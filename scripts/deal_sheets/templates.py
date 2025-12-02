@@ -270,6 +270,22 @@ DEAL_SHEET_TEMPLATE = """<!DOCTYPE html>
             color: #1e40af;
         }
 
+        .metric-note {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .assessment-notes {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8fafc;
+            border-left: 3px solid #3b82f6;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #475569;
+        }
+
         .features {
             display: flex;
             gap: 20px;
@@ -609,6 +625,52 @@ DEAL_SHEET_TEMPLATE = """<!DOCTYPE html>
     </div>
 
     <div class="section">
+        <h2>Interior Assessment (Section C)</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Kitchen</div>
+                <div class="metric-value">{{ property.kitchen_layout_score or 'N/A' }}/10</div>
+                <div class="metric-note">(40 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Master Suite</div>
+                <div class="metric-value">{{ property.master_suite_score or 'N/A' }}/10</div>
+                <div class="metric-note">(40 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Natural Light</div>
+                <div class="metric-value">{{ property.natural_light_score or 'N/A' }}/10</div>
+                <div class="metric-note">(30 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Ceilings</div>
+                <div class="metric-value">{{ property.high_ceilings_score or 'N/A' }}/10</div>
+                <div class="metric-note">(30 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Fireplace</div>
+                <div class="metric-value">{% if property.fireplace_present %}Yes{% else %}No{% endif %}</div>
+                <div class="metric-note">(20 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Laundry</div>
+                <div class="metric-value">{{ property.laundry_area_score or 'N/A' }}/10</div>
+                <div class="metric-note">(20 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Aesthetics</div>
+                <div class="metric-value">{{ property.aesthetics_score or 'N/A' }}/10</div>
+                <div class="metric-note">(10 pts max)</div>
+            </div>
+        </div>
+        {% if property.interior_assessment_notes %}
+        <div class="assessment-notes">
+            <strong>Assessment Notes:</strong> {{ property.interior_assessment_notes }}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="section">
         <h2>Key Metrics</h2>
         <div class="metrics-grid">
             <div class="metric">
@@ -849,6 +911,44 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
             color: #991b1b;
         }
 
+        /* Loading and error states */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 1.2em;
+            color: #2563eb;
+        }
+
+        .loading::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .error strong {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .error em {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
         .score {
             font-weight: 700;
             color: #1e40af;
@@ -858,73 +958,147 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Phoenix Home Deal Sheets</h1>
-            <p>Automated property analysis with traffic light kill-switch indicators</p>
-        </div>
+        <!-- Loading State -->
+        <div id="loading" class="loading">Loading property data</div>
 
-        <div class="stats">
-            <div class="stat-card">
-                <h3>Total Properties</h3>
-                <div class="value">{{ total_properties }}</div>
-            </div>
-            <div class="stat-card">
-                <h3>Passed Filters</h3>
-                <div class="value">{{ passed_properties }}</div>
-            </div>
-            <div class="stat-card">
-                <h3>Failed Filters</h3>
-                <div class="value">{{ failed_properties }}</div>
-            </div>
-            <div class="stat-card">
-                <h3>Avg Score (Passed)</h3>
-                <div class="value">{{ "{:.1f}".format(avg_score_passed) }}</div>
-            </div>
-        </div>
+        <!-- Error State -->
+        <div id="error" class="error" style="display: none;"></div>
 
-        <table class="properties-table">
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Address</th>
-                    <th>City</th>
-                    <th>Price</th>
-                    <th>Score</th>
-                    <th>Tier</th>
-                    <th>Status</th>
-                    <th>Deal Sheet</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for prop in properties %}
-                <tr class="{{ 'failed' if prop.kill_switch_passed != 'PASS' else '' }}">
-                    <td>
-                        <span class="rank-badge {{ 'top3' if prop.rank <= 3 else '' }}">
-                            {{ prop.rank }}
-                        </span>
-                    </td>
-                    <td>{{ prop.full_address.split(',')[0] }}</td>
-                    <td>{{ prop.city }}</td>
-                    <td>${{ "{:,.0f}".format(prop.price) }}</td>
-                    <td class="score">{{ prop.total_score }}</td>
-                    <td>
-                        <span class="tier-badge tier-{{ prop.tier.lower() }}">
-                            {{ prop.tier }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="status-badge status-{{ 'pass' if prop.kill_switch_passed == 'PASS' else 'fail' }}">
-                            {{ prop.kill_switch_passed }}
-                        </span>
-                    </td>
-                    <td>
-                        <a href="{{ prop.filename }}" class="address-link">View Details →</a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <!-- Content (hidden until data loads) -->
+        <div id="content" style="display: none;">
+            <div class="header">
+                <h1>Phoenix Home Deal Sheets</h1>
+                <p>Automated property analysis with traffic light kill-switch indicators</p>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>Total Properties</h3>
+                    <div class="value" id="stat-total">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Passed Filters</h3>
+                    <div class="value" id="stat-passed">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Failed Filters</h3>
+                    <div class="value" id="stat-failed">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg Score (Passed)</h3>
+                    <div class="value" id="stat-avg">-</div>
+                </div>
+            </div>
+
+            <table class="properties-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>Price</th>
+                        <th>Score</th>
+                        <th>Tier</th>
+                        <th>Status</th>
+                        <th>Deal Sheet</th>
+                    </tr>
+                </thead>
+                <tbody id="properties-body">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <script>
+        // Format currency
+        function formatCurrency(value) {
+            return '$' + value.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+        }
+
+        // Capitalize first letter
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Get tier badge HTML
+        function getTierBadge(tier) {
+            const tierLower = tier.toLowerCase();
+            return '<span class="tier-badge tier-' + tierLower + '">' + capitalize(tierLower) + '</span>';
+        }
+
+        // Get status badge HTML
+        function getStatusBadge(status) {
+            const statusLower = status.toLowerCase();
+            const cssClass = statusLower === 'pass' ? 'status-pass' : 'status-fail';
+            return '<span class="status-badge ' + cssClass + '">' + status + '</span>';
+        }
+
+        // Load and display data
+        async function loadData() {
+            try {
+                const response = await fetch('./data.json');
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+                }
+
+                const data = await response.json();
+
+                // Update stats
+                document.getElementById('stat-total').textContent = data.metadata.total_properties;
+                document.getElementById('stat-passed').textContent = data.metadata.passed_properties;
+                document.getElementById('stat-failed').textContent = data.metadata.failed_properties;
+                document.getElementById('stat-avg').textContent = data.metadata.avg_score_passed.toFixed(1);
+
+                // Build table rows
+                const tbody = document.getElementById('properties-body');
+                let html = '';
+
+                if (data.properties.length === 0) {
+                    html = '<tr><td colspan="8" style="text-align: center; padding: 40px;">No properties found</td></tr>';
+                } else {
+                    data.properties.forEach(function(prop) {
+                        const rowClass = prop.status !== 'PASS' ? 'failed' : '';
+                        const rankClass = prop.rank <= 3 ? 'top3' : '';
+
+                        html += '<tr class="' + rowClass + '">';
+                        html += '<td><span class="rank-badge ' + rankClass + '">' + prop.rank + '</span></td>';
+                        html += '<td>' + prop.address + '</td>';
+                        html += '<td>' + prop.city + '</td>';
+                        html += '<td>' + formatCurrency(prop.price) + '</td>';
+                        html += '<td class="score">' + prop.total_score.toFixed(1) + '</td>';
+                        html += '<td>' + getTierBadge(prop.tier) + '</td>';
+                        html += '<td>' + getStatusBadge(prop.status) + '</td>';
+                        html += '<td><a href="' + prop.filename + '" class="address-link">View Details \\u2192</a></td>';
+                        html += '</tr>';
+                    });
+                }
+
+                tbody.innerHTML = html;
+
+                // Hide loading, show content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML =
+                    '<strong>Error loading property data</strong>' +
+                    error.message + '<br><br>' +
+                    '<em>Note: If opening this file directly (file:// protocol), ' +
+                    'the browser may block loading data.json for security reasons. ' +
+                    'Try using a local web server: python -m http.server 8000</em>';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
 </body>
 </html>
 """

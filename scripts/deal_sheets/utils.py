@@ -3,10 +3,33 @@
 Contains:
 - slugify(): Convert address to URL-friendly slug
 - extract_features(): Extract present/missing features from property data
+- safe_numeric(): Safely convert value to numeric
 """
 
 import re
+
 import pandas as pd
+
+
+def safe_numeric(value, default=None):
+    """Safely convert a value to float, handling strings and edge cases.
+
+    Args:
+        value: The value to convert
+        default: Default value if conversion fails
+
+    Returns:
+        Float value or default if conversion fails
+    """
+    # Handle None, NaN, and empty strings
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return default
+    if isinstance(value, str) and value.strip() == '':
+        return default
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return default
 
 
 def slugify(text):
@@ -18,8 +41,10 @@ def slugify(text):
     Returns:
         URL-friendly slug (e.g., "123_main_st")
     """
-    # Handle None or NaN
+    # Handle None, NaN, or empty strings
     if text is None or (isinstance(text, float) and pd.isna(text)):
+        return "unknown_address"
+    if isinstance(text, str) and text.strip() == '':
         return "unknown_address"
 
     # Convert to string if needed
@@ -69,25 +94,26 @@ def extract_features(row):
         missing.append('Solar (unknown)')
 
     # Garage
-    garage = row.get('garage_spaces')
-    if garage and garage >= 3:
-        present.append(f'{int(garage)}-car garage')
-    elif garage and garage >= 2:
-        present.append('2-car garage')
+    garage = safe_numeric(row.get('garage_spaces'))
+    if garage is not None:
+        if garage >= 3:
+            present.append(f'{int(garage)}-car garage')
+        elif garage >= 2:
+            present.append('2-car garage')
 
     # Bedrooms
-    beds = row.get('beds')
-    if beds and beds > 4:
+    beds = safe_numeric(row.get('beds'))
+    if beds is not None and beds > 4:
         present.append(f'{int(beds)} bedrooms')
 
     # Bathrooms
-    baths = row.get('baths')
-    if baths and baths > 2:
+    baths = safe_numeric(row.get('baths'))
+    if baths is not None and baths > 2:
         present.append(f'{baths} bathrooms')
 
     # HVAC age (if known)
-    hvac_age = row.get('hvac_age')
-    if hvac_age is not None and not pd.isna(hvac_age):
+    hvac_age = safe_numeric(row.get('hvac_age'))
+    if hvac_age is not None:
         if hvac_age == 0:
             present.append('New HVAC')
         elif hvac_age <= 5:
@@ -96,8 +122,8 @@ def extract_features(row):
             missing.append(f'HVAC needs replacement ({int(hvac_age)} years)')
 
     # Roof age (if known)
-    roof_age = row.get('roof_age')
-    if roof_age is not None and not pd.isna(roof_age):
+    roof_age = safe_numeric(row.get('roof_age'))
+    if roof_age is not None:
         if roof_age == 0:
             present.append('New roof')
         elif roof_age <= 5:
@@ -107,8 +133,9 @@ def extract_features(row):
 
     # Default features if lists are too short
     if len(present) < 3:
-        present.append(f'City sewer')
-        present.append(f'{int(row.get("sqft", 0)):,} sqft living area')
+        present.append('City sewer')
+        sqft = safe_numeric(row.get('sqft'), 0)
+        present.append(f'{int(sqft):,} sqft living area')
 
     if len(missing) < 2:
         if not row.get('has_pool'):

@@ -47,9 +47,17 @@ def generate_deal_sheets(base_dir=None):
     print(f"Generating deal sheets for {len(df)} properties...")
 
     # Generate individual deal sheets
+    errors = []
     for idx, row in df.iterrows():
-        filename = generate_deal_sheet(row, output_dir)
-        print(f"  [{int(row['rank']):2d}/{len(df)}] Generated: {filename}")
+        try:
+            filename = generate_deal_sheet(row, output_dir)
+            print(f"  [{int(row['rank']):2d}/{len(df)}] Generated: {filename}")
+        except Exception as e:
+            errors.append((int(row['rank']), row.get('full_address', 'Unknown'), str(e)))
+            print(f"  [{int(row['rank']):2d}/{len(df)}] ERROR: {e}")
+
+    if errors:
+        print(f"\n[WARN] {len(errors)} properties failed to generate:")
 
     # Generate index page
     print("\nGenerating index.html...")
@@ -68,9 +76,15 @@ def generate_deal_sheets(base_dir=None):
     print(f"Total Properties:        {len(df)}")
     print(f"Passed Kill Switches:    {(df[ks_field] == 'PASS').sum()}")
     print(f"Failed Kill Switches:    {(df[ks_field] != 'PASS').sum()}")
-    print(f"Average Score (Passed):  {df[df[ks_field] == 'PASS']['total_score'].mean():.1f}")
-    print(f"Average Score (All):     {df['total_score'].mean():.1f}")
-    print(f"Top Score:               {df['total_score'].max():.1f} (Rank #{int(df['rank'].min())})")
+    # Convert total_score to numeric (may have strings after merge)
+    import pandas as pd
+    df['total_score'] = pd.to_numeric(df['total_score'], errors='coerce')
+    passed_avg = df[df[ks_field] == 'PASS']['total_score'].mean()
+    all_avg = df['total_score'].mean()
+    top_score = df['total_score'].max()
+    print(f"Average Score (Passed):  {passed_avg:.1f}" if pd.notna(passed_avg) else "Average Score (Passed):  N/A")
+    print(f"Average Score (All):     {all_avg:.1f}" if pd.notna(all_avg) else "Average Score (All):     N/A")
+    print(f"Top Score:               {top_score:.1f} (Rank #{int(df['rank'].min())})" if pd.notna(top_score) else "Top Score:               N/A")
 
     # Show top 3
     print("\n" + "="*60)
@@ -81,7 +95,10 @@ def generate_deal_sheets(base_dir=None):
         print(f"\n#{int(row['rank'])}: {row['full_address']}")
         print(f"  Score: {row['total_score']}/600 | Status: {status}")
         # Get price from price_num if price not available
-        price = row.get('price', row.get('price_num', 0))
+        price = row.get('price_num', row.get('price', 0))
+        # Convert price to numeric if it's a string (e.g., "$354,000")
+        if isinstance(price, str):
+            price = float(price.replace('$', '').replace(',', '')) if price else 0
         city = row.get('city', row['full_address'].split(',')[1].strip() if ',' in row['full_address'] else 'Unknown')
         print(f"  Price: ${price:,.0f} | {city}")
 

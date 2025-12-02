@@ -59,6 +59,8 @@ lot_sqft_lookup = {entry['full_address']: entry['lot_sqft'] for entry in enrichm
 df['lot_sqft_enriched'] = df['full_address'].map(lot_sqft_lookup)
 
 # Use lot_sqft from enrichment if available, otherwise from CSV
+# Replace empty strings with NaN before fillna (CSV may have empty strings instead of NaN)
+df['lot_sqft'] = df['lot_sqft'].replace('', pd.NA)
 df['lot_sqft_final'] = df['lot_sqft_enriched'].fillna(df['lot_sqft'])
 
 # Calculate score/price ratio (points per $1000) for value ranking

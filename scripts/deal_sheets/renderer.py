@@ -2,8 +2,9 @@
 
 Contains:
 - generate_deal_sheet(): Render individual property deal sheet
-- generate_index(): Render master index page
+- generate_index(): Render master index page with dynamic JSON loading
 """
+
 
 
 import pandas as pd
@@ -69,13 +70,23 @@ def calculate_monthly_cost(row_dict: dict) -> float:
 
     # HOA fee
     hoa_fee = row_dict.get('hoa_fee')
-    if hoa_fee and not pd.isna(hoa_fee) and hoa_fee > 0:
-        total += float(hoa_fee)
+    if hoa_fee and not pd.isna(hoa_fee):
+        try:
+            hoa_float = float(hoa_fee)
+            if hoa_float > 0:
+                total += hoa_float
+        except (ValueError, TypeError):
+            pass
 
     # Solar lease
     solar_lease = row_dict.get('solar_lease_monthly')
-    if solar_lease and not pd.isna(solar_lease) and solar_lease > 0:
-        total += float(solar_lease)
+    if solar_lease and not pd.isna(solar_lease):
+        try:
+            lease_float = float(solar_lease)
+            if lease_float > 0:
+                total += lease_float
+        except (ValueError, TypeError):
+            pass
 
     # Pool maintenance estimate (service + energy costs)
     has_pool = row_dict.get('has_pool')
@@ -116,6 +127,29 @@ def generate_deal_sheet(row, output_dir):
         else:
             row_dict[key] = value
 
+    # Convert numeric string fields to proper types (CSV stores everything as strings)
+    numeric_fields = [
+        'price_num', 'beds', 'baths', 'sqft', 'price_per_sqft', 'lot_sqft',
+        'year_built', 'garage_spaces', 'tax_annual', 'hoa_fee', 'commute_minutes',
+        'school_rating', 'distance_to_grocery_miles', 'distance_to_highway_miles',
+        'solar_lease_monthly', 'pool_equipment_age', 'roof_age', 'hvac_age',
+        'kitchen_layout_score', 'master_suite_score', 'natural_light_score',
+        'high_ceilings_score', 'fireplace_present', 'laundry_area_score',
+        'aesthetics_score', 'backyard_utility_score', 'safety_neighborhood_score',
+        'parks_walkability_score', 'score_location', 'score_lot_systems',
+        'score_interior', 'total_score', 'rank', 'latitude', 'longitude'
+    ]
+    for field in numeric_fields:
+        if field in row_dict and row_dict[field] is not None:
+            val = row_dict[field]
+            if isinstance(val, str) and val.strip() and val.strip().lower() not in ('n/a', 'nan', ''):
+                try:
+                    row_dict[field] = float(val.replace(',', ''))
+                except ValueError:
+                    row_dict[field] = None
+            elif isinstance(val, str):
+                row_dict[field] = None
+
     # Map CSV fields to template expectations
     # CSV has 'kill_switch_status' (PASS/FAIL), template expects 'kill_switch_passed'
     if 'kill_switch_status' in row_dict:
@@ -135,10 +169,23 @@ def generate_deal_sheet(row, output_dir):
     if 'section_c_score' in row_dict and 'score_interior' not in row_dict:
         row_dict['score_interior'] = row_dict['section_c_score']
 
+    # Ensure score fields are numeric (they might be strings from CSV/merge)
+    score_fields = ['score_location', 'score_lot_systems', 'score_interior', 'total_score']
+    for field in score_fields:
+        val = row_dict.get(field)
+        if val is None or (isinstance(val, str) and val.strip() == ''):
+            row_dict[field] = 0.0
+        elif isinstance(val, str):
+            try:
+                row_dict[field] = float(val)
+            except ValueError:
+                row_dict[field] = 0.0
+
     # Map CSV field names to expected template names
     if 'commute_min' in row_dict and 'commute_minutes' not in row_dict:
         row_dict['commute_minutes'] = row_dict['commute_min']
-    if 'price_num' in row_dict and 'price' not in row_dict:
+    # Template expects 'price' to be numeric for formatting; use price_num
+    if 'price_num' in row_dict:
         row_dict['price'] = row_dict['price_num']
 
     # Ensure interior assessment scores are available for display
@@ -177,14 +224,24 @@ def generate_deal_sheet(row, output_dir):
     ks_severity = ks_summary.get("severity_score", 0.0)
     ks_has_hard_failure = ks_summary.get("has_hard_failure", False)
 
-    # NOW replace None with display values for template rendering
-    if 'tax_annual' not in row_dict or row_dict['tax_annual'] is None:
+    # Helper to check for None, NaN, or empty string
+    def is_empty(val):
+        if val is None:
+            return True
+        if isinstance(val, float) and pd.isna(val):
+            return True
+        if isinstance(val, str) and val.strip() == '':
+            return True
+        return False
+
+    # NOW replace None/empty with display values for template rendering
+    if 'tax_annual' not in row_dict or is_empty(row_dict['tax_annual']):
         row_dict['tax_annual'] = 0
-    if 'distance_to_grocery_miles' not in row_dict or row_dict['distance_to_grocery_miles'] is None:
+    if 'distance_to_grocery_miles' not in row_dict or is_empty(row_dict['distance_to_grocery_miles']):
         row_dict['distance_to_grocery_miles'] = 0
 
     for key, value in row_dict.items():
-        if value is None:
+        if is_empty(value):
             # Use 'N/A' for string fields, 0 for numeric
             if 'distance' in key or 'minutes' in key or 'rating' in key or 'age' in key or 'annual' in key or 'sqft' in key:
                 row_dict[key] = 0
@@ -220,12 +277,19 @@ def generate_deal_sheet(row, output_dir):
 
 
 def generate_index(df, output_dir):
-    """Generate index.html master list.
+    """Generate index.html and data.json for dynamic loading.
+
+    Creates:
+    - data.json: Property data + metadata for JavaScript fetch
+    - index.html: JS shell that dynamically loads data.json
 
     Args:
         df: pandas DataFrame with all properties
         output_dir: Path object for output directory
     """
+    import json
+    from datetime import datetime
+
     # Add filename column
     df['filename'] = df.apply(
         lambda row: f"{int(row['rank']):02d}_{slugify(row['full_address'])}.html",
@@ -236,13 +300,24 @@ def generate_index(df, output_dir):
     # Use kill_switch_status field from CSV if available
     ks_field = 'kill_switch_status' if 'kill_switch_status' in df.columns else 'kill_switch_passed'
     total_properties = len(df)
-    passed_properties = (df[ks_field] == 'PASS').sum()
-    failed_properties = total_properties - passed_properties
-    avg_score_passed = df[df[ks_field] == 'PASS']['total_score'].mean()
 
-    # Ensure kill_switch_passed column exists for template
-    if 'kill_switch_passed' not in df.columns and 'kill_switch_status' in df.columns:
-        df['kill_switch_passed'] = df['kill_switch_status']
+    # Normalize status values for comparison (handle 'PASS', 'true', True, etc.)
+    def is_passed(val):
+        return str(val).lower() in ('pass', 'true', '1')
+
+    passed_mask = df[ks_field].apply(is_passed)
+    passed_count = int(passed_mask.sum())
+    failed_count = total_properties - passed_count
+
+    # Calculate avg score for passed properties
+    passed_df = df[passed_mask]
+    if len(passed_df) > 0:
+        # Convert scores to numeric, handling various formats
+        scores = pd.to_numeric(passed_df['total_score'], errors='coerce')
+        avg_score = scores.mean()
+        avg_score_passed = round(avg_score, 1) if not pd.isna(avg_score) else 0.0
+    else:
+        avg_score_passed = 0.0
 
     # Extract city from full_address if not present
     if 'city' not in df.columns:
@@ -250,25 +325,74 @@ def generate_index(df, output_dir):
             lambda addr: addr.split(',')[1].strip() if ',' in addr and len(addr.split(',')) > 1 else 'Unknown'
         )
 
-    # Extract price if not present or ensure it's numeric
+    # Ensure price is numeric
     if 'price' not in df.columns and 'price_num' in df.columns:
         df['price'] = df['price_num']
     elif 'price' in df.columns and df['price'].dtype == 'object':
-        # Price is a string like "$625,000", use price_num if available
         if 'price_num' in df.columns:
             df['price'] = df['price_num']
 
-    # Render template
-    template = Template(INDEX_TEMPLATE)
-    html = template.render(
-        total_properties=total_properties,
-        passed_properties=passed_properties,
-        failed_properties=failed_properties,
-        avg_score_passed=avg_score_passed,
-        properties=df.to_dict('records')
-    )
+    # Build properties list for JSON
+    properties = []
+    for _, row in df.iterrows():
+        # Get price value safely
+        price_val = row.get('price_num') or row.get('price', 0)
+        if isinstance(price_val, str):
+            price_val = float(price_val.replace('$', '').replace(',', '') or 0)
 
-    # Write file
+        # Get score safely
+        score_val = row.get('total_score', 0)
+        if pd.isna(score_val) or score_val == '' or score_val is None:
+            score_val = 0.0
+        else:
+            try:
+                score_val = float(score_val)
+            except (ValueError, TypeError):
+                score_val = 0.0
+
+        # Get status - normalize to PASS/FAIL
+        raw_status = row.get(ks_field, 'UNKNOWN')
+        if str(raw_status).lower() in ('pass', 'true', '1'):
+            status = 'PASS'
+        elif str(raw_status).lower() in ('fail', 'false', '0'):
+            status = 'FAIL'
+        else:
+            status = str(raw_status)
+
+        properties.append({
+            'rank': int(row['rank']),
+            'address': str(row['full_address']).split(',')[0],
+            'full_address': str(row['full_address']),
+            'city': str(row.get('city', 'Unknown')),
+            'price': float(price_val),
+            'total_score': float(score_val),
+            'tier': str(row.get('tier', 'pass')).lower(),
+            'status': status,
+            'filename': row['filename']
+        })
+
+    # Build data.json structure
+    data_json = {
+        'metadata': {
+            'generated_at': datetime.now().isoformat(),
+            'total_properties': total_properties,
+            'passed_properties': passed_count,
+            'failed_properties': failed_count,
+            'avg_score_passed': avg_score_passed
+        },
+        'properties': properties
+    }
+
+    # Write data.json
+    json_path = output_dir / 'data.json'
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(data_json, f, indent=2)
+
+    # Render HTML template (JS shell - no data passed)
+    template = Template(INDEX_TEMPLATE)
+    html = template.render()
+
+    # Write index.html
     filepath = output_dir / 'index.html'
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(html)

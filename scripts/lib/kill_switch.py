@@ -32,37 +32,23 @@ Usage with custom config:
 import math
 from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
 from pathlib import Path
 from typing import Any, Protocol, Union
 
 import yaml
 
+# Requires: uv pip install -e .
+from phx_home_analysis.services.kill_switch.constants import (
+    HARD_CRITERIA,
+    SEVERITY_FAIL_THRESHOLD,
+    SEVERITY_WARNING_THRESHOLD,
+    SOFT_SEVERITY_WEIGHTS,
+    KillSwitchVerdict,
+)
+
 # =============================================================================
-# SEVERITY THRESHOLD SYSTEM
+# SEVERITY THRESHOLD SYSTEM (imported from constants)
 # =============================================================================
-
-class KillSwitchVerdict(Enum):
-    """Kill switch verdict outcome."""
-    PASS = "PASS"
-    WARNING = "WARNING"
-    FAIL = "FAIL"
-
-
-# Severity weights for SOFT criteria
-SOFT_SEVERITY_WEIGHTS: dict[str, float] = {
-    "sewer": 2.5,      # Septic risk - infrastructure concern
-    "garage": 1.5,     # Convenience factor
-    "lot_size": 1.0,   # Minor preference
-    "year_built": 2.0, # New build avoidance
-}
-
-# HARD criteria - instant fail, no severity calculation
-HARD_CRITERIA: set = {"hoa", "beds", "baths"}
-
-# Threshold constants
-SEVERITY_FAIL_THRESHOLD: float = 3.0
-SEVERITY_WARNING_THRESHOLD: float = 1.5
 
 
 class PropertyLike(Protocol):
@@ -100,8 +86,11 @@ class KillSwitchResult:
 # =============================================================================
 
 def _is_none_or_nan(value: Any) -> bool:
-    """Check if value is None or NaN (for pandas compatibility)."""
+    """Check if value is None, NaN, or empty string (for pandas/CSV compatibility)."""
     if value is None:
+        return True
+    # Handle empty strings from CSV data
+    if isinstance(value, str) and value.strip() == '':
         return True
     try:
         return math.isnan(value)
