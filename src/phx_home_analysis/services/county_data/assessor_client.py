@@ -12,13 +12,15 @@ import re
 
 import httpx
 
-from .models import ParcelData
+from .models import ParcelData, ZoningData
 
 logger = logging.getLogger(__name__)
 
 # API endpoints
 OFFICIAL_API_BASE = "https://mcassessor.maricopa.gov"
 ARCGIS_API_BASE = "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/MaricopaDynamicQueryService/MapServer"
+# Zoning data may be on a different service - common layer IDs to try: 5, 6, 7
+ZONING_LAYER_ID = 5  # Layer ID for zoning - may need adjustment based on actual service
 
 
 def escape_like_pattern(value: str) -> str:
@@ -104,20 +106,41 @@ class MaricopaAssessorClient:
 
         Performance: Enables HTTP/2 for multiplexed connections and configures
         connection pooling for efficient concurrent request handling.
+
+        Performance Tuning Notes:
+            - max_connections=50: Support high concurrency (batch property processing)
+            - max_keepalive_connections=20: Balance connection reuse vs memory
+            - HTTP/2 multiplexing allows multiple requests per connection
         """
-        self._http = httpx.AsyncClient(
-            timeout=self._timeout,
-            http2=True,  # Enable HTTP/2 for better performance with concurrent requests
-            limits=httpx.Limits(
-                max_keepalive_connections=10,  # Maintain up to 10 persistent connections
-                max_connections=20,  # Allow up to 20 total connections
-                keepalive_expiry=30.0,  # Keep connections alive for 30 seconds
-            ),
-            event_hooks={
-                "request": [self._redact_request_log],
-                "response": [self._redact_response_log],
-            },
-        )
+        # Try HTTP/2, fall back to HTTP/1.1 if h2 not installed
+        try:
+            self._http = httpx.AsyncClient(
+                timeout=self._timeout,
+                http2=True,  # Enable HTTP/2 for better performance with concurrent requests
+                limits=httpx.Limits(
+                    max_keepalive_connections=20,  # Maintain up to 20 persistent connections
+                    max_connections=50,  # Allow up to 50 total connections for batch ops
+                    keepalive_expiry=30.0,  # Keep connections alive for 30 seconds
+                ),
+                event_hooks={
+                    "request": [self._redact_request_log],
+                    "response": [self._redact_response_log],
+                },
+            )
+        except ImportError:
+            logger.debug("h2 package not installed, using HTTP/1.1")
+            self._http = httpx.AsyncClient(
+                timeout=self._timeout,
+                limits=httpx.Limits(
+                    max_keepalive_connections=20,
+                    max_connections=50,
+                    keepalive_expiry=30.0,
+                ),
+                event_hooks={
+                    "request": [self._redact_request_log],
+                    "response": [self._redact_response_log],
+                },
+            )
         return self
 
     async def _redact_request_log(self, request: httpx.Request) -> None:
@@ -526,3 +549,134 @@ class MaricopaAssessorClient:
         if isinstance(value, (int, float)):
             return bool(value)
         return None
+
+    async def get_zoning_data(self, lat: float, lng: float) -> ZoningData | None:
+        """Get zoning data for coordinates.
+
+        Queries Maricopa County GIS zoning layer by lat/lng.
+
+        Args:
+            lat: Latitude
+            lng: Longitude
+
+        Returns:
+            ZoningData if found, None otherwise
+        """
+        await self._apply_rate_limit()
+
+        # Query zoning layer using spatial intersection
+        url = f"{ARCGIS_API_BASE}/{ZONING_LAYER_ID}/query"
+        params = {
+            "geometry": f"{lng},{lat}",
+            "geometryType": "esriGeometryPoint",
+            "spatialRel": "esriSpatialRelIntersects",
+            "outFields": "ZONING,ZONE_DESC,ZONE_CLASS",  # Common field names - may need adjustment
+            "returnGeometry": "false",
+            "f": "json",
+        }
+
+        try:
+            response = await self._http.get(url, params=params)
+            response.raise_for_status()
+            data = response.json()
+
+            features = data.get("features", [])
+            if not features:
+                logger.debug(f"No zoning data found for ({lat}, {lng})")
+                return None
+
+            attrs = features[0].get("attributes", {})
+            return self._parse_zoning_data(attrs, lat, lng)
+
+        except httpx.HTTPError as e:
+            logger.debug(f"Zoning query failed: {self._safe_error_message(e)}")
+            return None
+
+    def _parse_zoning_data(
+        self, attrs: dict, lat: float, lng: float
+    ) -> ZoningData | None:
+        """Parse zoning attributes from GIS response.
+
+        Args:
+            attrs: Feature attributes from API response
+            lat: Query latitude
+            lng: Query longitude
+
+        Returns:
+            ZoningData if valid, None if parsing fails
+        """
+        try:
+            # Try common field names for zoning code
+            zoning_code = (
+                attrs.get("ZONING")
+                or attrs.get("ZONE_CODE")
+                or attrs.get("ZONE")
+                or attrs.get("ZONECODE")
+            )
+
+            if not zoning_code:
+                logger.warning("No zoning code found in GIS response")
+                return None
+
+            # Try common field names for description
+            zone_desc = (
+                attrs.get("ZONE_DESC")
+                or attrs.get("ZONING_DESC")
+                or attrs.get("DESCRIPTION")
+                or attrs.get("DESC")
+            )
+
+            # Try to get zone class/category
+            zone_class = attrs.get("ZONE_CLASS") or attrs.get("CLASS")
+
+            # Derive category from code if not provided
+            category = self._derive_zoning_category(zoning_code, zone_class)
+
+            return ZoningData(
+                zoning_code=str(zoning_code).strip(),
+                zoning_description=zone_desc,
+                zoning_category=category,
+                latitude=lat,
+                longitude=lng,
+            )
+
+        except Exception as e:
+            logger.error(f"Error parsing zoning data: {e}")
+            return None
+
+    def _derive_zoning_category(
+        self, zoning_code: str, zone_class: str | None = None
+    ) -> str:
+        """Derive zoning category from code.
+
+        Args:
+            zoning_code: Zoning code (e.g., "R1-6", "C-2")
+            zone_class: Optional zone classification from GIS
+
+        Returns:
+            Category: "residential", "commercial", "industrial", "mixed", or "other"
+        """
+        if zone_class:
+            zone_class_lower = zone_class.lower()
+            if "residential" in zone_class_lower or "single" in zone_class_lower:
+                return "residential"
+            if "commercial" in zone_class_lower:
+                return "commercial"
+            if "industrial" in zone_class_lower or "manufacturing" in zone_class_lower:
+                return "industrial"
+            if "mixed" in zone_class_lower:
+                return "mixed"
+
+        # Fallback: derive from code prefix
+        code_upper = zoning_code.upper()
+
+        if code_upper.startswith(("R", "RS", "R1", "R2", "R3", "RE", "RU")):
+            return "residential"
+        elif code_upper.startswith(("C", "COM", "CR", "GC")):
+            return "commercial"
+        elif code_upper.startswith(("I", "IND", "M", "MFG")):
+            return "industrial"
+        elif code_upper.startswith(("MU", "MX", "MIXED")):
+            return "mixed"
+        else:
+            return "other"

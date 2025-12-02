@@ -64,10 +64,9 @@ class ProxyExtensionBuilder:
         self.extension_dir: Path | None = None
 
         logger.info(
-            "ProxyExtensionBuilder initialized: %s:%d (user: %s)",
+            "ProxyExtensionBuilder initialized: %s:%d (user: ***)",
             host,
             port,
-            username,
         )
 
     @classmethod

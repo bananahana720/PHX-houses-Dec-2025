@@ -1,7 +1,13 @@
-"""Singleton data cache with mtime-based invalidation.
+"""Singleton data cache with mtime-based invalidation and schema versioning.
 
 This module provides a thread-safe singleton cache for property data files
 (CSV and JSON) to eliminate redundant file I/O operations during pipeline runs.
+
+Features:
+- Automatic mtime-based cache invalidation
+- Schema version detection and validation on JSON load
+- Warning logs for outdated schema versions
+- Optional auto-migration support
 
 Usage:
     from phx_home_analysis.services.data_cache import PropertyDataCache
@@ -11,7 +17,7 @@ Usage:
     # Load CSV data (cached automatically)
     csv_data = cache.get_csv_data(Path("data/phx_homes.csv"))
 
-    # Load enrichment JSON (cached automatically)
+    # Load enrichment JSON (cached automatically, schema version checked)
     enrichment = cache.get_enrichment_data(Path("data/enrichment_data.json"))
 
     # Force reload if needed
@@ -27,13 +33,20 @@ Thread Safety:
 Cache Invalidation:
     Files are automatically reloaded if their mtime changes.
     Call invalidate() to force reload on next access.
+
+Schema Versioning:
+    On JSON load, the schema version is detected and logged.
+    If version is outdated, a warning is logged with migration instructions.
 """
 
 import csv
 import json
+import logging
 import threading
 from pathlib import Path
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 
 class PropertyDataCache:
@@ -141,12 +154,20 @@ class PropertyDataCache:
             return self._csv_data
 
     def get_enrichment_data(
-        self, json_path: Path
+        self,
+        json_path: Path,
+        check_schema: bool = True,
+        auto_migrate: bool = False,
     ) -> dict[str, Any] | list[dict[str, Any]]:
         """Get enrichment JSON, reloading if file changed or path changed.
 
+        On load, checks the schema version and logs warnings if outdated.
+        Optionally auto-migrates to the current schema version.
+
         Args:
             json_path: Path to enrichment JSON file to load
+            check_schema: If True, check schema version and log warnings
+            auto_migrate: If True, auto-migrate outdated schemas (writes to file)
 
         Returns:
             Enrichment data (dict or list depending on file format)
@@ -177,6 +198,12 @@ class PropertyDataCache:
                 with open(json_path, encoding='utf-8') as f:
                     enrichment_data = json.load(f)
 
+                # Check schema version if enabled
+                if check_schema:
+                    enrichment_data = self._check_and_migrate_schema(
+                        enrichment_data, json_path, auto_migrate
+                    )
+
                 # Update cache
                 self._enrichment_data = enrichment_data
                 self._json_mtime = current_mtime
@@ -184,6 +211,58 @@ class PropertyDataCache:
 
             assert self._enrichment_data is not None  # Guaranteed after reload
             return self._enrichment_data
+
+    def _check_and_migrate_schema(
+        self,
+        data: dict[str, Any] | list[dict[str, Any]],
+        json_path: Path,
+        auto_migrate: bool,
+    ) -> dict[str, Any] | list[dict[str, Any]]:
+        """Check schema version and optionally migrate.
+
+        Args:
+            data: Loaded JSON data
+            json_path: Path to JSON file (for migration write-back)
+            auto_migrate: If True, migrate and write back to file
+
+        Returns:
+            Data (potentially migrated)
+        """
+        try:
+            from phx_home_analysis.services.schema import (
+                SchemaMigrator,
+                SchemaVersion,
+            )
+
+            migrator = SchemaMigrator()
+            detected_version = migrator.get_version(data)
+            current_version = SchemaVersion.current()
+
+            if detected_version < current_version:
+                logger.warning(
+                    f"Schema version {detected_version.value} is outdated "
+                    f"(current: {current_version.value}). "
+                    f"Run: python scripts/migrate_schema.py --file {json_path}"
+                )
+
+                if auto_migrate:
+                    logger.info(f"Auto-migrating schema to {current_version.value}")
+                    data = migrator.migrate(data, current_version)
+
+                    # Write back to file
+                    with open(json_path, "w", encoding="utf-8") as f:
+                        json.dump(data, f, indent=2)
+                    logger.info(f"Migrated schema written to {json_path}")
+
+            elif detected_version == current_version:
+                logger.debug(f"Schema version {detected_version.value} is current")
+
+        except ImportError:
+            logger.debug("Schema versioning module not available, skipping check")
+        except Exception as e:
+            logger.warning(f"Schema version check failed: {e}")
+
+        return data
 
     def invalidate(self) -> None:
         """Force cache invalidation for all cached data.

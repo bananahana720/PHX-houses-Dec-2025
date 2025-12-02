@@ -147,7 +147,7 @@ Contains:
   ├── Referenced by: scoring/SKILL.md
   ├── Referenced by: image-assessment/SKILL.md
   ├── Referenced by: kill-switch/SKILL.md
-  ├── Referenced by: AGENT_CONTEXT.md
+  ├── Referenced by: AGENT_BRIEFING.md
   └── Supporting docs:
       ├── SCORING_CONSOLIDATION_SUMMARY.md
       ├── SCORING_QUICK_REFERENCE.md
@@ -168,7 +168,7 @@ Contains:
 1. `.claude/skills/scoring/SKILL.md` - Had all tables
 2. `.claude/skills/image-assessment/SKILL.md` - Had Section C rubrics
 3. `.claude/skills/kill-switch/SKILL.md` - Had criteria table
-4. `.claude/AGENT_CONTEXT.md` - Had quick references
+4. `.claude/AGENT_BRIEFING.md` - Had quick references
 
 ### Result
 Single file of truth with proper cross-references instead of 4 files with overlapping information.
@@ -232,7 +232,7 @@ Read: C:/Users/Andrew/.vscode/PHX-houses-Dec-2025/.claude/skills/_shared/scoring
 
 ### Immediate
 - [x] Create canonical scoring file
-- [x] Update AGENT_CONTEXT.md references
+- [x] Update AGENT_BRIEFING.md references
 - [x] Create supporting documentation
 
 ### Short Term
@@ -293,7 +293,7 @@ Read: C:/Users/Andrew/.vscode/PHX-houses-Dec-2025/.claude/skills/_shared/scoring
 - [x] Quick reference created
 - [x] Consolidation summary written
 - [x] Directory structure established
-- [x] AGENT_CONTEXT.md updated
+- [x] AGENT_BRIEFING.md updated
 
 ---
 

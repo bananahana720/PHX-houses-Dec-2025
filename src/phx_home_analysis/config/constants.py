@@ -449,3 +449,152 @@ assert SCORE_SECTION_A_TOTAL + SCORE_SECTION_B_TOTAL + SCORE_SECTION_C_TOTAL == 
     f"Scoring sections don't sum to {MAX_POSSIBLE_SCORE}: "
     f"A={SCORE_SECTION_A_TOTAL}, B={SCORE_SECTION_B_TOTAL}, C={SCORE_SECTION_C_TOTAL}"
 )
+
+
+# =============================================================================
+# SCORING STRATEGY THRESHOLDS
+# =============================================================================
+# Magic numbers extracted from scoring strategies for maintainability
+# Used by src/phx_home_analysis/services/scoring/strategies/*.py
+
+# ---- DEFAULT SCORE FOR UNKNOWN/MISSING DATA ----
+
+# Default neutral score (0-10 scale) when data is missing
+# Represents middle-ground assumption (neither penalize nor reward)
+DEFAULT_NEUTRAL_SCORE: Final[float] = 5.0
+
+# Default fireplace score when fireplace is present (0-10 scale)
+DEFAULT_FIREPLACE_PRESENT_SCORE: Final[float] = 10.0
+
+# Default fireplace score when no fireplace (0-10 scale)
+DEFAULT_FIREPLACE_ABSENT_SCORE: Final[float] = 0.0
+
+# ---- DISTANCE THRESHOLDS (Highway/Quietness) ----
+# Used by QuietnessScorer in location.py
+
+# Distance threshold for "very quiet" rating (>= this distance = 10 pts)
+DISTANCE_HIGHWAY_VERY_QUIET_MILES: Final[float] = 2.0
+
+# Distance threshold for "quiet" rating (>= this distance = 7 pts)
+DISTANCE_HIGHWAY_QUIET_MILES: Final[float] = 1.0
+
+# Distance threshold for "acceptable" rating (>= this distance = 5 pts)
+DISTANCE_HIGHWAY_ACCEPTABLE_MILES: Final[float] = 0.5
+
+# Score mappings for highway distance
+SCORE_QUIETNESS_VERY_QUIET: Final[float] = 10.0  # >= 2.0 miles
+SCORE_QUIETNESS_QUIET: Final[float] = 7.0        # >= 1.0 miles
+SCORE_QUIETNESS_ACCEPTABLE: Final[float] = 5.0   # >= 0.5 miles
+SCORE_QUIETNESS_NOISY: Final[float] = 3.0        # < 0.5 miles
+
+# ---- DISTANCE THRESHOLDS (Grocery/Supermarket) ----
+# Used by SupermarketScorer in location.py
+
+# Distance threshold for "walking distance" rating (< this distance = 10 pts)
+DISTANCE_GROCERY_WALKING_MILES: Final[float] = 0.5
+
+# Distance threshold for "very close" rating (< this distance = 8 pts)
+DISTANCE_GROCERY_VERY_CLOSE_MILES: Final[float] = 1.0
+
+# Distance threshold for "close" rating (< this distance = 6 pts)
+DISTANCE_GROCERY_CLOSE_MILES: Final[float] = 1.5
+
+# Distance threshold for "moderate" rating (< this distance = 4 pts)
+DISTANCE_GROCERY_MODERATE_MILES: Final[float] = 2.0
+
+# Score mappings for grocery distance
+SCORE_GROCERY_WALKING: Final[float] = 10.0     # < 0.5 miles
+SCORE_GROCERY_VERY_CLOSE: Final[float] = 8.0   # < 1.0 miles
+SCORE_GROCERY_CLOSE: Final[float] = 6.0        # < 1.5 miles
+SCORE_GROCERY_MODERATE: Final[float] = 4.0     # < 2.0 miles
+SCORE_GROCERY_FAR: Final[float] = 2.0          # >= 2.0 miles
+
+# ---- CRIME INDEX THRESHOLDS ----
+# Used by CrimeIndexScorer in location.py
+# Crime index uses 0-100 scale (100 = safest)
+
+# Composite weighting for crime score
+CRIME_INDEX_VIOLENT_WEIGHT: Final[float] = 0.6   # 60% violent crime impact
+CRIME_INDEX_PROPERTY_WEIGHT: Final[float] = 0.4  # 40% property crime impact
+
+# Crime index divisor to convert 0-100 scale to 0-10 score
+CRIME_INDEX_TO_SCORE_DIVISOR: Final[float] = 10.0
+
+# ---- WALK/TRANSIT SCORE WEIGHTS ----
+# Used by WalkTransitScorer in location.py
+# WalkScore uses 0-100 scale, converted to 0-10
+
+WALKSCORE_TO_BASE_DIVISOR: Final[float] = 10.0  # Divide by 10 for 0-10 scale
+
+# Component weights for composite walk/transit/bike score
+WALKSCORE_WEIGHT_WALK: Final[float] = 0.4     # 40% weight for walk score
+WALKSCORE_WEIGHT_TRANSIT: Final[float] = 0.4  # 40% weight for transit score
+WALKSCORE_WEIGHT_BIKE: Final[float] = 0.2     # 20% weight for bike score
+
+# ---- ROOF AGE THRESHOLDS (Years) ----
+# Used by RoofConditionScorer in systems.py
+
+ROOF_AGE_NEW_MAX: Final[int] = 5        # 0-5 years = new/replaced = 10 pts
+ROOF_AGE_GOOD_MAX: Final[int] = 10      # 6-10 years = good = 7 pts
+ROOF_AGE_FAIR_MAX: Final[int] = 15      # 11-15 years = fair = 5 pts
+ROOF_AGE_AGING_MAX: Final[int] = 20     # 16-20 years = aging = 3 pts
+# > 20 years = replacement needed = 1 pt
+
+# Score mappings for roof age
+SCORE_ROOF_NEW: Final[float] = 10.0          # <= 5 years
+SCORE_ROOF_GOOD: Final[float] = 7.0          # <= 10 years
+SCORE_ROOF_FAIR: Final[float] = 5.0          # <= 15 years
+SCORE_ROOF_AGING: Final[float] = 3.0         # <= 20 years
+SCORE_ROOF_REPLACEMENT: Final[float] = 1.0   # > 20 years
+
+# ---- PLUMBING/ELECTRICAL YEAR THRESHOLDS ----
+# Used by PlumbingElectricalScorer in systems.py
+
+PLUMBING_YEAR_RECENT_MIN: Final[int] = 2010   # 2010+ = recent = 10 pts
+PLUMBING_YEAR_MODERN_MIN: Final[int] = 2000   # 2000-2009 = modern = 8 pts
+PLUMBING_YEAR_UPDATED_MIN: Final[int] = 1990  # 1990-1999 = updated = 6 pts
+PLUMBING_YEAR_AGING_MIN: Final[int] = 1980    # 1980-1989 = aging = 4 pts
+# < 1980 = old systems = 2 pts
+
+# Score mappings for plumbing/electrical by year built
+SCORE_PLUMBING_RECENT: Final[float] = 10.0   # >= 2010
+SCORE_PLUMBING_MODERN: Final[float] = 8.0    # >= 2000
+SCORE_PLUMBING_UPDATED: Final[float] = 6.0   # >= 1990
+SCORE_PLUMBING_AGING: Final[float] = 4.0     # >= 1980
+SCORE_PLUMBING_OLD: Final[float] = 2.0       # < 1980
+
+# ---- POOL EQUIPMENT AGE THRESHOLDS (Years) ----
+# Used by PoolConditionScorer in systems.py
+
+POOL_EQUIP_NEW_MAX: Final[int] = 3    # 0-3 years = new equipment = 10 pts
+POOL_EQUIP_GOOD_MAX: Final[int] = 6   # 4-6 years = good condition = 7 pts
+POOL_EQUIP_FAIR_MAX: Final[int] = 10  # 7-10 years = fair condition = 5 pts
+# > 10 years = needs replacement = 3 pts
+
+# Score mappings for pool equipment age
+SCORE_POOL_NEW: Final[float] = 10.0          # <= 3 years
+SCORE_POOL_GOOD: Final[float] = 7.0          # <= 6 years
+SCORE_POOL_FAIR: Final[float] = 5.0          # <= 10 years
+SCORE_POOL_REPLACEMENT: Final[float] = 3.0   # > 10 years
+
+# ---- FLOOD ZONE SCORES ----
+# Used by FloodRiskScorer in location.py
+# Scores for different FEMA flood zone classifications
+
+SCORE_FLOOD_ZONE_X: Final[float] = 10.0         # Minimal risk (outside 500-year)
+SCORE_FLOOD_ZONE_X_SHADED: Final[float] = 8.0   # 500-year flood zone
+SCORE_FLOOD_ZONE_A: Final[float] = 3.0          # High risk (100-year)
+SCORE_FLOOD_ZONE_AE: Final[float] = 2.0         # High risk with BFE
+SCORE_FLOOD_ZONE_AH: Final[float] = 2.0         # Shallow flooding
+SCORE_FLOOD_ZONE_AO: Final[float] = 2.0         # Sheet flow
+SCORE_FLOOD_ZONE_VE: Final[float] = 0.0         # Coastal high hazard
+SCORE_FLOOD_ZONE_UNKNOWN: Final[float] = 5.0    # Unknown - neutral
+
+
+# =============================================================================
+# FILE FORMATTING CONSTANTS
+# =============================================================================
+# Used by renderer.py and other output generators
+
+# Zero-padding width for rank numbers in filenames (e.g., 01, 02, ..., 99)
+FILENAME_RANK_PADDING: Final[int] = 2

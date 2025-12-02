@@ -5,458 +5,364 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deal Sheet: 5038 W Echo Ln, Glendale, AZ 85302</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: #ffffff;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        @media print {
-            body {
-                padding: 0;
-            }
-            .no-print {
-                display: none;
-            }
-        }
-
-        .header {
-            border-bottom: 3px solid #2563eb;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #1e40af;
-        }
-
-        .header-meta {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-            flex-wrap: wrap;
-            font-size: 18px;
-        }
-
-        .header-meta .price {
-            font-size: 24px;
-            font-weight: 700;
-            color: #059669;
-        }
-
-        .header-meta .score {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .tier-badge {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .tier-unicorn {
-            background: linear-gradient(135deg, #a855f7, #ec4899);
-            color: white;
-        }
-
-        .tier-contender {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .tier-pass {
-            background: #6b7280;
-            color: white;
-        }
-
-        .section {
-            margin-bottom: 25px;
-            page-break-inside: avoid;
-        }
-
-        .section h2 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #1e40af;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 6px;
-        }
-
-        .kill-switch-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .kill-switch-table th {
-            background: #f3f4f6;
-            padding: 10px;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 2px solid #d1d5db;
-            font-size: 14px;
-        }
-
-        .kill-switch-table td {
-            padding: 10px;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 14px;
-        }
-
-        .kill-switch-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 80px;
-            padding: 4px 0;
-            text-align: center;
-            border-radius: 4px;
-            font-weight: 700;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-green {
-            background: #22c55e;
-            color: white;
-        }
-
-        .status-red {
-            background: #ef4444;
-            color: white;
-        }
-
-        .status-yellow {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .scorecard {
-            background: #f9fafb;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .score-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            gap: 15px;
-        }
-
-        .score-row:last-child {
-            margin-bottom: 0;
-            padding-top: 12px;
-            border-top: 2px solid #d1d5db;
-            font-weight: 700;
-        }
-
-        .score-label {
-            min-width: 100px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .score-value {
-            min-width: 80px;
-            font-weight: 700;
-            color: #1e40af;
-            font-size: 14px;
-        }
-
-        .score-bar-container {
-            flex: 1;
-            height: 24px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .score-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #2563eb);
-            transition: width 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 8px;
-        }
-
-        .score-bar-percentage {
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .metric {
-            background: #f9fafb;
-            padding: 12px;
-            border-radius: 6px;
-            border-left: 4px solid #3b82f6;
-        }
-
-        .metric-label {
-            font-size: 12px;
-            color: #6b7280;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .metric-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1e40af;
-        }
-
-        .metric-note {
-            font-size: 11px;
-            color: #6b7280;
-            margin-top: 2px;
-        }
-
-        .assessment-notes {
-            margin-top: 15px;
-            padding: 12px;
-            background: #f8fafc;
-            border-left: 3px solid #3b82f6;
-            font-size: 13px;
-            line-height: 1.5;
-            color: #475569;
-        }
-
-        .features {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .feature-column {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .feature-column h3 {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #059669;
-        }
-
-        .feature-column.missing h3 {
-            color: #dc2626;
-        }
-
-        .feature-column ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .feature-column li {
-            padding: 4px 0;
-            padding-left: 20px;
-            position: relative;
-            font-size: 14px;
-        }
-
-        .feature-column li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #059669;
-            font-weight: 700;
-        }
-
-        .feature-column.missing li:before {
-            content: "✗";
-            color: #dc2626;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 15px;
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 16px;
-            border: 2px solid #2563eb;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-
-        .back-link:hover {
-            background: #2563eb;
-            color: white;
-        }
-
-        .failure-notice {
-            background: #fef2f2;
-            border: 2px solid #ef4444;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .failure-notice h3 {
-            color: #dc2626;
-            font-size: 16px;
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .failure-notice ul {
-            margin-left: 20px;
-            color: #7f1d1d;
-        }
-
-        /* Kill Switch Verdict Badge Styles */
-        .verdict-badge-container {
-            margin-bottom: 15px;
-        }
-
-        .verdict-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .verdict-pass {
-            background: #28a745;
-            color: white;
-        }
-
-        .verdict-warning {
-            background: #ffc107;
-            color: #212529;
-        }
-
-        .verdict-fail {
-            background: #dc3545;
-            color: white;
-        }
-
-        .severity-info {
-            display: inline-block;
-            margin-left: 15px;
-            font-size: 14px;
-            color: #6b7280;
-        }
-
-        .hard-marker {
-            color: #dc3545;
-            font-weight: 700;
-            font-size: 12px;
-        }
-
-        .soft-marker {
-            color: #6b7280;
-            font-size: 12px;
-        }
-
-        .severity-points {
-            font-weight: 700;
-            color: #dc3545;
-            font-size: 12px;
-            margin-left: 8px;
-        }
-
-        .severity-breakdown {
-            background: #f8f9fa;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 12px;
-            margin-top: 15px;
-            font-size: 13px;
-        }
-
-        .severity-breakdown .score-line {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .severity-breakdown .threshold-line {
-            color: #6b7280;
-        }
-
-        /* Cost Warning Badge Styles */
-        .cost-warning {
-            background-color: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .cost-warning .warning-badge {
-            background-color: #ffc107;
-            color: #000;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-weight: 700;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .cost-warning .warning-text {
-            font-weight: 600;
-            font-size: 15px;
-            color: #856404;
-        }
-
-        .cost-warning .warning-note {
-            font-size: 13px;
-            color: #856404;
-            opacity: 0.9;
-        }
-    </style>
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Typography */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #1a1a1a;
+}
+
+/* Tier Badges */
+.tier-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tier-unicorn {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    color: white;
+}
+
+.tier-contender {
+    background: #3b82f6;
+    color: white;
+}
+
+.tier-pass {
+    background: #6b7280;
+    color: white;
+}
+
+/* Status Colors */
+.status-green { background: #22c55e; color: white; }
+.status-red { background: #ef4444; color: white; }
+.status-yellow { background: #f59e0b; color: white; }
+
+/* Header Styles */
+.header {
+    border-bottom: 3px solid #2563eb;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #1e40af;
+}
+
+/* Deal Sheet Body */
+body {
+    background: #ffffff;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media print {
+    body { padding: 0; }
+    .no-print { display: none; }
+}
+
+/* Deal Sheet Header */
+.header h1 { font-size: 28px; }
+
+.header-meta {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 18px;
+}
+
+.header-meta .price {
+    font-size: 24px;
+    font-weight: 700;
+    color: #059669;
+}
+
+.header-meta .score {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/* Deal Sheet Tier Badge Override */
+.tier-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+/* Sections */
+.section {
+    margin-bottom: 25px;
+    page-break-inside: avoid;
+}
+
+.section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #1e40af;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 6px;
+}
+
+/* Kill Switch Table */
+.kill-switch-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.kill-switch-table th {
+    background: #f3f4f6;
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #d1d5db;
+    font-size: 14px;
+}
+
+.kill-switch-table td {
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+.kill-switch-table tr:last-child td { border-bottom: none; }
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 80px;
+    padding: 4px 0;
+    text-align: center;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Verdict Badges */
+.verdict-badge-container { margin-bottom: 15px; }
+
+.verdict-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.verdict-pass { background: #28a745; color: white; }
+.verdict-warning { background: #ffc107; color: #212529; }
+.verdict-fail { background: #dc3545; color: white; }
+
+.severity-info {
+    display: inline-block;
+    margin-left: 15px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Kill Switch Markers */
+.hard-marker { color: #dc3545; font-weight: 700; font-size: 12px; }
+.soft-marker { color: #6b7280; font-size: 12px; }
+.severity-points { font-weight: 700; color: #dc3545; font-size: 12px; margin-left: 8px; }
+
+/* Severity Breakdown */
+.severity-breakdown {
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 15px;
+    font-size: 13px;
+}
+
+.severity-breakdown .score-line { font-weight: 600; margin-bottom: 5px; }
+.severity-breakdown .threshold-line { color: #6b7280; }
+
+/* Scorecard */
+.scorecard {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.score-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 15px;
+}
+
+.score-row:last-child {
+    margin-bottom: 0;
+    padding-top: 12px;
+    border-top: 2px solid #d1d5db;
+    font-weight: 700;
+}
+
+.score-label { min-width: 100px; font-weight: 600; font-size: 14px; }
+.score-value { min-width: 80px; font-weight: 700; color: #1e40af; font-size: 14px; }
+
+.score-bar-container {
+    flex: 1;
+    height: 24px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.score-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+}
+
+.score-bar-percentage { color: white; font-size: 11px; font-weight: 700; }
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.metric {
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid #3b82f6;
+}
+
+.metric-label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.metric-value { font-size: 18px; font-weight: 700; color: #1e40af; }
+.metric-note { font-size: 11px; color: #6b7280; margin-top: 2px; }
+
+/* Assessment Notes */
+.assessment-notes {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f8fafc;
+    border-left: 3px solid #3b82f6;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #475569;
+}
+
+/* Features */
+.features { display: flex; gap: 20px; flex-wrap: wrap; }
+.feature-column { flex: 1; min-width: 250px; }
+.feature-column h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #059669; }
+.feature-column.missing h3 { color: #dc2626; }
+.feature-column ul { list-style: none; padding-left: 0; }
+.feature-column li { padding: 4px 0; padding-left: 20px; position: relative; font-size: 14px; }
+.feature-column li:before { content: "\2713"; position: absolute; left: 0; color: #059669; font-weight: 700; }
+.feature-column.missing li:before { content: "\2717"; color: #dc2626; }
+
+/* Back Link */
+.back-link {
+    display: inline-block;
+    margin-bottom: 15px;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 2px solid #2563eb;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.back-link:hover { background: #2563eb; color: white; }
+
+/* Failure Notice */
+.failure-notice {
+    background: #fef2f2;
+    border: 2px solid #ef4444;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.failure-notice h3 { color: #dc2626; font-size: 16px; margin-bottom: 8px; font-weight: 700; }
+.failure-notice ul { margin-left: 20px; color: #7f1d1d; }
+
+/* Cost Warning */
+.cost-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cost-warning .warning-badge {
+    background-color: #ffc107;
+    color: #000;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cost-warning .warning-text { font-weight: 600; font-size: 15px; color: #856404; }
+.cost-warning .warning-note { font-size: 13px; color: #856404; opacity: 0.9; }
+
+/* Location Risk Styling */
+.metric-value.flood-minimal { color: #059669; }
+.metric-value.flood-moderate { color: #f59e0b; }
+.metric-value.flood-high { color: #dc2626; }
+.metric-value.crime-safe { color: #059669; }
+.metric-value.crime-average { color: #3b82f6; }
+.metric-value.crime-dangerous { color: #dc2626; }
+</style>
 </head>
 <body>
-    <a href="index.html" class="back-link no-print">← Back to All Properties</a>
+    <a href="index.html" class="back-link no-print">\u2190 Back to All Properties</a>
 
     
     <div class="failure-notice">
-        <h3>⚠️ KILL SWITCH FAILURES</h3>
+        <h3>\u26a0\ufe0f KILL SWITCH FAILURES</h3>
         <ul>
         
             <li>garage: Minimum 2-car garage (1-car) [severity +1.5]</li>
@@ -738,6 +644,75 @@
             <strong>Assessment Notes:</strong> Very limited interior photo coverage due to image dataset contamination. Only identified 5 images belonging to target property: living room with vaulted ceilings and exposed beams, one bedroom, exterior, backyard, and patio. Kitchen, master suite, bathrooms, fireplace, laundry, and pool not photographed. Scores for missing areas defaulted to 5. The dramatic vaulted ceilings with exposed wood beams and modern lighting visible in living room earn high ceiling score of 9.
         </div>
         
+    </div>
+
+    <div class="section">
+        <h2>Location Risk Assessment</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Flood Zone</div>
+                <div class="metric-value">Unknown</div>
+                <div class="metric-note">Insurance: Unknown</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Violent Crime Index</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note">Higher = Safer</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Property Crime Index</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note">Higher = Safer</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Crime Risk Level</div>
+                <div class="metric-value">Unknown</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Zoning</div>
+                <div class="metric-value">Unknown</div>
+                <div class="metric-note"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Walkability & Transit</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Walk Score</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note"></div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Transit Score</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note"></div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Bike Score</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Neighborhood Demographics</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Census Tract</div>
+                <div class="metric-value">Unknown</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Median Household Income</div>
+                <div class="metric-value">$N/A</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Median Home Value</div>
+                <div class="metric-value">$N/A</div>
+            </div>
+        </div>
     </div>
 
     <div class="section">

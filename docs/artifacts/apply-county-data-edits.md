@@ -159,7 +159,7 @@ If county API is unavailable:
 
 ---
 
-## File: `.claude/AGENT_CONTEXT.md`
+## File: `.claude/AGENT_BRIEFING.md`
 
 ### Edit 3: Expand Scripts Reference Table
 
@@ -426,7 +426,7 @@ garage_spaces = prop.get("garage_spaces")  # Verify garage size in photos
 
 Apply edits in this sequence to avoid conflicts:
 
-1. `.claude/AGENT_CONTEXT.md` (Edit 3, 4) - Shared context first
+1. `.claude/AGENT_BRIEFING.md` (Edit 3, 4) - Shared context first
 2. `.claude/agents/listing-browser.md` (Edit 5, 6) - Agent definitions
 3. `.claude/agents/map-analyzer.md` (Edit 7) - Agent definitions
 4. `.claude/agents/image-assessor.md` (Edit 8) - Agent definitions
@@ -438,11 +438,11 @@ Apply edits in this sequence to avoid conflicts:
 
 ```bash
 # Check all files were updated
-grep -l "extract_county_data" .claude/commands/analyze-property.md .claude/AGENT_CONTEXT.md .claude/agents/*.md
+grep -l "extract_county_data" .claude/commands/analyze-property.md .claude/AGENT_BRIEFING.md .claude/agents/*.md
 
 # Should return 5 files:
 # - .claude/commands/analyze-property.md
-# - .claude/AGENT_CONTEXT.md
+# - .claude/AGENT_BRIEFING.md
 # - .claude/agents/listing-browser.md
 # - .claude/agents/map-analyzer.md
 # - .claude/agents/image-assessor.md
@@ -451,7 +451,7 @@ grep -l "extract_county_data" .claude/commands/analyze-property.md .claude/AGENT
 grep "Phase 0: County Data Extraction" .claude/commands/analyze-property.md
 
 # Verify scripts table updated
-grep "extract_county_data.py" .claude/AGENT_CONTEXT.md
+grep "extract_county_data.py" .claude/AGENT_BRIEFING.md
 ```
 
 ---

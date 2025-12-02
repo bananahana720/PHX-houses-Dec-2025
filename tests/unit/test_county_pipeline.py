@@ -401,7 +401,11 @@ class TestEnrichmentMergeService:
 
     @pytest.fixture
     def service(self):
-        """Create merge service without lineage tracker."""
+        """Create merge service with default lineage tracker.
+
+        Note: Even when passing None, a default LineageTracker is created
+        internally to ensure lineage is always tracked.
+        """
         return EnrichmentMergeService(lineage_tracker=None)
 
     @pytest.fixture

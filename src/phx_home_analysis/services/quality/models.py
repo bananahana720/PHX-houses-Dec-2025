@@ -23,6 +23,14 @@ class DataSource(Enum):
     AI_INFERENCE = "ai_inference"
     MANUAL = "manual"
     DEFAULT = "default"
+    BESTPLACES = "bestplaces"
+    AREAVIBES = "areavibes"
+    WALKSCORE = "walkscore"
+    FEMA = "fema"
+    GREATSCHOOLS = "greatschools"
+    HOWLOUD = "howloud"
+    CENSUS = "census"
+    MARICOPA_GIS = "maricopa_gis"
 
     @property
     def default_confidence(self) -> float:
@@ -38,6 +46,14 @@ class DataSource(Enum):
             DataSource.AI_INFERENCE: 0.7,  # AI estimates have uncertainty
             DataSource.MANUAL: 0.85,  # Human inspection, subject to error
             DataSource.DEFAULT: 0.5,  # Default/assumed values
+            DataSource.BESTPLACES: 0.80,  # Crime data aggregator
+            DataSource.AREAVIBES: 0.80,  # Crime/neighborhood data
+            DataSource.WALKSCORE: 0.90,  # Walk/transit scores (proprietary algorithm)
+            DataSource.FEMA: 0.95,  # Official flood zone data
+            DataSource.GREATSCHOOLS: 0.85,  # School ratings
+            DataSource.HOWLOUD: 0.75,  # Noise score estimates
+            DataSource.CENSUS: 0.95,  # Official census data
+            DataSource.MARICOPA_GIS: 0.95,  # Official county GIS data
         }
         return confidence_map.get(self, 0.5)
 

@@ -48,6 +48,19 @@ value_zone_max_price = value_zone_config['max_price']
 # Read CSV
 df = pd.read_csv(csv_path)
 
+# Ensure numeric price column exists
+# Use price_num if available, otherwise clean price column
+if 'price_num' in df.columns:
+    df['price'] = df['price_num']
+else:
+    # Clean price column: remove '$' and ',' then convert to numeric
+    df['price'] = df['price'].replace(r'[\$,]', '', regex=True).astype(float)
+
+# Normalize kill_switch_passed to boolean for consistent filtering
+# Handle both boolean (True/False) and string ('PASS'/'FAIL') formats
+if df['kill_switch_passed'].dtype == object:
+    df['kill_switch_passed'] = df['kill_switch_passed'].str.upper() == 'PASS'
+
 # Read JSON enrichment data
 with open(json_path) as f:
     enrichment_data = json.load(f)
@@ -66,7 +79,7 @@ df['lot_sqft_final'] = df['lot_sqft_enriched'].fillna(df['lot_sqft'])
 # Calculate score/price ratio (points per $1000) for value ranking
 # Only for PASSing properties
 df['value_ratio'] = df.apply(
-    lambda row: row['total_score'] / (row['price'] / 1000) if row['kill_switch_passed'] == 'PASS' else 0,
+    lambda row: row['total_score'] / (row['price'] / 1000) if row['kill_switch_passed'] else 0,
     axis=1
 )
 
@@ -79,15 +92,15 @@ median_price = df['price'].median()
 df['in_value_zone'] = (
     (df['total_score'] > value_zone_min_score) &
     (df['price'] < value_zone_max_price) &
-    (df['kill_switch_passed'] == 'PASS')
+    (df['kill_switch_passed'])
 )
 
 # Get top 3 value picks (highest value_ratio among PASSing properties)
-top_value_picks = df[df['kill_switch_passed'] == 'PASS'].nlargest(3, 'value_ratio')
+top_value_picks = df[df['kill_switch_passed']].nlargest(3, 'value_ratio')
 
 # Separate PASS and FAIL properties
-df_pass = df[df['kill_switch_passed'] == 'PASS']
-df_fail = df[df['kill_switch_passed'] == 'FAIL']
+df_pass = df[df['kill_switch_passed']]
+df_fail = df[~df['kill_switch_passed']]
 
 # Create figure
 fig = go.Figure()
@@ -141,7 +154,7 @@ fig.add_trace(go.Scatter(
     text=df_pass.apply(lambda row: (
         f"{row['full_address']}<br>"
         f"Score: {row['total_score']:.1f}<br>"
-        f"Price: {row['price']}<br>"
+        f"Price: ${row['price']:,.0f}<br>"
         f"Lot: {row['lot_sqft_final']:,} sqft<br>"
         f"Value Ratio: {row['value_ratio']:.2f} pts/$1k"
     ), axis=1),
@@ -165,9 +178,9 @@ fig.add_trace(go.Scatter(
     text=df_fail.apply(lambda row: (
         f"{row['full_address']}<br>"
         f"Score: {row['total_score']:.1f}<br>"
-        f"Price: {row['price']}<br>"
+        f"Price: ${row['price']:,.0f}<br>"
         f"Lot: {row['lot_sqft_final']:,} sqft<br>"
-        f"Kill Switch: {row['kill_switch_passed']}"
+        f"Kill Switch: FAIL"
     ), axis=1),
     hovertemplate='%{text}<extra></extra>',
 ))
@@ -275,7 +288,7 @@ print("TOP 3 VALUE PICKS (Highest Score/Price Ratio, PASS only)")
 print("="*70)
 for i, (_idx, row) in enumerate(top_value_picks.iterrows(), 1):
     print(f"\n{i}. {row['full_address']}")
-    print(f"   Score: {row['total_score']:.1f} | Price: {row['price']}")
+    print(f"   Score: {row['total_score']:.1f} | Price: ${row['price']:,.0f}")
     print(f"   Lot Size: {row['lot_sqft_final']:,} sqft")
     print(f"   Value Ratio: {row['value_ratio']:.3f} points per $1,000")
     print(f"   Beds/Baths: {row['beds']}/{row['baths']}")

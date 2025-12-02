@@ -204,7 +204,7 @@ PHX-houses-Dec-2025/
 
 2. **Slash commands** could reference shared context:
    - Multiple commands repeat state file locations
-   - Could extract to `.claude/AGENT_CONTEXT.md` (already referenced)
+   - Could extract to `.claude/AGENT_BRIEFING.md` (already referenced)
 
 3. **Further root CLAUDE.md reduction**:
    - Arizona-specific section could move to separate file

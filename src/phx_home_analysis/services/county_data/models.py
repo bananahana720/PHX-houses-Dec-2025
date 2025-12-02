@@ -1,6 +1,7 @@
 """Data models for county assessor data extraction."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 
 
 @dataclass
@@ -55,3 +56,52 @@ class ParcelData:
             # Preserve None for fields not from county API
             # These must come from other sources
         }
+
+
+@dataclass
+class ZoningData:
+    """Zoning data extracted from Maricopa County GIS.
+
+    Provides zoning classification for property location.
+    """
+
+    zoning_code: str
+    zoning_description: str | None = None
+    zoning_category: str | None = None  # residential, commercial, industrial, mixed
+
+    # Geocoding
+    latitude: float | None = None
+    longitude: float | None = None
+
+    # Metadata
+    source: str = "maricopa_gis"
+    extracted_at: datetime = field(default_factory=datetime.utcnow)
+
+    def to_enrichment_dict(self) -> dict:
+        """Convert to enrichment data format for JSON serialization.
+
+        Returns:
+            Dictionary compatible with enrichment_data.json structure
+        """
+        return {
+            "zoning_code": self.zoning_code,
+            "zoning_description": self.zoning_description,
+            "zoning_category": self.zoning_category,
+        }
+
+    @property
+    def is_residential(self) -> bool:
+        """Check if zoning is residential.
+
+        Returns:
+            True if residential zoning
+        """
+        if self.zoning_category:
+            return self.zoning_category.lower() == "residential"
+
+        # Fallback: check code prefix
+        if self.zoning_code:
+            code_upper = self.zoning_code.upper()
+            return code_upper.startswith(("R", "RS", "R1", "R2", "R3"))
+
+        return False

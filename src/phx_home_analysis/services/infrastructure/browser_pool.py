@@ -97,13 +97,16 @@ class BrowserPool:
             proxy_url and "@" in proxy_url and "://" in proxy_url
         )
 
+        # Import here to avoid circular imports
+        from .logging_utils import sanitize_proxy_config_for_logging
+
+        proxy_config = sanitize_proxy_config_for_logging(proxy_url)
         logger.info(
-            "BrowserPool configured: headless=%s, viewport=%dx%d, proxy=%s (auth=%s), isolation=%s",
+            "BrowserPool configured: headless=%s, viewport=%dx%d, proxy=%s, isolation=%s",
             headless,
             viewport_width,
             viewport_height,
-            "enabled" if proxy_url else "disabled",
-            "yes" if self._proxy_has_auth else "no",
+            proxy_config,
             self.isolation_mode.value if not headless else "n/a",
         )
 
@@ -156,9 +159,11 @@ class BrowserPool:
             if self.proxy_url:
                 if self._proxy_has_auth:
                     # Create proxy extension for authenticated proxy
+                    from .logging_utils import sanitize_url_for_logging
+
                     logger.info(
                         "Creating proxy authentication extension for: %s",
-                        self.proxy_url.split("@")[1] if "@" in self.proxy_url else self.proxy_url,
+                        sanitize_url_for_logging(self.proxy_url),
                     )
 
                     try:
@@ -191,8 +196,11 @@ class BrowserPool:
                 else:
                     # No authentication - use standard --proxy-server
                     browser_config.add_argument(f"--proxy-server={self.proxy_url}")
+                    from .logging_utils import sanitize_url_for_logging
+
                     logger.info(
-                        "Browser configured with proxy (no auth): %s", self.proxy_url
+                        "Browser configured with proxy (no auth): %s",
+                        sanitize_url_for_logging(self.proxy_url),
                     )
 
             self._browser = await uc.start(config=browser_config)

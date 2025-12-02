@@ -101,6 +101,9 @@ Confidence Reasoning: Clear photos from 3 angles, all major features visible, go
 {
   "category": "kitchen_layout",
   "raw_score": 8,
+  "uad_condition": "C3",
+  "uad_quality": "Q3",
+  "update_status": "Updated (5-10 years)",
   "observations": ["white shaker cabinets", "granite counters", "island with seating"],
   "era_context": "Exceeds 1995 expectations, clearly renovated",
   "condition_notes": "Minor handle wear, grout discoloration",
@@ -626,6 +629,34 @@ When confidence is LOW for a category:
 2. Document reason: "Score 5.0 assigned - no photos available"
 3. Flag for research: Add to research_tasks.json
 4. Do NOT let low-confidence scores drag down otherwise strong properties
+
+## UAD Score Mapping
+
+Map internal 1-10 scores to professional appraisal terminology:
+
+| Internal Score | UAD Condition | UAD Quality | Professional Description |
+|---------------|---------------|-------------|-------------------------|
+| 9-10 | C1-C2 | Q1-Q2 | New/Excellent, custom/luxury |
+| 7-8 | C2-C3 | Q3 | Good, above-standard |
+| 5-6 | C3-C4 | Q4 | Average, standard builder |
+| 3-4 | C4-C5 | Q5 | Fair, deferred maintenance |
+| 1-2 | C5-C6 | Q6 | Poor, significant repairs needed |
+
+### When to Use UAD Ratings
+- Deal sheets: Include UAD alongside raw scores
+- Professional communication: Use UAD for agents/appraisers
+- Mortgage eligibility: C5/C6 may affect financing
+
+### Kitchen/Bathroom Update Status
+- **Not Updated**: Original finishes or >20 years since update
+- **Updated**: Improvements within last 20 years (new counters, appliances)
+- **Remodeled**: Substantial renovation with layout/structural changes
+
+## Related Skills
+
+- **inspection-standards**: Full UAD/ASHI terminology glossary
+- **exterior-assessment**: Roof, pool, HVAC visual protocols
+- **arizona-context-lite**: Era calibration for Phoenix properties
 
 ## Best Practices
 

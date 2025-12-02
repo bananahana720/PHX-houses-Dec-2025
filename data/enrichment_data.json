@@ -1,5 +1,11 @@
 [
   {
+    "_schema_metadata": {
+      "version": "2.0.0",
+      "migrated_at": null,
+      "migrated_from": null,
+      "created_at": "2025-12-02T15:36:50.524781+00:00"
+    },
     "full_address": "4732 W Davis Rd, Glendale, AZ 85306",
     "lot_sqft": 8069,
     "year_built": 1978,
@@ -64,7 +70,13 @@
     "high_ceilings_score": 7,
     "laundry_area_score": 5,
     "price": 475000,
-    "sqft": 2241
+    "sqft": 2241,
+    "lat": 33.6314,
+    "lng": -112.1998,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
@@ -136,7 +148,13 @@
     "laundry_score": 5.0,
     "laundry_score_source": "default_pending_assessment",
     "price": 499900,
-    "sqft": 1752
+    "sqft": 1752,
+    "lat": 33.6287,
+    "lng": -112.1105,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
@@ -208,7 +226,13 @@
     "laundry_score": 5.0,
     "laundry_score_source": "default_pending_assessment",
     "price": 560000,
-    "sqft": 2048
+    "sqft": 2048,
+    "lat": 33.6307,
+    "lng": -112.11,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
@@ -282,7 +306,13 @@
     "image_assessment_date": "2025-12-01T17:18:41.559231",
     "image_assessment_confidence": "medium",
     "price": 540000,
-    "sqft": 2076
+    "sqft": 2076,
+    "lat": 33.6505,
+    "lng": -112.1212,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "15225 N 37th Way, Phoenix, AZ 85032",
@@ -371,7 +401,13 @@
       "reasoning": "Kitchen excellently documented (5+ photos). Master suite not clearly identified in photos. Living areas well-captured."
     },
     "price": 565000,
-    "sqft": 1748
+    "sqft": 1748,
+    "lat": 33.625,
+    "lng": -112.0011,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "18820 N 35th Way, Phoenix, AZ 85050",
@@ -440,7 +476,13 @@
     "high_ceilings_score": 7.0,
     "laundry_area_score": 5.0,
     "price": 582000,
-    "sqft": 1972
+    "sqft": 1972,
+    "lat": 33.6581,
+    "lng": -112.0061,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "4209 W Wahalla Ln, Glendale, AZ 85308",
@@ -508,7 +550,13 @@
     "high_ceilings_score": 8.0,
     "laundry_area_score": 5.0,
     "price": 625000,
-    "sqft": 2349
+    "sqft": 2349,
+    "lat": 33.6658,
+    "lng": -112.1999,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "4137 W Cielo Grande, Glendale, AZ 85310",
@@ -577,7 +625,13 @@
     "high_ceilings_score": 5.0,
     "laundry_area_score": 5.0,
     "price": 519900,
-    "sqft": 2125
+    "sqft": 2125,
+    "lat": 33.6549,
+    "lng": -112.2269,
+    "geocode_source": "fallback_generate_map",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "13307 N 84th Ave, Peoria, AZ 85381",
@@ -657,7 +711,13 @@
     "section_c_confidence": "low",
     "section_c_notes": "No interior photos available - all scores defaulted to 5.0. In-person verification required.",
     "price": 490000,
-    "sqft": 2052
+    "sqft": 2052,
+    "lat": 33.6055,
+    "lng": -112.2393,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "14014 N 39th Ave, Phoenix, AZ 85053",
@@ -733,7 +793,13 @@
       "NO_INTERIOR_PHOTOS"
     ],
     "price": 495000,
-    "sqft": 1930
+    "sqft": 1930,
+    "lat": 33.6128,
+    "lng": -112.1428,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "25841 N 66th Dr, Phoenix, AZ 85083",
@@ -802,7 +868,13 @@
     "high_ceilings_score": 6,
     "laundry_area_score": 6,
     "price": 499777,
-    "sqft": 1884
+    "sqft": 1884,
+    "lat": 33.7211,
+    "lng": -112.2022,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "4001 W Libby St, Glendale, AZ 85308",
@@ -870,7 +942,13 @@
     "high_ceilings_score": 7.0,
     "laundry_area_score": 5.0,
     "price": 458000,
-    "sqft": 1873
+    "sqft": 1873,
+    "lat": 33.6479,
+    "lng": -112.1841,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "5522 W Carol Ave, Glendale, AZ 85302",
@@ -946,7 +1024,13 @@
     "assessment_confidence": "medium",
     "assessment_notes": "Complete modern renovation visible. Kitchen excellent with granite/stainless/LVP. No fireplace present. Master bedroom not photographed (bathroom only). Laundry area not visible. Concern: photo set may contain images from multiple properties.",
     "price": 442000,
-    "sqft": 2139
+    "sqft": 2139,
+    "lat": 33.5718,
+    "lng": -112.1788,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "5004 W Kaler Dr, Glendale, AZ 85301",
@@ -1017,7 +1101,13 @@
     "images_analyzed": 18,
     "total_images_available": 33,
     "price": 459900,
-    "sqft": 2405
+    "sqft": 2405,
+    "lat": 33.5489,
+    "lng": -112.1664,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "4342 W Claremont St, Glendale, AZ 85301",
@@ -1085,7 +1175,13 @@
     "high_ceilings_score": 5.0,
     "laundry_area_score": 5.0,
     "price": 514800,
-    "sqft": 2160
+    "sqft": 2160,
+    "lat": 33.5292,
+    "lng": -112.1538,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "20021 N 38th Ln, Glendale, AZ 85308",
@@ -1153,7 +1249,13 @@
     "high_ceilings_score": 8.0,
     "laundry_area_score": 5.0,
     "price": 545000,
-    "sqft": 2627
+    "sqft": 2627,
+    "lat": 33.6684,
+    "lng": -112.1423,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "18825 N 34th St, Phoenix, AZ 85050",
@@ -1230,7 +1332,13 @@
       "REQUIRES_VERIFICATION"
     ],
     "price": 550000,
-    "sqft": 1952
+    "sqft": 1952,
+    "lat": 33.6583,
+    "lng": -112.009,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "4136 W Hearn Rd, Phoenix, AZ 85053",
@@ -1298,7 +1406,13 @@
     "high_ceilings_score": 5.0,
     "laundry_area_score": 5.0,
     "price": 457000,
-    "sqft": 2228
+    "sqft": 2228,
+    "lat": 33.615,
+    "lng": -112.1474,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "4020 W Anderson Dr, Glendale, AZ 85308",
@@ -1364,7 +1478,13 @@
     "high_ceilings_score_source": "image_assessment",
     "laundry_area_score_source": "image_assessment_default",
     "price": 479900,
-    "sqft": 1882
+    "sqft": 1882,
+    "lat": 33.6337,
+    "lng": -112.1935,
+    "geocode_source": "fallback_generate_map",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "8714 E Plaza Ave, Scottsdale, AZ 85250",
@@ -1431,7 +1551,13 @@
     "high_ceilings_score": 9,
     "laundry_area_score": 6,
     "price": 750000,
-    "sqft": 1620
+    "sqft": 1620,
+    "lat": 33.4846,
+    "lng": -111.8966,
+    "geocode_source": "fallback_generate_map",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "8426 E Lincoln Dr, Scottsdale, AZ 85250",
@@ -1499,7 +1625,13 @@
     "image_assessment_confidence": "medium",
     "image_assessment_notes": "Mixed property images detected - scored based on modern renovation photos",
     "price": 849900,
-    "sqft": 2373
+    "sqft": 2373,
+    "lat": 33.5316,
+    "lng": -111.8989,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "11035 E Clinton St, Scottsdale, AZ 85259",
@@ -1571,7 +1703,13 @@
     "laundry_area_score": 5,
     "laundry_area_score_source": "visual_assessment_sonnet_default_no_photos",
     "price": 775000,
-    "sqft": 1971
+    "sqft": 1971,
+    "lat": 33.5836,
+    "lng": -111.8425,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "14622 N 37th St, Phoenix, AZ 85032",
@@ -1639,7 +1777,13 @@
     "high_ceilings_score": 5,
     "laundry_area_score": 5,
     "price": 510000,
-    "sqft": 1350
+    "sqft": 1350,
+    "lat": 33.6199,
+    "lng": -112.0032,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "12808 N 27th St, Phoenix, AZ 85032",
@@ -1717,7 +1861,13 @@
       "deduplication_failure"
     ],
     "price": 509000,
-    "sqft": 1909
+    "sqft": 1909,
+    "lat": 33.6032,
+    "lng": -112.0252,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "16814 N 31st Ave, Phoenix, AZ 85053",
@@ -1781,7 +1931,13 @@
     "aesthetics_score": 5.0,
     "aesthetics_score_source": "default_large_image_set",
     "price": 400000,
-    "sqft": 1921
+    "sqft": 1921,
+    "lat": 33.6376,
+    "lng": -112.1253,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "4417 W Sandra Cir, Glendale, AZ 85308",
@@ -1849,7 +2005,13 @@
     "high_ceilings_score": 5.0,
     "laundry_area_score": 5.0,
     "price": 354000,
-    "sqft": 1730
+    "sqft": 1730,
+    "lat": 33.6412,
+    "lng": -112.1943,
+    "geocode_source": "fallback_generate_map",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "17244 N 36th Ln, Glendale, AZ 85308",
@@ -1918,7 +2080,13 @@
     "high_ceilings_score": 5.0,
     "laundry_area_score": 5.0,
     "price": 425000,
-    "sqft": 1898
+    "sqft": 1898,
+    "lat": 33.6346,
+    "lng": -112.1394,
+    "geocode_source": "fallback_generate_map",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "7126 W Columbine Dr, Peoria, AZ 85381",
@@ -1986,7 +2154,13 @@
     "high_ceilings_score": 6.0,
     "laundry_area_score": 5.0,
     "price": 565000,
-    "sqft": 2459
+    "sqft": 2459,
+    "lat": 33.5992,
+    "lng": -112.2127,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "14353 N 76th Dr, Peoria, AZ 85381",
@@ -2065,7 +2239,13 @@
     "image_assessment_date": "2025-12-01T20:09:52.393040",
     "requires_manual_verification": true,
     "price": 550000,
-    "sqft": 1700
+    "sqft": 1700,
+    "lat": 33.6158,
+    "lng": -112.2227,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "7233 W Corrine Dr, Peoria, AZ 85381",
@@ -2135,7 +2315,13 @@
     "image_assessment_confidence": "low",
     "image_assessment_notes": "Only living room photos available - kitchen, master, fireplace, laundry defaulted to 5.0",
     "price": 749999,
-    "sqft": 1982
+    "sqft": 1982,
+    "lat": 33.6,
+    "lng": -112.2151,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "8803 N 105th Dr, Peoria, AZ 85345",
@@ -2203,7 +2389,13 @@
     "high_ceilings_score": 5.0,
     "laundry_area_score": 5.0,
     "price": 509000,
-    "sqft": 2225
+    "sqft": 2225,
+    "lat": 33.5631,
+    "lng": -112.2862,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "8931 W Villa Rita Dr, Peoria, AZ 85382",
@@ -2271,7 +2463,13 @@
     "high_ceilings_score": 5.0,
     "laundry_area_score": 5.0,
     "price": 549900,
-    "sqft": 2672
+    "sqft": 2672,
+    "lat": 33.6486,
+    "lng": -112.2514,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "9150 W Villa Rita Dr, Peoria, AZ 85382",
@@ -2339,7 +2537,13 @@
     "high_ceilings_score": 5.0,
     "laundry_area_score": 5.0,
     "price": 605000,
-    "sqft": 1919
+    "sqft": 1919,
+    "lat": 33.6479,
+    "lng": -112.2562,
+    "geocode_source": "nominatim",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "5038 W Echo Ln, Glendale, AZ 85302",
@@ -2355,7 +2559,7 @@
     "kill_switch_failed": false,
     "kill_switch_reason": "override - user requested",
     "data_source": "movephoenix.com",
-    "last_updated": "2025-12-01T01:09:09.662868",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
     "school_rating": 6.0,
     "school_district": "Glendale Elementary District",
     "orientation": "south",
@@ -2416,7 +2620,12 @@
     "laundry_score": 5.0,
     "laundry_score_source": "default_pending_assessment",
     "price": 634000,
-    "sqft": 2813
+    "sqft": 2813,
+    "lat": 33.6146,
+    "lng": -112.1739,
+    "geocode_source": "fallback_generate_map",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
   },
   {
     "full_address": "9832 N 29th St, Phoenix, AZ 85028",
@@ -2496,6 +2705,135 @@
     "high_ceilings_score": 6,
     "laundry_area_score": 5,
     "price": 765000,
-    "sqft": 1819
+    "sqft": 1819,
+    "lat": 33.6241,
+    "lng": -112.0058,
+    "geocode_source": "fallback_generate_map",
+    "geocoded_at": "2025-12-02T13:42:25.026614+00:00",
+    "last_updated": "2025-12-02T13:42:25.026614+00:00",
+    "status": "active"
+  },
+  {
+    "_schema_metadata": {
+      "schema_version": "2.1.0",
+      "created_at": "2025-12-02T15:36:33.793963",
+      "updated_at": "2025-12-02T16:03:07.098883"
+    },
+    "full_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+    "lot_sqft": 9387,
+    "year_built": 1983,
+    "garage_spaces": 2,
+    "has_pool": true,
+    "livable_sqft": 1786,
+    "beds": 4,
+    "baths": 2.5,
+    "price": 650000,
+    "hoa_fee": 0,
+    "sewer_type": null,
+    "kill_switch_passed": true,
+    "kill_switch_severity": 0.0,
+    "kill_switch_failures": [],
+    "phase_status": {
+      "phase0_county": "complete",
+      "phase05_cost": "complete",
+      "phase1_listing": "complete",
+      "phase1_map": "complete",
+      "phase2a_exterior": "complete",
+      "phase2b_interior": "complete",
+      "phase3_synthesis": "complete",
+      "phase4_report": "complete"
+    },
+    "bath_fixtures": 7,
+    "full_cash_value": 461700,
+    "apn": "301-40-718",
+    "subdivision": "Spanish Mountain Estates Unit 2",
+    "school_district_elementary": "KYRENE ELEMENTARY SCHOOL DISTRICT",
+    "school_district_high": "TEMPE UNION #213",
+    "exterior_wall": "Frame Wood",
+    "roof_type": "Asphalt",
+    "location_characteristics": "Corner",
+    "patios": {
+      "covered": 2,
+      "uncovered": 0
+    },
+    "price_source": "zillow_listing",
+    "monthly_cost": 5142.91,
+    "cost_breakdown": {
+      "mortgage": 3459.57,
+      "property_tax": 325.0,
+      "insurance": 166.67,
+      "hoa": 0,
+      "utilities": 350,
+      "pool": 300,
+      "maintenance": 541.67,
+      "solar": 0,
+      "total": 5142.91
+    },
+    "images_folder": "f4e29e2c",
+    "images_count": 40,
+    "images_source": "zillow",
+    "school_elementary": "Kyrene de las Lomas Elementary School",
+    "school_elementary_rating": 5,
+    "school_elementary_distance_mi": 1.2,
+    "school_high": "Mountain Pointe High School",
+    "school_high_rating": 7,
+    "school_high_distance_mi": 2.1,
+    "safety_grade": "A-",
+    "safety_percentile": 84,
+    "crime_rate_per_1000": 21.82,
+    "violent_crime_rate_per_1000": 2.699,
+    "neighborhood": "Ahwatukee Foothills",
+    "orientation": "East",
+    "backyard_orientation": "West",
+    "latitude": 33.3532028,
+    "longitude": -111.9832116,
+    "commute_downtown_phoenix_mi": 15,
+    "commute_tempe_mi": 8,
+    "location_type": "Corner lot",
+    "roof_score": 35,
+    "roof_notes": "Asphalt shingle roof, appears maintained, estimate 10-15 years old",
+    "backyard_score": 28,
+    "backyard_notes": "Beautiful freeform pool, covered pergola, outdoor kitchen, well-maintained landscaping",
+    "section_b_total": 63,
+    "kitchen_raw": 9,
+    "kitchen_score": 36,
+    "kitchen_notes": "Complete remodel: white shaker cabinets, quartz counters, large island, pendant lights, SS appliances",
+    "master_raw": 7,
+    "master_score": 28,
+    "master_notes": "Not directly visible, scored based on overall renovation quality",
+    "light_raw": 9,
+    "light_score": 27,
+    "light_notes": "Excellent natural light, vaulted ceilings enhance brightness, large windows",
+    "ceiling_raw": 10,
+    "ceiling_score": 30,
+    "ceiling_notes": "Dramatic cathedral/vaulted ceilings in great room, major upgrade from 1983 original",
+    "fireplace_raw": 9,
+    "fireplace_score": 18,
+    "fireplace_notes": "Modern linear gas fireplace with built-in shelving, contemporary accent wall",
+    "laundry_raw": 6,
+    "laundry_score": 12,
+    "laundry_notes": "Not visible in photos, assumed standard indoor laundry room",
+    "aesthetics_raw": 9,
+    "aesthetics_score": 9,
+    "aesthetics_notes": "Cohesive modern farmhouse style, LVP flooring, neutral palette, designer finishes",
+    "section_c_total": 160,
+    "roof_age_estimate": 12,
+    "pool_age_estimate": 5,
+    "kitchen_updated": "2020s",
+    "interior_updated": "2020s",
+    "assessment_confidence": "high",
+    "data_quality_note": "Some mixed property images in folder, but target property clearly identified",
+    "overall_notes": "Exceptional full renovation of 1983 property. Modern open-concept interior with vaulted ceilings, linear fireplace, designer kitchen. Pool area with pergola and outdoor kitchen. Corner lot with desert landscaping.",
+    "kill_switch_verdict": "PASS",
+    "section_a_score": 173,
+    "section_b_score": 132,
+    "section_c_score": 160,
+    "total_score": 465,
+    "tier": "CONTENDER",
+    "total_rooms": 7,
+    "beds_source": "zillow_listing",
+    "beds_conflict_note": "RealtyTrac showed 7 rooms (assumed 3 beds incorrectly). Zillow confirms 4 beds.",
+    "price_conflict_note": "Previously estimated $500,000 from comps. Zillow listing confirms $650,000.",
+    "price_per_sqft": 363.94
   }
 ]

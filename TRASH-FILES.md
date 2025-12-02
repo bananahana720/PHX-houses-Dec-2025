@@ -70,3 +70,8 @@ scripts/orientation_estimates.json - moved to TRASH/duplicates/ - duplicate of d
 - test_extension_only.py → tests/unit/test_proxy_extension_builder.py
 - test_proxy_extension.py → tests/integration/test_proxy_extension.py
 - test_lsh_performance.py → tests/benchmarks/test_lsh_performance.py
+
+## Schema Migration Test Files - 2025-12-02
+
+test_v1_data.json - moved to TRASH/ - temporary test file for schema migration testing
+test_v1_outdated.json - moved to TRASH/ - temporary test file for schema migration testing

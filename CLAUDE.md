@@ -1,189 +1,128 @@
-# PHX Houses Dec 2025
+# PHX Houses Analysis Pipeline
 
-First-time home buyer analysis for Phoenix metropolitan area with kill-switch filtering and weighted scoring.
+First-time home buyer analysis for Phoenix metro with kill-switch filtering and 600-point scoring.
 
-## Project Overview
+## What This Project Does
 
-Data pipeline analyzing Phoenix listings against strict buyer criteria: hard kill-switches (pass/fail) + weighted scoring (600 pts max).
+Evaluates Phoenix residential properties against strict buyer criteria:
+- **Kill-switches**: Hard fails (HOA, beds, baths) + soft severity threshold (≥3.0 = fail)
+- **Scoring**: 600 pts max across Location (230), Systems (180), Interior (190)
+- **Tiers**: Unicorn (>480), Contender (360-480), Pass (<360)
 
-**Target Buyer:** Max $4k/month payment, 4+ bed, 2+ bath, 2-car garage, 7k-15k sqft lot, NO HOA, city sewer, pre-2024 builds only.
+## Where Things Live
 
-## Kill Switches (Weighted Threshold System)
+| Purpose | Location |
+|---------|----------|
+| Property data | `data/enrichment_data.json`, `data/phx_homes.csv` |
+| Pipeline state | `data/work_items.json` |
+| Scoring config | `src/phx_home_analysis/config/constants.py` |
+| Analysis scripts | `scripts/phx_home_analyzer.py`, `scripts/extract_*.py` |
+| Agent definitions | `.claude/agents/*.md` |
+| Skills library | `.claude/skills/*/SKILL.md` |
+| Knowledge graphs | `.claude/knowledge/*.json` |
 
-### HARD Criteria (Instant Fail)
-- NO HOA (hoa_fee = 0 or None)
-- Min 4 beds
-- Min 2 baths
-
-### SOFT Criteria (Contribute to Severity Score)
-| Criterion | Requirement | Severity |
-|-----------|-------------|----------|
-| City sewer | No septic | 2.5 |
-| No new builds | year_built < 2024 | 2.0 |
-| Min 2-car garage | garage_spaces >= 2 | 1.5 |
-| Lot size | 7,000-15,000 sqft | 1.0 |
-
-**Verdict**: FAIL if any HARD fails OR severity >= 3.0 | WARNING if 1.5-3.0 | PASS if < 1.5
-
-## Scoring System (600 pts max)
-
-**Section A: Location (230 pts)** - School (50), Quietness (40), Safety (50), Supermarket (30), Parks (30), Sun (30)
-**Section B: Lot/Systems (180 pts)** - Roof (50), Backyard (40), Plumbing (40), Pool (20), Cost Efficiency (30)
-**Section C: Interior (190 pts)** - Kitchen (40), Master (40), Light (30), Ceilings (30), Fireplace (20), Laundry (20), Aesthetics (10)
-
-**Tiers:** Unicorn (>480), Contender (360-480), Pass (<360)
-
-## Key Commands
+## Quick Commands
 
 ```bash
-# Analysis pipeline
-python scripts/phx_home_analyzer.py
-
-# Deal sheets (multiple entry points)
-python -m scripts.deal_sheets
-python scripts/deal_sheets/generator.py
-
-# Image extraction (stealth browsers: nodriver + curl_cffi)
-python scripts/extract_images.py --all                    # All properties
-python scripts/extract_images.py --address "123 Main St"  # Single property
-python scripts/extract_images.py --sources zillow,redfin  # Filter sources
-python scripts/extract_images.py --dry-run                # Discover only
-python scripts/extract_images.py --fresh                  # Clear state
-python scripts/extract_images.py --resume                 # Resume (default)
-
-# County data extraction
-python scripts/extract_county_data.py --all --update-only
-
 # Multi-agent analysis
-/analyze-property --test          # First 5 properties
-/analyze-property --all           # Full batch
+/analyze-property --all           # All properties
 /analyze-property "123 Main St"   # Single property
+
+# Manual execution
+python scripts/phx_home_analyzer.py              # Scoring
+python scripts/extract_county_data.py --all      # County API
+python scripts/extract_images.py --all           # Images (stealth)
+python -m scripts.deal_sheets                    # Reports
 ```
 
-## Project Structure
+## Key Principles
+
+### Tool Usage (CRITICAL)
+| ❌ Never | ✅ Always |
+|----------|----------|
+| `bash grep/rg` | `Grep` tool |
+| `bash cat/head/tail` | `Read` tool |
+| `bash find` | `Glob` tool |
+| `bash sed` | `Edit` tool |
+| Playwright for Zillow/Redfin | `scripts/extract_images.py` |
+| WebSearch without sources | Include Sources: section |
+
+### Context Management
+1. **Session start**: Read `.claude/AGENT_BRIEFING.md` + check `work_items.json`
+2. **Directory entry**: Check for CLAUDE.md, create placeholder if missing
+3. **Work complete**: Update pending_tasks, add key_learnings
+4. **On errors**: Document in key_learnings with workaround
+
+### File Organization
+- Scripts → `scripts/` | Tests → `tests/` | Docs → `docs/` | Data → `data/`
+- **Never create files in project root**
+
+## Multi-Agent Pipeline
 
 ```
-src/phx_home_analysis/
-├── services/
-│   ├── cost_estimation/      # Monthly cost estimator
-│   ├── ai_enrichment/        # Field inference & triage
-│   ├── quality/              # Quality metrics & lineage
-│   ├── scoring/              # Property scoring
-│   └── kill_switch/          # Kill-switch filtering
-├── validation/               # Pydantic validation layer
-├── config/                   # Scoring weights config
-└── domain/                   # Entities & value objects
-
-scripts/
-├── phx_home_analyzer.py      # Main pipeline (uses PropertyScorer)
-├── deal_sheets/              # Package (was single file)
-│   ├── generator.py          # Main entry
-│   ├── data_loader.py
-│   ├── templates.py
-│   └── renderer.py
-├── lib/
-│   └── kill_switch.py        # Canonical kill-switch logic
-
-data/
-├── phx_homes.csv             # Listing data
-├── enrichment_data.json      # Research data
-└── phx_homes_ranked.csv      # Output with scores
+Phase 0: County API → lot_sqft, year_built, garage_spaces
+Phase 1: listing-browser (Haiku) → images, hoa_fee, price
+         map-analyzer (Haiku) → schools, safety, orientation
+Phase 2: image-assessor (Sonnet) → interior + exterior scores
+Phase 3: Synthesis → total score, tier, kill-switch verdict
+Phase 4: Reports → deal sheets, visualizations
 ```
 
-## Data Sources
+## Kill-Switch Criteria
 
-| Source | Data | Access |
-|--------|------|--------|
-| Maricopa County Assessor | Lot size, year built, garage, sewer | API (token required) |
-| GreatSchools | School ratings | Manual/scraping |
-| Google Maps | Commute, distances | Manual/API |
-| Zillow/Redfin | Price, beds, baths, photos | Stealth browsers (nodriver, curl_cffi) |
+| Type | Criterion | Requirement | Severity |
+|------|-----------|-------------|----------|
+| HARD | HOA | Must be $0 | instant |
+| HARD | Beds | ≥4 | instant |
+| HARD | Baths | ≥2 | instant |
+| SOFT | Sewer | City | 2.5 |
+| SOFT | Year | <2024 | 2.0 |
+| SOFT | Garage | ≥2 spaces | 1.5 |
+| SOFT | Lot | 7k-15k sqft | 1.0 |
 
-**Architecture:** Async concurrent processing, perceptual hash deduplication, PerimeterX bypass
+**Verdict**: FAIL if HARD fails OR severity ≥3.0 | WARNING if 1.5-3.0 | PASS if <1.5
 
-## Key Scripts
+## Arizona Specifics
 
-| Script | Purpose |
-|--------|---------|
-| `scripts/phx_home_analyzer.py` | Main analysis pipeline |
-| `scripts/deal_sheets/generator.py` | Deal summary sheets |
-| `scripts/extract_images.py` | Image extraction orchestrator |
-| `scripts/extract_county_data.py` | Maricopa County API |
-| `scripts/estimate_ages.py` | Estimate roof/HVAC/pool ages |
-| `scripts/geocode_homes.py` | Geocode addresses |
-| `scripts/value_spotter.py` | Identify value opportunities |
-| `scripts/radar_charts.py` | Generate radar visuals |
-| `scripts/quality_baseline.py` | Measure quality before changes |
-| `scripts/quality_check.py` | CI/CD quality gate (95% threshold) |
+- **Orientation**: North=30pts (best), West=0pts (worst for cooling)
+- **HVAC lifespan**: 10-15 years (not 20+ like elsewhere)
+- **Pool costs**: $250-400/month total ownership
+- **Solar leases**: Liability, not asset ($100-200/mo + transfer issues)
 
-## Arizona-Specific Considerations
+## Agents & Skills
 
-**Solar:** Owned = value-add, Leased = $100-200/mo burden + transfer issues
-**Pool:** $100-150/mo service, $3k-8k equipment, $50-100/mo energy
-**Sun:** West-facing = high cooling costs, North-facing = best for AZ
-**HVAC:** 10-15yr lifespan (vs 20+ elsewhere), dual-zone preferred for 2-story
+| Agent | Model | Skills |
+|-------|-------|--------|
+| listing-browser | Haiku | property-data, state-management, listing-extraction, kill-switch |
+| map-analyzer | Haiku | property-data, state-management, map-analysis, arizona-context, scoring |
+| image-assessor | Sonnet | property-data, state-management, image-assessment, exterior-assessment, inspection-standards |
 
-## Maricopa County Assessor API
+## State Files
 
-**Requires:** `MARICOPA_ASSESSOR_TOKEN` env var
+| File | Purpose | Check When |
+|------|---------|------------|
+| `work_items.json` | Pipeline progress | Session start, agent spawn |
+| `enrichment_data.json` | Property data | Before property ops |
+| `extraction_state.json` | Image pipeline | Before image ops |
 
-```bash
-# Extract all properties
-python scripts/extract_county_data.py --all --update-only
-```
+## Knowledge Graphs
 
-**Fields Available:** lot_sqft, year_built, garage_spaces, has_pool, livable_sqft, baths (estimated), full_cash_value, roof_type
-**NOT Available:** sewer_type (manual), beds (listings), hoa_fee (listings), tax_annual (Treasurer API)
+Detailed tool schemas, relationships, and protocols:
+- @.claude/knowledge/toolkit.json - Tools, scripts, agents, skills
+- @.claude/knowledge/context-management.json - State tracking, staleness, handoff
 
-## Property Hash
+## References
 
-```python
-import hashlib
-hashlib.md5(address.lower().encode()).hexdigest()[:8]
-# Example: "4732 W Davis Rd, Glendale, AZ 85306" -> "ef7cd95f"
-```
-
-## Development Guidelines
-
-- Use `uv` instead of `pip`
-- Follow existing code patterns
-- Document all data sources in enrichment_data.json
-- Manual assessment fields default to 5.0 until inspected
-- Keep analysis reproducible
+- Kill-switch: `src/phx_home_analysis/config/constants.py:1-50`
+- Scoring: `src/phx_home_analysis/config/scoring_weights.py:1-100`
+- Schemas: `src/phx_home_analysis/validation/schemas.py:1-200`
+- Agent briefing: `.claude/AGENT_BRIEFING.md`
+- Protocols: `.claude/protocols.md`
 
 ## Environment Variables
 
 - `MARICOPA_ASSESSOR_TOKEN` - County Assessor API
 
-## File Organization
-
-**Root Directory Policy:** Keep root CLEAN - only standard config files allowed.
-
-| File Type | Destination | Example |
-|-----------|-------------|---------|
-| Python scripts | `scripts/` | `extract_*.py`, `*_analyzer.py` |
-| Test files | `tests/` | `test_*.py` |
-| Benchmarks | `tests/benchmarks/` | `test_*_performance.py` |
-| Implementation notes | `docs/artifacts/implementation-notes/` | `*_SUMMARY.md` |
-| Reference docs | `docs/` | `*_REFERENCE.md`, `CHANGELOG` |
-| Data files | `data/` | `*.csv`, `*.json` |
-| Temp/log files | Delete or `TRASH/` | `*.log`, `tmp_*` |
-
-**Never in root:** `*.py`, `*_SUMMARY.md`, `*.log`, `tmp_*`, data files
-
-**See:** `.claude/skills/file-organization/SKILL.md` for full rules
-
 ---
-
-## Protocols and Multi-Agent Analysis
-
-**Full protocols:** See `.claude/protocols.md` (TIER 0-3, all operational standards)
-
-**Multi-agent orchestration:** See `.claude/commands/analyze-property.md`
-- 3 agents: listing-browser (Haiku), map-analyzer (Haiku), image-assessor (Sonnet)
-- Pipeline: Phase 0 (County) → Phase 1 (Listing + Map) → Phase 2 (Images) → Phase 3 (Synthesis)
-- State: `data/property_images/metadata/{extraction_state,image_manifest,hash_index}.json`
-
----
-
-*Lines: ~150 (target: <200)*
+*Knowledge graphs provide HOW. This file provides WHAT, WHERE, WHY.*
+*Lines: ~120 (target: <200)*

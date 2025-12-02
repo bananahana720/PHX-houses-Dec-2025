@@ -428,3 +428,71 @@ class ImageStatus(Enum):
             ImageStatus.DUPLICATE: "Duplicate detected and skipped",
             ImageStatus.FAILED: "Processing failed",
         }[self]
+
+
+class FloodZone(Enum):
+    """FEMA flood zone designations."""
+
+    X = "x"  # Minimal flood risk (outside 500-year)
+    X_SHADED = "x_shaded"  # Moderate (500-year flood zone)
+    A = "a"  # High risk (100-year, no BFE)
+    AE = "ae"  # High risk (100-year with BFE)
+    AH = "ah"  # Shallow flooding
+    AO = "ao"  # Sheet flow areas
+    VE = "ve"  # Coastal high hazard
+    UNKNOWN = "unknown"
+
+    @property
+    def risk_level(self) -> str:
+        """Map zone to risk level.
+
+        Returns:
+            Risk level string: 'high', 'moderate', 'minimal', or 'unknown'
+        """
+        high_risk = {FloodZone.A, FloodZone.AE, FloodZone.AH, FloodZone.AO, FloodZone.VE}
+        if self in high_risk:
+            return "high"
+        elif self == FloodZone.X_SHADED:
+            return "moderate"
+        elif self == FloodZone.X:
+            return "minimal"
+        return "unknown"
+
+    @property
+    def requires_insurance(self) -> bool:
+        """Whether flood insurance is required.
+
+        Returns:
+            True if flood insurance is federally required
+        """
+        return self in {FloodZone.A, FloodZone.AE, FloodZone.AH, FloodZone.AO, FloodZone.VE}
+
+
+class CrimeRiskLevel(Enum):
+    """Crime risk classification."""
+
+    LOW = "low"  # Index 80-100 (safest)
+    MODERATE = "moderate"  # Index 50-79
+    HIGH = "high"  # Index 20-49
+    VERY_HIGH = "very_high"  # Index 0-19
+    UNKNOWN = "unknown"
+
+    @classmethod
+    def from_index(cls, index: float | None) -> "CrimeRiskLevel":
+        """Convert crime index (0-100, 100=safest) to risk level.
+
+        Args:
+            index: Crime safety index where 100 is safest, 0 is most dangerous
+
+        Returns:
+            CrimeRiskLevel classification
+        """
+        if index is None:
+            return cls.UNKNOWN
+        if index >= 80:
+            return cls.LOW
+        if index >= 50:
+            return cls.MODERATE
+        if index >= 20:
+            return cls.HIGH
+        return cls.VERY_HIGH

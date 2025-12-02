@@ -217,6 +217,59 @@ class EnrichmentDataSchema(BaseModel):
         None, ge=0, le=500, description="Monthly solar lease payment"
     )
 
+    # Crime data
+    violent_crime_index: float | None = Field(
+        None, ge=0, le=100, description="Violent crime index 0-100, 100=safest"
+    )
+    property_crime_index: float | None = Field(
+        None, ge=0, le=100, description="Property crime index 0-100, 100=safest"
+    )
+    crime_risk_level: str | None = Field(
+        None, description="Crime risk level: low/moderate/high/very_high"
+    )
+
+    # Flood zone
+    flood_zone: str | None = Field(
+        None, description="FEMA flood zone: X, X_SHADED, A, AE, AH, AO, VE"
+    )
+    flood_zone_panel: str | None = Field(None, description="FEMA map panel number")
+    flood_insurance_required: bool | None = Field(
+        None, description="Whether flood insurance is required"
+    )
+
+    # Walk/Transit/Bike
+    walk_score: int | None = Field(None, ge=0, le=100, description="Walk Score 0-100")
+    transit_score: int | None = Field(None, ge=0, le=100, description="Transit Score 0-100")
+    bike_score: int | None = Field(None, ge=0, le=100, description="Bike Score 0-100")
+
+    # Noise
+    noise_score: int | None = Field(
+        None, ge=0, le=100, description="Noise score 0-100, 100=quietest"
+    )
+    noise_sources: list[str] | None = Field(None, description="Primary noise sources")
+
+    # Zoning
+    zoning_code: str | None = Field(None, description="Zoning code e.g. R1-6, C-1")
+    zoning_description: str | None = Field(None, description="Zoning description")
+    zoning_category: str | None = Field(
+        None, description="Category: residential/commercial/industrial/mixed"
+    )
+
+    # Demographics
+    census_tract: str | None = Field(None, description="Census tract FIPS code")
+    median_household_income: int | None = Field(
+        None, ge=0, description="Median household income in tract"
+    )
+    median_home_value: int | None = Field(None, ge=0, description="Median home value in tract")
+
+    # Enhanced schools
+    elementary_rating: float | None = Field(
+        None, ge=1, le=10, description="Elementary school rating 1-10"
+    )
+    middle_rating: float | None = Field(None, ge=1, le=10, description="Middle school rating 1-10")
+    high_rating: float | None = Field(None, ge=1, le=10, description="High school rating 1-10")
+    school_count_1mi: int | None = Field(None, ge=0, description="Schools within 1 mile")
+
     # Metadata fields (prefixed with _) for tracking data freshness
     # These are optional timestamps in ISO 8601 format
     # Note: Pydantic doesn't support fields starting with _ directly,

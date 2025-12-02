@@ -6,7 +6,7 @@ computed properties, and analysis results.
 
 from dataclasses import dataclass, field
 
-from .enums import Orientation, SewerType, SolarStatus, Tier
+from .enums import CrimeRiskLevel, FloodZone, Orientation, SewerType, SolarStatus, Tier
 from .value_objects import Address, RenovationEstimate, RiskAssessment, ScoreBreakdown
 
 
@@ -82,6 +82,41 @@ class Property:
     backyard_utility_score: float | None = None  # 0-10 scale
     safety_neighborhood_score: float | None = None  # 0-10 scale
     parks_walkability_score: float | None = None  # 0-10 scale
+
+    # Location - Crime/Safety
+    violent_crime_index: float | None = None  # 0-100, 100=safest
+    property_crime_index: float | None = None  # 0-100, 100=safest
+    crime_risk_level: CrimeRiskLevel = CrimeRiskLevel.UNKNOWN
+
+    # Location - Flood Zone
+    flood_zone: FloodZone = FloodZone.UNKNOWN
+    flood_zone_panel: str | None = None
+    flood_insurance_required: bool | None = None
+
+    # Location - Walk/Transit/Bike Scores
+    walk_score: int | None = None  # 0-100
+    transit_score: int | None = None  # 0-100
+    bike_score: int | None = None  # 0-100
+
+    # Location - Noise
+    noise_score: int | None = None  # 0-100, 100=quietest
+    noise_sources: list[str] | None = field(default=None)
+
+    # Location - Zoning
+    zoning_code: str | None = None
+    zoning_description: str | None = None
+    zoning_category: str | None = None  # residential, commercial, industrial, mixed
+
+    # Demographics
+    census_tract: str | None = None
+    median_household_income: int | None = None
+    median_home_value: int | None = None
+
+    # Schools - Enhanced
+    elementary_rating: float | None = None  # 1-10
+    middle_rating: float | None = None  # 1-10
+    high_rating: float | None = None  # 1-10
+    school_count_1mi: int | None = None
 
     def __post_init__(self) -> None:
         """Validate and normalize data after initialization."""
@@ -208,14 +243,17 @@ class Property:
         """
         return self.tier == Tier.FAILED or not self.kill_switch_passed
 
-    # Computed properties - Financial
+    # Cached financial data (set by service layer, not computed in domain)
+    # These fields are populated by MonthlyCostEstimator service externally
+    _monthly_costs_cache: dict[str, float] | None = field(default=None, repr=False)
 
     @property
     def monthly_costs(self) -> dict[str, float]:
-        """Estimated monthly costs breakdown.
+        """Cached monthly costs breakdown.
 
-        Delegates to MonthlyCostEstimator service for comprehensive cost calculation.
-        Returns a simplified dict for backward compatibility with existing code.
+        NOTE: This returns cached data set by the service layer.
+        Use MonthlyCostEstimator.estimate(property) to populate this cache
+        or to get fresh cost estimates.
 
         Includes:
         - Mortgage payment (30-year, $50k down, 7% rate estimate)
@@ -225,32 +263,31 @@ class Property:
         - Pool maintenance estimate (if pool present)
 
         Returns:
-            Dict mapping cost category to monthly amount
+            Dict mapping cost category to monthly amount, or empty dict if not cached
         """
-        # Delegate to cost estimation service
-        from ..services.cost_estimation import MonthlyCostEstimator
+        if self._monthly_costs_cache is None:
+            # Return empty dict - caller should use MonthlyCostEstimator service
+            return {}
+        return self._monthly_costs_cache
 
-        estimator = MonthlyCostEstimator()
-        monthly_costs_obj = estimator.estimate(self)
+    def set_monthly_costs(self, costs: dict[str, float]) -> None:
+        """Set cached monthly costs (called by service layer).
 
-        # Return dict for backward compatibility with legacy code
-        # Map service result to expected keys
-        return {
-            "mortgage": monthly_costs_obj.mortgage,
-            "property_tax": monthly_costs_obj.property_tax,
-            "hoa": monthly_costs_obj.hoa_fee,
-            "solar_lease": monthly_costs_obj.solar_lease,
-            "pool_maintenance": monthly_costs_obj.pool_maintenance,
-        }
+        Args:
+            costs: Dict mapping cost category to monthly amount
+        """
+        self._monthly_costs_cache = costs
 
     @property
     def total_monthly_cost(self) -> float:
         """Total estimated monthly cost.
 
         Returns:
-            Sum of all monthly costs
+            Sum of all monthly costs, or 0 if not cached
         """
-        return sum(self.monthly_costs.values())
+        if not self._monthly_costs_cache:
+            return 0.0
+        return sum(self._monthly_costs_cache.values())
 
     @property
     def effective_price(self) -> float:
@@ -344,3 +381,50 @@ class EnrichmentData:
     pool_equipment_age: int | None = None
     roof_age: int | None = None
     hvac_age: int | None = None
+
+    # Manual assessment fields (visual inspection)
+    kitchen_layout_score: float | None = None
+    master_suite_score: float | None = None
+    natural_light_score: float | None = None
+    high_ceilings_score: float | None = None
+    fireplace_present: bool | None = None
+    laundry_area_score: float | None = None
+    aesthetics_score: float | None = None
+    backyard_utility_score: float | None = None
+    safety_neighborhood_score: float | None = None
+    parks_walkability_score: float | None = None
+
+    # Location - Crime/Safety
+    violent_crime_index: float | None = None
+    property_crime_index: float | None = None
+    crime_risk_level: str | None = None
+
+    # Location - Flood Zone
+    flood_zone: str | None = None
+    flood_zone_panel: str | None = None
+    flood_insurance_required: bool | None = None
+
+    # Location - Walk/Transit/Bike Scores
+    walk_score: int | None = None
+    transit_score: int | None = None
+    bike_score: int | None = None
+
+    # Location - Noise
+    noise_score: int | None = None
+    noise_sources: list[str] | None = None
+
+    # Location - Zoning
+    zoning_code: str | None = None
+    zoning_description: str | None = None
+    zoning_category: str | None = None
+
+    # Demographics
+    census_tract: str | None = None
+    median_household_income: int | None = None
+    median_home_value: int | None = None
+
+    # Schools - Enhanced
+    elementary_rating: float | None = None
+    middle_rating: float | None = None
+    high_rating: float | None = None
+    school_count_1mi: int | None = None

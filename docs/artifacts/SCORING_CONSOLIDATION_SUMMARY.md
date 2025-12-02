@@ -20,7 +20,7 @@ Scoring information was duplicated across multiple files:
 | `.claude/skills/scoring/SKILL.md` | Complete scoring system (Tables, rubrics) | ~150 |
 | `.claude/skills/image-assessment/SKILL.md` | Section C rubrics (Interior scoring) | ~200+ |
 | `.claude/skills/kill-switch/SKILL.md` | Kill-switch criteria table | ~50 |
-| `.claude/AGENT_CONTEXT.md` | Quick reference tables | ~30 |
+| `.claude/AGENT_BRIEFING.md` | Quick reference tables | ~30 |
 | Various agents | Partial scoring info in descriptions | Variable |
 
 **Issues:**
@@ -62,7 +62,7 @@ Scoring information was duplicated across multiple files:
 
 ### 2. Updated References in Other Files
 
-**`.claude/AGENT_CONTEXT.md`** (Updated)
+**`.claude/AGENT_BRIEFING.md`** (Updated)
 - Added explicit reference to shared file
 - Kept quick reference tables inline
 - Added note that kill-switch table is in shared file
@@ -191,7 +191,7 @@ Quick reference:
 
 ### Completed
 - [x] Created `.claude/skills/_shared/scoring-tables.md`
-- [x] Updated `.claude/AGENT_CONTEXT.md` with reference
+- [x] Updated `.claude/AGENT_BRIEFING.md` with reference
 - [x] Added file relationships section
 - [x] Included usage guidelines for other files
 
@@ -214,7 +214,7 @@ Quick reference:
 | Rubric categories covered | 7 (Kitchen, Master, Light, Ceilings, Fireplace, Laundry, Aesthetics) |
 | Kill-switch criteria | 7 |
 | Validation checks | 5 |
-| File references updated | 1 (AGENT_CONTEXT.md) |
+| File references updated | 1 (AGENT_BRIEFING.md) |
 | Files pending updates | 3 (scoring, image-assessment, kill-switch) |
 
 ---
@@ -229,7 +229,7 @@ Quick reference:
 - [x] Validation protocol complete
 - [x] File relationship matrix included
 - [x] Usage guidelines included
-- [x] AGENT_CONTEXT.md updated with reference
+- [x] AGENT_BRIEFING.md updated with reference
 - [x] Directory structure (_shared/) created
 
 ---
@@ -240,7 +240,7 @@ Quick reference:
 - `C:/Users/Andrew/.vscode/PHX-houses-Dec-2025/.claude/skills/_shared/scoring-tables.md`
 
 **Files Modified:**
-- `C:/Users/Andrew/.vscode/PHX-houses-Dec-2025/.claude/AGENT_CONTEXT.md`
+- `C:/Users/Andrew/.vscode/PHX-houses-Dec-2025/.claude/AGENT_BRIEFING.md`
 
 **Related Skills:**
 - `.claude/skills/scoring/SKILL.md`

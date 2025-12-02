@@ -7,7 +7,7 @@ See `../CLAUDE.md` for full project documentation.
 ```
 .claude/
 ├── CLAUDE.md              # This file
-├── AGENT_CONTEXT.md       # Shared agent context (required reading)
+├── AGENT_BRIEFING.md       # Shared agent context (required reading)
 ├── protocols.md           # Operational protocols (TIER 0-3)
 ├── mcp-reference.md       # MCP tool documentation
 ├── agents/                # Subagent definitions
@@ -73,7 +73,7 @@ Load skills as needed: property-data, scoring, deal-sheets
 
 | Resource | Description |
 |----------|-------------|
-| `AGENT_CONTEXT.md` | Shared agent context |
+| `AGENT_BRIEFING.md` | Shared agent context |
 | `protocols.md` | Operational protocols (TIER 0-3) |
 | `mcp-reference.md` | MCP tool documentation |
 | `commands/analyze-property.md` | Multi-agent orchestrator |
@@ -81,7 +81,7 @@ Load skills as needed: property-data, scoring, deal-sheets
 ## Essential Files (Do Not Condense)
 
 - `protocols.md` - Operational protocols
-- `AGENT_CONTEXT.md` - Agent shared context
+- `AGENT_BRIEFING.md` - Agent shared context
 - `skills/*/SKILL.md` - Skill definitions
 
 ## Key Commands

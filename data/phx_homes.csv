@@ -34,3 +34,4 @@ street,city,state,zip,price,price_num,beds,baths,sqft,price_per_sqft,full_addres
 9150 W Villa Rita Dr,Peoria,AZ,85382,"$605,000",605000,4,3.0,1919,315.27,"9150 W Villa Rita Dr, Peoria, AZ 85382"
 5038 W Echo Ln,Glendale,AZ,85302,"$634,000",634000,6,3.0,2813,225.38,"5038 W Echo Ln, Glendale, AZ 85302"
 9832 N 29th St,Phoenix,AZ,85028,"$765,000",765000,4,2.0,1819,420.56,"9832 N 29th St, Phoenix, AZ 85028"
+4560 E Sunrise Dr,Phoenix,AZ,85044,"$500,000",500000,3,3.0,1786,279.96,"4560 E Sunrise Dr, Phoenix, AZ 85044"

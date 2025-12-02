@@ -11,6 +11,34 @@ Total Section B maximum: 180 points
 """
 
 
+from ....config.constants import (
+    DEFAULT_NEUTRAL_SCORE,
+    PLUMBING_YEAR_AGING_MIN,
+    PLUMBING_YEAR_MODERN_MIN,
+    PLUMBING_YEAR_RECENT_MIN,
+    PLUMBING_YEAR_UPDATED_MIN,
+    POOL_EQUIP_FAIR_MAX,
+    POOL_EQUIP_GOOD_MAX,
+    POOL_EQUIP_NEW_MAX,
+    ROOF_AGE_AGING_MAX,
+    ROOF_AGE_FAIR_MAX,
+    ROOF_AGE_GOOD_MAX,
+    ROOF_AGE_NEW_MAX,
+    SCORE_PLUMBING_AGING,
+    SCORE_PLUMBING_MODERN,
+    SCORE_PLUMBING_OLD,
+    SCORE_PLUMBING_RECENT,
+    SCORE_PLUMBING_UPDATED,
+    SCORE_POOL_FAIR,
+    SCORE_POOL_GOOD,
+    SCORE_POOL_NEW,
+    SCORE_POOL_REPLACEMENT,
+    SCORE_ROOF_AGING,
+    SCORE_ROOF_FAIR,
+    SCORE_ROOF_GOOD,
+    SCORE_ROOF_NEW,
+    SCORE_ROOF_REPLACEMENT,
+)
 from ....config.scoring_weights import ScoringWeights
 from ....domain.entities import Property
 from ..base import ScoringStrategy
@@ -60,20 +88,20 @@ class RoofConditionScorer(ScoringStrategy):
             Base score (0-10 based on age)
         """
         if property.roof_age is None:
-            return 5.0  # Neutral default
+            return DEFAULT_NEUTRAL_SCORE
 
         age = property.roof_age
 
-        if age <= 5:
-            return 10.0  # New/replaced
-        elif age <= 10:
-            return 7.0  # Good condition
-        elif age <= 15:
-            return 5.0  # Fair condition
-        elif age <= 20:
-            return 3.0  # Aging
+        if age <= ROOF_AGE_NEW_MAX:
+            return SCORE_ROOF_NEW
+        elif age <= ROOF_AGE_GOOD_MAX:
+            return SCORE_ROOF_GOOD
+        elif age <= ROOF_AGE_FAIR_MAX:
+            return SCORE_ROOF_FAIR
+        elif age <= ROOF_AGE_AGING_MAX:
+            return SCORE_ROOF_AGING
         else:
-            return 1.0  # Replacement needed
+            return SCORE_ROOF_REPLACEMENT
 
 
 class BackyardUtilityScorer(ScoringStrategy):
@@ -122,7 +150,7 @@ class BackyardUtilityScorer(ScoringStrategy):
             Base score (0-10 from manual assessment, 5 if not assessed)
         """
         if property.backyard_utility_score is None:
-            return 5.0  # Neutral default
+            return DEFAULT_NEUTRAL_SCORE
         return float(property.backyard_utility_score)
 
 
@@ -171,20 +199,20 @@ class PlumbingElectricalScorer(ScoringStrategy):
             Base score (0-10 based on year built)
         """
         if property.year_built is None:
-            return 5.0  # Neutral default
+            return DEFAULT_NEUTRAL_SCORE
 
         year = property.year_built
 
-        if year >= 2010:
-            return 10.0  # Recent build
-        elif year >= 2000:
-            return 8.0  # Modern
-        elif year >= 1990:
-            return 6.0  # Updated
-        elif year >= 1980:
-            return 4.0  # Aging
+        if year >= PLUMBING_YEAR_RECENT_MIN:
+            return SCORE_PLUMBING_RECENT
+        elif year >= PLUMBING_YEAR_MODERN_MIN:
+            return SCORE_PLUMBING_MODERN
+        elif year >= PLUMBING_YEAR_UPDATED_MIN:
+            return SCORE_PLUMBING_UPDATED
+        elif year >= PLUMBING_YEAR_AGING_MIN:
+            return SCORE_PLUMBING_AGING
         else:
-            return 2.0  # Old systems
+            return SCORE_PLUMBING_OLD
 
 
 class PoolConditionScorer(ScoringStrategy):
@@ -234,19 +262,19 @@ class PoolConditionScorer(ScoringStrategy):
         """
         # No pool = neutral (no burden, no benefit)
         if not property.has_pool:
-            return 5.0
+            return DEFAULT_NEUTRAL_SCORE
 
         # Has pool but age unknown = neutral
         if property.pool_equipment_age is None:
-            return 5.0
+            return DEFAULT_NEUTRAL_SCORE
 
         age = property.pool_equipment_age
 
-        if age <= 3:
-            return 10.0  # New equipment
-        elif age <= 6:
-            return 7.0  # Good condition
-        elif age <= 10:
-            return 5.0  # Fair condition
+        if age <= POOL_EQUIP_NEW_MAX:
+            return SCORE_POOL_NEW
+        elif age <= POOL_EQUIP_GOOD_MAX:
+            return SCORE_POOL_GOOD
+        elif age <= POOL_EQUIP_FAIR_MAX:
+            return SCORE_POOL_FAIR
         else:
-            return 3.0  # Needs replacement
+            return SCORE_POOL_REPLACEMENT

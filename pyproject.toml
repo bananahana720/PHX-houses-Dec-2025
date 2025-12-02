@@ -40,6 +40,8 @@ dependencies = [
     # Stealth browser automation (PerimeterX bypass)
     "nodriver==0.48.1",
     "curl-cffi==0.13.0",
+    # Development server with auto-refresh
+    "livereload>=2.7.0",
 ]
 
 [project.optional-dependencies]

@@ -200,7 +200,9 @@ async def extract_zillow_listing(address: str, proxy: dict = None) -> dict:
                                 else:
                                     hold_button = None
                                     box = None
-                        except:
+                        except Exception:
+                            # Playwright selector or bounding_box may fail for various reasons
+                            # (element detached, timeout, invalid selector, etc.)
                             continue
 
                     # If no button found, try to find all elements with exact text
@@ -216,7 +218,8 @@ async def extract_zillow_listing(address: str, proxy: dict = None) -> dict:
                                         hold_button = elem
                                         print("  Found button by exact text match")
                                         break
-                            except:
+                            except Exception:
+                                # Element may be detached or inaccessible
                                 continue
 
                     # Fallback: click center of viewport where button typically appears

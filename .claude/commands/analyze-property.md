@@ -10,14 +10,24 @@ Orchestrate multi-phase property analysis using specialized agents and skills.
 
 ## STEP 0: GET YOUR BEARINGS (MANDATORY)
 
-Before ANY property analysis, orient yourself to current pipeline state:
+Before ANY property analysis, orient yourself to current pipeline state.
+
+**CRITICAL: Read `.claude/AGENT_BRIEFING.md` for quick state orientation.**
 
 ```bash
 # 1. Confirm working directory
 pwd
 
-# 2. Check pipeline state
-cat data/property_images/metadata/extraction_state.json | python -c "import json,sys; d=json.load(sys.stdin); print(f'Completed: {len(d.get(\"completed_properties\",[]))}, In Progress: {len(d.get(\"in_progress_properties\",[]))}, Failed: {len(d.get(\"failed_properties\",[]))}')"
+# 2. Check pipeline state (work_items.json - NEW)
+cat data/work_items.json | python -c "
+import json,sys
+d=json.load(sys.stdin)
+print(f'Session: {d[\"session\"][\"session_id\"]}')
+print(f'Progress: {d[\"summary\"][\"completed\"]}/{d[\"session\"][\"total_items\"]}')
+print(f'Current Index: {d[\"session\"][\"current_index\"]}')
+print(f'In Progress: {d[\"summary\"][\"in_progress\"]}')
+print(f'Failed: {d[\"summary\"][\"failed\"]}')
+"
 
 # 3. Count properties to process
 echo "CSV properties:" && wc -l < data/phx_homes.csv
@@ -26,8 +36,8 @@ echo "Enriched properties:" && cat data/enrichment_data.json | python -c "import
 # 4. Check metadata files exist
 ls -la data/property_images/metadata/
 
-# 5. Review recent git history
-git log --oneline -5
+# 5. Review recent git history (property commits)
+git log --oneline -10 --grep="feat(property)"
 
 # 6. Check pending research tasks
 cat data/research_tasks.json 2>/dev/null | head -20 || echo "No research tasks file"
@@ -38,8 +48,9 @@ cat data/session_cache.json 2>/dev/null || echo "Fresh session"
 
 **DO NOT PROCEED** until you understand:
 - How many properties are completed vs remaining
-- Current pipeline state
+- Current pipeline state and session ID
 - Any blocked sources from previous runs
+- Git commit history (properties should have individual commits)
 
 ## Arguments: $ARGUMENTS
 
@@ -142,6 +153,124 @@ Load skills as needed during orchestration:
 - **scoring** - Calculate & assign tiers
 - **deal-sheets** - Generate reports
 
+## State Management (work_items.json)
+
+### Schema Overview
+
+```json
+{
+  "schema_version": "1.0.0",
+  "session": {
+    "session_id": "session_20251202_123456",
+    "start_time": "2025-12-02T12:34:56",
+    "mode": "batch|single|test",
+    "total_items": 25,
+    "current_index": 5
+  },
+  "work_items": [
+    {
+      "index": 0,
+      "address": "123 Main St, Phoenix, AZ 85001",
+      "hash": "abc123de",
+      "status": "pending|in_progress|complete|failed",
+      "locked_by": null,
+      "locked_at": null,
+      "phase_status": {
+        "phase0_county": "complete",
+        "phase05_cost": "complete",
+        "phase1_listing": "in_progress",
+        "phase1_map": "pending",
+        "phase2a_exterior": "pending",
+        "phase2b_interior": "pending",
+        "phase3_synthesis": "pending",
+        "phase4_report": "pending"
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T12:45:00",
+      "commit_sha": null,
+      "errors": []
+    }
+  ],
+  "summary": {
+    "pending": 15,
+    "in_progress": 1,
+    "complete": 8,
+    "failed": 1
+  }
+}
+```
+
+### Property-Level Locking
+
+Before modifying any property data:
+
+```python
+from datetime import datetime
+import json
+from pathlib import Path
+
+def acquire_work_item_lock(work_items: dict, index: int, session_id: str) -> bool:
+    """Acquire lock on work item for exclusive access.
+
+    Returns True if lock acquired, False if already locked by another session.
+    """
+    item = work_items['work_items'][index]
+
+    # Check if already locked by different session
+    if item.get('locked_by') and item['locked_by'] != session_id:
+        lock_age = datetime.now() - datetime.fromisoformat(item['locked_at'])
+        if lock_age.total_seconds() < 3600:  # 1 hour stale lock timeout
+            return False
+
+    # Acquire lock
+    item['locked_by'] = session_id
+    item['locked_at'] = datetime.now().isoformat()
+    return True
+
+def release_work_item_lock(work_items: dict, index: int):
+    """Release lock on work item."""
+    item = work_items['work_items'][index]
+    item['locked_by'] = None
+    item['locked_at'] = None
+
+# Usage in orchestrator
+work_items = load_work_items()
+if not acquire_work_item_lock(work_items, idx, session_id):
+    log_warning(f"Property {address} locked by another session - skipping")
+    continue
+
+try:
+    # ... do work ...
+finally:
+    release_work_item_lock(work_items, idx)
+    save_work_items(work_items)
+```
+
+### Atomic Updates
+
+Use temp file + rename pattern to prevent corruption:
+
+```python
+def save_work_items_atomic(work_items: dict, path: Path):
+    """Atomically save work_items.json to prevent corruption."""
+    import tempfile
+    import shutil
+
+    # Write to temp file
+    with tempfile.NamedTemporaryFile(
+        mode='w',
+        dir=path.parent,
+        prefix='work_items_',
+        suffix='.tmp',
+        delete=False
+    ) as tmp:
+        json.dump(work_items, tmp, indent=2)
+        tmp_path = Path(tmp.name)
+
+    # Atomic rename
+    shutil.move(str(tmp_path), str(path))
+```
+
 ## Session Blocking Cache
 
 Track source blocking status (resets each run):
@@ -172,7 +301,8 @@ Before executing any phase, check:
 | 0.5: Cost | Phase 0 complete | list_price, lot_sqft | No (uses defaults) |
 | 1: Listing | Phase 0 ≠ failed | lot_sqft, year_built | No (can estimate) |
 | 1: Map | Phase 0 ≠ failed | address, (lat/lon optional) | No |
-| 2: Images | Phase 1 listing complete | images in folder | Yes (skip phase) |
+| 2A: Exterior | Phase 1 listing complete | images in folder | Yes (skip phase) |
+| 2B: Interior | Phase 2A complete | exterior scores | No (independent scoring) |
 | 3: Synthesis | Phase 0 + Phase 0.5 + Phase 1 complete | kill_switch_passed, monthly_cost, scores | No (partial scoring) |
 | 4: Report | Phase 3 complete | total_score, tier | Yes |
 
@@ -212,7 +342,7 @@ def check_phase_prerequisites(phase: int, property_state: dict, enrichment: dict
             result["missing_prerequisites"].append("phase0_county failed")
             result["skip_reason"] = "county_data_failed"
 
-    elif phase == 2:
+    elif phase == "2a":
         # Requires Phase 1 listing complete with images
         if phase_status.get("phase1_listing") not in ["complete", "skipped"]:
             result["can_proceed"] = False
@@ -223,6 +353,13 @@ def check_phase_prerequisites(phase: int, property_state: dict, enrichment: dict
         if not images_folder or not any(images_folder.iterdir()):
             result["can_proceed"] = False
             result["skip_reason"] = "no_images_available"
+
+    elif phase == "2b":
+        # Phase 2B (interior) requires Phase 2A (exterior) complete
+        if phase_status.get("phase2a_exterior") not in ["complete", "skipped"]:
+            result["can_proceed"] = False
+            result["missing_prerequisites"].append("phase2a_exterior not complete")
+            result["skip_reason"] = "exterior_assessment_required_first"
 
     elif phase == 3:
         # Requires Phase 0, Phase 0.5, and at least one Phase 1 task complete
@@ -269,7 +406,7 @@ For EACH phase, before spawning agents or running scripts:
    └─ Confirm MCP tools available (if needed)
 
 3. LOG PHASE START
-   └─ Update extraction_state.json: phase_status[phaseN] = "in_progress"
+   └─ Update work_items.json: phase_status[phaseN] = "in_progress"
    └─ Log: "Starting Phase N for {address}"
 
 4. EXECUTE PHASE
@@ -429,7 +566,9 @@ Analyze schools, safety, orientation, distances
 
 **Checkpoints**: `phase1_listing`, `phase1_map`
 
-### Phase 2: Visual Assessment (Sequential)
+### Phase 2A: Exterior Assessment (Sequential)
+
+**NEW: Phase 2 is now split into 2A (Exterior) and 2B (Interior)**
 
 **Prerequisites:**
 - Phase 1 listing must be complete (images downloaded)
@@ -437,14 +576,15 @@ Analyze schools, safety, orientation, distances
 
 **Pre-execution check:**
 ```python
-prereq = check_phase_prerequisites(2, state, enrichment)
+prereq = check_phase_prerequisites("2a", state, enrichment)
 
 if not prereq["can_proceed"]:
     if prereq["skip_reason"] == "no_images_available":
-        log_info("Phase 2 skipped: No images available for visual assessment")
-        update_phase_status("phase2_images", "skipped", reason="no_images")
-        # Use default scores (5.0) for Section C
-        apply_default_interior_scores(enrichment)
+        log_info("Phase 2A skipped: No images available for visual assessment")
+        update_phase_status("phase2a_exterior", "skipped", reason="no_images")
+        update_phase_status("phase2b_interior", "skipped", reason="no_images")
+        # Use default scores (5.0) for Section B exterior
+        apply_default_exterior_scores(enrichment)
         return
     else:
         handle_prerequisite_failure(prereq, strict_mode)
@@ -455,13 +595,54 @@ if not prereq["can_proceed"]:
 ```
 Task (model: sonnet, subagent: image-assessor)
 Target: {ADDRESS}
-Skills: property-data, image-assessment, arizona-context, scoring
-Score Section C (190 pts): kitchen, master, light, ceilings, fireplace, laundry, aesthetics
+Phase: 2A (Exterior)
+Skills: property-data, image-assessment, arizona-context-lite, scoring
+Score Section B exterior (80 pts): roof, backyard, pool
+Estimate ages: roof, HVAC, pool equipment
 ```
 
-**If missing ages**: `python scripts/estimate_ages.py --property "{ADDRESS}"`
+**Output:**
+- `roof_score` (0-50 pts)
+- `backyard_score` (0-40 pts)
+- `pool_score` (0-20 pts if pool exists)
+- `roof_age_estimate`
+- `pool_age_estimate`
 
-**Checkpoint**: `phase2_images`
+**Checkpoint**: `phase2a_exterior = "complete"`
+
+### Phase 2B: Interior Assessment (Sequential)
+
+**Prerequisites:**
+- Phase 2A must be complete (exterior assessment done first)
+
+**Pre-execution check:**
+```python
+prereq = check_phase_prerequisites("2b", state, enrichment)
+
+if not prereq["can_proceed"]:
+    handle_prerequisite_failure(prereq, strict_mode)
+    return
+```
+
+**Agent spawn:**
+```
+Task (model: sonnet, subagent: image-assessor)
+Target: {ADDRESS}
+Phase: 2B (Interior)
+Skills: property-data, image-assessment, arizona-context-lite, scoring
+Score Section C interior (190 pts): kitchen, master, light, ceilings, fireplace, laundry, aesthetics
+```
+
+**Output:**
+- `kitchen_score` (0-40 pts)
+- `master_score` (0-40 pts)
+- `light_score` (0-30 pts)
+- `ceiling_score` (0-30 pts)
+- `fireplace_score` (0-20 pts)
+- `laundry_score` (0-20 pts)
+- `aesthetics_score` (0-10 pts)
+
+**Checkpoint**: `phase2b_interior = "complete"`
 
 ### Phase 3: Synthesis & Scoring
 
@@ -525,13 +706,155 @@ python -m scripts.deal_sheets --property "{ADDRESS}"
 
 Generate markdown summary with tier, scores, strengths, concerns, and recommendation.
 
+**Checkpoint**: `phase4_report = "complete"`
+
+## Git Commit Protocol
+
+### Commit After Each Property
+
+After all phases complete for a property, commit changes to preserve progress and enable recovery.
+
+#### Commit Points Table
+
+| When | Files to Stage | Rationale |
+|------|----------------|-----------|
+| After Phase 0+0.5 | enrichment_data.json, work_items.json | County + cost data acquired |
+| After Phase 1 | enrichment_data.json, work_items.json, images/*, metadata/*.json | Listing + map data complete |
+| After Phase 2 | enrichment_data.json, work_items.json | Visual scores assigned |
+| After Phase 3+4 | enrichment_data.json, work_items.json, ranked.csv, deal_sheets/* | Final scoring + report |
+| Property complete | All of the above | Full property checkpoint |
+
+#### Commit Message Template
+
+```bash
+# Stage files
+git add data/enrichment_data.json data/work_items.json
+
+# If Phase 1 completed (images)
+if [ -d "data/property_images/processed/{hash}" ]; then
+  git add "data/property_images/processed/{hash}/*"
+  git add data/property_images/metadata/*.json
+fi
+
+# If Phase 4 completed (report)
+if ls reports/deal_sheets/*{hash}* 1> /dev/null 2>&1; then
+  git add "reports/deal_sheets/*{hash}*"
+fi
+
+# Commit with structured message
+git commit -m "$(cat <<'EOF'
+feat(property): Complete {address_short} - {tier} ({score}/600)
+
+Property: {full_address}
+Hash: {hash}
+Phases: County ✓ | Cost ✓ | Listing ✓ | Map ✓ | Images ✓ | Synthesis ✓ | Report ✓
+Kill-switch: {PASS|WARNING|FAIL}
+Tier: {tier}
+Score: {score}/600
+Monthly Cost: ${monthly_cost}
+
+🤖 Generated with Claude Code Pipeline
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+
+# Update work_items.json with commit SHA
+python -c "
+import json
+from pathlib import Path
+import subprocess
+
+# Get commit SHA
+sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+
+# Update work_items.json
+work_items_path = Path('data/work_items.json')
+work_items = json.loads(work_items_path.read_text())
+
+# Find property by hash
+for item in work_items['work_items']:
+    if item['hash'] == '{hash}':
+        item['commit_sha'] = sha
+        break
+
+work_items_path.write_text(json.dumps(work_items, indent=2))
+"
+```
+
+#### Example Commit Messages
+
+```
+feat(property): Complete 4732 W Davis Rd - CONTENDER (412/600)
+
+Property: 4732 W Davis Rd, Glendale, AZ 85306
+Hash: ef7cd95f
+Phases: County ✓ | Cost ✓ | Listing ✓ | Map ✓ | Images ✓ | Synthesis ✓ | Report ✓
+Kill-switch: PASS
+Tier: CONTENDER
+Score: 412/600
+Monthly Cost: $3,245
+
+🤖 Generated with Claude Code Pipeline
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+```
+feat(property): Complete 2353 W Tierra Buena Ln - FAILED (0/600)
+
+Property: 2353 W Tierra Buena Ln, Phoenix, AZ 85023
+Hash: abc12345
+Phases: County ✓ | Cost ✓ | Listing ✓ | Map ✓ | Images ✗ | Synthesis ✗ | Report ✗
+Kill-switch: FAIL (HOA fee: $250/mo)
+Tier: FAILED
+Score: 0/600
+Monthly Cost: N/A
+
+🤖 Generated with Claude Code Pipeline
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+### Merge Conflict Prevention
+
+#### Property-Level Locking (Already Covered Above)
+
+See "State Management (work_items.json)" → "Property-Level Locking" section.
+
+#### Serialized Updates
+
+**Orchestrator Pattern:**
+1. Collect all phase updates in memory
+2. Single atomic write per property completion
+3. Use temp file + rename pattern (see `save_work_items_atomic`)
+
+```python
+# BAD: Multiple writes per property
+for phase in phases:
+    execute_phase(phase)
+    save_work_items(work_items)  # ❌ N writes
+
+# GOOD: Single write per property
+phase_results = []
+for phase in phases:
+    result = execute_phase(phase)
+    phase_results.append(result)
+
+# Apply all updates at once
+for result in phase_results:
+    update_phase_status(work_items, result)
+
+save_work_items_atomic(work_items, work_items_path)  # ✓ 1 write
+```
+
 ## Batch Processing
 
 ### Triage
 
 ```python
 # Skip if:
-# - In completed_properties
+# - status == "complete" (in work_items.json)
 # - retry_count >= 3
 # For --test: limit to first 5 from CSV
 ```
@@ -540,13 +863,17 @@ Generate markdown summary with tier, scores, strengths, concerns, and recommenda
 
 ```
 for property in to_process:
-    1. Phase 0 (county) → early kill-switch check
-    2. Phase 0.5 (cost) → monthly cost estimation
-    3. Phase 1 (listing + map) → parallel
-    4. Phase 2 (images) → if images exist
-    5. Phase 3 (synthesis) → includes CostEfficiencyScorer
-    6. Phase 4 (report)
-    7. Update checkpoints
+    1. Acquire lock (work_items.json)
+    2. Phase 0 (county) → early kill-switch check
+    3. Phase 0.5 (cost) → monthly cost estimation
+    4. Phase 1 (listing + map) → parallel
+    5. Phase 2A (exterior) → if images exist
+    6. Phase 2B (interior) → if Phase 2A complete
+    7. Phase 3 (synthesis) → includes CostEfficiencyScorer
+    8. Phase 4 (report)
+    9. Update work_items.json
+   10. Git commit property completion
+   11. Release lock
 ```
 
 ### Progress Display
@@ -554,51 +881,70 @@ for property in to_process:
 ```
 Processing: 5/25 properties
 Current: 123 Main St, Phoenix, AZ 85001
-Phase: 2 (Image Assessment)
+Phase: 2B (Interior Assessment)
 Completed: 4 | Failed: 0 | Skipped: 1
 Unicorns: 1 | Contenders: 2 | Pass: 1
+
+Session: session_20251202_123456
+Locked: 123 Main St
+Last Commit: ef7cd95f (4732 W Davis Rd - CONTENDER)
 ```
 
 ## Optimization Rules
 
 1. **Check data completeness** before spawning agents
-2. **Skip if complete** - Don't reprocess finished properties
+2. **Skip if complete** - Don't reprocess finished properties (check work_items.json)
 3. **Test one first** - Verify source not blocked before batch
 4. **Fail fast** - After 3 consecutive same errors, skip source
+5. **Commit frequently** - One commit per property for crash recovery
 
 ## Error Handling
 
 | Error | Action |
 |-------|--------|
 | Agent fails | Log, mark phase "failed", continue with partial |
-| No images | Mark phase2_images "skipped" |
+| No images | Mark phase2a_exterior, phase2b_interior "skipped" |
 | Rate limited | Backoff, retry, increment retry_count |
 | Max retries | Skip permanently |
+| Lock conflict | Skip property (another session owns it) |
 
 **Always generate report with available data.**
 
-## Crash Recovery with Prerequisite Awareness
+## Crash Recovery with work_items.json
 
-On restart, the prerequisite system ensures safe resumption:
+On restart, the work_items.json system ensures safe resumption:
 
 ### Recovery Protocol
 
 ```python
-def recover_from_crash(property_address: str) -> dict:
+def recover_from_crash(property_address: str, work_items: dict) -> dict:
     """Recover property processing from crash.
 
     Returns next phase to execute and any warnings.
     """
-    state = load_extraction_state()
-    property_state = state.get("properties", {}).get(property_address, {})
+    # Find work item by address
+    work_item = None
+    for item in work_items['work_items']:
+        if item['address'] == property_address:
+            work_item = item
+            break
 
-    if not property_state:
+    if not work_item:
         return {"next_phase": 0, "warnings": ["No state found, starting fresh"]}
 
-    phase_status = property_state.get("phase_status", {})
+    phase_status = work_item.get("phase_status", {})
 
     # Find last completed phase
-    phases = ["phase0_county", "phase05_cost", "phase1_listing", "phase1_map", "phase2_images", "phase3_synthesis"]
+    phases = [
+        "phase0_county",
+        "phase05_cost",
+        "phase1_listing",
+        "phase1_map",
+        "phase2a_exterior",
+        "phase2b_interior",
+        "phase3_synthesis",
+        "phase4_report"
+    ]
     last_complete = -1
 
     for i, phase in enumerate(phases):
@@ -614,7 +960,7 @@ def recover_from_crash(property_address: str) -> dict:
             last_complete = i
         elif status == "failed":
             # Check retry count
-            if property_state.get("retry_count", 0) >= 3:
+            if work_item.get("retry_count", 0) >= 3:
                 return {
                     "next_phase": None,
                     "skip_reason": "max_retries_exceeded",
@@ -638,11 +984,13 @@ Display clear status on recovery:
 ```
 RECOVERY STATUS
 ===============
+Session: session_20251202_123456 (resumed)
 Property: 123 Main St, Phoenix, AZ 85001
 Last Checkpoint: phase05_cost (complete)
 Crashed During: phase1_listing (in_progress)
 Action: Retry Phase 1 (attempt 2/3)
 Prerequisites: Verified (phase0_county, phase05_cost complete)
+Last Commit: abc12345 (previous property)
 ```
 
 ## Verification
@@ -650,20 +998,25 @@ Prerequisites: Verified (phase0_county, phase05_cost complete)
 ### Single Property
 
 - [ ] enrichment_data.json updated
-- [ ] extraction_state.json shows complete
+- [ ] work_items.json shows complete
 - [ ] All phase_status entries complete/skipped
+- [ ] Git commit created with property hash
+- [ ] commit_sha populated in work_items.json
 
 ### Batch
 
 - [ ] Stats match property counts
 - [ ] No properties stuck in in_progress
 - [ ] Summary report generated
+- [ ] Git log shows individual property commits
+- [ ] work_items.json summary accurate
 
 ## Summary Report
 
 ```
 ANALYSIS COMPLETE
 =================
+Session: session_20251202_123456
 Attempted: 25
 Completed: 23
 Failed: 2
@@ -674,5 +1027,10 @@ Tier Breakdown:
 - Pass: 6
 - Failed: 2
 
+Git Commits: 23 (1 per completed property)
 Research Tasks Pending: 4
+
+Next Steps:
+- Review failed properties: 2353 W Tierra Buena Ln, 8426 E Lincoln Dr
+- Run: git log --oneline --grep="feat(property)" to see all commits
 ```

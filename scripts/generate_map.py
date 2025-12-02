@@ -2,12 +2,18 @@
 """
 Generate golden_zone_map.html with current property locations and tiers.
 Uses ranked CSV data for scores and enrichment JSON for lat/lon geocoding.
+
+Security: Uses html.escape() for XSS prevention and SRI hashes for CDN integrity.
 """
 
 import csv
 import json
 import re
 from pathlib import Path
+
+# SRI hashes for CDN resources (SHA-384)
+LEAFLET_CSS_SRI = "sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+LEAFLET_JS_SRI = "sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
 
 
 def extract_address_parts(address: str) -> tuple[str, str]:
@@ -17,24 +23,73 @@ def extract_address_parts(address: str) -> tuple[str, str]:
         return match.group(1).strip(), match.group(2)
     return "", ""
 
-def get_coordinates_from_enrichment(address: str, enrichment_data: list) -> tuple[float, float] | None:
-    """Look up coordinates in enrichment data based on address."""
+
+def load_geocoded_data(geocoded_path: Path) -> dict[str, tuple[float, float]]:
+    """Load coordinates from geocoded_homes.json.
+
+    Returns:
+        Dictionary mapping lowercase address to (lat, lng) tuple
+    """
+    if not geocoded_path.exists():
+        return {}
+
+    with open(geocoded_path) as f:
+        data = json.load(f)
+
+    coords = {}
+    for entry in data:
+        addr = entry.get("full_address", "").lower()
+        lat = entry.get("lat")
+        lng = entry.get("lng")
+        if addr and lat is not None and lng is not None:
+            coords[addr] = (lat, lng)
+
+    return coords
+
+
+def get_coordinates(address: str, enrichment_data: list, geocoded_lookup: dict) -> tuple[float, float] | None:
+    """Look up coordinates from multiple sources.
+
+    Priority:
+    1. enrichment_data.json (lat/lng fields)
+    2. geocoded_homes.json (via geocoded_lookup)
+
+    Args:
+        address: Property address
+        enrichment_data: List of property dicts from enrichment_data.json
+        geocoded_lookup: Dict from load_geocoded_data()
+
+    Returns:
+        (lat, lng) tuple or None if not found
+    """
+    addr_lower = address.lower()
+
+    # Try enrichment data first (single source of truth after migration)
     for prop in enrichment_data:
-        if prop.get('full_address', '').lower() == address.lower():
-            # Try to extract from safety_data_source or use a geocoding API
-            # For now, we'll use manual lookup from existing map data
-            return None
+        if prop.get('full_address', '').lower() == addr_lower:
+            lat = prop.get('lat')
+            lng = prop.get('lng')
+            if lat is not None and lng is not None:
+                return (lat, lng)
+
+    # Fallback to geocoded_homes.json
+    if addr_lower in geocoded_lookup:
+        return geocoded_lookup[addr_lower]
+
     return None
 
 def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_path: str):
     """Generate the interactive map HTML."""
 
-    # Load enrichment data for coordinates
+    project_root = Path(ranked_csv_path).parent.parent
+    geocoded_path = project_root / "data" / "geocoded_homes.json"
+
+    # Load enrichment data for coordinates and property data
     with open(enrichment_json_path) as f:
         enrichment_data = json.load(f)
 
-    # Create address -> enrichment data map
-    {prop['full_address']: prop for prop in enrichment_data if 'full_address' in prop}
+    # Load geocoded data as fallback
+    geocoded_lookup = load_geocoded_data(geocoded_path)
 
     # Read ranked CSV
     properties = []
@@ -50,8 +105,6 @@ def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_pa
     for prop in enrichment_data:
         addr = prop.get('full_address', '').lower()
         if addr and addr not in seen_addresses:
-            # Create a CSV-like row from enrichment data
-            # Mark as FAIL if kill_switch_passed is False
             tier = prop.get('tier', 'INCOMPLETE')
             kill_status = 'FAIL' if prop.get('kill_switch_passed') is False else 'UNKNOWN'
 
@@ -71,46 +124,6 @@ def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_pa
             }
             properties.append(row)
 
-    # Geocoding data (from Nominatim/Google Maps)
-    geocoding = {
-        "4209 W Wahalla Ln, Glendale, AZ 85308": (33.6353, -112.2024),
-        "4417 W Sandra Cir, Glendale, AZ 85308": (33.6412, -112.1943),
-        "2344 W Marconi Ave, Phoenix, AZ 85023": (33.6307, -112.1101),
-        "4136 W Hearn Rd, Phoenix, AZ 85053": (33.6545, -112.0967),
-        "13307 N 84th Ave, Peoria, AZ 85381": (33.7168, -112.3166),
-        "4732 W Davis Rd, Glendale, AZ 85306": (33.6314, -112.1998),
-        "20021 N 38th Ln, Glendale, AZ 85308": (33.6483, -112.1525),
-        "5004 W Kaler Dr, Glendale, AZ 85301": (33.5956, -112.1819),
-        "8426 E Lincoln Dr, Scottsdale, AZ 85250": (33.4934, -111.9134),
-        "5522 W Carol Ave, Glendale, AZ 85302": (33.6107, -112.1638),
-        "7233 W Corrine Dr, Peoria, AZ 85381": (33.7053, -112.3315),
-        "4020 W Anderson Dr, Glendale, AZ 85308": (33.6337, -112.1935),
-        "7126 W Columbine Dr, Peoria, AZ 85381": (33.7024, -112.3524),
-        "4001 W Libby St, Glendale, AZ 85308": (33.6377, -112.1853),
-        "2353 W Tierra Buena Ln, Phoenix, AZ 85023": (33.6287, -112.1105),
-        "14014 N 39th Ave, Phoenix, AZ 85053": (33.6487, -112.0844),
-        "4342 W Claremont St, Glendale, AZ 85301": (33.5902, -112.1781),
-        "2846 W Villa Rita Dr, Phoenix, AZ 85053": (33.6505, -112.1212),
-        "8803 N 105th Dr, Peoria, AZ 85345": (33.6907, -112.4211),
-        "8931 W Villa Rita Dr, Peoria, AZ 85382": (33.6782, -112.3984),
-        "15225 N 37th Way, Phoenix, AZ 85032": (33.625, -112.0011),
-        "16814 N 31st Ave, Phoenix, AZ 85053": (33.6389, -112.0623),
-        "14353 N 76th Dr, Peoria, AZ 85381": (33.7276, -112.2998),
-        "18820 N 35th Way, Phoenix, AZ 85050": (33.6682, -112.0529),
-        "4137 W Cielo Grande, Glendale, AZ 85310": (33.6549, -112.2269),
-        "25841 N 66th Dr, Phoenix, AZ 85083": (33.7071, -112.1437),
-        "18825 N 34th St, Phoenix, AZ 85050": (33.6664, -112.0477),
-        "8714 E Plaza Ave, Scottsdale, AZ 85250": (33.4846, -111.8966),
-        "11035 E Clinton St, Scottsdale, AZ 85259": (33.5165, -111.8585),
-        "14622 N 37th St, Phoenix, AZ 85032": (33.6252, -112.0118),
-        "12808 N 27th St, Phoenix, AZ 85032": (33.6087, -112.0255),
-        "17244 N 36th Ln, Glendale, AZ 85308": (33.6346, -112.1394),
-        "9150 W Villa Rita Dr, Peoria, AZ 85382": (33.6734, -112.3958),
-        "5038 W Echo Ln, Glendale, AZ 85302": (33.6146, -112.1739),
-        "9832 N 29th St, Phoenix, AZ 85028": (33.6241, -112.0058),
-    }
-
-    # Ensure we have all 35 properties with geocoding
     print(f"Total properties loaded: {len(properties)}")
 
     # Build HTML
@@ -120,9 +133,9 @@ def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_pa
     html_parts.append('<head>')
     html_parts.append('    <meta charset="UTF-8">')
     html_parts.append('    <meta name="viewport" content="width=device-width, initial-scale=1.0">')
-    html_parts.append('    <title>Phoenix Golden Zone - Property Map (December 1, 2025)</title>')
-    html_parts.append('    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />')
-    html_parts.append('    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>')
+    html_parts.append('    <title>Phoenix Golden Zone - Property Map (December 2025)</title>')
+    html_parts.append(f'    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="{LEAFLET_CSS_SRI}" crossorigin="anonymous" />')
+    html_parts.append(f'    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="{LEAFLET_JS_SRI}" crossorigin="anonymous"></script>')
     html_parts.append('    <style>')
     html_parts.append('        html, body { width: 100%; height: 100%; margin: 0; padding: 0; }')
     html_parts.append('        #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }')
@@ -140,7 +153,7 @@ def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_pa
     html_parts.append('</head>')
     html_parts.append('<body>')
     html_parts.append('    <div id="map"></div>')
-    html_parts.append('    <div class="timestamp">Updated: December 1, 2025</div>')
+    html_parts.append('    <div class="timestamp">Updated: December 2025</div>')
     html_parts.append('    <div class="legend">')
     html_parts.append('        <h4>Golden Zone Legend</h4>')
     html_parts.append('        <div class="legend-item"><span class="legend-color" style="background: green;"></span>CONTENDER (340+)</div>')
@@ -157,10 +170,16 @@ def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_pa
     html_parts.append('        }).addTo(map);')
     html_parts.append('')
 
+    # Helper for XSS prevention
+    def esc(value):
+        """Escape HTML special characters."""
+        import html as html_mod
+        return html_mod.escape(str(value)) if value is not None else 'N/A'
+
     # Add markers for each property
     for prop in properties:
         address = prop['full_address'].strip()
-        coords = geocoding.get(address)
+        coords = get_coordinates(address, enrichment_data, geocoded_lookup)
 
         if not coords:
             print(f"Warning: No coordinates found for {address}")
@@ -191,27 +210,28 @@ def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_pa
                 color = 'gray'
                 radius = 8
 
-        # Build popup HTML
+        # Build popup HTML (with XSS escaping for user data)
         popup_title_color = 'green' if status == 'PASS' else 'red'
         popup_html = f'''
             <div style="font-family: Arial; font-size: 12px; width: 280px;">
-                <h4 style="margin: 0 0 8px 0; color: {popup_title_color};">{address}</h4>
+                <h4 style="margin: 0 0 8px 0; color: {popup_title_color};">{esc(address)}</h4>
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
-                    <tr><td><b>Price:</b></td><td>{price}</td></tr>
-                    <tr><td><b>Score:</b></td><td>{prop.get('total_score', 'N/A')} / 600</td></tr>
-                    <tr><td><b>Tier:</b></td><td><b>{tier}</b></td></tr>
-                    <tr><td><b>Kill Switch:</b></td><td style="color: {popup_title_color}; font-weight: bold;">{status}</td></tr>
+                    <tr><td><b>Price:</b></td><td>{esc(price)}</td></tr>
+                    <tr><td><b>Score:</b></td><td>{esc(prop.get('total_score', 'N/A'))} / 600</td></tr>
+                    <tr><td><b>Tier:</b></td><td><b>{esc(tier)}</b></td></tr>
+                    <tr><td><b>Kill Switch:</b></td><td style="color: {popup_title_color}; font-weight: bold;">{esc(status)}</td></tr>
                 </table>
                 <div style="padding-top: 8px; border-top: 1px solid #ccc; font-size: 11px;">
                     <b>Details:</b><br>
-                    {prop.get('beds', 'N/A')} bed, {prop.get('baths', 'N/A')} bath, {prop.get('sqft', 'N/A')} sqft<br>
-                    Lot: {prop.get('lot_sqft', 'N/A')} sqft | Year: {prop.get('year_built', 'N/A')}<br>
-                    Schools: {prop.get('school_rating', 'N/A')} / 10 | Commute: {prop.get('commute_min', 'N/A')} min
+                    {esc(prop.get('beds', 'N/A'))} bed, {esc(prop.get('baths', 'N/A'))} bath, {esc(prop.get('sqft', 'N/A'))} sqft<br>
+                    Lot: {esc(prop.get('lot_sqft', 'N/A'))} sqft | Year: {esc(prop.get('year_built', 'N/A'))}<br>
+                    Schools: {esc(prop.get('school_rating', 'N/A'))} / 10 | Commute: {esc(prop.get('commute_min', 'N/A'))} min
                 </div>
             </div>
         '''
 
-        # Add marker to map
+        # Add marker to map (escape tooltip text too)
+        tooltip_text = f"{esc(address)}<br>Score: {esc(prop.get('total_score', 'N/A'))} | {esc(status)}"
         html_parts.append(f'''
         L.circleMarker([{lat}, {lon}], {{
             radius: {radius},
@@ -221,7 +241,7 @@ def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_pa
             opacity: 1,
             fillOpacity: 0.75
         }}).bindPopup(`{popup_html}`)
-          .bindTooltip("{address}<br>Score: {prop.get('total_score', 'N/A')} | {status}")
+          .bindTooltip("{tooltip_text}")
           .addTo(map);
         ''')
 

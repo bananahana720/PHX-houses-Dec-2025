@@ -1,11 +1,15 @@
 {
   "completed_properties": [
-    "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-    "4732 W Davis Rd, Glendale, AZ 85306",
-    "2344 W Marconi Ave, Phoenix, AZ 85023",
     "15225 N 37th Way, Phoenix, AZ 85032",
-    "2353 W Tierra Buena Ln, Phoenix, AZ 85023"
+    "2344 W Marconi Ave, Phoenix, AZ 85023",
+    "4560 E Sunrise Dr, Phoenix, AZ 85044",
+    "4732 W Davis Rd, Glendale, AZ 85306",
+    "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+    "2846 W Villa Rita Dr, Phoenix, AZ 85053"
   ],
   "failed_properties": [],
-  "last_updated": "2025-12-02T01:21:28.558641-05:00"
+  "property_last_checked": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": "2025-12-02T15:43:23.628555-05:00"
+  },
+  "last_updated": "2025-12-02T15:43:23.628555-05:00"
 }

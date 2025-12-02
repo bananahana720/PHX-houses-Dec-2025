@@ -17,12 +17,15 @@ from .interior import (
     NaturalLightScorer,
 )
 from .location import (
+    CrimeIndexScorer,
+    FloodRiskScorer,
     OrientationScorer,
     ParksWalkabilityScorer,
     QuietnessScorer,
-    SafetyScorer,
+    SafetyScorer,  # Deprecated, kept for backwards compatibility
     SchoolDistrictScorer,
     SupermarketScorer,
+    WalkTransitScorer,
 )
 from .systems import (
     BackyardUtilityScorer,
@@ -31,17 +34,19 @@ from .systems import (
     RoofConditionScorer,
 )
 
-# Location strategies (Section A: 230 pts max)
+# Location strategies (Section A: 250 pts max)
 LOCATION_STRATEGIES = [
     SchoolDistrictScorer,
     QuietnessScorer,
-    SafetyScorer,
+    CrimeIndexScorer,  # Replaces SafetyScorer
     SupermarketScorer,
     ParksWalkabilityScorer,
     OrientationScorer,
+    FloodRiskScorer,  # NEW
+    WalkTransitScorer,  # NEW
 ]
 
-# Systems strategies (Section B: 180 pts max)
+# Systems strategies (Section B: 170 pts max)
 SYSTEMS_STRATEGIES = [
     RoofConditionScorer,
     BackyardUtilityScorer,
@@ -50,7 +55,7 @@ SYSTEMS_STRATEGIES = [
     CostEfficiencyScorer,
 ]
 
-# Interior strategies (Section C: 190 pts max)
+# Interior strategies (Section C: 180 pts max)
 INTERIOR_STRATEGIES = [
     KitchenLayoutScorer,
     MasterSuiteScorer,
@@ -68,10 +73,13 @@ __all__ = [
     # Location strategies
     "SchoolDistrictScorer",
     "QuietnessScorer",
-    "SafetyScorer",
+    "CrimeIndexScorer",
+    "SafetyScorer",  # Deprecated
     "SupermarketScorer",
     "ParksWalkabilityScorer",
     "OrientationScorer",
+    "FloodRiskScorer",
+    "WalkTransitScorer",
     # Systems strategies
     "RoofConditionScorer",
     "BackyardUtilityScorer",

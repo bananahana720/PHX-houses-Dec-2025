@@ -64,9 +64,27 @@ class EnrichmentMergeService:
 
         Args:
             lineage_tracker: Optional lineage tracker for recording field updates.
-                            If None, lineage tracking is disabled.
+                            If None, a default LineageTracker is created to ensure
+                            lineage is always tracked.
         """
-        self.lineage_tracker = lineage_tracker
+        # Always ensure lineage tracking is enabled - create default if not provided
+        self._lineage_tracker = lineage_tracker or LineageTracker()
+
+    @property
+    def lineage_tracker(self) -> LineageTracker:
+        """Access the lineage tracker (read-only).
+
+        Returns:
+            The LineageTracker instance used by this service.
+        """
+        return self._lineage_tracker
+
+    def save_lineage(self) -> None:
+        """Persist lineage data to disk.
+
+        Call this after batch operations to ensure lineage is saved.
+        """
+        self._lineage_tracker.save()
 
     def should_update_field(
         self,
@@ -143,8 +161,8 @@ class EnrichmentMergeService:
         entry = existing_enrichment.get(full_address, {}).copy()
         report = ConflictReport()
 
-        # Compute property hash for lineage tracking
-        prop_hash = compute_property_hash(full_address) if self.lineage_tracker else None
+        # Compute property hash for lineage tracking (always tracked now)
+        prop_hash = compute_property_hash(full_address)
 
         # Get parcel values to merge
         parcel_values = {
@@ -226,7 +244,7 @@ class EnrichmentMergeService:
         parcel: ParcelData,
         report: ConflictReport,
         update_only: bool,
-        prop_hash: str | None,
+        prop_hash: str,
     ) -> None:
         """Merge latitude/longitude coordinates from parcel data.
 
@@ -238,7 +256,7 @@ class EnrichmentMergeService:
             parcel: Parcel data containing coordinates.
             report: Conflict report to update (modified in place).
             update_only: Whether in update-only mode.
-            prop_hash: Property hash for lineage tracking.
+            prop_hash: Property hash for lineage tracking (always required).
         """
         coord_fields = [
             ("latitude", parcel.latitude),
@@ -275,14 +293,16 @@ class EnrichmentMergeService:
 
     def _record_lineage(
         self,
-        prop_hash: str | None,
+        prop_hash: str,
         field_name: str,
         value: Any,
         source: str,
         previous_value: Any = None,
         confidence: float | None = None,
     ) -> None:
-        """Record field lineage if tracker is available.
+        """Record field lineage.
+
+        Lineage tracking is now mandatory - a LineageTracker is always available.
 
         Args:
             prop_hash: Property hash identifier.
@@ -292,9 +312,6 @@ class EnrichmentMergeService:
             previous_value: Previous value if this is an update.
             confidence: Override confidence score. If None, uses DataSource default.
         """
-        if not self.lineage_tracker or not prop_hash:
-            return
-
         notes = f"County API source: {source}"
         if previous_value is not None:
             notes += f", updated from {previous_value}"
@@ -302,7 +319,7 @@ class EnrichmentMergeService:
         # Use provided confidence or DataSource default
         conf = confidence if confidence is not None else DataSource.ASSESSOR_API.default_confidence
 
-        self.lineage_tracker.record_field(
+        self._lineage_tracker.record_field(
             property_hash=prop_hash,
             field_name=field_name,
             source=DataSource.ASSESSOR_API,

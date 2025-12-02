@@ -8,6 +8,7 @@ ownership including mortgage, taxes, HOA, solar lease, and pool maintenance.
 
 from ....config.scoring_weights import ScoringWeights
 from ....domain.entities import Property
+from ...cost_estimation import MonthlyCostEstimator
 from ..base import ScoringStrategy
 
 
@@ -39,13 +40,19 @@ class CostEfficiencyScorer(ScoringStrategy):
     - Pool maintenance costs (if applicable)
     """
 
-    def __init__(self, weights: ScoringWeights | None = None) -> None:
-        """Initialize with scoring weights.
+    def __init__(
+        self,
+        weights: ScoringWeights | None = None,
+        cost_estimator: MonthlyCostEstimator | None = None,
+    ) -> None:
+        """Initialize with scoring weights and cost estimator.
 
         Args:
             weights: Scoring weights config, defaults to standard weights
+            cost_estimator: Cost estimator service, defaults to new instance
         """
         self._weights = weights or ScoringWeights()
+        self._cost_estimator = cost_estimator or MonthlyCostEstimator()
 
     @property
     def name(self) -> str:
@@ -62,12 +69,14 @@ class CostEfficiencyScorer(ScoringStrategy):
     def calculate_base_score(self, property: Property) -> float:
         """Calculate base score from estimated monthly cost.
 
-        Uses the Property.total_monthly_cost computed property which includes:
+        Uses MonthlyCostEstimator service to calculate costs including:
         - Mortgage payment (30-year, $50k down, 7% rate)
         - Property tax (annual / 12)
         - HOA fee (if applicable)
         - Solar lease (if applicable)
         - Pool maintenance estimate ($125/mo if pool present)
+
+        Also caches the cost breakdown on the property for later use.
 
         Args:
             property: Property to score
@@ -75,8 +84,18 @@ class CostEfficiencyScorer(ScoringStrategy):
         Returns:
             Base score (0-10 based on monthly cost efficiency)
         """
-        # Get the total monthly cost from the property
-        monthly_cost = property.total_monthly_cost
+        # Use injected service to calculate monthly costs
+        cost_estimate = self._cost_estimator.estimate(property)
+        monthly_cost = cost_estimate.total
+
+        # Cache the costs on the property for other consumers
+        property.set_monthly_costs({
+            "mortgage": cost_estimate.mortgage,
+            "property_tax": cost_estimate.property_tax,
+            "hoa": cost_estimate.hoa_fee,
+            "solar_lease": cost_estimate.solar_lease,
+            "pool_maintenance": cost_estimate.pool_maintenance,
+        })
 
         # Handle edge case where cost calculation fails
         if monthly_cost <= 0:

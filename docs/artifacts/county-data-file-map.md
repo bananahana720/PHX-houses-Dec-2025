@@ -14,7 +14,7 @@ Visual reference showing which files are updated and their relationships.
 │   ├── map-analyzer.md ············· [1 EDIT]  Phase 1 agent (skip county fields)
 │   └── image-assessor.md ··········· [1 EDIT]  Phase 2 agent (use county context)
 │
-└── AGENT_CONTEXT.md ················ [2 EDITS] Shared context (document script)
+└── AGENT_BRIEFING.md ················ [2 EDITS] Shared context (document script)
 ```
 
 ## New Script (already exists)
@@ -36,7 +36,7 @@ scripts/
          ┌─────────────────────┼─────────────────────┐
          ↓                     ↓                     ↓
 ┌────────────────┐   ┌──────────────────┐   ┌──────────────────┐
-│ Pre-Execution  │   │  AGENT_CONTEXT   │   │ Research Queue   │
+│ Pre-Execution  │   │  AGENT_BRIEFING   │   │ Research Queue   │
 │ State Checks   │   │  (shared context)│   │    Check         │
 └────────────────┘   └──────────────────┘   └──────────────────┘
          ↓
@@ -132,7 +132,7 @@ Line ~244: Add "### Phase 0: County Data Extraction" section (WORKFLOW)
 
 ---
 
-### 2. `.claude/AGENT_CONTEXT.md`
+### 2. `.claude/AGENT_BRIEFING.md`
 
 ```
 Line ~231: Expand scripts reference table
@@ -234,7 +234,7 @@ Check kill-switches:
 | File | Current Size | Lines Added | % Increase |
 |------|--------------|-------------|------------|
 | analyze-property.md | ~666 lines | ~60 lines | +9% |
-| AGENT_CONTEXT.md | ~457 lines | ~35 lines | +8% |
+| AGENT_BRIEFING.md | ~457 lines | ~35 lines | +8% |
 | listing-browser.md | ~237 lines | ~22 lines | +9% |
 | map-analyzer.md | ~298 lines | ~18 lines | +6% |
 | image-assessor.md | ~354 lines | ~15 lines | +4% |
@@ -246,7 +246,7 @@ Total: ~150 lines added across 5 files
 ```
 analyze-property.md
     ↓ references
-AGENT_CONTEXT.md ← shared by all agents
+AGENT_BRIEFING.md ← shared by all agents
     ↑ referenced by
     ├─ listing-browser.md
     ├─ map-analyzer.md
@@ -260,7 +260,7 @@ All files reference:
 ## Edit Order (Dependency-Based)
 
 ```
-1. AGENT_CONTEXT.md ········· Foundation (edits 3, 4)
+1. AGENT_BRIEFING.md ········· Foundation (edits 3, 4)
    ↓
 2. Agent files (parallel):
    ├─ listing-browser.md ···· Edit 5, 6
@@ -278,7 +278,7 @@ All files reference:
 # 1. Check all files were updated
 grep -c "extract_county_data" \
   .claude/commands/analyze-property.md \
-  .claude/AGENT_CONTEXT.md \
+  .claude/AGENT_BRIEFING.md \
   .claude/agents/listing-browser.md \
   .claude/agents/map-analyzer.md \
   .claude/agents/image-assessor.md
@@ -291,7 +291,7 @@ grep "Phase 0: County Data Extraction" .claude/commands/analyze-property.md
 # Expected: 1 match
 
 # 3. Check scripts table updated
-grep "extract_county_data.py" .claude/AGENT_CONTEXT.md
+grep "extract_county_data.py" .claude/AGENT_BRIEFING.md
 
 # Expected: 2+ matches (table + options section)
 
@@ -311,7 +311,7 @@ done
 | File | Role | County Integration |
 |------|------|-------------------|
 | `analyze-property.md` | Orchestrates 5-phase workflow | Adds Phase 0, runs county extraction |
-| `AGENT_CONTEXT.md` | Shared context for all agents | Documents county script and fields |
+| `AGENT_BRIEFING.md` | Shared context for all agents | Documents county script and fields |
 | `listing-browser.md` | Extract listing images/data | Cross-references county data |
 | `map-analyzer.md` | Extract geographic data | Skips county-sourced fields |
 | `image-assessor.md` | Score interior from photos | Uses county data for context |

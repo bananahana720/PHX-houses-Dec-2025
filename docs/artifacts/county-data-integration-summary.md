@@ -32,7 +32,7 @@ python scripts/extract_county_data.py --all --update-only
    - Add pre-execution step to extract county data
    - Enables early kill-switch filtering
 
-2. **`.claude/AGENT_CONTEXT.md`** (2 edits)
+2. **`.claude/AGENT_BRIEFING.md`** (2 edits)
    - Add `extract_county_data.py` to scripts reference table
    - Document which fields come from county API
    - Note fields NOT available from API
@@ -161,7 +161,7 @@ cat docs/artifacts/apply-county-data-edits.md
 # Apply each edit using Edit tool
 # Example:
 Edit(
-  file_path=".claude/AGENT_CONTEXT.md",
+  file_path=".claude/AGENT_BRIEFING.md",
   old_string="<exact text from instructions>",
   new_string="<exact replacement from instructions>"
 )

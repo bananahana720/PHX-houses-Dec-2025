@@ -1,0 +1,247 @@
+{
+  "$schema": "toolkit-schema-v1",
+  "version": "1.0.0",
+  "last_updated": "2025-12-02",
+
+  "tool_tiers": {
+    "description": "Hierarchical priority - use higher tier tools first",
+    "tiers": [
+      {"tier": 1, "name": "Claude Native Tools", "priority": "highest"},
+      {"tier": 2, "name": "Project Scripts", "priority": "high"},
+      {"tier": 3, "name": "Agent Skills", "priority": "medium"},
+      {"tier": 4, "name": "Subagents (Task)", "priority": "medium"},
+      {"tier": 5, "name": "Slash Commands", "priority": "low"},
+      {"tier": 6, "name": "MCP Tools", "priority": "lowest"}
+    ]
+  },
+
+  "native_tools": {
+    "file_operations": [
+      {
+        "id": "read",
+        "name": "Read",
+        "description": "Read files (text, images, PDFs, notebooks)",
+        "replaces": ["bash cat", "bash head", "bash tail"],
+        "parameters": ["file_path (required)", "offset", "limit"],
+        "best_practices": ["Use absolute paths", "Batch parallel reads"],
+        "mistakes": ["Using relative paths", "Using bash cat instead"]
+      },
+      {
+        "id": "write",
+        "name": "Write",
+        "description": "Create new files",
+        "replaces": ["bash echo >", "bash cat <<EOF"],
+        "parameters": ["file_path (required)", "content (required)"],
+        "best_practices": ["Verify parent directory exists"],
+        "mistakes": ["Using for modifications (use Edit)"]
+      },
+      {
+        "id": "edit",
+        "name": "Edit",
+        "description": "Exact string replacement in files",
+        "replaces": ["bash sed", "bash awk"],
+        "parameters": ["file_path", "old_string", "new_string"],
+        "best_practices": ["Read file first to get exact string", "Include whitespace"],
+        "mistakes": ["Incorrect whitespace", "Partial string matching"]
+      }
+    ],
+    "search_tools": [
+      {
+        "id": "glob",
+        "name": "Glob",
+        "description": "Find files by name pattern",
+        "replaces": ["bash find", "bash ls -R"],
+        "parameters": ["pattern (required)", "path"],
+        "best_practices": ["Use ** for recursive", "Combine with Read"],
+        "mistakes": ["Using bash find instead"]
+      },
+      {
+        "id": "grep",
+        "name": "Grep",
+        "description": "Search file contents (ripgrep)",
+        "replaces": ["bash grep", "bash rg"],
+        "parameters": ["pattern", "path", "output_mode", "glob", "type", "-C/-A/-B"],
+        "best_practices": ["Use output_mode:content with -C for context", "Filter by type"],
+        "mistakes": ["Using bash grep", "Wrong output_mode", "Forgetting multiline for cross-line"]
+      }
+    ],
+    "execution": [
+      {
+        "id": "bash",
+        "name": "Bash",
+        "description": "Execute shell commands",
+        "use_for": ["git", "npm", "pytest", "docker", "builds"],
+        "not_for": ["file reading (Read)", "searching (Glob/Grep)", "file writing (Write/Edit)"],
+        "parameters": ["command", "description", "timeout", "run_in_background"],
+        "best_practices": ["Quote paths with spaces", "Use absolute paths", "Chain with &&"],
+        "mistakes": ["Using for file ops", "Relative paths", "Unquoted spaces"]
+      },
+      {
+        "id": "task",
+        "name": "Task",
+        "description": "Spawn subagents for complex work",
+        "parameters": ["description", "prompt", "subagent_type", "model"],
+        "best_practices": ["Complete instructions in prompt", "Parallel launches when independent"],
+        "mistakes": ["Using for simple tasks", "Missing required context in prompt"]
+      }
+    ],
+    "web": [
+      {
+        "id": "websearch",
+        "name": "WebSearch",
+        "description": "Search web for current information",
+        "parameters": ["query", "allowed_domains", "blocked_domains"],
+        "best_practices": ["Use current year (2025)", "ALWAYS include Sources section"],
+        "mistakes": ["Forgetting Sources (MANDATORY)", "Old year in query"]
+      },
+      {
+        "id": "webfetch",
+        "name": "WebFetch",
+        "description": "Fetch and analyze URL content",
+        "parameters": ["url", "prompt"],
+        "best_practices": ["Clear extraction prompt", "Handle redirects"],
+        "mistakes": ["Using for search (use WebSearch)"]
+      }
+    ],
+    "management": [
+      {
+        "id": "todowrite",
+        "name": "TodoWrite",
+        "description": "Track multi-step tasks",
+        "parameters": ["todos[{content, activeForm, status}]"],
+        "use_when": ["3+ step tasks", "User provides multiple tasks"],
+        "not_when": ["Single simple task", "Trivial operations"]
+      }
+    ]
+  },
+
+  "project_scripts": {
+    "analysis": [
+      {
+        "id": "phx_home_analyzer",
+        "path": "scripts/phx_home_analyzer.py",
+        "description": "Main scoring pipeline",
+        "usage": "python scripts/phx_home_analyzer.py"
+      },
+      {
+        "id": "extract_county_data",
+        "path": "scripts/extract_county_data.py",
+        "description": "Maricopa County API extraction",
+        "usage": "python scripts/extract_county_data.py --all --update-only",
+        "requires": "MARICOPA_ASSESSOR_TOKEN"
+      },
+      {
+        "id": "extract_images",
+        "path": "scripts/extract_images.py",
+        "description": "Stealth image extraction (nodriver + curl_cffi)",
+        "usage": "python scripts/extract_images.py --address \"ADDRESS\" --sources zillow,redfin"
+      }
+    ],
+    "reporting": [
+      {
+        "id": "deal_sheets",
+        "path": "scripts/deal_sheets/",
+        "description": "Generate property deal sheets",
+        "usage": "python -m scripts.deal_sheets"
+      },
+      {
+        "id": "visualizations",
+        "path": "scripts/generate_all_visualizations.py",
+        "description": "Generate maps and charts",
+        "usage": "python scripts/generate_all_visualizations.py"
+      }
+    ]
+  },
+
+  "agents": {
+    "listing-browser": {
+      "model": "haiku",
+      "path": ".claude/agents/listing-browser.md",
+      "purpose": "Extract images/data from Zillow/Redfin/Realtor",
+      "skills": ["property-data", "state-management", "listing-extraction", "kill-switch"],
+      "tools": ["stealth browsers (nodriver)", "state files"]
+    },
+    "map-analyzer": {
+      "model": "haiku",
+      "path": ".claude/agents/map-analyzer.md",
+      "purpose": "Geographic analysis (schools, safety, orientation)",
+      "skills": ["property-data", "state-management", "map-analysis", "arizona-context", "scoring"],
+      "tools": ["Playwright MCP", "WebSearch", "Google Maps"]
+    },
+    "image-assessor": {
+      "model": "sonnet",
+      "path": ".claude/agents/image-assessor.md",
+      "purpose": "Visual scoring (exterior + interior)",
+      "skills": ["property-data", "state-management", "image-assessment", "exterior-assessment", "inspection-standards", "arizona-context", "scoring"],
+      "tools": ["Claude Vision", "Read (images)"]
+    }
+  },
+
+  "skills": {
+    "data_management": ["property-data", "state-management"],
+    "filtering": ["kill-switch", "quality-metrics"],
+    "scoring": ["scoring", "cost-efficiency"],
+    "extraction": ["listing-extraction", "county-assessor", "map-analysis", "image-assessment", "exterior-assessment"],
+    "domain": ["arizona-context", "arizona-context-lite", "inspection-standards"],
+    "reporting": ["deal-sheets", "visualizations"],
+    "standards": ["file-organization"]
+  },
+
+  "slash_commands": {
+    "analyze-property": {
+      "path": ".claude/commands/analyze-property.md",
+      "description": "Multi-agent property analysis pipeline",
+      "usage": [
+        "/analyze-property --test",
+        "/analyze-property --all",
+        "/analyze-property \"123 Main St\""
+      ]
+    },
+    "commit": {
+      "path": ".claude/commands/commit.md",
+      "description": "Git commit helper"
+    }
+  },
+
+  "mcp_tools": {
+    "playwright": {
+      "prefix": "mcp__playwright__",
+      "use_for": "Browser automation (Realtor.com, Google Maps)",
+      "not_for": "Zillow/Redfin (use stealth scripts instead)",
+      "key_tools": ["browser_navigate", "browser_snapshot", "browser_click", "browser_type", "browser_take_screenshot"]
+    },
+    "fetch": {
+      "prefix": "mcp__fetch__",
+      "use_for": "Simple URL fetching without analysis"
+    }
+  },
+
+  "relationships": [
+    {"from": "Grep", "relation": "replaces", "to": "bash grep/rg"},
+    {"from": "Read", "relation": "replaces", "to": "bash cat/head/tail"},
+    {"from": "Glob", "relation": "replaces", "to": "bash find"},
+    {"from": "Edit", "relation": "replaces", "to": "bash sed/awk"},
+    {"from": "Write", "relation": "replaces", "to": "bash echo/cat <<EOF"},
+    {"from": "Task", "relation": "spawns", "to": "agents/*"},
+    {"from": "agents/*", "relation": "loads", "to": "skills/*"},
+    {"from": "Skill", "relation": "invokes", "to": "skills/*"},
+    {"from": "browser_snapshot", "relation": "preferred_over", "to": "browser_take_screenshot"},
+    {"from": "stealth scripts", "relation": "required_for", "to": "Zillow/Redfin"}
+  ],
+
+  "common_mistakes": {
+    "critical": [
+      {"mistake": "Using bash grep instead of Grep tool", "fix": "Always use Grep for content search"},
+      {"mistake": "Using bash cat instead of Read tool", "fix": "Always use Read for file reading"},
+      {"mistake": "Using bash find instead of Glob tool", "fix": "Always use Glob for file finding"},
+      {"mistake": "Playwright for Zillow/Redfin", "fix": "Use stealth scripts (nodriver)"},
+      {"mistake": "Forgetting WebSearch Sources section", "fix": "ALWAYS include Sources: at end"}
+    ],
+    "common": [
+      {"mistake": "Relative file paths", "fix": "Always use absolute paths"},
+      {"mistake": "Unquoted paths with spaces in Bash", "fix": "Quote all paths: \"path with spaces\""},
+      {"mistake": "Task for simple operations", "fix": "Use direct tool calls for simple tasks"},
+      {"mistake": "Wrong Grep output_mode", "fix": "Match mode to need: files_with_matches/content/count"}
+    ]
+  }
+}

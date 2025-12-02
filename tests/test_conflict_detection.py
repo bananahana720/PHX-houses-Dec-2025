@@ -23,6 +23,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Create a service instance for testing
+# Note: A default LineageTracker is created internally to ensure lineage is always tracked
 merge_service = EnrichmentMergeService()
 
 

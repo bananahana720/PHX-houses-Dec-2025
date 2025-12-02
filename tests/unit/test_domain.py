@@ -521,8 +521,23 @@ class TestPropertyEntity:
         sample_property.kill_switch_passed = True
         assert sample_property.is_failed is False
 
-    def test_property_monthly_costs(self, sample_property):
-        """Test Property.monthly_costs calculation."""
+    def test_property_monthly_costs_empty_without_cache(self, sample_property):
+        """Test Property.monthly_costs returns empty dict when not cached."""
+        # Without calling set_monthly_costs, should return empty dict
+        costs = sample_property.monthly_costs
+        assert costs == {}
+
+    def test_property_monthly_costs_with_cache(self, sample_property):
+        """Test Property.monthly_costs returns cached data after set_monthly_costs."""
+        # Simulate service layer setting the cache
+        sample_property.set_monthly_costs({
+            "mortgage": 2500.0,
+            "property_tax": 300.0,
+            "hoa": 0.0,
+            "solar_lease": 0.0,
+            "pool_maintenance": 0.0,
+        })
+
         costs = sample_property.monthly_costs
 
         assert "mortgage" in costs
@@ -535,30 +550,62 @@ class TestPropertyEntity:
         for cost in costs.values():
             assert cost >= 0
 
-    def test_property_total_monthly_cost(self, sample_property):
-        """Test Property.total_monthly_cost aggregation."""
+    def test_property_total_monthly_cost_without_cache(self, sample_property):
+        """Test Property.total_monthly_cost returns 0 when not cached."""
+        total = sample_property.total_monthly_cost
+        assert total == 0.0
+
+    def test_property_total_monthly_cost_with_cache(self, sample_property):
+        """Test Property.total_monthly_cost aggregation with cached data."""
+        sample_property.set_monthly_costs({
+            "mortgage": 2500.0,
+            "property_tax": 300.0,
+            "hoa": 150.0,
+            "solar_lease": 0.0,
+            "pool_maintenance": 0.0,
+        })
+
         total = sample_property.total_monthly_cost
         expected = sum(sample_property.monthly_costs.values())
 
         assert abs(total - expected) < 0.01
+        assert abs(total - 2950.0) < 0.01
 
-    def test_property_monthly_costs_with_hoa(self, sample_property):
-        """Test monthly costs include HOA fee."""
-        sample_property.hoa_fee = 150
+    def test_property_set_monthly_costs_with_hoa(self, sample_property):
+        """Test monthly costs can include HOA fee via set_monthly_costs."""
+        sample_property.set_monthly_costs({
+            "mortgage": 2500.0,
+            "property_tax": 300.0,
+            "hoa": 150.0,
+            "solar_lease": 0.0,
+            "pool_maintenance": 0.0,
+        })
         costs = sample_property.monthly_costs
 
         assert costs["hoa"] == 150.0
 
-    def test_property_monthly_costs_with_solar_lease(self, sample_property):
-        """Test monthly costs include solar lease."""
-        sample_property.solar_lease_monthly = 120
+    def test_property_set_monthly_costs_with_solar_lease(self, sample_property):
+        """Test monthly costs can include solar lease via set_monthly_costs."""
+        sample_property.set_monthly_costs({
+            "mortgage": 2500.0,
+            "property_tax": 300.0,
+            "hoa": 0.0,
+            "solar_lease": 120.0,
+            "pool_maintenance": 0.0,
+        })
         costs = sample_property.monthly_costs
 
         assert costs["solar_lease"] == 120.0
 
-    def test_property_monthly_costs_with_pool(self, sample_property):
-        """Test monthly costs include pool maintenance."""
-        sample_property.has_pool = True
+    def test_property_set_monthly_costs_with_pool(self, sample_property):
+        """Test monthly costs can include pool maintenance via set_monthly_costs."""
+        sample_property.set_monthly_costs({
+            "mortgage": 2500.0,
+            "property_tax": 300.0,
+            "hoa": 0.0,
+            "solar_lease": 0.0,
+            "pool_maintenance": 200.0,
+        })
         costs = sample_property.monthly_costs
 
         # Service uses comprehensive pool cost: $125 service + $75 energy = $200

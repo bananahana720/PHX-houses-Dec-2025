@@ -5,7 +5,10 @@ Contains:
 - generate_index(): Render master index page with dynamic JSON loading
 """
 
+from __future__ import annotations
 
+from pathlib import Path
+from typing import TypedDict
 
 import pandas as pd
 from jinja2 import Template
@@ -15,6 +18,7 @@ from scripts.lib.kill_switch import (
     SEVERITY_WARNING_THRESHOLD,
     evaluate_kill_switches_for_display,
 )
+from src.phx_home_analysis.config.constants import FILENAME_RANK_PADDING
 from src.phx_home_analysis.services.cost_estimation.rates import (
     DOWN_PAYMENT_DEFAULT,
     LOAN_TERM_30YR_MONTHS,
@@ -26,7 +30,97 @@ from .templates import DEAL_SHEET_TEMPLATE, INDEX_TEMPLATE
 from .utils import extract_features, slugify
 
 
-def calculate_monthly_cost(row_dict: dict) -> float:
+def _format_rank(rank: int) -> str:
+    """Format rank number with zero-padding for filenames.
+
+    Uses FILENAME_RANK_PADDING to ensure consistent filename ordering.
+
+    Args:
+        rank: Property rank number
+
+    Returns:
+        Zero-padded rank string (e.g., "01", "02", ...)
+    """
+    return str(rank).zfill(FILENAME_RANK_PADDING)
+
+
+class PropertyRow(TypedDict, total=False):
+    """Type definition for property row dictionary.
+
+    Uses total=False since most fields are optional depending on data availability.
+    """
+
+    # Core identifiers
+    full_address: str
+    rank: int | float
+
+    # Price fields
+    price: int | float | str | None
+    price_num: int | float | None
+    price_per_sqft: float | None
+
+    # Property characteristics
+    beds: int | float | None
+    baths: float | None
+    sqft: int | float | None
+    lot_sqft: int | float | None
+    year_built: int | float | None
+    garage_spaces: int | float | None
+    has_pool: bool | None
+
+    # Financial fields
+    tax_annual: float | None
+    hoa_fee: float | None
+    solar_lease_monthly: float | None
+
+    # Kill switch fields
+    kill_switch_status: str | None
+    kill_switch_passed: str | None
+    kill_switch_failures: str | None
+    sewer_type: str | None
+
+    # Score fields
+    total_score: float | None
+    score_location: float | None
+    score_lot_systems: float | None
+    score_interior: float | None
+    section_a_score: float | None
+    section_b_score: float | None
+    section_c_score: float | None
+    tier: str | None
+
+    # Location/commute
+    city: str | None
+    latitude: float | None
+    longitude: float | None
+    commute_minutes: float | None
+    commute_min: float | None
+    school_rating: float | None
+    distance_to_grocery_miles: float | None
+    distance_to_highway_miles: float | None
+
+    # Interior assessment scores
+    kitchen_layout_score: float | None
+    master_suite_score: float | None
+    natural_light_score: float | None
+    high_ceilings_score: float | None
+    fireplace_present: bool | float | None
+    laundry_area_score: float | None
+    aesthetics_score: float | None
+    backyard_utility_score: float | None
+    safety_neighborhood_score: float | None
+    parks_walkability_score: float | None
+
+    # System ages
+    pool_equipment_age: float | None
+    roof_age: float | None
+    hvac_age: float | None
+
+    # Solar status
+    solar_status: str | None
+
+
+def calculate_monthly_cost(row_dict: dict[str, object]) -> float:
     """Calculate estimated monthly cost for a property.
 
     Includes:
@@ -45,13 +139,15 @@ def calculate_monthly_cost(row_dict: dict) -> float:
     total = 0.0
 
     # Get price
-    price_num = row_dict.get('price_num') or row_dict.get('price', 0)
+    price_num = row_dict.get('price_num') or row_dict.get('price', 0) or 0
     if isinstance(price_num, str):
         # Handle formatted price like "$475,000"
         price_num = int(price_num.replace('$', '').replace(',', ''))
+    elif not isinstance(price_num, (int, float)):
+        price_num = 0
 
     # Mortgage (30-year fixed, standard down payment)
-    loan_amount = max(0, price_num - DOWN_PAYMENT_DEFAULT)
+    loan_amount = max(0, int(price_num) - DOWN_PAYMENT_DEFAULT)
     if loan_amount > 0:
         monthly_rate = MORTGAGE_RATE_30YR / 12
         num_payments = LOAN_TERM_30YR_MONTHS
@@ -65,14 +161,17 @@ def calculate_monthly_cost(row_dict: dict) -> float:
 
     # Property tax (annual / 12)
     tax_annual = row_dict.get('tax_annual')
-    if tax_annual and not pd.isna(tax_annual):
-        total += float(tax_annual) / 12
+    if tax_annual is not None and not pd.isna(tax_annual):
+        try:
+            total += float(str(tax_annual)) / 12
+        except (ValueError, TypeError):
+            pass
 
     # HOA fee
     hoa_fee = row_dict.get('hoa_fee')
-    if hoa_fee and not pd.isna(hoa_fee):
+    if hoa_fee is not None and not pd.isna(hoa_fee):
         try:
-            hoa_float = float(hoa_fee)
+            hoa_float = float(str(hoa_fee))
             if hoa_float > 0:
                 total += hoa_float
         except (ValueError, TypeError):
@@ -80,9 +179,9 @@ def calculate_monthly_cost(row_dict: dict) -> float:
 
     # Solar lease
     solar_lease = row_dict.get('solar_lease_monthly')
-    if solar_lease and not pd.isna(solar_lease):
+    if solar_lease is not None and not pd.isna(solar_lease):
         try:
-            lease_float = float(solar_lease)
+            lease_float = float(str(solar_lease))
             if lease_float > 0:
                 total += lease_float
         except (ValueError, TypeError):
@@ -96,7 +195,7 @@ def calculate_monthly_cost(row_dict: dict) -> float:
     return total
 
 
-def generate_deal_sheet(row, output_dir):
+def generate_deal_sheet(row: pd.Series, output_dir: Path) -> str:
     """Generate a single deal sheet HTML file.
 
     Args:
@@ -108,12 +207,12 @@ def generate_deal_sheet(row, output_dir):
     """
     # Create filename slug
     slug = slugify(row['full_address'])
-    filename = f"{int(row['rank']):02d}_{slug}.html"
+    filename = f"{_format_rank(int(row['rank']))}_{slug}.html"
     filepath = output_dir / filename
 
     # Clean up NaN values in the row for template rendering
     # Keep None for kill switch evaluation, replace with display values later
-    row_dict = {}
+    row_dict: dict[str, object] = {}
     for key, value in row.items():
         # Check for NaN - pandas is already imported at module level
         if isinstance(value, float) and pd.isna(value):
@@ -202,11 +301,17 @@ def generate_deal_sheet(row, output_dir):
     # Add missing fields with defaults if not present
     if 'price_per_sqft' not in row_dict and 'sqft' in row_dict:
         # Use price_num (int) for calculation, not price (might be formatted string)
-        price_val = row_dict.get('price_num') or row_dict.get('price', 0)
-        if isinstance(price_val, str):
-            price_val = int(price_val.replace('$', '').replace(',', ''))
-        sqft_val = row_dict.get('sqft', 0)
-        if sqft_val and sqft_val > 0:
+        raw_price = row_dict.get('price_num') or row_dict.get('price', 0)
+        price_val: float
+        if isinstance(raw_price, str):
+            price_val = float(raw_price.replace('$', '').replace(',', ''))
+        elif isinstance(raw_price, (int, float)):
+            price_val = float(raw_price)
+        else:
+            price_val = 0.0
+        raw_sqft = row_dict.get('sqft', 0)
+        sqft_val = float(raw_sqft) if isinstance(raw_sqft, (int, float)) else 0.0
+        if sqft_val > 0:
             row_dict['price_per_sqft'] = price_val / sqft_val
         else:
             row_dict['price_per_sqft'] = 0
@@ -225,7 +330,7 @@ def generate_deal_sheet(row, output_dir):
     ks_has_hard_failure = ks_summary.get("has_hard_failure", False)
 
     # Helper to check for None, NaN, or empty string
-    def is_empty(val):
+    def is_empty(val: object) -> bool:
         if val is None:
             return True
         if isinstance(val, float) and pd.isna(val):
@@ -276,7 +381,7 @@ def generate_deal_sheet(row, output_dir):
     return filename
 
 
-def generate_index(df, output_dir):
+def generate_index(df: pd.DataFrame, output_dir: Path) -> None:
     """Generate index.html and data.json for dynamic loading.
 
     Creates:
@@ -292,7 +397,7 @@ def generate_index(df, output_dir):
 
     # Add filename column
     df['filename'] = df.apply(
-        lambda row: f"{int(row['rank']):02d}_{slugify(row['full_address'])}.html",
+        lambda row: f"{_format_rank(int(row['rank']))}_{slugify(row['full_address'])}.html",
         axis=1
     )
 
@@ -302,7 +407,7 @@ def generate_index(df, output_dir):
     total_properties = len(df)
 
     # Normalize status values for comparison (handle 'PASS', 'true', True, etc.)
-    def is_passed(val):
+    def is_passed(val: object) -> bool:
         return str(val).lower() in ('pass', 'true', '1')
 
     passed_mask = df[ks_field].apply(is_passed)

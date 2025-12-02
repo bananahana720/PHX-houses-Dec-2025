@@ -119,7 +119,7 @@ If county API is unavailable:
 
 ---
 
-## File 2: `.claude/AGENT_CONTEXT.md`
+## File 2: `.claude/AGENT_BRIEFING.md`
 
 ### Edit 3: Update SCRIPTS REFERENCE Section
 
@@ -327,7 +327,7 @@ garage_spaces = prop.get("garage_spaces")  # Verify garage size in photos
 
 ### Files Updated
 1. `.claude/commands/analyze-property.md` - Added Phase 0 county extraction step
-2. `.claude/AGENT_CONTEXT.md` - Added county data script reference and field documentation
+2. `.claude/AGENT_BRIEFING.md` - Added county data script reference and field documentation
 3. `.claude/agents/listing-browser.md` - Added county data cross-reference protocol
 4. `.claude/agents/map-analyzer.md` - Added county data cross-check to avoid duplication
 5. `.claude/agents/image-assessor.md` - Added county data context for visual assessment
@@ -393,8 +393,8 @@ All modes will automatically run Phase 0 county extraction before Phase 1.
 
 - [ ] Update `.claude/commands/analyze-property.md` with Phase 0 section
 - [ ] Update section numbering in analyze-property.md (3→4, 4→5)
-- [ ] Update `.claude/AGENT_CONTEXT.md` scripts reference table
-- [ ] Add county data fields documentation to AGENT_CONTEXT.md
+- [ ] Update `.claude/AGENT_BRIEFING.md` scripts reference table
+- [ ] Add county data fields documentation to AGENT_BRIEFING.md
 - [ ] Update `.claude/agents/listing-browser.md` with cross-reference protocol
 - [ ] Update `.claude/agents/map-analyzer.md` with county data check
 - [ ] Update `.claude/agents/image-assessor.md` with county context

@@ -631,32 +631,31 @@ class TestCostEfficiencyScorer:
 
     def test_target_budget_neutral_score(self):
         """Test property at target budget ($4000/mo) gets neutral score."""
-        # Create a property at ~$4000/mo
-        # Mortgage: $550k - $50k = $500k loan at 7% for 30yr = ~$3,327/mo
-        # Tax: $5000/yr = $417/mo
-        # Pool maintenance: $125/mo
-        # Total: ~$3,869/mo which should score ~5.6
+        # Create a property at ~$4000/mo using comprehensive cost calculation
+        # MonthlyCostEstimator includes: mortgage, tax, insurance, utilities,
+        # water, trash, maintenance reserve (plus pool/HOA/solar if applicable)
+        # At $475k with no pool: ~$4,029/mo total -> ~4.9 score
         prop = Property(
             street="100 Budget St",
             city="Phoenix",
             state="AZ",
             zip_code="85001",
             full_address="100 Budget St, Phoenix, AZ 85001",
-            price="$550,000",
-            price_num=550000,
+            price="$475,000",
+            price_num=475000,
             beds=4,
             baths=2.0,
-            sqft=2200,
-            price_per_sqft_raw=250.0,
+            sqft=2000,
+            price_per_sqft_raw=237.5,
             hoa_fee=0,
-            tax_annual=5000,  # ~$417/mo
-            has_pool=True,  # ~$125/mo
+            tax_annual=None,  # Let service estimate
+            has_pool=False,
         )
 
         scorer = CostEfficiencyScorer()
         base_score = scorer.calculate_base_score(prop)
 
-        # At-budget property ($3,869/mo) should score around 5.6 (neutral range)
+        # At-budget property (~$4,029/mo) should score around 4.9 (neutral range)
         assert 3.0 <= base_score <= 7.0
 
     def test_score_formula_boundaries(self):

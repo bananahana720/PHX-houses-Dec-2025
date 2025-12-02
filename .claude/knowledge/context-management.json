@@ -1,0 +1,190 @@
+{
+  "$schema": "context-management-schema-v1",
+  "version": "1.0.0",
+  "last_updated": "2025-12-02",
+
+  "discovery_protocol": {
+    "description": "Auto-discover and maintain CLAUDE.md files in directories",
+    "triggers": [
+      "on_read_file_in_directory",
+      "on_navigate_to_directory",
+      "on_create_file_in_directory"
+    ],
+    "action": "check_for_claude_md",
+    "if_missing": {
+      "action": "create_placeholder",
+      "template": ".claude/templates/CLAUDE.md.template",
+      "flags": ["UPDATE_ME"]
+    },
+    "excluded_directories": [
+      "node_modules", ".git", "__pycache__", ".venv",
+      "venv", ".pytest_cache", "data/property_images/processed"
+    ]
+  },
+
+  "staleness_protocol": {
+    "check_on": ["session_start", "before_agent_spawn", "before_commit"],
+    "thresholds": {
+      "default_hours": 24,
+      "warning_hours": 12,
+      "critical_files_hours": 12
+    },
+    "critical_files": [
+      "data/work_items.json",
+      "data/enrichment_data.json"
+    ],
+    "stale_actions": {
+      "default": "flag_for_review",
+      "critical": "warn_user"
+    }
+  },
+
+  "update_triggers": [
+    {
+      "event": "UPDATE_ME_flag_detected",
+      "action": "prompt_to_update",
+      "priority": "high"
+    },
+    {
+      "event": "files_created_in_directory",
+      "action": "update_contents_section",
+      "priority": "medium"
+    },
+    {
+      "event": "agent_completed_work",
+      "action": "update_pending_tasks_and_learnings",
+      "priority": "high"
+    },
+    {
+      "event": "error_discovered",
+      "action": "add_to_key_learnings",
+      "priority": "high"
+    },
+    {
+      "event": "session_wrapping_up",
+      "action": "update_pending_tasks",
+      "priority": "medium"
+    }
+  ],
+
+  "state_files": [
+    {
+      "path": "data/work_items.json",
+      "purpose": "Pipeline progress tracking",
+      "check_on": ["session_start", "before_agent_spawn"],
+      "staleness_field": "session.started_at",
+      "critical": true
+    },
+    {
+      "path": "data/enrichment_data.json",
+      "purpose": "Property data store",
+      "check_on": ["before_property_operations"],
+      "critical": true
+    },
+    {
+      "path": "data/property_images/metadata/extraction_state.json",
+      "purpose": "Image extraction state",
+      "check_on": ["before_image_operations"],
+      "critical": false
+    },
+    {
+      "path": "data/property_images/metadata/address_folder_lookup.json",
+      "purpose": "Address to image folder mapping",
+      "check_on": ["before_image_assessment"],
+      "critical": false
+    }
+  ],
+
+  "agent_handoff": {
+    "required_reading": [
+      ".claude/AGENT_BRIEFING.md",
+      "data/work_items.json"
+    ],
+    "on_spawn": {
+      "main_provides": ["task", "target_address", "current_phase", "constraints"],
+      "agent_reads": ["AGENT_BRIEFING.md", "work_items.json", "relevant skill files"]
+    },
+    "on_completion": {
+      "agent_updates": ["work_items.json", "enrichment_data.json", "directory CLAUDE.md"],
+      "agent_reports": ["status", "data_collected", "errors", "files_updated"]
+    }
+  },
+
+  "reference_format": {
+    "syntax": "path:line-range",
+    "style": "relative_to_project_root",
+    "examples": [
+      "scripts/lib/kill_switch.py:45-89",
+      "src/phx_home_analysis/config/constants.py:12-67"
+    ],
+    "markdown": "- [Description]: `path:lines`",
+    "grep_command": "rg -n \"pattern\" path"
+  },
+
+  "claude_md_sections": {
+    "required": ["purpose", "contents"],
+    "recommended": ["pending_tasks", "key_learnings", "references"],
+    "optional": ["dependencies"]
+  },
+
+  "directory_contexts": {
+    "scripts/": {
+      "purpose": "Main analysis scripts and utilities",
+      "staleness_hours": 48,
+      "key_files": ["phx_home_analyzer.py", "extract_images.py", "extract_county_data.py"]
+    },
+    "data/": {
+      "purpose": "Property data and state files",
+      "staleness_hours": 12,
+      "critical": true,
+      "key_files": ["enrichment_data.json", "work_items.json", "phx_homes.csv"]
+    },
+    "src/phx_home_analysis/": {
+      "purpose": "Core analysis library",
+      "staleness_hours": 72,
+      "key_subdirs": ["config/", "domain/", "services/", "validation/"]
+    },
+    ".claude/": {
+      "purpose": "Claude Code configuration and agents",
+      "staleness_hours": 168,
+      "key_subdirs": ["agents/", "skills/", "commands/", "knowledge/"]
+    }
+  },
+
+  "session_checklist": {
+    "on_start": [
+      "Read .claude/AGENT_BRIEFING.md for quick orientation",
+      "Check data/work_items.json for current progress",
+      "Check for stale CLAUDE.md files (UPDATE_ME flags)"
+    ],
+    "on_directory_enter": [
+      "Check for CLAUDE.md in directory",
+      "If missing, create from template with UPDATE_ME flag",
+      "If present, check staleness"
+    ],
+    "on_work_complete": [
+      "Update relevant CLAUDE.md pending_tasks",
+      "Add key_learnings if discoveries made",
+      "Update work_items.json phase status"
+    ],
+    "on_error": [
+      "Add to key_learnings in relevant CLAUDE.md",
+      "Note workaround if found"
+    ]
+  },
+
+  "validation_rules": {
+    "required_project_files": [
+      "CLAUDE.md",
+      ".claude/AGENT_BRIEFING.md",
+      "data/work_items.json",
+      "data/enrichment_data.json"
+    ],
+    "required_directories": [
+      "scripts/",
+      "src/phx_home_analysis/",
+      "data/",
+      ".claude/"
+    ]
+  }
+}

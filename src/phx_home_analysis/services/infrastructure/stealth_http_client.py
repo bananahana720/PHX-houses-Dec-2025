@@ -146,12 +146,14 @@ class StealthHttpClient:
                 file size exceeds limit, or download fails after all retries
         """
         # SSRF Protection: Always validate URL before fetching (no bypass option)
+        from .logging_utils import sanitize_url_for_logging
+
         validator = get_url_validator()
         validation_result = validator.validate_url(url)
         if not validation_result.is_valid:
             logger.warning(
                 "SSRF Protection: Blocked download from %s - %s",
-                url[:100],
+                sanitize_url_for_logging(url),
                 validation_result.error_message,
             )
             raise StealthDownloadError(
@@ -223,7 +225,7 @@ class StealthHttpClient:
                     logger.warning(
                         "Security: Rejected non-image Content-Type '%s' from %s",
                         content_type[:50],
-                        url[:100],
+                        sanitize_url_for_logging(url),
                     )
                     raise StealthDownloadError(
                         url=url,
@@ -241,7 +243,7 @@ class StealthHttpClient:
                             logger.warning(
                                 "Security: Rejected oversized image (%d bytes) from %s",
                                 declared_size,
-                                url[:100],
+                                sanitize_url_for_logging(url),
                             )
                             raise StealthDownloadError(
                                 url=url,
@@ -260,7 +262,7 @@ class StealthHttpClient:
                     logger.warning(
                         "Security: Downloaded image exceeded size limit (%d bytes) from %s",
                         len(image_data),
-                        url[:100],
+                        sanitize_url_for_logging(url),
                     )
                     raise StealthDownloadError(
                         url=url,

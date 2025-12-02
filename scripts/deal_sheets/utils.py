@@ -6,12 +6,22 @@ Contains:
 - safe_numeric(): Safely convert value to numeric
 """
 
+from __future__ import annotations
+
 import re
+from typing import Any, TypedDict
 
 import pandas as pd
 
 
-def safe_numeric(value, default=None):
+class FeaturesDict(TypedDict):
+    """Return type for extract_features function."""
+
+    present: list[str]
+    missing: list[str]
+
+
+def safe_numeric(value: Any, default: float | None = None) -> float | None:
     """Safely convert a value to float, handling strings and edge cases.
 
     Args:
@@ -32,7 +42,7 @@ def safe_numeric(value, default=None):
         return default
 
 
-def slugify(text):
+def slugify(text: str | float | None) -> str:
     """Convert text to URL-friendly slug.
 
     Args:
@@ -58,7 +68,7 @@ def slugify(text):
     return slug
 
 
-def extract_features(row):
+def extract_features(row: pd.Series | dict[str, Any]) -> FeaturesDict:
     """Extract present and missing features from property data.
 
     Analyzes property row data to identify:
@@ -134,7 +144,7 @@ def extract_features(row):
     # Default features if lists are too short
     if len(present) < 3:
         present.append('City sewer')
-        sqft = safe_numeric(row.get('sqft'), 0)
+        sqft = safe_numeric(row.get('sqft'), 0) or 0
         present.append(f'{int(sqft):,} sqft living area')
 
     if len(missing) < 2:

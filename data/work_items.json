@@ -1,0 +1,3080 @@
+{
+  "$schema": "work_items_v1",
+  "session": {
+    "session_id": "session_20251202_190719",
+    "started_at": "2025-12-02T19:07:19.945540Z",
+    "mode": "batch",
+    "total_items": 36,
+    "current_index": 0,
+    "runtime_seconds": 0,
+    "last_checkpoint": "2025-12-02T19:07:19.945540Z"
+  },
+  "blocked_sources": {
+    "zillow": {
+      "blocked": false,
+      "last_check": "2025-12-02T19:07:19.945540Z",
+      "error": null
+    },
+    "redfin": {
+      "blocked": false,
+      "last_check": "2025-12-02T19:07:19.945540Z",
+      "error": null
+    },
+    "realtor": {
+      "blocked": false,
+      "last_check": "2025-12-02T19:07:19.945540Z",
+      "error": null
+    }
+  },
+  "work_items": [
+    {
+      "id": "ef7cd95f",
+      "address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "9654bc8e",
+      "address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "5b8b1e28",
+      "address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "d07c4ec2",
+      "address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "e2936db6",
+      "address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "400b1171",
+      "address": "18820 N 35th Way, Phoenix, AZ 85050",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "fe97e7f5",
+      "address": "4209 W Wahalla Ln, Glendale, AZ 85308",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "bf1c9c53",
+      "address": "4137 W Cielo Grande, Glendale, AZ 85310",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "0c8d34f0",
+      "address": "13307 N 84th Ave, Peoria, AZ 85381",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "e4f3d0eb",
+      "address": "14014 N 39th Ave, Phoenix, AZ 85053",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "6db6bc4a",
+      "address": "25841 N 66th Dr, Phoenix, AZ 85083",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "b6ea8003",
+      "address": "4001 W Libby St, Glendale, AZ 85308",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "938ff187",
+      "address": "5522 W Carol Ave, Glendale, AZ 85302",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "a645e64c",
+      "address": "5004 W Kaler Dr, Glendale, AZ 85301",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "1807e65d",
+      "address": "4342 W Claremont St, Glendale, AZ 85301",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "f3dbf4a2",
+      "address": "20021 N 38th Ln, Glendale, AZ 85308",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "1746fe4e",
+      "address": "18825 N 34th St, Phoenix, AZ 85050",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "471e615f",
+      "address": "4136 W Hearn Rd, Phoenix, AZ 85053",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "8e0debde",
+      "address": "4020 W Anderson Dr, Glendale, AZ 85308",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "b845eb27",
+      "address": "8714 E Plaza Ave, Scottsdale, AZ 85250",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "9d1c3324",
+      "address": "8426 E Lincoln Dr, Scottsdale, AZ 85250",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "d24738ec",
+      "address": "11035 E Clinton St, Scottsdale, AZ 85259",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "87dbc560",
+      "address": "14622 N 37th St, Phoenix, AZ 85032",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "37674f2a",
+      "address": "12808 N 27th St, Phoenix, AZ 85032",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "dc3acde8",
+      "address": "16814 N 31st Ave, Phoenix, AZ 85053",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "4d661a13",
+      "address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "357331ef",
+      "address": "17244 N 36th Ln, Glendale, AZ 85308",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "ca9d5893",
+      "address": "7126 W Columbine Dr, Peoria, AZ 85381",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "d0aebff2",
+      "address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "8466444c",
+      "address": "7233 W Corrine Dr, Peoria, AZ 85381",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "d5a1ae86",
+      "address": "8803 N 105th Dr, Peoria, AZ 85345",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "41679d2a",
+      "address": "8931 W Villa Rita Dr, Peoria, AZ 85382",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "038fc858",
+      "address": "9150 W Villa Rita Dr, Peoria, AZ 85382",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "71730a15",
+      "address": "5038 W Echo Ln, Glendale, AZ 85302",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "total_score",
+            "tier"
+          ],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": "CONTENDER",
+      "total_score": 385.0,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "id": "e27e1997",
+      "address": "9832 N 29th St, Phoenix, AZ 85028",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "lot_sqft",
+            "year_built"
+          ],
+          "error": null
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "monthly_cost"
+          ],
+          "error": null
+        },
+        "phase1_listing": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "price",
+            "beds",
+            "baths"
+          ],
+          "error": null
+        },
+        "phase1_map": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [
+            "school_rating"
+          ],
+          "error": null
+        },
+        "phase2_images": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "started": null,
+          "completed": null,
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        },
+        "phase4_report": {
+          "status": "complete",
+          "started": null,
+          "completed": "2025-12-02T13:42:25.026614+00:00",
+          "commit_sha": null,
+          "data_fields": [],
+          "error": null
+        }
+      },
+      "tier": null,
+      "total_score": null,
+      "kill_switch": {
+        "passed": true,
+        "failures": [],
+        "severity": 0.0
+      },
+      "retry_count": 0,
+      "error_log": [],
+      "completed_at": null,
+      "locked_by": null,
+      "locked_at": null
+    },
+    {
+      "index": 35,
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "hash": "5887ee9b",
+      "status": "complete",
+      "locked_by": null,
+      "locked_at": null,
+      "phase_status": {
+        "phase0_county": "complete",
+        "phase05_cost": "complete",
+        "phase1_listing": "complete",
+        "phase1_map": "complete",
+        "phase2a_exterior": "complete",
+        "phase2b_interior": "complete",
+        "phase3_synthesis": "complete",
+        "phase4_report": "complete"
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T15:56:35.726956",
+      "commit_sha": null,
+      "errors": []
+    }
+  ],
+  "summary": {
+    "completed": 1,
+    "in_progress": 33,
+    "pending": 1,
+    "failed": 0,
+    "skipped": 0,
+    "tiers": {
+      "UNICORN": 0,
+      "CONTENDER": 1,
+      "PASS": 0,
+      "FAILED": 0
+    }
+  },
+  "last_updated": "2025-12-02T19:07:19.945540Z"
+}

@@ -35,8 +35,15 @@ def load_data():
 
 def get_top_3_passing(df):
     """Get top 3 properties that passed kill switches"""
-    passing = df[df['kill_switch_passed'] == 'PASS'].copy()
-    top_3 = passing.nsmallest(3, 'rank')  # Lowest rank = best
+    # Handle both boolean and string kill_switch_passed values
+    if df['kill_switch_passed'].dtype == bool:
+        passing = df[df['kill_switch_passed'] == True].copy()
+    else:
+        passing = df[df['kill_switch_passed'] == 'PASS'].copy()
+
+    # Sort by total_score descending (highest score = best) and take top 3
+    # Note: 'rank' column may not exist, so we derive ranking from total_score
+    top_3 = passing.nlargest(3, 'total_score')
     return top_3
 
 def normalize_price_value(prices):
@@ -62,8 +69,12 @@ def calculate_radar_scores(top_3):
     """Calculate 5-axis radar scores normalized to 0-10 scale"""
     scores = []
 
-    # Extract prices for normalization
-    prices = top_3['price'].values
+    # Extract prices for normalization - prefer price_num (numeric) over price (string)
+    if 'price_num' in top_3.columns:
+        prices = top_3['price_num'].values
+    else:
+        # Fallback: clean price column if it contains strings like "$354,000"
+        prices = top_3['price'].replace(r'[\$,]', '', regex=True).astype(float).values
     price_values = normalize_price_value(prices)
 
     for idx, (_i, row) in enumerate(top_3.iterrows()):
@@ -72,9 +83,15 @@ def calculate_radar_scores(top_3):
         systems_score = row.get('score_lot_systems', row.get('section_b_score', 0))
         interior_score = row.get('score_interior', row.get('section_c_score', 0))
 
+        # Use numeric price for calculations, fall back to cleaning string if needed
+        if 'price_num' in row.index:
+            numeric_price = row['price_num']
+        else:
+            numeric_price = float(str(row['price']).replace('$', '').replace(',', ''))
+
         property_scores = {
             'address': row['full_address'],
-            'price': row['price'],
+            'price': numeric_price,
             'total_score': row['total_score'],
             'axes': {
                 'Price Value': round(price_values[idx], 2),
@@ -234,8 +251,8 @@ def main():
     top_3 = get_top_3_passing(df)
 
     print("Top 3 Properties:")
-    for _i, row in top_3.iterrows():
-        print(f"  {row['rank']}. {row['full_address']} - Score: {row['total_score']}")
+    for rank, (_i, row) in enumerate(top_3.iterrows(), 1):
+        print(f"  {rank}. {row['full_address']} - Score: {row['total_score']}")
 
     print("\nCalculating radar scores...")
     scores = calculate_radar_scores(top_3)

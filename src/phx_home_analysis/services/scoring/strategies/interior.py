@@ -13,6 +13,11 @@ Total Section C maximum: 190 points
 """
 
 
+from ....config.constants import (
+    DEFAULT_FIREPLACE_ABSENT_SCORE,
+    DEFAULT_FIREPLACE_PRESENT_SCORE,
+    DEFAULT_NEUTRAL_SCORE,
+)
 from ....config.scoring_weights import ScoringWeights
 from ....domain.entities import Property
 from ..base import ScoringStrategy
@@ -63,7 +68,7 @@ class KitchenLayoutScorer(ScoringStrategy):
             Base score (0-10 from manual assessment, 5 if not assessed)
         """
         if property.kitchen_layout_score is None:
-            return 5.0  # Neutral default
+            return DEFAULT_NEUTRAL_SCORE
         return float(property.kitchen_layout_score)
 
 
@@ -112,7 +117,7 @@ class MasterSuiteScorer(ScoringStrategy):
             Base score (0-10 from manual assessment, 5 if not assessed)
         """
         if property.master_suite_score is None:
-            return 5.0  # Neutral default
+            return DEFAULT_NEUTRAL_SCORE
         return float(property.master_suite_score)
 
 
@@ -161,7 +166,7 @@ class NaturalLightScorer(ScoringStrategy):
             Base score (0-10 from manual assessment, 5 if not assessed)
         """
         if property.natural_light_score is None:
-            return 5.0  # Neutral default
+            return DEFAULT_NEUTRAL_SCORE
         return float(property.natural_light_score)
 
 
@@ -211,7 +216,7 @@ class HighCeilingsScorer(ScoringStrategy):
             Base score (0-10 from manual assessment, 5 if not assessed)
         """
         if property.high_ceilings_score is None:
-            return 5.0  # Neutral default
+            return DEFAULT_NEUTRAL_SCORE
         return float(property.high_ceilings_score)
 
 
@@ -260,15 +265,15 @@ class FireplaceScorer(ScoringStrategy):
         """
         # If fireplace presence is unknown, default to neutral
         if property.fireplace_present is None:
-            return 5.0
+            return DEFAULT_NEUTRAL_SCORE
 
         # No fireplace = 0 points
         if not property.fireplace_present:
-            return 0.0
+            return DEFAULT_FIREPLACE_ABSENT_SCORE
 
         # Has fireplace - use manual assessment if available
         # (could distinguish gas vs wood-burning in manual score)
-        return 10.0  # Has fireplace
+        return DEFAULT_FIREPLACE_PRESENT_SCORE
 
 
 class LaundryAreaScorer(ScoringStrategy):
@@ -317,7 +322,7 @@ class LaundryAreaScorer(ScoringStrategy):
             Base score (0-10 from manual assessment, 5 if not assessed)
         """
         if property.laundry_area_score is None:
-            return 5.0  # Neutral default
+            return DEFAULT_NEUTRAL_SCORE
         return float(property.laundry_area_score)
 
 
@@ -365,5 +370,5 @@ class AestheticsScorer(ScoringStrategy):
             Base score (0-10 from manual assessment, 5 if not assessed)
         """
         if property.aesthetics_score is None:
-            return 5.0  # Neutral default
+            return DEFAULT_NEUTRAL_SCORE
         return float(property.aesthetics_score)

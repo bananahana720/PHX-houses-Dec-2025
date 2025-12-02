@@ -151,7 +151,7 @@ For someone reviewing the proposed changes:
 | File | Current Lines | Lines Added | Edits | Complexity |
 |------|---------------|-------------|-------|------------|
 | `.claude/commands/analyze-property.md` | ~666 | ~60 | 2 | Medium |
-| `.claude/AGENT_CONTEXT.md` | ~457 | ~35 | 2 | Low |
+| `.claude/AGENT_BRIEFING.md` | ~457 | ~35 | 2 | Low |
 | `.claude/agents/listing-browser.md` | ~237 | ~22 | 2 | Low |
 | `.claude/agents/map-analyzer.md` | ~298 | ~18 | 1 | Low |
 | `.claude/agents/image-assessor.md` | ~354 | ~15 | 1 | Low |
@@ -247,7 +247,7 @@ Phase 4: Report Generation
 - [ ] Verify county script works
 
 ### 2. Apply Edits (20 min)
-- [ ] Edit AGENT_CONTEXT.md (2 edits)
+- [ ] Edit AGENT_BRIEFING.md (2 edits)
 - [ ] Edit agent files (4 edits across 3 files)
 - [ ] Edit analyze-property.md (2 edits)
 
@@ -275,7 +275,7 @@ If implementation causes issues:
 1. **Restore backups:**
    ```bash
    cp .claude/commands/analyze-property.md.backup .claude/commands/analyze-property.md
-   cp .claude/AGENT_CONTEXT.md.backup .claude/AGENT_CONTEXT.md
+   cp .claude/AGENT_BRIEFING.md.backup .claude/AGENT_BRIEFING.md
    cp .claude/agents/listing-browser.md.backup .claude/agents/listing-browser.md
    cp .claude/agents/map-analyzer.md.backup .claude/agents/map-analyzer.md
    cp .claude/agents/image-assessor.md.backup .claude/agents/image-assessor.md
@@ -358,7 +358,7 @@ Target files (to be edited):
 │   ├── listing-browser.md ···················· Phase 1 agent
 │   ├── map-analyzer.md ······················· Phase 1 agent
 │   └── image-assessor.md ····················· Phase 2 agent
-└── AGENT_CONTEXT.md ·························· Shared context
+└── AGENT_BRIEFING.md ·························· Shared context
 ```
 
 ---

@@ -520,7 +520,7 @@ Quick reference:
 | `.claude/skills/image-assessment/SKILL.md` | Section C visual scoring | Section C rubrics & interpretation |
 | `.claude/skills/kill-switch/SKILL.md` | Kill-switch evaluation | Kill-switch criteria table & logic |
 | `.claude/skills/arizona-context/SKILL.md` | AZ-specific factors | Orientation scoring (sun impact) |
-| `.claude/AGENT_CONTEXT.md` | Quick reference | Tier table, kill-switch summary |
+| `.claude/AGENT_BRIEFING.md` | Quick reference | Tier table, kill-switch summary |
 
 ---
 

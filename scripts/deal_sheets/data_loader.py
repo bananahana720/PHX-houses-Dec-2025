@@ -9,16 +9,23 @@ Note: All file I/O operations use PropertyDataCache singleton to eliminate
 redundant disk reads across pipeline runs.
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 
 # Requires: uv pip install -e .
 from phx_home_analysis.services.data_cache import PropertyDataCache
 
+# Type aliases for enrichment data structures
+EnrichmentRecord = dict[str, Any]
+EnrichmentData = list[EnrichmentRecord] | dict[str, EnrichmentRecord]
 
-def load_ranked_csv(csv_path):
+
+def load_ranked_csv(csv_path: str | Path) -> pd.DataFrame:
     """Load ranked homes CSV into DataFrame using cache.
 
     Args:
@@ -45,23 +52,23 @@ def load_ranked_csv(csv_path):
     return df
 
 
-def load_enrichment_json(json_path):
+def load_enrichment_json(json_path: str | Path) -> EnrichmentData:
     """Load enrichment data from JSON file using cache.
 
     Args:
         json_path: Path to enrichment_data.json
 
     Returns:
-        List of enrichment data dicts
+        Enrichment data as list of dicts or dict mapping addresses to fields
     """
     # Use cache for file I/O
     cache = PropertyDataCache()
     enrichment_data = cache.get_enrichment_data(Path(json_path))
 
-    return enrichment_data
+    return enrichment_data  # type: ignore[no-any-return]
 
 
-def merge_enrichment_data(df, enrichment_data):
+def merge_enrichment_data(df: pd.DataFrame, enrichment_data: EnrichmentData) -> pd.DataFrame:
     """Merge enrichment data into DataFrame.
 
     Adds enrichment fields to DataFrame by matching on full_address.

@@ -9,7 +9,7 @@ Step-by-step checklist for applying all documentation updates.
 - [ ] **Backup current documentation**
   ```bash
   cp .claude/commands/analyze-property.md .claude/commands/analyze-property.md.backup
-  cp .claude/AGENT_CONTEXT.md .claude/AGENT_CONTEXT.md.backup
+  cp .claude/AGENT_BRIEFING.md .claude/AGENT_BRIEFING.md.backup
   cp .claude/agents/listing-browser.md .claude/agents/listing-browser.md.backup
   cp .claude/agents/map-analyzer.md .claude/agents/map-analyzer.md.backup
   cp .claude/agents/image-assessor.md .claude/agents/image-assessor.md.backup
@@ -37,30 +37,30 @@ Step-by-step checklist for applying all documentation updates.
 
 ## Phase 1: Edit Shared Context (Foundation)
 
-### Edit `.claude/AGENT_CONTEXT.md`
+### Edit `.claude/AGENT_BRIEFING.md`
 
 - [ ] **Edit 3: Expand scripts reference table**
   - Location: Line ~231, Section 3 "SCRIPTS REFERENCE"
   - Action: Replace scripts table with expanded version
   - Adds: `extract_county_data.py` row and options section
-  - Verification: `grep "extract_county_data.py" .claude/AGENT_CONTEXT.md`
+  - Verification: `grep "extract_county_data.py" .claude/AGENT_BRIEFING.md`
   - Expected: 2+ matches
 
 - [ ] **Edit 4: Add county data source note**
   - Location: Line ~281, after enrichment JSON schema
   - Action: Add "County Data Sources" section
   - Adds: Documentation of which fields come from county API
-  - Verification: `grep "County Data Sources" .claude/AGENT_CONTEXT.md`
+  - Verification: `grep "County Data Sources" .claude/AGENT_BRIEFING.md`
   - Expected: 1 match
 
 **Phase 1 Verification:**
 ```bash
 # Check both edits applied
-grep -c "extract_county_data" .claude/AGENT_CONTEXT.md
+grep -c "extract_county_data" .claude/AGENT_BRIEFING.md
 # Expected: 2+
 
 # Check county sources documented
-grep "County Data Sources" .claude/AGENT_CONTEXT.md
+grep "County Data Sources" .claude/AGENT_BRIEFING.md
 # Expected: section header found
 ```
 
@@ -165,7 +165,7 @@ grep "extract_county_data.py" .claude/commands/analyze-property.md
   # Check all files reference county data extraction
   grep -l "extract_county_data\|County Data\|county data" \
     .claude/commands/analyze-property.md \
-    .claude/AGENT_CONTEXT.md \
+    .claude/AGENT_BRIEFING.md \
     .claude/agents/listing-browser.md \
     .claude/agents/map-analyzer.md \
     .claude/agents/image-assessor.md
@@ -282,7 +282,7 @@ If issues arise, restore backups:
 - [ ] **Restore from backups**
   ```bash
   cp .claude/commands/analyze-property.md.backup .claude/commands/analyze-property.md
-  cp .claude/AGENT_CONTEXT.md.backup .claude/AGENT_CONTEXT.md
+  cp .claude/AGENT_BRIEFING.md.backup .claude/AGENT_BRIEFING.md
   cp .claude/agents/listing-browser.md.backup .claude/agents/listing-browser.md
   cp .claude/agents/map-analyzer.md.backup .claude/agents/map-analyzer.md
   cp .claude/agents/image-assessor.md.backup .claude/agents/image-assessor.md
@@ -322,7 +322,7 @@ If issues arise, restore backups:
 
 **Lines added:**
 - analyze-property.md: ~60 lines
-- AGENT_CONTEXT.md: ~35 lines
+- AGENT_BRIEFING.md: ~35 lines
 - listing-browser.md: ~22 lines
 - map-analyzer.md: ~18 lines
 - image-assessor.md: ~15 lines
