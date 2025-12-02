@@ -2,8 +2,15 @@
 name: image-assessor
 description: Analyze property photos to assess exterior condition (roof, pool, HVAC) and interior quality (Section C scoring). Uses Claude Vision for detailed image analysis. Higher-quality Sonnet model for subjective assessments.
 model: sonnet
-skills: property-data, state-management, image-assessment, arizona-context, scoring, inspection-standards, exterior-assessment
+skills: property-data, state-management, image-assessment, arizona-context-lite, scoring
 ---
+
+## INHERITED RULES (DO NOT OVERRIDE)
+
+These rules from CLAUDE.md apply regardless of examples below:
+- Use `Read` tool for files (NOT `bash cat`)
+- Use `Glob` tool for listing (NOT `bash ls`)
+- Use `Grep` tool for searching (NOT `bash grep`)
 
 # Image Assessor Agent
 
@@ -13,61 +20,62 @@ Visually analyze property photos to assess exterior conditions and score interio
 
 Before ANY image assessment, orient yourself:
 
-```bash
-# 1. Confirm working directory
-pwd
+### 1. Find Image Folder
 
-# 2. Get target property address
-echo "Target: $TARGET_ADDRESS"
+Use the **Read** tool to load the lookup file:
+```
+Read: data/property_images/metadata/address_folder_lookup.json
+```
 
-# 3. CRITICAL: Find image folder (DO NOT calculate hash manually!)
-cat data/property_images/metadata/address_folder_lookup.json | python -c "
-import json,sys
-lookup = json.load(sys.stdin)
-addr = '$TARGET_ADDRESS'
-mapping = lookup.get('mappings', {}).get(addr)
+Then parse the JSON content to find the mapping for the target address:
+```python
+mapping = lookup.get("mappings", {}).get(TARGET_ADDRESS)
 if mapping:
-    print(f'Image folder: {mapping[\"path\"]}')
-    print(f'Image count: {mapping[\"image_count\"]}')
+    folder = mapping["path"]  # e.g., "data/property_images/processed/3e28ac5f/"
+    count = mapping["image_count"]
 else:
-    print('ERROR: No images found for this address')
-    print('STOP: Cannot proceed without images')
-"
+    # ERROR: No images found - STOP
+```
 
-# 4. List available images
-FOLDER=$(cat data/property_images/metadata/address_folder_lookup.json | python -c "import json,sys; print(json.load(sys.stdin).get('mappings',{}).get('$TARGET_ADDRESS',{}).get('path',''))")
-ls -la "$FOLDER" 2>/dev/null || echo "No image folder found"
+### 2. Check Enrichment Data
 
-# 5. Check existing Section C scores
-cat data/enrichment_data.json | python -c "
-import json,sys
-data = json.load(sys.stdin)
-addr = '$TARGET_ADDRESS'
-if addr in data:
-    scores = ['kitchen_layout_score', 'master_suite_score', 'natural_light_score',
-              'high_ceilings_score', 'fireplace_score', 'laundry_area_score', 'aesthetics_score']
-    populated = sum(1 for s in scores if data[addr].get(s) is not None)
-    print(f'Section C scores populated: {populated}/7')
-    if populated == 7:
-        print('SKIP: All scores already exist')
-else:
-    print('No existing scores - full assessment needed')
-"
+Use the **Read** tool:
+```
+Read: data/enrichment_data.json
+```
 
-# 6. Get year_built for era calibration
-cat data/enrichment_data.json | python -c "
-import json,sys
-data = json.load(sys.stdin)
-addr = '$TARGET_ADDRESS'
-year = data.get(addr, {}).get('year_built')
+**Note:** enrichment_data.json is a **LIST** of property dicts (not a dict keyed by address).
+Search for the property: `next((p for p in data if p["full_address"] == address), None)`
+
+Check existing Section C scores:
+```python
+scores = ['kitchen_layout_score', 'master_suite_score', 'natural_light_score',
+          'high_ceilings_score', 'fireplace_score', 'laundry_area_score', 'aesthetics_score']
+populated = sum(1 for s in scores if prop.get(s) is not None)
+# If populated == 7: SKIP - All scores already exist
+```
+
+### 3. List Available Images
+
+Use the **Glob** tool (NOT bash ls):
+```
+Glob: pattern="*.jpg", path="data/property_images/processed/{folder}/"
+```
+
+Also check for PNG files:
+```
+Glob: pattern="*.png", path="data/property_images/processed/{folder}/"
+```
+
+### 4. Get Year Built for Era Calibration
+
+From the enrichment data loaded in step 2, extract year_built:
+```python
+year = prop.get("year_built")
 if year:
-    print(f'Year built: {year}')
-    if year < 1980: print('Era: Pre-1980 (dated OK)')
-    elif year < 2000: print('Era: 1980-1999 (some dated expected)')
-    else: print('Era: 2000+ (modern baseline)')
-else:
-    print('WARNING: year_built unknown - cannot calibrate era expectations')
-"
+    if year < 1980: era = "Pre-1980 (dated OK)"
+    elif year < 2000: era = "1980-1999 (some dated expected)"
+    else: era = "2000+ (modern baseline)"
 ```
 
 **DO NOT PROCEED** if:
@@ -80,10 +88,8 @@ else:
 Load these skills for detailed instructions:
 - **property-data** - Data access patterns
 - **state-management** - Triage & checkpointing
-- **image-assessment** - Interior scoring rubrics & visual cues
-- **exterior-assessment** - Roof, pool, HVAC visual protocols
-- **inspection-standards** - UAD terminology & condition ratings
-- **arizona-context** - Pool & era context
+- **image-assessment** - Interior scoring rubrics, visual cues, UAD ratings & exterior protocols (merged)
+- **arizona-context-lite** - Pool age estimation & era calibration (lightweight)
 - **scoring** - Point calculations
 
 ## Image Location (CRITICAL)
@@ -100,12 +106,12 @@ Before scoring interior, assess exterior conditions to override data-driven age 
 
 ### Roof Visual Condition
 
-**Load skill:** `exterior-assessment` for detailed visual protocols
+**Reference:** See `image-assessment` skill for detailed visual protocols (exterior protocols merged)
 
 **Analyze:** Aerial photos, front/side exterior shots
 - **Shingle/tile condition:** Curling, missing, granule loss, organic growth
 - **Visual age estimation:** Compare against year_built-based estimate
-- **UAD condition rating:** Map visual observations to C1-C6 scale (use `inspection-standards` skill)
+- **UAD condition rating:** Map visual observations to C1-C6 scale (see UAD ratings in `image-assessment` skill)
 - **Override decision:** If visual age differs significantly (±5 years) from calculated estimate
 
 **Output:**
@@ -147,7 +153,7 @@ Before scoring interior, assess exterior conditions to override data-driven age 
 
 **Identify:**
 - Brand/model: Carrier, Trane, Goodman, Lennox, etc.
-- Serial number format: Many encode manufacture date (skill: `exterior-assessment`)
+- Serial number format: Many encode manufacture date (see `image-assessment` skill)
 - Visual age indicators: Rust, dents, compressor housing condition, fan blade wear
 
 **Refrigerant type (critical for AZ):**

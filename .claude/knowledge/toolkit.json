@@ -137,6 +137,25 @@
         "usage": "python scripts/extract_images.py --address \"ADDRESS\" --sources zillow,redfin"
       }
     ],
+    "validation": [
+      {
+        "id": "validate_prerequisites",
+        "path": "scripts/validate_phase_prerequisites.py",
+        "description": "Pre-spawn validation and data quality reconciliation",
+        "provides": ["validate_phase2_prerequisites()", "reconcile_data_quality()", "repair_data_inconsistencies()"],
+        "usage": {
+          "phase_validation": "python scripts/validate_phase_prerequisites.py --address \"ADDRESS\" --phase phase2_images --json",
+          "reconcile_single": "python scripts/validate_phase_prerequisites.py --reconcile --address \"ADDRESS\"",
+          "reconcile_all": "python scripts/validate_phase_prerequisites.py --reconcile --all",
+          "auto_repair": "python scripts/validate_phase_prerequisites.py --reconcile --all --repair"
+        },
+        "returns": {
+          "validation": {"can_spawn": "bool", "reason": "string", "context": "dict with image_folder, image_count, property_data"},
+          "reconciliation": {"completeness_score": "0-1", "accuracy_score": "0-1", "issues": "list", "repairs_made": "list"}
+        },
+        "exit_codes": {"0": "success/can_spawn", "1": "blocked/errors_found"}
+      }
+    ],
     "reporting": [
       {
         "id": "deal_sheets",
@@ -172,7 +191,7 @@
       "model": "sonnet",
       "path": ".claude/agents/image-assessor.md",
       "purpose": "Visual scoring (exterior + interior)",
-      "skills": ["property-data", "state-management", "image-assessment", "exterior-assessment", "inspection-standards", "arizona-context", "scoring"],
+      "skills": ["property-data", "state-management", "image-assessment", "arizona-context-lite", "scoring"],
       "tools": ["Claude Vision", "Read (images)"]
     }
   },
@@ -226,8 +245,54 @@
     {"from": "agents/*", "relation": "loads", "to": "skills/*"},
     {"from": "Skill", "relation": "invokes", "to": "skills/*"},
     {"from": "browser_snapshot", "relation": "preferred_over", "to": "browser_take_screenshot"},
-    {"from": "stealth scripts", "relation": "required_for", "to": "Zillow/Redfin"}
+    {"from": "stealth scripts", "relation": "required_for", "to": "Zillow/Redfin"},
+    {"from": "validate_prerequisites", "relation": "validates_before", "to": "phase2_images spawn"},
+    {"from": "phase1_listing", "relation": "must_complete_before", "to": "phase2_images"},
+    {"from": "phase2_images", "relation": "must_complete_before", "to": "phase3_synthesis"}
   ],
+
+  "phase_dependencies": {
+    "description": "Pipeline phase flow - use to understand what must complete before spawning agents",
+    "phases": {
+      "phase0_county": {
+        "requires": [],
+        "outputs": ["lot_sqft", "year_built", "garage_spaces", "pool"],
+        "agent": null,
+        "script": "extract_county_data.py"
+      },
+      "phase1_listing": {
+        "requires": [],
+        "outputs": ["images", "price", "hoa_fee", "listing_url"],
+        "agent": "listing-browser",
+        "script": "extract_images.py"
+      },
+      "phase1_map": {
+        "requires": [],
+        "outputs": ["school_rating", "safety_score", "orientation", "distances"],
+        "agent": "map-analyzer",
+        "script": null
+      },
+      "phase2_images": {
+        "requires": ["phase1_listing"],
+        "validates_before_spawn": "validate_prerequisites --phase phase2_images",
+        "outputs": ["interior_total", "exterior_total", "kitchen_score", "roof_condition"],
+        "agent": "image-assessor"
+      },
+      "phase3_synthesis": {
+        "requires": ["phase0_county", "phase1_listing", "phase1_map", "phase2_images"],
+        "outputs": ["total_score", "tier", "kill_switch_verdict"],
+        "agent": null,
+        "script": "phx_home_analyzer.py"
+      },
+      "phase4_report": {
+        "requires": ["phase3_synthesis"],
+        "outputs": ["deal_sheet", "visualizations"],
+        "agent": null,
+        "script": "deal_sheets"
+      }
+    },
+    "spawn_order": "Phases 0, 1a, 1b can run in parallel. Phase 2 requires Phase 1 listing. Phase 3 requires all prior. Phase 4 requires Phase 3."
+  },
 
   "common_mistakes": {
     "critical": [

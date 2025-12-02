@@ -110,6 +110,46 @@
     }
   },
 
+  "spawn_validation_protocol": {
+    "description": "Mandatory pre-spawn validation before agent Task dispatch",
+    "applies_to": ["phase2_images"],
+    "script": "scripts/validate_phase_prerequisites.py",
+    "workflow": [
+      "1. Run validation: python scripts/validate_phase_prerequisites.py --address \"ADDRESS\" --phase PHASE --json",
+      "2. Parse JSON result for can_spawn boolean",
+      "3. If can_spawn=true: Include context in agent prompt (image_folder, image_count, property_data)",
+      "4. If can_spawn=false: Do NOT spawn - return structured error to user/orchestrator"
+    ],
+    "context_to_include_in_prompt": ["image_folder", "image_count", "year_built", "orientation", "phase_status"],
+    "skip_validation_phases": ["phase0_county", "phase1_listing", "phase1_map"]
+  },
+
+  "failure_response_protocols": {
+    "description": "Structured error handling when validation or agents fail",
+    "prerequisite_not_met": {
+      "action": "return_structured_error",
+      "update_work_items": true,
+      "response_template": {
+        "status": "blocked",
+        "phase": "PHASE_NAME",
+        "address": "ADDRESS",
+        "reason": "FROM_VALIDATION_RESULT",
+        "remediation": ["Complete Phase 1 listing first", "Run extract_images.py", "Check work_items.json"]
+      }
+    },
+    "data_inconsistency": {
+      "action": "attempt_repair_then_retry",
+      "repair_command": "python scripts/validate_phase_prerequisites.py --reconcile --address \"ADDRESS\" --repair",
+      "max_retries": 1,
+      "on_repair_failure": "escalate_to_user"
+    },
+    "agent_timeout": {
+      "action": "update_work_items_status",
+      "set_status": "failed",
+      "preserve_partial_data": true
+    }
+  },
+
   "reference_format": {
     "syntax": "path:line-range",
     "style": "relative_to_project_root",

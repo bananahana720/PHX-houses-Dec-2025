@@ -4,27 +4,27 @@
   "mappings": {
     "4732 W Davis Rd, Glendale, AZ 85306": {
       "folder": "686067a4",
-      "image_count": 76,
+      "image_count": 98,
       "path": "data/property_images/processed/686067a4/"
     },
     "2353 W Tierra Buena Ln, Phoenix, AZ 85023": {
       "folder": "3e28ac5f",
-      "image_count": 39,
+      "image_count": 59,
       "path": "data/property_images/processed/3e28ac5f/"
     },
     "2344 W Marconi Ave, Phoenix, AZ 85023": {
       "folder": "6505014b",
-      "image_count": 34,
+      "image_count": 77,
       "path": "data/property_images/processed/6505014b/"
     },
     "2846 W Villa Rita Dr, Phoenix, AZ 85053": {
       "folder": "97c061f9",
-      "image_count": 44,
+      "image_count": 60,
       "path": "data/property_images/processed/97c061f9/"
     },
     "15225 N 37th Way, Phoenix, AZ 85032": {
       "folder": "05e62943",
-      "image_count": 33,
+      "image_count": 65,
       "path": "data/property_images/processed/05e62943/"
     },
     "5038 W Echo Ln, Glendale, AZ 85302": {
@@ -44,7 +44,7 @@
     },
     "4417 W Sandra Cir, Glendale, AZ 85308": {
       "folder": "af0c4015",
-      "image_count": 20,
+      "image_count": 69,
       "path": "data/property_images/processed/af0c4015/"
     },
     "7126 W Columbine Dr, Peoria, AZ 85381": {
@@ -54,7 +54,7 @@
     },
     "14353 N 76th Dr, Peoria, AZ 85381": {
       "folder": "c3caaa63",
-      "image_count": 39,
+      "image_count": 51,
       "path": "data/property_images/processed/c3caaa63/"
     },
     "7233 W Corrine Dr, Peoria, AZ 85381": {
@@ -84,7 +84,7 @@
     },
     "17244 N 36th Ln, Glendale, AZ 85308": {
       "folder": "e8b5c50c",
-      "image_count": 27,
+      "image_count": 36,
       "path": "data/property_images/processed/e8b5c50c/"
     },
     "4020 W Anderson Dr, Glendale, AZ 85308": {
@@ -99,12 +99,12 @@
     },
     "4001 W Libby St, Glendale, AZ 85308": {
       "folder": "fbd71f8f",
-      "image_count": 14,
+      "image_count": 86,
       "path": "data/property_images/processed/fbd71f8f/"
     },
     "9150 W Villa Rita Dr, Peoria, AZ 85382": {
       "folder": "184a9e6c",
-      "image_count": 33,
+      "image_count": 39,
       "path": "data/property_images/processed/184a9e6c/"
     },
     "5522 W Carol Ave, Glendale, AZ 85302": {
@@ -159,7 +159,7 @@
     },
     "12808 N 27th St, Phoenix, AZ 85032": {
       "folder": "0ab6992e",
-      "image_count": 31,
+      "image_count": 44,
       "path": "data/property_images/processed/0ab6992e/"
     },
     "13307 N 84th Ave, Peoria, AZ 85381": {
@@ -174,9 +174,13 @@
     },
     "4342 W Claremont St, Glendale, AZ 85301": {
       "folder": "5ab30b44",
-      "image_count": 42,
+      "image_count": 55,
       "path": "data/property_images/processed/5ab30b44/"
+    },
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "folder": "f4e29e2c",
+      "image_count": 40,
+      "path": "data/property_images/processed/f4e29e2c/"
     }
-  },
-  "4560 E Sunrise Dr, Phoenix, AZ 85044": "f4e29e2c"
+  }
 }

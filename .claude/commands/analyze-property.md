@@ -153,6 +153,88 @@ Load skills as needed during orchestration:
 - **scoring** - Calculate & assign tiers
 - **deal-sheets** - Generate reports
 
+## Pre-Spawn Validation (CRITICAL)
+
+Before spawning Phase 2 agents, ALWAYS use the validation script to verify prerequisites and gather context.
+
+### Validation Script Location
+
+```
+scripts/validate_phase_prerequisites.py
+```
+
+### Available Functions
+
+| Function | Purpose | Returns |
+|----------|---------|---------|
+| `validate_phase2_prerequisites(address)` | Check if Phase 2 can spawn | `ValidationResult(can_spawn, reason, context)` |
+| `reconcile_data_quality(address)` | Cross-check data quality | `ReconciliationResult(completeness_score, accuracy_score, issues)` |
+| `repair_data_inconsistencies(issues)` | Auto-fix common issues | List of repairs made |
+
+### CLI Usage
+
+```bash
+# Validate Phase 2 prerequisites (JSON output)
+python scripts/validate_phase_prerequisites.py --address "123 Main St" --phase phase2_images --json
+
+# Data quality reconciliation with auto-repair
+python scripts/validate_phase_prerequisites.py --reconcile --address "123 Main St" --repair --json
+
+# Reconcile all properties
+python scripts/validate_phase_prerequisites.py --reconcile --all --json
+```
+
+### Exit Codes
+
+| Code | Meaning | Action |
+|------|---------|--------|
+| 0 | can_spawn=true OR no errors | Proceed with agent spawn |
+| 1 | can_spawn=false OR errors found | Block spawn, report reason |
+
+### ValidationResult Structure (JSON)
+
+```json
+{
+  "can_spawn": true,
+  "reason": "All Phase 2 prerequisites met",
+  "context": {
+    "address": "123 Main St, Phoenix, AZ 85001",
+    "image_folder": "C:/path/to/processed/abc123",
+    "image_count": 25,
+    "folder_hash": "abc123",
+    "phase_status": {
+      "phase0_county": "complete",
+      "phase1_listing": "complete",
+      "phase1_map": "complete",
+      "phase2_images": "pending"
+    },
+    "property_data": {
+      "year_built": 2005,
+      "lot_sqft": 8500,
+      "beds": 4,
+      "baths": 2.5,
+      "price": 450000,
+      "has_pool": true,
+      "orientation": "north",
+      "sqft": 2200
+    }
+  }
+}
+```
+
+### When Spawn is BLOCKED
+
+Common blocking reasons and remediation:
+
+| Reason | Remediation |
+|--------|-------------|
+| "Phase 1 listing not complete" | Run Phase 1 first |
+| "No image folder mapping found" | Run `python scripts/extract_images.py --address "$ADDRESS"` |
+| "Image folder does not exist on disk" | Re-run image extraction |
+| "Image folder exists but contains no images" | Re-run image extraction with different sources |
+| "work_items.json not found" | Initialize pipeline with Phase 0 |
+| "Property not found in work_items.json" | Add property to work_items or run from CSV |
+
 ## State Management (work_items.json)
 
 ### Schema Overview
@@ -574,21 +656,129 @@ Analyze schools, safety, orientation, distances
 - Phase 1 listing must be complete (images downloaded)
 - Images folder must contain at least 1 image
 
-**Pre-execution check:**
-```python
-prereq = check_phase_prerequisites("2a", state, enrichment)
+## Pre-Spawn Validation Protocol (MANDATORY)
 
-if not prereq["can_proceed"]:
-    if prereq["skip_reason"] == "no_images_available":
-        log_info("Phase 2A skipped: No images available for visual assessment")
-        update_phase_status("phase2a_exterior", "skipped", reason="no_images")
-        update_phase_status("phase2b_interior", "skipped", reason="no_images")
-        # Use default scores (5.0) for Section B exterior
-        apply_default_exterior_scores(enrichment)
-        return
-    else:
-        handle_prerequisite_failure(prereq, strict_mode)
-        return
+Before spawning the image-assessor agent, ALWAYS run validation using the dedicated script:
+
+### Step 1: Validate Prerequisites
+
+```bash
+python scripts/validate_phase_prerequisites.py --address "$ADDRESS" --phase phase2_images --json
+```
+
+**If exit code 0 (can_spawn=true):**
+- Parse the JSON output to get the `context` dict
+- Extract key fields: `image_folder`, `image_count`, `property_data` (year_built, lot_sqft, beds, baths, has_pool)
+- Proceed to spawn the agent with validated context
+
+**If exit code 1 (can_spawn=false):**
+- Read the `reason` field from JSON output
+- Report to user: "BLOCKED: {reason}"
+- DO NOT spawn the agent
+- Suggest remediation based on reason:
+  - "Phase 1 listing not complete" -> Run Phase 1 first
+  - "No image folder mapping found" -> Run `python scripts/extract_images.py --address "$ADDRESS"`
+  - "Image folder exists but contains no images" -> Re-run image extraction
+
+### Step 2: Data Quality Check (Recommended)
+
+```bash
+python scripts/validate_phase_prerequisites.py --reconcile --address "$ADDRESS" --repair --json
+```
+
+- If issues found and repaired, re-run Step 1 validation
+- If issues persist after repair, warn user but allow spawn if Step 1 passed
+- Check `completeness_score` and `accuracy_score` - warn if below 0.7
+
+### Step 3: Include Validated Context in Spawn Prompt
+
+When spawning the image-assessor, include the pre-verified context from validation:
+
+```markdown
+## Pre-Verified Context (Orchestrator Validated)
+
+**Target Property:** {context.address}
+**Phase:** 2A (Exterior Assessment)
+
+### Prerequisites Verified:
+- [x] Phase 1 Status: {context.phase_status.phase1_listing}
+- [x] Image Folder: {context.image_folder} (exists: YES)
+- [x] Image Count: {context.image_count}
+- [x] Year Built: {context.property_data.year_built}
+
+### Property Data Snapshot:
+- Lot: {context.property_data.lot_sqft} sqft
+- Beds/Baths: {context.property_data.beds}/{context.property_data.baths}
+- Has Pool: {context.property_data.has_pool}
+- Orientation: {context.property_data.orientation}
+- Square Footage: {context.property_data.sqft}
+
+**PROCEED:** All prerequisites verified - begin exterior assessment.
+```
+
+### Error Handling for Validation Script
+
+If the validation script fails to execute (file missing, Python error, etc.):
+
+```python
+# Fallback validation (use only if script unavailable)
+def fallback_validation(address: str) -> tuple[bool, str, dict]:
+    """Emergency fallback if validation script fails."""
+    # Check work_items.json manually
+    work_items = load_work_items()
+    item = find_work_item(address, work_items)
+
+    if not item:
+        return False, "Property not in work_items.json", {}
+
+    phase1_status = item.get("phases", {}).get("phase1_listing", {}).get("status")
+    if phase1_status != "complete":
+        return False, f"Phase 1 not complete (status: {phase1_status})", {}
+
+    # Warn that full validation was skipped
+    return True, "WARNING: Fallback validation used - full checks skipped", {"address": address}
+```
+
+**Pre-execution check (updated to use validation script):**
+```python
+import subprocess
+import json
+
+def validate_and_spawn_phase2(address: str, strict_mode: bool) -> bool:
+    """Validate prerequisites before spawning Phase 2 agent."""
+
+    # Run validation script
+    result = subprocess.run(
+        ["python", "scripts/validate_phase_prerequisites.py",
+         "--address", address, "--phase", "phase2_images", "--json"],
+        capture_output=True,
+        text=True
+    )
+
+    try:
+        validation = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        # Script failed - use fallback or abort
+        if strict_mode:
+            raise ValidationError(f"Validation script failed: {result.stderr}")
+        log_warning("Validation script failed, using fallback")
+        validation = {"can_spawn": False, "reason": "Validation script error"}
+
+    if not validation["can_spawn"]:
+        reason = validation.get("reason", "Unknown reason")
+        log_error(f"BLOCKED: {reason}")
+
+        if strict_mode:
+            raise PhasePrerequisiteError(phase="2A", reason=reason)
+
+        update_phase_status("phase2a_exterior", "skipped", reason=reason)
+        update_phase_status("phase2b_interior", "skipped", reason=reason)
+        return False
+
+    # Extract validated context for agent prompt
+    context = validation.get("context", {})
+    spawn_phase2_agent(address, context)
+    return True
 ```
 
 **Agent spawn (only if prerequisites satisfied):**
@@ -597,6 +787,14 @@ Task (model: sonnet, subagent: image-assessor)
 Target: {ADDRESS}
 Phase: 2A (Exterior)
 Skills: property-data, image-assessment, arizona-context-lite, scoring
+
+## Pre-Verified Context
+- Image Folder: {context.image_folder}
+- Image Count: {context.image_count}
+- Year Built: {context.property_data.year_built}
+- Has Pool: {context.property_data.has_pool}
+- Lot Size: {context.property_data.lot_sqft} sqft
+
 Score Section B exterior (80 pts): roof, backyard, pool
 Estimate ages: roof, HVAC, pool equipment
 ```
@@ -614,22 +812,87 @@ Estimate ages: roof, HVAC, pool equipment
 
 **Prerequisites:**
 - Phase 2A must be complete (exterior assessment done first)
+- Same image folder validation applies
 
-**Pre-execution check:**
+**Pre-execution check (uses same validation with Phase 2A status check):**
+
 ```python
-prereq = check_phase_prerequisites("2b", state, enrichment)
+def validate_and_spawn_phase2b(address: str, strict_mode: bool) -> bool:
+    """Validate prerequisites before spawning Phase 2B agent."""
 
-if not prereq["can_proceed"]:
-    handle_prerequisite_failure(prereq, strict_mode)
-    return
+    # First, verify Phase 2A is complete via work_items.json
+    work_items = load_work_items()
+    item = find_work_item(address, work_items)
+
+    if not item:
+        log_error(f"BLOCKED: Property '{address}' not in work_items.json")
+        return False
+
+    phase2a_status = item.get("phases", {}).get("phase2a_exterior", {}).get("status")
+    if phase2a_status not in ["complete", "skipped"]:
+        log_error(f"BLOCKED: Phase 2A not complete (status: {phase2a_status})")
+        if strict_mode:
+            raise PhasePrerequisiteError(phase="2B", reason="Phase 2A not complete")
+        update_phase_status("phase2b_interior", "skipped", reason="phase2a_incomplete")
+        return False
+
+    # Run validation script for image folder verification
+    result = subprocess.run(
+        ["python", "scripts/validate_phase_prerequisites.py",
+         "--address", address, "--phase", "phase2_images", "--json"],
+        capture_output=True,
+        text=True
+    )
+
+    try:
+        validation = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        if strict_mode:
+            raise ValidationError(f"Validation script failed: {result.stderr}")
+        log_warning("Validation script failed, using Phase 2A context")
+        validation = {"can_spawn": True, "context": {"address": address}}
+
+    if not validation["can_spawn"]:
+        reason = validation.get("reason", "Unknown reason")
+        log_error(f"BLOCKED: {reason}")
+        update_phase_status("phase2b_interior", "skipped", reason=reason)
+        return False
+
+    # Include Phase 2A results in context
+    context = validation.get("context", {})
+    context["phase2a_complete"] = True
+    context["exterior_scores_available"] = True
+
+    spawn_phase2b_agent(address, context)
+    return True
 ```
 
-**Agent spawn:**
+**Agent spawn with validated context:**
 ```
 Task (model: sonnet, subagent: image-assessor)
 Target: {ADDRESS}
 Phase: 2B (Interior)
 Skills: property-data, image-assessment, arizona-context-lite, scoring
+
+## Pre-Verified Context (Orchestrator Validated)
+
+**Target Property:** {context.address}
+**Phase:** 2B (Interior Assessment)
+
+### Prerequisites Verified:
+- [x] Phase 2A Status: complete
+- [x] Image Folder: {context.image_folder} (exists: YES)
+- [x] Image Count: {context.image_count}
+- [x] Year Built: {context.property_data.year_built}
+
+### Property Data Snapshot:
+- Lot: {context.property_data.lot_sqft} sqft
+- Beds/Baths: {context.property_data.beds}/{context.property_data.baths}
+- Has Pool: {context.property_data.has_pool}
+- Square Footage: {context.property_data.sqft}
+
+**PROCEED:** All prerequisites verified - begin interior assessment.
+
 Score Section C interior (190 pts): kitchen, master, light, ceilings, fireplace, laundry, aesthetics
 ```
 
@@ -867,13 +1130,17 @@ for property in to_process:
     2. Phase 0 (county) → early kill-switch check
     3. Phase 0.5 (cost) → monthly cost estimation
     4. Phase 1 (listing + map) → parallel
-    5. Phase 2A (exterior) → if images exist
-    6. Phase 2B (interior) → if Phase 2A complete
-    7. Phase 3 (synthesis) → includes CostEfficiencyScorer
-    8. Phase 4 (report)
-    9. Update work_items.json
-   10. Git commit property completion
-   11. Release lock
+    5. PRE-SPAWN VALIDATION for Phase 2:
+       └─ python scripts/validate_phase_prerequisites.py --address "$ADDRESS" --phase phase2_images --json
+       └─ If exit code 1 → log BLOCKED, skip Phase 2A/2B
+       └─ If exit code 0 → extract context for agent spawn
+    6. Phase 2A (exterior) → spawn with validated context
+    7. Phase 2B (interior) → spawn with validated context (if Phase 2A complete)
+    8. Phase 3 (synthesis) → includes CostEfficiencyScorer
+    9. Phase 4 (report)
+   10. Update work_items.json
+   11. Git commit property completion
+   12. Release lock
 ```
 
 ### Progress Display

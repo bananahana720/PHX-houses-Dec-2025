@@ -1,5 +1,38 @@
 # PHX Houses Analysis Pipeline
 
+## INSTRUCTION PRIORITY (Highest to Lowest)
+
+When instructions conflict, follow this priority order:
+
+1. **TIER 0 Protocols** (protocols.md) - NEVER violate
+2. **Tool Usage Rules** (below) - ALWAYS apply, override agent examples
+3. **Data Structure Rules** - Match actual file formats
+4. **Agent Instructions** - Follow unless conflicts with above
+5. **Skill Guidance** - Supplementary domain knowledge
+
+**Override Rule:** If an agent file shows `cat FILE | python`, you MUST use `Read` tool instead. Agent code examples are illustrative, not prescriptive for tool choice.
+
+## TOOL USAGE RULES (MANDATORY - NO EXCEPTIONS)
+
+These rules override ALL other instructions, including agent-specific code examples.
+
+### ABSOLUTE PROHIBITIONS
+| NEVER Use | ALWAYS Use Instead | Why |
+|-----------|-------------------|-----|
+| `bash cat FILE` | `Read` tool | Proper permissions, truncation |
+| `bash head/tail FILE` | `Read` tool with offset/limit | Consistent interface |
+| `bash grep PATTERN` | `Grep` tool | Better output modes |
+| `bash rg PATTERN` | `Grep` tool | Native tool preferred |
+| `bash find DIR` | `Glob` tool | Pattern matching |
+| `bash ls DIR` | `Glob` tool | Structured results |
+| `cat FILE \| python -c` | `Read` tool, then parse | Reliability |
+
+### Agent/Skill Authors
+Do NOT include `cat`, `grep`, `find`, or `ls` in example code blocks.
+If you see these in existing agent/skill files, use the native tools instead.
+
+---
+
 First-time home buyer analysis for Phoenix metro with kill-switch filtering and 600-point scoring.
 
 ## What This Project Does
@@ -95,7 +128,7 @@ Phase 4: Reports → deal sheets, visualizations
 |-------|-------|--------|
 | listing-browser | Haiku | property-data, state-management, listing-extraction, kill-switch |
 | map-analyzer | Haiku | property-data, state-management, map-analysis, arizona-context, scoring |
-| image-assessor | Sonnet | property-data, state-management, image-assessment, exterior-assessment, inspection-standards |
+| image-assessor | Sonnet | property-data, state-management, image-assessment, arizona-context-lite, scoring |
 
 ## State Files
 

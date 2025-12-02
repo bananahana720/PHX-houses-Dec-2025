@@ -22,12 +22,85 @@ python -c "import json; s=json.load(open('data/work_items.json'))['session']; pr
 
 ---
 
+## DATA STRUCTURE REFERENCE
+
+### Critical: Know Your Data Types
+
+| File | Type | Key Field | Access Pattern |
+|------|------|-----------|----------------|
+| `enrichment_data.json` | **LIST** | `full_address` | Iterate to find |
+| `work_items.json` | Dict | `work_items` (list inside) | `data["work_items"]` |
+| `address_folder_lookup.json` | Dict | `mappings[address]` | Direct key lookup |
+| `phx_homes.csv` | CSV | `full_address` | Pandas or csv module |
+
+### enrichment_data.json Structure
+
+**Type:** List of property dictionaries (NOT a dict keyed by address)
+
+```python
+# CORRECT - It's a list, search by address
+data = json.loads(file_content)  # List[Dict]
+prop = next((p for p in data if p["full_address"] == address), None)
+
+# WRONG - This will fail
+prop = data[address]  # TypeError: list indices must be integers
+prop = data.get(address)  # AttributeError: 'list' object has no attribute 'get'
+```
+
+**Required fields per property:**
+- `full_address` (str): Full address with city, state, zip
+- `lot_sqft` (int): Lot size in square feet
+- `year_built` (int): Year of construction
+- `beds` (int): Number of bedrooms
+- `baths` (float): Number of bathrooms
+- `has_pool` (bool): Pool present
+
+### address_folder_lookup.json Structure
+
+**Type:** Dict with `mappings` key containing address->object mappings
+
+```python
+# CORRECT
+lookup = json.loads(file_content)
+mapping = lookup.get("mappings", {}).get(address)
+if mapping:
+    folder = mapping["folder"]  # e.g., "686067a4"
+    path = mapping["path"]      # e.g., "data/property_images/processed/686067a4/"
+    count = mapping["image_count"]
+
+# WRONG - Don't access root level (may have orphan entries)
+folder = lookup.get(address)  # May return string or None, not the expected dict
+```
+
+### work_items.json Structure
+
+**Type:** Dict with metadata and `work_items` list
+
+```python
+data = json.loads(file_content)
+items = data["work_items"]  # List of work item dicts
+prop = next((w for w in items if w["address"] == address), None)
+if prop:
+    status = prop["phases"]["phase2_images"]["status"]
+```
+
+### Common Errors and Fixes
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `'list' object has no attribute 'keys'` | Treating enrichment as dict | Use list iteration |
+| `'list' object has no attribute 'get'` | Treating enrichment as dict | Use `next((p for p in data if ...), None)` |
+| `KeyError: 'address'` | Wrong key in lookup | Use `lookup["mappings"][address]` |
+| `TypeError: string indices must be integers` | Lookup returned string | Check if result is dict, not orphan entry |
+
+---
+
 ## Key File Locations
 
 | File | Purpose | Access | Critical Fields |
 |------|---------|--------|-----------------|
 | `data/work_items.json` | Pipeline state & progress | RW | `properties[].phase_status`, `session.current_phase` |
-| `data/enrichment_data.json` | Property enrichment data | RW | `[address].listing`, `[address].location`, `[address].images` |
+| `data/enrichment_data.json` | Property enrichment data (LIST) | RW | `[].full_address`, `[].listing`, `[].location` |
 | `data/property_images/metadata/extraction_state.json` | Image extraction state | RW | `[address].status`, `[address].sources` |
 | `data/property_images/metadata/address_folder_lookup.json` | Address → folder mapping | R | `[address]` → folder hash |
 | `data/property_images/metadata/image_manifest.json` | Downloaded images inventory | R | `[folder_hash][]` → image paths |
@@ -70,7 +143,7 @@ Before starting any task:
    ```python
    import json
    work_items = json.load(open('data/work_items.json'))
-   enrichment = json.load(open('data/enrichment_data.json'))
+   enrichment = json.load(open('data/enrichment_data.json'))  # LIST of dicts!
    ```
 
 2. **Check Property Status:**
@@ -83,7 +156,7 @@ Before starting any task:
 3. **Verify Not Already Complete:**
    ```python
    if prop['phase_status'].get(f'phase_{current_phase}') == 'completed':
-       print(f"⚠️  Property already processed for Phase {current_phase}")
+       print(f"WARNING: Property already processed for Phase {current_phase}")
        # Skip or ask for confirmation
    ```
 
@@ -92,16 +165,20 @@ Before starting any task:
    # Phase 2 requires Phase 1 complete
    if current_phase == 2:
        assert prop['phase_status']['phase_1'] == 'completed', "Phase 1 not complete"
-       assert target_address in enrichment, "No enrichment data"
-       assert 'images' in enrichment[target_address], "No images downloaded"
+       # enrichment is a LIST - find property by address
+       enrich_prop = next((p for p in enrichment if p['full_address'] == target_address), None)
+       assert enrich_prop is not None, "No enrichment data"
+       assert 'images' in enrich_prop, "No images downloaded"
    ```
 
 5. **Load Required Context:**
    ```python
    # Image assessment needs year_built for era calibration
    if current_phase == 2:
-       year_built = enrichment[target_address].get('year_built')
-       pool_exists = enrichment[target_address].get('has_pool', False)
+       # enrichment is a LIST - find property by address
+       enrich_prop = next((p for p in enrichment if p['full_address'] == target_address), None)
+       year_built = enrich_prop.get('year_built') if enrich_prop else None
+       pool_exists = enrich_prop.get('has_pool', False) if enrich_prop else False
    ```
 
 6. **Update Status to In-Progress:**
@@ -118,12 +195,21 @@ After completing task:
 
 1. **Update Enrichment Data:**
    ```python
-   enrichment[target_address]['listing'] = {
-       'price': 425000,
-       'beds': 4,
-       'baths': 2.0,
-       # ... other fields
-   }
+   # enrichment is a LIST - find and update by address
+   enrich_prop = next((p for p in enrichment if p['full_address'] == target_address), None)
+   if enrich_prop:
+       enrich_prop['listing'] = {
+           'price': 425000,
+           'beds': 4,
+           'baths': 2.0,
+           # ... other fields
+       }
+   else:
+       # Add new property to list
+       enrichment.append({
+           'full_address': target_address,
+           'listing': {'price': 425000, 'beds': 4, 'baths': 2.0}
+       })
    json.dump(enrichment, open('data/enrichment_data.json', 'w'), indent=2)
    ```
 
@@ -180,8 +266,8 @@ if not os.path.exists('data/work_items.json'):
 
 # enrichment_data.json missing
 if not os.path.exists('data/enrichment_data.json'):
-    print("⚠️  Creating new enrichment_data.json")
-    json.dump({}, open('data/enrichment_data.json', 'w'))
+    print("WARNING: Creating new enrichment_data.json")
+    json.dump([], open('data/enrichment_data.json', 'w'))  # LIST, not dict!
 ```
 
 ### Images Missing (Phase 2)
@@ -230,18 +316,25 @@ if prev_phase_status != 'completed':
 # Validate Phase 1 completeness before Phase 2
 required_fields = ['listing.price', 'listing.beds', 'location.school_rating']
 
+# enrichment is a LIST - find property by address
+enrich_prop = next((p for p in enrichment if p['full_address'] == target_address), None)
+
+if not enrich_prop:
+    print(f"ERROR: No enrichment data for {target_address}")
+    return {'status': 'error', 'reason': 'missing_enrichment'}
+
 missing = []
 for field in required_fields:
     keys = field.split('.')
-    value = enrichment[target_address]
+    value = enrich_prop
     for key in keys:
-        value = value.get(key, {})
+        value = value.get(key, {}) if isinstance(value, dict) else None
     if not value:
         missing.append(field)
 
 if missing:
-    print(f"⚠️  Incomplete Phase 1 data: {missing}")
-    print("→ Rerun Phase 1 or mark fields as N/A")
+    print(f"WARNING: Incomplete Phase 1 data: {missing}")
+    print("-> Rerun Phase 1 or mark fields as N/A")
     # Decide: proceed with warnings or fail
 ```
 
@@ -376,8 +469,11 @@ from filelock import FileLock
 
 lock_path = 'data/enrichment_data.json.lock'
 with FileLock(lock_path, timeout=10):
-    data = json.load(open('data/enrichment_data.json'))
-    data[address]['new_field'] = value
+    data = json.load(open('data/enrichment_data.json'))  # LIST of dicts!
+    # Find property by address
+    prop = next((p for p in data if p['full_address'] == address), None)
+    if prop:
+        prop['new_field'] = value
     json.dump(data, open('data/enrichment_data.json', 'w'), indent=2)
 ```
 
@@ -445,7 +541,7 @@ You are the image-assessor agent for the PHX Houses pipeline.
 **Skills to Load:** image-assessment, property-data, arizona-context-lite
 
 **State Files to Update:**
-- data/enrichment_data.json (add scores to [address].images.assessment)
+- data/enrichment_data.json (LIST - find by full_address, add scores to prop.images.assessment)
 - data/work_items.json (update phase_status.phase_2 to 'completed')
 
 **Pre-Work:** Read `.claude/AGENT_BRIEFING.md` for orientation.
@@ -491,7 +587,7 @@ print(f"Price source: {field_history.get('source')} at {field_history.get('times
 
 ---
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2025-12-02
 **Maintainer:** Claude Code Orchestrator
 

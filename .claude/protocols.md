@@ -220,8 +220,10 @@ Remaining: Q tasks
 
 ## TOOL SELECTION RULES
 
-- MUST use `fd` instead of `find`
-- MUST use `rg` (ripgrep) instead of `grep`
+- MUST use `Glob` tool instead of bash find/fd
+- MUST use `Grep` tool instead of bash grep/rg
+- MUST use `Read` tool instead of bash cat/head/tail
+- See CLAUDE.md TOOL USAGE RULES for complete list
 
 ## WORKFLOW STANDARDS
 
