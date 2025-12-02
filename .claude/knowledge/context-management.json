@@ -171,7 +171,7 @@
     "scripts/": {
       "purpose": "Main analysis scripts and utilities",
       "staleness_hours": 48,
-      "key_files": ["phx_home_analyzer.py", "extract_images.py", "extract_county_data.py"]
+      "key_files": ["phx_home_analyzer.py", "extract_images.py", "extract_county_data.py", "validate_phase_prerequisites.py"]
     },
     "data/": {
       "purpose": "Property data and state files",
@@ -188,6 +188,17 @@
       "purpose": "Claude Code configuration and agents",
       "staleness_hours": 168,
       "key_subdirs": ["agents/", "skills/", "commands/", "knowledge/"]
+    },
+    "tests/": {
+      "purpose": "Test infrastructure and fixtures",
+      "staleness_hours": 72,
+      "key_files": ["conftest.py"],
+      "key_subdirs": ["unit/", "integration/", "fixtures/", "benchmarks/"]
+    },
+    "docs/": {
+      "purpose": "Technical documentation and guides",
+      "staleness_hours": 168,
+      "key_subdirs": ["architecture/", "specs/", "artifacts/", "templates/", "risk_checklists/"]
     }
   },
 
@@ -218,13 +229,76 @@
       "CLAUDE.md",
       ".claude/AGENT_BRIEFING.md",
       "data/work_items.json",
-      "data/enrichment_data.json"
+      "data/enrichment_data.json",
+      "scripts/CLAUDE.md",
+      "src/phx_home_analysis/CLAUDE.md",
+      "data/CLAUDE.md",
+      "tests/CLAUDE.md",
+      "docs/CLAUDE.md"
     ],
     "required_directories": [
       "scripts/",
       "src/phx_home_analysis/",
       "data/",
-      ".claude/"
+      ".claude/",
+      "tests/",
+      "docs/"
+    ]
+  },
+
+  "file_organization_rules": {
+    "description": "File placement validation and enforcement (Protocol 9)",
+    "root_allowed_files": [
+      "CLAUDE.md",
+      "README.md",
+      "pyproject.toml",
+      "uv.lock",
+      ".gitignore",
+      ".env",
+      ".mcp.json",
+      ".pre-commit-config.yaml",
+      ".python-version",
+      ".coverage"
+    ],
+    "placement_matrix": {
+      "*.py": "scripts/ or tests/ or src/",
+      "*_SUMMARY.md": "docs/artifacts/",
+      "*_REPORT.md": "docs/artifacts/",
+      "test_*.py": "tests/",
+      "*.json": "data/ or config/",
+      "*.csv": "data/",
+      "*.html": "reports/ or docs/templates/"
+    },
+    "enforcement": {
+      "on_file_create": "validate_placement",
+      "on_session_start": "check_root_for_violations",
+      "on_commit": "verify_no_root_artifacts"
+    },
+    "violation_response": {
+      "action": "warn_and_suggest_move",
+      "update_trash_files_md": true
+    }
+  },
+
+  "auto_claude_md_protocol": {
+    "description": "Auto-create CLAUDE.md in directories without one",
+    "triggers": [
+      "file_created_in_directory_without_claude_md",
+      "directory_visited_without_claude_md"
+    ],
+    "template_path": ".claude/templates/CLAUDE.md.template",
+    "placeholder_flags": ["UPDATE_ME"],
+    "excluded_directories": [
+      "node_modules",
+      ".git",
+      "__pycache__",
+      ".venv",
+      "venv",
+      ".pytest_cache",
+      ".mypy_cache",
+      ".ruff_cache",
+      "data/property_images/processed",
+      ".playwright-mcp"
     ]
   }
 }

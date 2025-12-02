@@ -218,6 +218,46 @@ Current batch: P tasks
 Remaining: Q tasks
 ```
 
+### Protocol 9: File Organization
+
+**Root Directory Rules:**
+- NEVER create new files in project root (except standard config files)
+- Allowed root files: `CLAUDE.md`, `README.md`, `pyproject.toml`, `uv.lock`, `.gitignore`, `.env`, `.mcp.json`, `.pre-commit-config.yaml`, `.python-version`
+
+**File Placement Matrix:**
+| File Type | Required Location |
+|-----------|-------------------|
+| Python scripts | `scripts/` |
+| Test files | `tests/` |
+| Documentation | `docs/` |
+| Implementation summaries | `docs/artifacts/` |
+| Data files | `data/` |
+| Reports | `reports/` |
+| Configuration | `config/` |
+| Temporary files | `TRASH/temp/` |
+
+**CLAUDE.md Protocol:**
+- Every non-excluded directory MUST have a CLAUDE.md file
+- Excluded directories: `node_modules`, `.git`, `__pycache__`, `.venv`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `data/property_images/processed`
+- If CLAUDE.md missing when entering directory, create placeholder with UPDATE_ME flag
+
+**BEFORE creating ANY file:**
+1. Determine file type (script, test, doc, data, config, temp)
+2. Consult placement matrix for target directory
+3. If directory has no CLAUDE.md, create one first
+4. Create file in correct location
+
+**NEVER:**
+- Create `*.py` files in project root
+- Create `*_SUMMARY.md` or `*_REPORT.md` in project root
+- Create temporary files outside `TRASH/temp/`
+- Create artifacts without updating `docs/TRASH-FILES.md`
+
+**When files are misplaced:**
+1. Move to correct location using `git mv` (preserves history)
+2. Update `docs/TRASH-FILES.md` with move record
+3. Update any references to the file
+
 ## TOOL SELECTION RULES
 
 - MUST use `Glob` tool instead of bash find/fd

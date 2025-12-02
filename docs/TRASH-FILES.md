@@ -75,3 +75,63 @@ scripts/orientation_estimates.json - moved to TRASH/duplicates/ - duplicate of d
 
 test_v1_data.json - moved to TRASH/ - temporary test file for schema migration testing
 test_v1_outdated.json - moved to TRASH/ - temporary test file for schema migration testing
+
+## File Organization Cleanup - 2025-12-02
+
+### Cache Directories (TRASH/cache_backup/)
+.venv.bak/ - moved to TRASH/cache_backup/ - 482MB backup virtual environment (unused)
+.pytest_cache/ - moved to TRASH/cache_backup/ - pytest cache (auto-regenerates)
+.mypy_cache/ - moved to TRASH/cache_backup/ - mypy cache (auto-regenerates)
+.ruff_cache/ - moved to TRASH/cache_backup/ - ruff cache (auto-regenerates)
+nul - moved to TRASH/ - Windows NUL device artifact
+
+### Deprecated Scripts (TRASH/deprecated/)
+scripts/deal_sheets.py - moved to TRASH/deprecated/ - superseded by scripts/deal_sheets/ module (explicit deprecation notice)
+scripts/extract_location_data.py - moved to TRASH/deprecated/ - superseded by map-analyzer agent
+
+### Migration Scripts (TRASH/migrations/) - One-time migrations complete
+scripts/migrate_to_work_items.py - moved to TRASH/migrations/ - state migration from extraction_state.json complete
+scripts/consolidate_geodata.py - moved to TRASH/migrations/ - geocoding consolidation complete
+scripts/geocode_homes.py - moved to TRASH/migrations/ - Nominatim geocoding complete, data in enrichment_data.json
+scripts/sun_orientation_analysis.py - moved to TRASH/migrations/ - orientation now handled by map-analyzer agent
+
+### Analysis Artifacts (TRASH/analysis_artifacts/)
+scripts/show_best_values.py - moved to TRASH/analysis_artifacts/ - one-off CSV analysis script
+scripts/generate_extraction_report.py - moved to TRASH/analysis_artifacts/ - test report generator
+
+### Deleted Scripts (git rm - no longer needed)
+scripts/verify_security_setup.py - DELETED - pre-commit hooks handle verification
+scripts/demo_reporters.py - DELETED - demo/example code only, no production value
+scripts/extract_county_batch.py - DELETED - not runnable, just hardcoded data/comments
+scripts/cost_breakdown_analysis.py - DELETED - one-off CSV analysis, no integration
+
+### Root Files Removed (git rm)
+toolkit.json - DELETED - duplicate of .claude/knowledge/toolkit.json
+ruff_errors.json - DELETED - generated linting output
+data/enrichment_data.json.bak - DELETED - backup file
+data/enrichment_data.json.pre_schema_version.bak - DELETED - backup file
+data/property_images/metadata/extraction_state.json.bak - DELETED - backup file
+data/property_images/metadata/image_manifest.json.bak - DELETED - backup file
+docs/SECURITY_AUDIT_REPORT.md.bak - DELETED - backup file
+
+### Documentation Moved to docs/artifacts/
+CONSOLIDATION_SUMMARY.md, DEDUPLICATOR_TEST_USAGE.md, DEDUPLICATOR_UNIT_TESTS_SUMMARY.md,
+DELIVERABLE_SUMMARY.md, DELIVERABLES.md, DELIVERY_SUMMARY.md, FINAL_SUMMARY.txt,
+INDEX_DEDUPLICATOR_TESTS.md, INTEGRATION_VERIFICATION_REPORT.md, STANDARDIZER_TEST_DELIVERY.md,
+TEST_COVERAGE_SUMMARY.txt, TEST_DELIVERABLES_INDEX.md, TEST_SUITE_OVERVIEW.txt,
+TESTING_QUICK_START.md, URL_VALIDATOR_TEST_REFERENCE.md, VERIFICATION_SUMMARY.txt,
+README_TESTING.md - all moved from root to docs/artifacts/
+
+### Directories Consolidated
+raw_exports/ - moved to data/raw_exports/
+risk_checklists/ - moved to docs/risk_checklists/
+templates/ - moved to docs/templates/
+deal_sheets/ - DELETED (superseded by reports/deal_sheets/)
+
+### Generic Templates Removed from .claude/
+.claude/agents/: ai-engineer.md, code-reviewer.md, data-scientist.md, debugger.md, django-pro.md,
+  error-detective.md, fastapi-pro.md, ml-engineer.md, mlops-engineer.md, prompt-engineer.md,
+  python-pro.md, test-automator.md - DELETED (not project-specific)
+.claude/commands/: ai-assistant.md, config-validate.md, deps-audit.md, error-analysis.md,
+  error-trace.md, langchain-agent.md, ml-pipeline.md, prompt-optimize.md, python-scaffold.md,
+  refactor-clean.md, smart-debug.md, tech-debt.md - DELETED (not project-specific)
