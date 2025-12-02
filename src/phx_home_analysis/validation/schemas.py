@@ -129,7 +129,7 @@ class EnrichmentDataSchema(BaseModel):
     Attributes:
         full_address: Property address for matching (required)
         school_rating: GreatSchools rating (1-10 scale)
-        safety_score: Neighborhood safety score (0-10)
+        safety_neighborhood_score: Neighborhood safety score (0-10)
         noise_level: Ambient noise level score (0-10, lower is quieter)
         commute_minutes: Commute time to work location
         distance_to_grocery_miles: Distance to nearest supermarket
@@ -162,7 +162,7 @@ class EnrichmentDataSchema(BaseModel):
     school_rating: float | None = Field(
         None, ge=1, le=10, description="GreatSchools rating 1-10"
     )
-    safety_score: float | None = Field(
+    safety_neighborhood_score: float | None = Field(
         None, ge=0, le=10, description="Neighborhood safety 0-10"
     )
     noise_level: float | None = Field(

@@ -1,7 +1,6 @@
 """Data models for county assessor data extraction."""
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -15,27 +14,27 @@ class ParcelData:
     full_address: str
 
     # Kill-switch fields
-    lot_sqft: Optional[int] = None
-    year_built: Optional[int] = None
-    garage_spaces: Optional[int] = None
-    sewer_type: Optional[str] = None  # "city" or "septic"
-    has_pool: Optional[bool] = None
-    beds: Optional[int] = None
-    baths: Optional[float] = None
+    lot_sqft: int | None = None
+    year_built: int | None = None
+    garage_spaces: int | None = None
+    sewer_type: str | None = None  # "city" or "septic"
+    has_pool: bool | None = None
+    beds: int | None = None
+    baths: float | None = None
 
     # Tax and valuation
-    tax_annual: Optional[int] = None
-    full_cash_value: Optional[int] = None
-    limited_value: Optional[int] = None
+    tax_annual: float | None = None
+    full_cash_value: int | None = None
+    limited_value: int | None = None
 
     # Additional property info
-    livable_sqft: Optional[int] = None
-    roof_type: Optional[str] = None
-    exterior_wall_type: Optional[str] = None
+    livable_sqft: int | None = None
+    roof_type: str | None = None
+    exterior_wall_type: str | None = None
 
     # Geocoding (from ArcGIS fallback)
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    latitude: float | None = None
+    longitude: float | None = None
 
     # Metadata
     source: str = "maricopa_assessor"

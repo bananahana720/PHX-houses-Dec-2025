@@ -8,154 +8,33 @@ import asyncio
 import hashlib
 import json
 import logging
-from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 from uuid import uuid4
 
 import httpx
 
 from ...domain.entities import Property
 from ...domain.enums import ImageSource, ImageStatus
-from ...domain.value_objects import ImageMetadata, PerceptualHash
-from .deduplicator import ImageDeduplicator, DeduplicationError
-from .standardizer import ImageStandardizer, ImageProcessingError
+from ...domain.value_objects import ImageMetadata
+from .deduplicator import DeduplicationError, ImageDeduplicator
+from .extraction_stats import ExtractionResult, SourceStats
 from .extractors import (
     MaricopaAssessorExtractor,
     PhoenixMLSExtractor,
-    ZillowExtractor,
     RedfinExtractor,
+    ZillowExtractor,
 )
 from .extractors.base import (
-    ImageExtractor,
     ExtractionError,
-    SourceUnavailableError,
     ImageDownloadError,
+    ImageExtractor,
+    SourceUnavailableError,
 )
+from .standardizer import ImageProcessingError, ImageStandardizer
+from .state_manager import ExtractionState
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class SourceStats:
-    """Statistics for a single image source."""
-
-    source: str
-    properties_processed: int = 0
-    properties_failed: int = 0
-    images_found: int = 0
-    images_downloaded: int = 0
-    images_failed: int = 0
-    duplicates_detected: int = 0
-
-
-@dataclass
-class ExtractionResult:
-    """Results from image extraction process."""
-
-    total_properties: int
-    properties_completed: int
-    properties_failed: int
-    properties_skipped: int
-    total_images: int
-    unique_images: int
-    duplicate_images: int
-    failed_downloads: int
-    by_source: dict[str, SourceStats] = field(default_factory=dict)
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
-
-    @property
-    def duration_seconds(self) -> float:
-        """Total extraction duration in seconds.
-
-        Returns:
-            Duration or 0 if not complete
-        """
-        if not self.start_time or not self.end_time:
-            return 0.0
-        return (self.end_time - self.start_time).total_seconds()
-
-    @property
-    def success_rate(self) -> float:
-        """Percentage of properties successfully processed.
-
-        Returns:
-            Success rate 0-100
-        """
-        if self.total_properties == 0:
-            return 0.0
-        return (self.properties_completed / self.total_properties) * 100
-
-    def to_dict(self) -> dict:
-        """Convert to dictionary for JSON serialization.
-
-        Returns:
-            Dict representation
-        """
-        return {
-            "total_properties": self.total_properties,
-            "properties_completed": self.properties_completed,
-            "properties_failed": self.properties_failed,
-            "properties_skipped": self.properties_skipped,
-            "total_images": self.total_images,
-            "unique_images": self.unique_images,
-            "duplicate_images": self.duplicate_images,
-            "failed_downloads": self.failed_downloads,
-            "by_source": {
-                name: {
-                    "properties_processed": stats.properties_processed,
-                    "properties_failed": stats.properties_failed,
-                    "images_found": stats.images_found,
-                    "images_downloaded": stats.images_downloaded,
-                    "images_failed": stats.images_failed,
-                    "duplicates_detected": stats.duplicates_detected,
-                }
-                for name, stats in self.by_source.items()
-            },
-            "start_time": self.start_time.isoformat() if self.start_time else None,
-            "end_time": self.end_time.isoformat() if self.end_time else None,
-            "duration_seconds": self.duration_seconds,
-            "success_rate": self.success_rate,
-        }
-
-
-@dataclass
-class ExtractionState:
-    """Persistent state for resumable extraction."""
-
-    completed_properties: set[str] = field(default_factory=set)
-    failed_properties: set[str] = field(default_factory=set)
-    last_updated: Optional[str] = None
-
-    def to_dict(self) -> dict:
-        """Convert to dictionary for JSON serialization.
-
-        Returns:
-            Dict representation
-        """
-        return {
-            "completed_properties": list(self.completed_properties),
-            "failed_properties": list(self.failed_properties),
-            "last_updated": self.last_updated or datetime.now().astimezone().isoformat(),
-        }
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "ExtractionState":
-        """Load from dictionary.
-
-        Args:
-            data: Dictionary from JSON
-
-        Returns:
-            ExtractionState instance
-        """
-        return cls(
-            completed_properties=set(data.get("completed_properties", [])),
-            failed_properties=set(data.get("failed_properties", [])),
-            last_updated=data.get("last_updated"),
-        )
 
 
 class ImageExtractionOrchestrator:
@@ -173,7 +52,7 @@ class ImageExtractionOrchestrator:
     def __init__(
         self,
         base_dir: Path,
-        enabled_sources: Optional[list[ImageSource]] = None,
+        enabled_sources: list[ImageSource] | None = None,
         max_concurrent_properties: int = 3,
         deduplication_threshold: int = 8,
         max_dimension: int = 1024,
@@ -216,7 +95,7 @@ class ImageExtractionOrchestrator:
         self.state: ExtractionState = self._load_state()
 
         # HTTP client (shared across extractors)
-        self._http_client: Optional[httpx.AsyncClient] = None
+        self._http_client: httpx.AsyncClient | None = None
 
     def _load_manifest(self) -> dict[str, list[dict]]:
         """Load image manifest from disk.
@@ -226,13 +105,13 @@ class ImageExtractionOrchestrator:
         """
         if self.manifest_path.exists():
             try:
-                with open(self.manifest_path, "r") as f:
+                with open(self.manifest_path) as f:
                     data = json.load(f)
                     logger.info(
                         f"Loaded manifest with {len(data.get('properties', {}))} properties"
                     )
                     return data.get("properties", {})
-            except (json.JSONDecodeError, IOError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 logger.warning(f"Failed to load manifest: {e}")
 
         return {}
@@ -258,7 +137,7 @@ class ImageExtractionOrchestrator:
         """
         if self.state_path.exists():
             try:
-                with open(self.state_path, "r") as f:
+                with open(self.state_path) as f:
                     data = json.load(f)
                     state = ExtractionState.from_dict(data)
                     logger.info(
@@ -266,7 +145,7 @@ class ImageExtractionOrchestrator:
                         f"{len(state.failed_properties)} failed"
                     )
                     return state
-            except (json.JSONDecodeError, IOError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 logger.warning(f"Failed to load state: {e}")
 
         return ExtractionState()

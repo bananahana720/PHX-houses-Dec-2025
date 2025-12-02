@@ -5,13 +5,9 @@ Tests Pydantic schemas, normalizers, and validators for property data.
 
 import pytest
 
-from src.phx_home_analysis.validation.schemas import (
-    EnrichmentDataSchema,
-    KillSwitchCriteriaSchema,
-    OrientationSchema,
-    PropertySchema,
-    SewerTypeSchema,
-    SolarStatusSchema,
+from src.phx_home_analysis.validation.deduplication import (
+    DuplicateDetector,
+    compute_property_hash,
 )
 from src.phx_home_analysis.validation.normalizer import (
     clean_price,
@@ -22,18 +18,19 @@ from src.phx_home_analysis.validation.normalizer import (
     normalize_sewer_type,
     normalize_solar_status,
 )
-from src.phx_home_analysis.validation.deduplication import (
-    DuplicateDetector,
-    compute_property_hash,
+from src.phx_home_analysis.validation.schemas import (
+    EnrichmentDataSchema,
+    OrientationSchema,
+    PropertySchema,
+    SewerTypeSchema,
+    SolarStatusSchema,
 )
 from src.phx_home_analysis.validation.validators import (
     BatchValidator,
     PropertyValidator,
-    ValidationResult,
     validate_enrichment,
     validate_property,
 )
-
 
 # ============================================================================
 # PropertySchema Tests
@@ -298,11 +295,11 @@ class TestEnrichmentDataSchema:
         data = EnrichmentDataSchema(
             full_address="123 Main Street, Phoenix, AZ 85001",
             school_rating=8.5,
-            safety_score=7.0,
+            safety_neighborhood_score=7.0,
             kitchen_layout_score=8.0,
         )
         assert data.school_rating == 8.5
-        assert data.safety_score == 7.0
+        assert data.safety_neighborhood_score == 7.0
 
     def test_score_out_of_range_fails(self):
         """Test scores must be in valid range."""
@@ -315,7 +312,7 @@ class TestEnrichmentDataSchema:
         with pytest.raises(Exception):
             EnrichmentDataSchema(
                 full_address="123 Main Street, Phoenix, AZ 85001",
-                safety_score=-1.0,  # < 0
+                safety_neighborhood_score=-1.0,  # < 0
             )
 
     def test_orientation_validation(self):
