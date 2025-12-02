@@ -3,14 +3,35 @@
 This module provides a StealthHttpClient that uses curl_cffi to make HTTP requests
 with Chrome TLS fingerprinting, making requests harder to detect and block.
 Primarily used for image extraction from real estate listing sites.
+
+Security: All URLs are validated against SSRF attacks before fetching.
 """
+
+from __future__ import annotations
 
 import asyncio
 import logging
 
 from curl_cffi.requests import AsyncSession
 
+from .url_validator import URLValidator
+
 logger = logging.getLogger(__name__)
+
+# Module-level singleton for URL validation (lazy-initialized)
+_url_validator: URLValidator | None = None
+
+
+def get_url_validator() -> URLValidator:
+    """Get the shared URL validator instance.
+
+    Returns:
+        URLValidator instance configured for real estate CDN hosts
+    """
+    global _url_validator
+    if _url_validator is None:
+        _url_validator = URLValidator(strict_mode=True, resolve_dns=True)
+    return _url_validator
 
 
 class StealthDownloadError(Exception):
@@ -89,6 +110,16 @@ class StealthHttpClient:
 
         return self._session
 
+    # Security constants
+    MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB max download size
+    ALLOWED_CONTENT_TYPES = {
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+        "image/jpg",  # Non-standard but common alias
+    }
+
     async def download_image(
         self,
         url: str,
@@ -96,6 +127,11 @@ class StealthHttpClient:
         referer: str | None = None,
     ) -> tuple[bytes, str]:
         """Download an image with retry logic and exponential backoff.
+
+        Security controls:
+        - SSRF validation: All URLs validated against internal networks
+        - Content-Type validation: Only image types accepted
+        - File size limits: Maximum 50MB to prevent resource exhaustion
 
         Args:
             url: Image URL to download
@@ -106,8 +142,24 @@ class StealthHttpClient:
             Tuple of (image_bytes, content_type)
 
         Raises:
-            StealthDownloadError: If download fails after all retries
+            StealthDownloadError: If URL validation fails, Content-Type is invalid,
+                file size exceeds limit, or download fails after all retries
         """
+        # SSRF Protection: Always validate URL before fetching (no bypass option)
+        validator = get_url_validator()
+        validation_result = validator.validate_url(url)
+        if not validation_result.is_valid:
+            logger.warning(
+                "SSRF Protection: Blocked download from %s - %s",
+                url[:100],
+                validation_result.error_message,
+            )
+            raise StealthDownloadError(
+                url=url,
+                status_code=None,
+                message=f"URL validation failed (SSRF protection): {validation_result.error_message}",
+            )
+
         # Build headers
         request_headers = self.DEFAULT_IMAGE_HEADERS.copy()
         if headers:
@@ -162,11 +214,60 @@ class StealthHttpClient:
                         message=f"HTTP {response.status_code}",
                     )
 
-                # Extract content type
-                content_type = response.headers.get("Content-Type", "image/jpeg")
+                # Extract and validate content type
+                content_type = response.headers.get("Content-Type", "")
+                # Parse content type (strip charset and parameters)
+                base_content_type = content_type.split(";")[0].strip().lower()
+
+                if base_content_type not in self.ALLOWED_CONTENT_TYPES:
+                    logger.warning(
+                        "Security: Rejected non-image Content-Type '%s' from %s",
+                        content_type[:50],
+                        url[:100],
+                    )
+                    raise StealthDownloadError(
+                        url=url,
+                        status_code=response.status_code,
+                        message=f"Invalid Content-Type: {base_content_type}. "
+                        f"Only image types allowed: {self.ALLOWED_CONTENT_TYPES}",
+                    )
+
+                # Check Content-Length header before reading body
+                content_length = response.headers.get("Content-Length")
+                if content_length:
+                    try:
+                        declared_size = int(content_length)
+                        if declared_size > self.MAX_FILE_SIZE:
+                            logger.warning(
+                                "Security: Rejected oversized image (%d bytes) from %s",
+                                declared_size,
+                                url[:100],
+                            )
+                            raise StealthDownloadError(
+                                url=url,
+                                status_code=response.status_code,
+                                message=f"File too large: {declared_size} bytes "
+                                f"exceeds limit of {self.MAX_FILE_SIZE} bytes",
+                            )
+                    except ValueError:
+                        pass  # Invalid Content-Length header, proceed with download
 
                 # Get image bytes
                 image_data = response.content
+
+                # Validate actual size (defense in depth)
+                if len(image_data) > self.MAX_FILE_SIZE:
+                    logger.warning(
+                        "Security: Downloaded image exceeded size limit (%d bytes) from %s",
+                        len(image_data),
+                        url[:100],
+                    )
+                    raise StealthDownloadError(
+                        url=url,
+                        status_code=response.status_code,
+                        message=f"Downloaded file too large: {len(image_data)} bytes "
+                        f"exceeds limit of {self.MAX_FILE_SIZE} bytes",
+                    )
 
                 if not image_data:
                     raise StealthDownloadError(
@@ -178,7 +279,7 @@ class StealthHttpClient:
                 logger.debug(
                     f"Successfully downloaded {len(image_data)} bytes from {url}"
                 )
-                return image_data, content_type
+                return image_data, base_content_type
 
             except StealthDownloadError:
                 # Don't retry on 404/403/429 - re-raise immediately
@@ -216,7 +317,7 @@ class StealthHttpClient:
             self._session = None
             logger.debug("Stealth HTTP client session closed")
 
-    async def __aenter__(self) -> "StealthHttpClient":
+    async def __aenter__(self) -> StealthHttpClient:
         """Enter async context manager.
 
         Returns:

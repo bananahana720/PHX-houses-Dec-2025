@@ -2,6 +2,8 @@
 
 Converts all property images to a consistent format (PNG) and dimensions
 (max 1024x1024) for uniform AI model input.
+
+Security: Includes image bomb (decompression bomb) protection.
 """
 
 import logging
@@ -9,7 +11,15 @@ from io import BytesIO
 
 from PIL import Image
 
+# Security: Limit maximum image pixels to prevent decompression bombs
+# 15000 x 15000 = 225 million pixels is a reasonable upper bound
+# This must be set BEFORE any Image.open() calls
+Image.MAX_IMAGE_PIXELS = 178956970  # ~15000 x 12000 pixels
+
 logger = logging.getLogger(__name__)
+
+# Security: Maximum raw file size before processing (50MB)
+MAX_RAW_FILE_SIZE = 50 * 1024 * 1024
 
 
 class ImageProcessingError(Exception):
@@ -47,6 +57,10 @@ class ImageStandardizer:
     def standardize(self, image_data: bytes) -> bytes:
         """Convert image to standard format and size.
 
+        Security controls:
+        - File size check: Rejects files > 50MB before processing
+        - Pixel limit: PIL.Image.MAX_IMAGE_PIXELS prevents decompression bombs
+
         Args:
             image_data: Raw image bytes in any supported format
 
@@ -54,9 +68,18 @@ class ImageStandardizer:
             Standardized image as PNG bytes
 
         Raises:
-            ImageProcessingError: If image cannot be processed
+            ImageProcessingError: If image cannot be processed or exceeds security limits
         """
+        # Security: Check raw file size BEFORE opening
+        if len(image_data) > MAX_RAW_FILE_SIZE:
+            raise ImageProcessingError(
+                f"File size {len(image_data)} bytes exceeds maximum "
+                f"of {MAX_RAW_FILE_SIZE} bytes (50MB)"
+            )
+
         try:
+            # Note: PIL.Image.MAX_IMAGE_PIXELS (set at module level) provides
+            # additional protection against decompression bombs
             img = Image.open(BytesIO(image_data))
 
             # Convert color mode
@@ -154,12 +177,18 @@ class ImageStandardizer:
     def is_valid_image(self, image_data: bytes) -> bool:
         """Validate that bytes represent a valid image.
 
+        Includes security checks for file size limits.
+
         Args:
             image_data: Raw bytes to validate
 
         Returns:
-            True if valid image, False otherwise
+            True if valid image, False otherwise (including security failures)
         """
+        # Security: Reject oversized files
+        if len(image_data) > MAX_RAW_FILE_SIZE:
+            return False
+
         try:
             img = Image.open(BytesIO(image_data))
             img.verify()

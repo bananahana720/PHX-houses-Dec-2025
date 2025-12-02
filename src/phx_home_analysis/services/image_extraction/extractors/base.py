@@ -1,6 +1,8 @@
 """Abstract base class for image extractors.
 
 Defines the interface that all source-specific extractors must implement.
+
+Security: All URLs are validated against SSRF attacks before fetching.
 """
 
 import asyncio
@@ -11,8 +13,24 @@ import httpx
 
 from ....domain.entities import Property
 from ....domain.enums import ImageSource
+from ...infrastructure.url_validator import URLValidator
 
 logger = logging.getLogger(__name__)
+
+# Module-level singleton for URL validation (lazy-initialized)
+_url_validator: URLValidator | None = None
+
+
+def get_url_validator() -> URLValidator:
+    """Get the shared URL validator instance.
+
+    Returns:
+        URLValidator instance configured for real estate CDN hosts
+    """
+    global _url_validator
+    if _url_validator is None:
+        _url_validator = URLValidator(strict_mode=True, resolve_dns=True)
+    return _url_validator
 
 
 class ExtractionError(Exception):
@@ -182,6 +200,7 @@ class ImageExtractor(ABC):
         url: str,
         max_retries: int = 3,
         headers: dict | None = None,
+        skip_url_validation: bool = False,
     ) -> tuple[bytes, str]:
         """Download with exponential backoff retry.
 
@@ -189,13 +208,30 @@ class ImageExtractor(ABC):
             url: URL to download
             max_retries: Maximum retry attempts
             headers: Additional headers to include
+            skip_url_validation: If True, bypass SSRF validation (use with caution)
 
         Returns:
             Tuple of (image_bytes, content_type)
 
         Raises:
-            ImageDownloadError: After all retries exhausted
+            ImageDownloadError: After all retries exhausted or URL validation fails
         """
+        # SSRF Protection: Validate URL before fetching
+        if not skip_url_validation:
+            validator = get_url_validator()
+            validation_result = validator.validate_url(url)
+            if not validation_result.is_valid:
+                logger.warning(
+                    "SSRF Protection: Blocked download from %s - %s",
+                    url[:100],
+                    validation_result.error_message,
+                )
+                raise ImageDownloadError(
+                    url=url,
+                    status_code=None,
+                    message=f"URL validation failed (SSRF protection): {validation_result.error_message}",
+                )
+
         last_error: Exception | None = None
 
         for attempt in range(max_retries):

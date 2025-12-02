@@ -2,6 +2,9 @@
 
 Provides resumable extraction by tracking completed and failed properties.
 State is persisted to JSON for crash recovery and incremental processing.
+
+Security:
+    Uses atomic file writes to prevent corruption from crashes/interrupts.
 """
 
 import json
@@ -19,10 +22,17 @@ class ExtractionState:
 
     Tracks which properties have been processed (successfully or failed)
     to enable resumption of interrupted extraction runs.
+
+    Attributes:
+        completed_properties: Set of addresses that completed successfully
+        failed_properties: Set of addresses that failed
+        property_last_checked: Dict mapping address -> ISO datetime when last processed
+        last_updated: ISO timestamp of last state modification
     """
 
     completed_properties: set[str] = field(default_factory=set)
     failed_properties: set[str] = field(default_factory=set)
+    property_last_checked: dict[str, str] = field(default_factory=dict)
     last_updated: str | None = None
 
     def to_dict(self) -> dict:
@@ -34,6 +44,7 @@ class ExtractionState:
         return {
             "completed_properties": list(self.completed_properties),
             "failed_properties": list(self.failed_properties),
+            "property_last_checked": self.property_last_checked,
             "last_updated": self.last_updated or datetime.now().astimezone().isoformat(),
         }
 
@@ -50,8 +61,58 @@ class ExtractionState:
         return cls(
             completed_properties=set(data.get("completed_properties", [])),
             failed_properties=set(data.get("failed_properties", [])),
+            property_last_checked=data.get("property_last_checked", {}),
             last_updated=data.get("last_updated"),
         )
+
+    def record_property_checked(self, address: str) -> None:
+        """Record when a property was last checked for images.
+
+        Updates the timestamp regardless of whether new images were found.
+
+        Args:
+            address: Full property address
+        """
+        self.property_last_checked[address] = datetime.now().astimezone().isoformat()
+
+    def get_property_last_checked(self, address: str) -> str | None:
+        """Get the last time a property was checked.
+
+        Args:
+            address: Full property address
+
+        Returns:
+            ISO datetime string or None if never checked
+        """
+        return self.property_last_checked.get(address)
+
+    def get_stale_properties(self, max_age_days: int = 7) -> list[str]:
+        """Get properties not checked within the specified period.
+
+        Args:
+            max_age_days: Maximum age in days before considered stale
+
+        Returns:
+            List of addresses that are stale
+        """
+        stale = []
+        now = datetime.now().astimezone()
+
+        for address in self.completed_properties:
+            last_checked = self.property_last_checked.get(address)
+            if not last_checked:
+                stale.append(address)
+                continue
+
+            try:
+                checked_dt = datetime.fromisoformat(last_checked)
+                age_days = (now - checked_dt).days
+                if age_days > max_age_days:
+                    stale.append(address)
+            except (ValueError, TypeError):
+                stale.append(address)
+
+        return stale
 
 
 class StateManager:
@@ -96,11 +157,16 @@ class StateManager:
         return self._state
 
     def save(self, state: ExtractionState | None = None) -> None:
-        """Save state to disk.
+        """Save state to disk atomically.
+
+        Security: Uses temp file + rename to prevent corruption from crashes.
 
         Args:
             state: State to save (uses cached state if None)
         """
+        import os
+        import tempfile
+
         if state is not None:
             self._state = state
 
@@ -112,9 +178,18 @@ class StateManager:
 
         try:
             self.state_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.state_path, "w", encoding="utf-8") as f:
-                json.dump(self._state.to_dict(), f, indent=2)
-            logger.debug("Saved state to disk")
+
+            # Atomic write using temp file + rename
+            fd, temp_path = tempfile.mkstemp(dir=self.state_path.parent, suffix=".tmp")
+            try:
+                with os.fdopen(fd, "w", encoding="utf-8") as f:
+                    json.dump(self._state.to_dict(), f, indent=2)
+                os.replace(temp_path, self.state_path)  # Atomic on POSIX and Windows
+                logger.debug("Saved state to disk")
+            except Exception:
+                if os.path.exists(temp_path):
+                    os.unlink(temp_path)
+                raise
         except OSError as e:
             logger.error(f"Failed to save state: {e}")
 

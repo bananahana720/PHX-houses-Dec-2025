@@ -6,8 +6,11 @@ of compression, resizing, or minor edits.
 
 Performance Optimization:
     Uses Locality Sensitive Hashing (LSH) to reduce duplicate detection
-    from O(n²) to O(n) by bucketing similar hashes together. Only checks
+    from O(n^2) to O(n) by bucketing similar hashes together. Only checks
     candidate matches from the same buckets instead of all stored hashes.
+
+Security:
+    Uses atomic file writes to prevent corruption from crashes/interrupts.
 """
 
 import json
@@ -83,10 +86,24 @@ class ImageDeduplicator:
         return {"version": "1.0.0", "images": {}}
 
     def _save_index(self) -> None:
-        """Persist hash index to disk."""
+        """Persist hash index to disk atomically.
+
+        Security: Uses temp file + rename to prevent corruption from crashes.
+        """
+        import os
+        import tempfile
+
         self._index_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(self._index_path, "w") as f:
-            json.dump(self._hash_index, f, indent=2)
+
+        fd, temp_path = tempfile.mkstemp(dir=self._index_path.parent, suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                json.dump(self._hash_index, f, indent=2)
+            os.replace(temp_path, self._index_path)  # Atomic on POSIX and Windows
+        except Exception:
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
+            raise
 
     def _build_lsh_buckets(self) -> dict[int, dict[str, set[str]]]:
         """Build LSH bucket structure from existing hash index.

@@ -2,6 +2,9 @@
 
 Provides stealth-configured browser instances with human-like behavior patterns
 for web scraping operations that require anti-detection measures.
+
+Supports browser window isolation for non-headless mode to prevent interference
+with user input during stealth automation.
 """
 
 import asyncio
@@ -21,11 +24,16 @@ class BrowserPool:
     Provides lazy initialization, user agent rotation, and human-like
     interaction patterns to avoid detection by anti-bot systems.
 
+    Supports browser window isolation for non-headless mode to prevent
+    interference with user input during stealth automation.
+
     Attributes:
         proxy_url: Optional proxy server URL
         headless: Whether to run browser in headless mode
         viewport_width: Browser viewport width in pixels
         viewport_height: Browser viewport height in pixels
+        isolation_mode: Browser isolation mode for non-headless operation
+        fallback_to_minimize: Fall back to minimize if preferred isolation fails
     """
 
     USER_AGENTS = [
@@ -41,6 +49,8 @@ class BrowserPool:
         headless: bool = True,
         viewport_width: int = 1280,
         viewport_height: int = 720,
+        isolation_mode: str = "virtual_display",
+        fallback_to_minimize: bool = True,
     ) -> None:
         """Initialize browser pool configuration.
 
@@ -51,11 +61,32 @@ class BrowserPool:
             headless: Whether to run browser in headless mode
             viewport_width: Browser viewport width in pixels
             viewport_height: Browser viewport height in pixels
+            isolation_mode: Browser isolation mode for non-headless operation.
+                Options: "virtual_display", "secondary_display", "off_screen",
+                "minimize", "none"
+            fallback_to_minimize: If preferred isolation fails, use minimize mode
         """
+        # Import here to avoid circular imports
+        from phx_home_analysis.config.settings import BrowserIsolationMode
+
         self.proxy_url = proxy_url
         self.headless = headless
         self.viewport_width = viewport_width
         self.viewport_height = viewport_height
+        self.fallback_to_minimize = fallback_to_minimize
+
+        # Parse isolation mode
+        if isinstance(isolation_mode, str):
+            try:
+                self.isolation_mode = BrowserIsolationMode(isolation_mode)
+            except ValueError:
+                logger.warning(
+                    "Unknown isolation mode '%s', defaulting to VIRTUAL_DISPLAY",
+                    isolation_mode,
+                )
+                self.isolation_mode = BrowserIsolationMode.VIRTUAL_DISPLAY
+        else:
+            self.isolation_mode = isolation_mode
 
         self._browser: uc.Browser | None = None
         self._browser_lock = asyncio.Lock()
@@ -67,12 +98,13 @@ class BrowserPool:
         )
 
         logger.info(
-            "BrowserPool configured: headless=%s, viewport=%dx%d, proxy=%s (auth=%s)",
+            "BrowserPool configured: headless=%s, viewport=%dx%d, proxy=%s (auth=%s), isolation=%s",
             headless,
             viewport_width,
             viewport_height,
             "enabled" if proxy_url else "disabled",
             "yes" if self._proxy_has_auth else "no",
+            self.isolation_mode.value if not headless else "n/a",
         )
 
     async def get_browser(self) -> uc.Browser:
@@ -84,6 +116,9 @@ class BrowserPool:
         If proxy URL contains credentials, creates a Chrome extension for
         authentication instead of using --proxy-server with inline credentials
         (which Chrome doesn't support).
+
+        For non-headless mode, applies window isolation based on isolation_mode
+        to prevent interference with user input.
 
         Returns:
             Browser instance configured with stealth settings
@@ -112,6 +147,10 @@ class BrowserPool:
             browser_config.add_argument(
                 f"--window-size={self.viewport_width},{self.viewport_height}"
             )
+
+            # Configure window isolation for non-headless mode
+            if not self.headless:
+                self._configure_window_isolation(browser_config)
 
             # Handle proxy configuration
             if self.proxy_url:
@@ -161,6 +200,98 @@ class BrowserPool:
             logger.info("Browser initialized successfully (headless=%s)", self.headless)
 
             return self._browser
+
+    def _configure_window_isolation(self, browser_config: uc.Config) -> None:
+        """Configure browser window isolation for non-headless mode.
+
+        Positions the browser window on a virtual display, secondary monitor,
+        or off-screen to prevent interference with user input.
+
+        Args:
+            browser_config: nodriver Config object to add arguments to
+        """
+        from phx_home_analysis.config.settings import BrowserIsolationMode
+
+        from .display_utils import (
+            find_virtual_display,
+            get_displays,
+            get_recommended_position,
+        )
+
+        position: tuple[int, int] | None = None
+        effective_mode = self.isolation_mode
+
+        if effective_mode == BrowserIsolationMode.VIRTUAL_DISPLAY:
+            # Try to find virtual display
+            vd = find_virtual_display()
+            if vd:
+                position = (vd.x, vd.y)
+                logger.info(
+                    "Using virtual display for isolation at (%d, %d)", vd.x, vd.y
+                )
+            elif self.fallback_to_minimize:
+                logger.warning(
+                    "Virtual display not found, falling back to minimize mode"
+                )
+                effective_mode = BrowserIsolationMode.MINIMIZE
+            else:
+                # Use recommended position (off-screen or secondary)
+                position = get_recommended_position()
+                logger.warning(
+                    "Virtual display not found, using position (%d, %d)",
+                    position[0],
+                    position[1],
+                )
+
+        elif effective_mode == BrowserIsolationMode.SECONDARY_DISPLAY:
+            # Try to find secondary display
+            displays = get_displays()
+            secondary = next(
+                (d for d in displays if not d.is_primary),
+                None,
+            )
+            if secondary:
+                position = (secondary.x, secondary.y)
+                logger.info(
+                    "Using secondary display for isolation at (%d, %d)",
+                    secondary.x,
+                    secondary.y,
+                )
+            elif self.fallback_to_minimize:
+                logger.warning(
+                    "Secondary display not found, falling back to minimize mode"
+                )
+                effective_mode = BrowserIsolationMode.MINIMIZE
+            else:
+                position = get_recommended_position()
+                logger.warning(
+                    "Secondary display not found, using position (%d, %d)",
+                    position[0],
+                    position[1],
+                )
+
+        elif effective_mode == BrowserIsolationMode.OFF_SCREEN:
+            # Position off-screen
+            position = get_recommended_position()
+            logger.info(
+                "Using off-screen position for isolation at (%d, %d)",
+                position[0],
+                position[1],
+            )
+
+        elif effective_mode == BrowserIsolationMode.NONE:
+            logger.info("Browser isolation disabled, window will be visible")
+
+        # Apply position if determined
+        if position:
+            browser_config.add_argument(
+                f"--window-position={position[0]},{position[1]}"
+            )
+
+        # Apply minimize mode if needed
+        if effective_mode == BrowserIsolationMode.MINIMIZE:
+            browser_config.add_argument("--start-minimized")
+            logger.info("Browser will start minimized")
 
     async def new_tab(self, url: str) -> uc.Tab:
         """Create new tab and navigate to URL.

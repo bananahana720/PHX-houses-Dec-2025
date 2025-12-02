@@ -7,7 +7,29 @@ map configuration, and Arizona-specific context.
 import os
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
+
+
+class BrowserIsolationMode(Enum):
+    """Browser window isolation mode for stealth automation.
+
+    Controls how the browser window is isolated to prevent interference
+    with user input during non-headless stealth browser operations.
+
+    Attributes:
+        VIRTUAL_DISPLAY: Position on virtual display (VDD) - best isolation
+        SECONDARY_DISPLAY: Position on secondary monitor if available
+        OFF_SCREEN: Position off-screen to the right of primary display
+        MINIMIZE: Minimize browser window (less stealthy, may be detected)
+        NONE: No isolation (browser visible on primary display)
+    """
+
+    VIRTUAL_DISPLAY = "virtual_display"
+    SECONDARY_DISPLAY = "secondary_display"
+    OFF_SCREEN = "off_screen"
+    MINIMIZE = "minimize"
+    NONE = "none"
 
 
 @dataclass(frozen=True)
@@ -125,6 +147,12 @@ class StealthExtractionConfig:
         viewport_width: Browser viewport width in pixels
         viewport_height: Browser viewport height in pixels
 
+    Browser Isolation (for non-headless mode):
+        isolation_mode: How to isolate browser window from user input
+        fallback_to_minimize: If preferred isolation fails, use minimize mode
+        virtual_display_offset_x: X offset for virtual display positioning
+        virtual_display_offset_y: Y offset for virtual display positioning
+
     Human Behavior Simulation:
         human_delay_min: Minimum delay between actions (seconds)
         human_delay_max: Maximum delay between actions (seconds)
@@ -148,6 +176,12 @@ class StealthExtractionConfig:
     viewport_width: int = 1280
     viewport_height: int = 720
 
+    # Browser isolation (for non-headless mode)
+    isolation_mode: BrowserIsolationMode = BrowserIsolationMode.VIRTUAL_DISPLAY
+    fallback_to_minimize: bool = True
+    virtual_display_offset_x: int = 1920  # Position after primary monitor
+    virtual_display_offset_y: int = 0
+
     # Human behavior simulation
     human_delay_min: float = 1.0
     human_delay_max: float = 3.0
@@ -169,15 +203,25 @@ class StealthExtractionConfig:
             PROXY_USERNAME: Proxy username
             PROXY_PASSWORD: Proxy password
             BROWSER_HEADLESS: "true" or "false"
+            BROWSER_ISOLATION: Isolation mode (virtual_display, secondary_display,
+                              off_screen, minimize, none)
 
         Returns:
             StealthExtractionConfig instance
         """
+        # Parse isolation mode from environment
+        isolation_str = os.getenv("BROWSER_ISOLATION", "virtual_display").lower()
+        try:
+            isolation_mode = BrowserIsolationMode(isolation_str)
+        except ValueError:
+            isolation_mode = BrowserIsolationMode.VIRTUAL_DISPLAY
+
         return cls(
             proxy_server=os.getenv("PROXY_SERVER", ""),
             proxy_username=os.getenv("PROXY_USERNAME", ""),
             proxy_password=os.getenv("PROXY_PASSWORD", ""),
             browser_headless=os.getenv("BROWSER_HEADLESS", "true").lower() == "true",
+            isolation_mode=isolation_mode,
         )
 
     @property

@@ -34,6 +34,7 @@ Usage:
 import argparse
 import asyncio
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -60,8 +61,8 @@ def parse_args() -> argparse.Namespace:
         epilog=__doc__,
     )
 
-    # Property selection (mutually exclusive)
-    selection_group = parser.add_mutually_exclusive_group(required=True)
+    # Property selection (mutually exclusive, required unless --show-displays)
+    selection_group = parser.add_mutually_exclusive_group(required=False)
     selection_group.add_argument(
         "--all",
         action="store_true",
@@ -122,6 +123,25 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path("data/phx_homes.csv"),
         help="Path to properties CSV file (default: data/phx_homes.csv)",
+    )
+
+    # Browser isolation (for non-headless stealth mode)
+    parser.add_argument(
+        "--isolation",
+        type=str,
+        choices=["virtual", "secondary", "off_screen", "minimize", "none"],
+        default="virtual",
+        help=(
+            "Browser window isolation mode for non-headless stealth operation. "
+            "Options: virtual (Virtual Display Driver), secondary (secondary monitor), "
+            "off_screen (position off-screen), minimize (start minimized), "
+            "none (no isolation). Default: virtual"
+        ),
+    )
+    parser.add_argument(
+        "--show-displays",
+        action="store_true",
+        help="Show detected displays and exit (useful for debugging isolation)",
     )
 
     return parser.parse_args()
@@ -188,6 +208,10 @@ def print_banner(args: argparse.Namespace, num_properties: int, sources: list[Im
         num_properties: Number of properties to process
         sources: List of enabled sources
     """
+    # Get headless mode from environment
+    headless = os.getenv("BROWSER_HEADLESS", "true").lower() == "true"
+    isolation_display = "n/a (headless)" if headless else args.isolation
+
     print()
     print("=" * 60)
     print("Image Extraction Pipeline")
@@ -197,6 +221,7 @@ def print_banner(args: argparse.Namespace, num_properties: int, sources: list[Im
     print(f"Output directory: {args.output_dir}")
     print(f"Mode: {'Dry run' if args.dry_run else 'Full extraction'}")
     print(f"Resume: {'Yes' if args.resume and not args.fresh else 'No (fresh start)'}")
+    print(f"Browser isolation: {isolation_display}")
     print("=" * 60)
     print()
 
@@ -261,6 +286,25 @@ def print_summary(result, dry_run: bool) -> None:
     print("=" * 60)
 
 
+def map_isolation_mode(mode: str) -> str:
+    """Map CLI isolation mode to config value.
+
+    Args:
+        mode: CLI isolation mode (virtual, secondary, off_screen, minimize, none)
+
+    Returns:
+        Config isolation mode value
+    """
+    mode_map = {
+        "virtual": "virtual_display",
+        "secondary": "secondary_display",
+        "off_screen": "off_screen",
+        "minimize": "minimize",
+        "none": "none",
+    }
+    return mode_map.get(mode, "virtual_display")
+
+
 async def main() -> int:
     """Main execution function.
 
@@ -273,6 +317,23 @@ async def main() -> int:
     # Configure logging
     configure_logging(args.verbose)
     logger = logging.getLogger(__name__)
+
+    # Handle --show-displays option
+    if args.show_displays:
+        from phx_home_analysis.services.infrastructure import get_display_summary
+
+        print()
+        print("Display Detection")
+        print("=" * 60)
+        print(get_display_summary())
+        print("=" * 60)
+        return 0
+
+    # Validate that --all or --address is provided for extraction
+    if not args.all and not args.address:
+        print("Error: one of the arguments --all --address is required", file=sys.stderr)
+        print("Use --help for usage information", file=sys.stderr)
+        return 1
 
     try:
         # Validate CSV exists
@@ -306,6 +367,11 @@ async def main() -> int:
         except ValueError as e:
             print(f"Error: {e}", file=sys.stderr)
             return 1
+
+        # Set browser isolation mode in environment for StealthExtractionConfig
+        isolation_mode = map_isolation_mode(args.isolation)
+        os.environ["BROWSER_ISOLATION"] = isolation_mode
+        logger.info(f"Browser isolation mode set to: {isolation_mode}")
 
         # Initialize orchestrator
         orchestrator = ImageExtractionOrchestrator(

@@ -65,12 +65,14 @@ class StealthBrowserExtractor(ImageExtractor):
         # Load config from environment if not provided
         self.config = config or StealthExtractionConfig.from_env()
 
-        # Initialize browser pool
+        # Initialize browser pool with isolation settings
         self._browser_pool = BrowserPool(
             proxy_url=self.config.proxy_url,
             headless=self.config.browser_headless,
             viewport_width=self.config.viewport_width,
             viewport_height=self.config.viewport_height,
+            isolation_mode=self.config.isolation_mode.value,
+            fallback_to_minimize=self.config.fallback_to_minimize,
         )
 
         # Initialize stealth HTTP client
