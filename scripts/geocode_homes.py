@@ -10,7 +10,6 @@ import csv
 import json
 import time
 from pathlib import Path
-from typing import Optional
 
 from geopy.geocoders import Nominatim
 
@@ -40,11 +39,11 @@ class HomeGeocoder:
         """Load cached geocoding results from file."""
         if self.cache_file.exists():
             try:
-                with open(self.cache_file, "r") as f:
+                with open(self.cache_file) as f:
                     cached_list = json.load(f)
                     # Convert list to dict keyed by address for faster lookup
                     return {item["full_address"]: item for item in cached_list}
-            except (json.JSONDecodeError, IOError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 print(f"Warning: Could not load cache file: {e}")
                 return {}
         return {}
@@ -57,7 +56,7 @@ class HomeGeocoder:
             json.dump(cache_list, f, indent=2)
         print(f"Cached results saved to {self.cache_file}")
 
-    def geocode_address(self, address: str) -> Optional[dict]:
+    def geocode_address(self, address: str) -> dict | None:
         """
         Geocode a single address.
 
@@ -106,7 +105,7 @@ class HomeGeocoder:
         results = []
         failed_addresses = []
 
-        with open(csv_file, "r") as f:
+        with open(csv_file) as f:
             reader = csv.DictReader(f)
             for i, row in enumerate(reader, 1):
                 address = row.get("full_address")
@@ -127,7 +126,7 @@ class HomeGeocoder:
 
         # Print summary
         print("\n" + "=" * 80)
-        print(f"GEOCODING SUMMARY")
+        print("GEOCODING SUMMARY")
         print("=" * 80)
         print(f"Successfully geocoded: {len(results)}/{len(results) + len(failed_addresses)}")
 
@@ -139,7 +138,7 @@ class HomeGeocoder:
             print("All addresses geocoded successfully!")
 
         if results:
-            print(f"\nSample coordinates (Phoenix area verification):")
+            print("\nSample coordinates (Phoenix area verification):")
             for item in results[:3]:
                 print(f"  {item['full_address']}")
                 print(f"    Lat: {item['lat']}, Lng: {item['lng']}")
@@ -158,7 +157,7 @@ def main():
     with open("geocoded_homes.json", "w") as f:
         json.dump(results, f, indent=2)
 
-    print(f"\nResults saved to geocoded_homes.json")
+    print("\nResults saved to geocoded_homes.json")
 
 
 if __name__ == "__main__":

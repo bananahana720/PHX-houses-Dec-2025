@@ -125,19 +125,19 @@ fig.add_trace(go.Scatter(
     y=df_pass['price'],
     mode='markers',
     name='PASS',
-    marker=dict(
-        size=12,
-        color=df_pass['lot_sqft_final'],
-        colorscale='Blues',
-        colorbar=dict(
-            title="Lot Size<br>(sqft)",
-            x=1.15
-        ),
-        line=dict(width=1, color='DarkSlateGrey'),
-        symbol='circle',
-        cmin=7000,  # Min lot size for color scale
-        cmax=15000,  # Max lot size for color scale
-    ),
+    marker={
+        "size": 12,
+        "color": df_pass['lot_sqft_final'],
+        "colorscale": 'Blues',
+        "colorbar": {
+            "title": "Lot Size<br>(sqft)",
+            "x": 1.15
+        },
+        "line": {"width": 1, "color": 'DarkSlateGrey'},
+        "symbol": 'circle',
+        "cmin": 7000,  # Min lot size for color scale
+        "cmax": 15000,  # Max lot size for color scale
+    },
     text=df_pass.apply(lambda row: (
         f"{row['full_address']}<br>"
         f"Score: {row['total_score']:.1f}<br>"
@@ -154,14 +154,14 @@ fig.add_trace(go.Scatter(
     y=df_fail['price'],
     mode='markers',
     name='FAIL',
-    marker=dict(
-        size=12,
-        color=df_fail['lot_sqft_final'],
-        colorscale='Reds',
-        showscale=False,
-        line=dict(width=1, color='DarkRed'),
-        symbol='x',
-    ),
+    marker={
+        "size": 12,
+        "color": df_fail['lot_sqft_final'],
+        "colorscale": 'Reds',
+        "showscale": False,
+        "line": {"width": 1, "color": 'DarkRed'},
+        "symbol": 'x',
+    },
     text=df_fail.apply(lambda row: (
         f"{row['full_address']}<br>"
         f"Score: {row['total_score']:.1f}<br>"
@@ -185,7 +185,7 @@ for idx, row in top_value_picks.iterrows():
         arrowcolor="gold",
         ax=40,
         ay=-40,
-        font=dict(color="gold", size=12, family="Arial Black"),
+        font={"color": "gold", "size": 12, "family": "Arial Black"},
         bgcolor="rgba(255,215,0,0.3)",
         bordercolor="gold",
         borderwidth=2,
@@ -197,7 +197,7 @@ fig.add_annotation(
     y=value_zone_max_price - 20000,
     text="VALUE ZONE<br>(High Score, Low Price)",
     showarrow=False,
-    font=dict(size=14, color="darkgreen", family="Arial Black"),
+    font={"size": 14, "color": "darkgreen", "family": "Arial Black"},
     bgcolor="rgba(144,238,144,0.5)",
     bordercolor="darkgreen",
     borderwidth=2,
@@ -205,33 +205,33 @@ fig.add_annotation(
 
 # Update layout
 fig.update_layout(
-    title=dict(
-        text="PHX Home Value Spotter: Score vs Price",
-        font=dict(size=20, family="Arial Black"),
-        x=0.5,
-        xanchor='center'
-    ),
+    title={
+        "text": "PHX Home Value Spotter: Score vs Price",
+        "font": {"size": 20, "family": "Arial Black"},
+        "x": 0.5,
+        "xanchor": 'center'
+    },
     xaxis_title="Total Score (Max 600 points)",
     yaxis_title="Price ($)",
     hovermode='closest',
     width=1200,
     height=800,
     showlegend=True,
-    legend=dict(
-        x=0.02,
-        y=0.98,
-        bgcolor="rgba(255,255,255,0.8)",
-        bordercolor="black",
-        borderwidth=1
-    ),
+    legend={
+        "x": 0.02,
+        "y": 0.98,
+        "bgcolor": "rgba(255,255,255,0.8)",
+        "bordercolor": "black",
+        "borderwidth": 1
+    },
     plot_bgcolor='white',
-    yaxis=dict(
-        gridcolor='lightgray',
-        tickformat='$,.0f',
-    ),
-    xaxis=dict(
-        gridcolor='lightgray',
-    )
+    yaxis={
+        "gridcolor": 'lightgray',
+        "tickformat": '$,.0f',
+    },
+    xaxis={
+        "gridcolor": 'lightgray',
+    }
 )
 
 # Save as HTML (interactive)
@@ -273,7 +273,7 @@ print(f"Properties in Value Zone: {value_zone_count}")
 print("\n" + "="*70)
 print("TOP 3 VALUE PICKS (Highest Score/Price Ratio, PASS only)")
 print("="*70)
-for i, (idx, row) in enumerate(top_value_picks.iterrows(), 1):
+for i, (_idx, row) in enumerate(top_value_picks.iterrows(), 1):
     print(f"\n{i}. {row['full_address']}")
     print(f"   Score: {row['total_score']:.1f} | Price: {row['price']}")
     print(f"   Lot Size: {row['lot_sqft_final']:,} sqft")

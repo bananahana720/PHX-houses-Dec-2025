@@ -6,7 +6,6 @@ Defines the interface that all source-specific extractors must implement.
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import Optional
 
 import httpx
 
@@ -29,7 +28,7 @@ class SourceUnavailableError(ExtractionError):
         self,
         source: ImageSource,
         reason: str,
-        retry_after: Optional[int] = None,
+        retry_after: int | None = None,
     ):
         self.source = source
         self.reason = reason
@@ -55,7 +54,7 @@ class ImageDownloadError(ExtractionError):
     def __init__(
         self,
         url: str,
-        status_code: Optional[int],
+        status_code: int | None,
         message: str,
     ):
         self.url = url
@@ -80,7 +79,7 @@ class ImageExtractor(ABC):
 
     def __init__(
         self,
-        http_client: Optional[httpx.AsyncClient] = None,
+        http_client: httpx.AsyncClient | None = None,
         timeout: float = 30.0,
     ):
         """Initialize extractor with optional HTTP client.
@@ -182,7 +181,7 @@ class ImageExtractor(ABC):
         self,
         url: str,
         max_retries: int = 3,
-        headers: Optional[dict] = None,
+        headers: dict | None = None,
     ) -> tuple[bytes, str]:
         """Download with exponential backoff retry.
 
@@ -197,7 +196,7 @@ class ImageExtractor(ABC):
         Raises:
             ImageDownloadError: After all retries exhausted
         """
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
 
         for attempt in range(max_retries):
             try:

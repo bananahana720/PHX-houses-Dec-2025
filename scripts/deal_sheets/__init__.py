@@ -22,6 +22,6 @@ Package Structure:
 - generator.py: Main orchestration logic
 """
 
-from .generator import main, generate_deal_sheets
+from .generator import generate_deal_sheets, main
 
 __all__ = ["main", "generate_deal_sheets"]

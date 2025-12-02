@@ -5,7 +5,6 @@ their estimated monthly cost efficiency, capturing the financial burden of
 ownership including mortgage, taxes, HOA, solar lease, and pool maintenance.
 """
 
-from typing import Optional
 
 from ....config.scoring_weights import ScoringWeights
 from ....domain.entities import Property
@@ -40,7 +39,7 @@ class CostEfficiencyScorer(ScoringStrategy):
     - Pool maintenance costs (if applicable)
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:

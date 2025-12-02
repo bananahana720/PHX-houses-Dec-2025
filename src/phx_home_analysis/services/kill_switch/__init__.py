@@ -24,20 +24,20 @@ Usage:
 """
 
 from .base import (
-    KillSwitch,
-    KillSwitchVerdict,
-    SOFT_SEVERITY_WEIGHTS,
     HARD_CRITERIA_NAMES,
     SEVERITY_FAIL_THRESHOLD,
     SEVERITY_WARNING_THRESHOLD,
+    SOFT_SEVERITY_WEIGHTS,
+    KillSwitch,
+    KillSwitchVerdict,
 )
 from .criteria import (
-    NoHoaKillSwitch,
     CitySewerKillSwitch,
-    MinGarageKillSwitch,
-    MinBedroomsKillSwitch,
-    MinBathroomsKillSwitch,
     LotSizeKillSwitch,
+    MinBathroomsKillSwitch,
+    MinBedroomsKillSwitch,
+    MinGarageKillSwitch,
+    NoHoaKillSwitch,
     NoNewBuildKillSwitch,
 )
 from .filter import KillSwitchFilter

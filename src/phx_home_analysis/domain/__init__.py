@@ -5,24 +5,24 @@ use throughout the application.
 """
 
 # Entities
-from .entities import Property, EnrichmentData
+from .entities import EnrichmentData, Property
+
+# Enums
+from .enums import (
+    Orientation,
+    RiskLevel,
+    SewerType,
+    SolarStatus,
+    Tier,
+)
 
 # Value Objects
 from .value_objects import (
     Address,
-    Score,
-    RiskAssessment,
-    ScoreBreakdown,
     RenovationEstimate,
-)
-
-# Enums
-from .enums import (
-    RiskLevel,
-    Tier,
-    SolarStatus,
-    SewerType,
-    Orientation,
+    RiskAssessment,
+    Score,
+    ScoreBreakdown,
 )
 
 __all__ = [

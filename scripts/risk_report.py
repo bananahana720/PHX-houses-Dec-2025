@@ -18,9 +18,7 @@ Outputs:
 
 import csv
 import json
-import os
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 
 class RiskCategory:
@@ -41,7 +39,7 @@ class RiskScores:
     UNKNOWN = 1
 
 
-def assess_noise_risk(distance_to_highway_miles: float) -> Tuple[str, str]:
+def assess_noise_risk(distance_to_highway_miles: float) -> tuple[str, str]:
     """
     Assess highway noise risk based on distance.
 
@@ -58,7 +56,7 @@ def assess_noise_risk(distance_to_highway_miles: float) -> Tuple[str, str]:
         return RiskCategory.LOW, "Quiet location"
 
 
-def assess_infrastructure_risk(year_built: int) -> Tuple[str, str]:
+def assess_infrastructure_risk(year_built: int) -> tuple[str, str]:
     """
     Assess building infrastructure risk based on construction era.
 
@@ -75,7 +73,7 @@ def assess_infrastructure_risk(year_built: int) -> Tuple[str, str]:
         return RiskCategory.LOW, "Modern construction"
 
 
-def assess_solar_risk(solar_status: str) -> Tuple[str, str]:
+def assess_solar_risk(solar_status: str) -> tuple[str, str]:
     """
     Assess solar panel risk based on ownership status.
 
@@ -96,7 +94,7 @@ def assess_solar_risk(solar_status: str) -> Tuple[str, str]:
         return RiskCategory.UNKNOWN, "Verify solar status"
 
 
-def assess_cooling_risk(orientation: str) -> Tuple[str, str]:
+def assess_cooling_risk(orientation: str) -> tuple[str, str]:
     """
     Assess cooling cost risk based on sun orientation.
 
@@ -118,7 +116,7 @@ def assess_cooling_risk(orientation: str) -> Tuple[str, str]:
         return RiskCategory.LOW, "Favorable orientation"
 
 
-def assess_school_risk(school_rating: float) -> Tuple[str, str]:
+def assess_school_risk(school_rating: float) -> tuple[str, str]:
     """
     Assess school quality risk based on GreatSchools rating.
 
@@ -135,7 +133,7 @@ def assess_school_risk(school_rating: float) -> Tuple[str, str]:
         return RiskCategory.LOW, "Strong school district"
 
 
-def assess_lot_size_risk(lot_sqft: int) -> Tuple[str, str]:
+def assess_lot_size_risk(lot_sqft: int) -> tuple[str, str]:
     """
     Assess lot size margin risk (proximity to minimum requirement).
 
@@ -151,7 +149,7 @@ def assess_lot_size_risk(lot_sqft: int) -> Tuple[str, str]:
         return RiskCategory.LOW, "Comfortable lot size"
 
 
-def calculate_overall_risk_score(risks: Dict[str, str]) -> int:
+def calculate_overall_risk_score(risks: dict[str, str]) -> int:
     """
     Calculate overall risk score by summing individual risk values.
 
@@ -174,26 +172,26 @@ def calculate_overall_risk_score(risks: Dict[str, str]) -> int:
     return score
 
 
-def load_enrichment_data(file_path: str) -> Dict[str, Dict]:
+def load_enrichment_data(file_path: str) -> dict[str, dict]:
     """Load enrichment data indexed by full_address."""
-    with open(file_path, 'r') as f:
+    with open(file_path) as f:
         data_list = json.load(f)
 
     return {item['full_address']: item for item in data_list}
 
 
-def load_orientation_data(file_path: str) -> Dict[str, str]:
+def load_orientation_data(file_path: str) -> dict[str, str]:
     """Load orientation estimates indexed by full_address."""
-    with open(file_path, 'r') as f:
+    with open(file_path) as f:
         data_list = json.load(f)
 
     return {item['full_address']: item['estimated_orientation'] for item in data_list}
 
 
-def load_ranked_properties(file_path: str) -> List[Dict]:
+def load_ranked_properties(file_path: str) -> list[dict]:
     """Load property rankings from CSV."""
     properties = []
-    with open(file_path, 'r', newline='', encoding='utf-8') as f:
+    with open(file_path, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
             properties.append(row)
@@ -201,7 +199,7 @@ def load_ranked_properties(file_path: str) -> List[Dict]:
     return properties
 
 
-def analyze_property_risks(property_data: Dict, enrichment: Dict, orientation: str) -> Dict:
+def analyze_property_risks(property_data: dict, enrichment: dict, orientation: str) -> dict:
     """
     Analyze all risk categories for a single property.
 
@@ -265,7 +263,7 @@ def generate_risk_badge_html(risk_level: str) -> str:
     return f'<span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; {style}">{risk_level}</span>'
 
 
-def generate_html_report(properties_with_risks: List[Dict], output_file: str):
+def generate_html_report(properties_with_risks: list[dict], output_file: str):
     """Generate HTML report with color-coded risk badges."""
 
     from datetime import datetime
@@ -443,7 +441,7 @@ def generate_html_report(properties_with_risks: List[Dict], output_file: str):
         f.write(html)
 
 
-def generate_csv_report(properties_with_risks: List[Dict], output_file: str):
+def generate_csv_report(properties_with_risks: list[dict], output_file: str):
     """Generate CSV report for data analysis."""
 
     # Sort by overall risk score
@@ -463,7 +461,7 @@ def generate_csv_report(properties_with_risks: List[Dict], output_file: str):
             writer.writerow({k: prop.get(k, '') for k in fieldnames})
 
 
-def generate_due_diligence_checklist(prop: Dict, output_dir: str):
+def generate_due_diligence_checklist(prop: dict, output_dir: str):
     """Generate detailed due diligence checklist for high-risk properties."""
 
     address = prop['full_address']
@@ -479,81 +477,81 @@ def generate_due_diligence_checklist(prop: Dict, output_dir: str):
     # Add items based on specific risk factors
     if prop['noise_risk'] == RiskCategory.HIGH:
         checklist_items.append("[HIGH PRIORITY] NOISE RISK")
-        checklist_items.append(f"  [ ] Visit property during rush hour to assess highway noise levels")
-        checklist_items.append(f"  [ ] Check noise levels at different times of day")
-        checklist_items.append(f"  [ ] Inspect windows for noise insulation quality")
-        checklist_items.append(f"  [ ] Ask neighbors about noise complaints")
+        checklist_items.append("  [ ] Visit property during rush hour to assess highway noise levels")
+        checklist_items.append("  [ ] Check noise levels at different times of day")
+        checklist_items.append("  [ ] Inspect windows for noise insulation quality")
+        checklist_items.append("  [ ] Ask neighbors about noise complaints")
         checklist_items.append("")
 
     if prop['infrastructure_risk'] == RiskCategory.HIGH:
         checklist_items.append("[HIGH PRIORITY] INFRASTRUCTURE RISK")
-        checklist_items.append(f"  [ ] Request comprehensive home inspection focusing on outdated systems")
-        checklist_items.append(f"  [ ] Verify all building permits and additions are code-compliant")
-        checklist_items.append(f"  [ ] Check electrical panel for aluminum wiring or other hazards")
-        checklist_items.append(f"  [ ] Inspect plumbing for galvanized pipes or polybutylene")
-        checklist_items.append(f"  [ ] Request HVAC inspection and service records")
-        checklist_items.append(f"  [ ] Check for asbestos and lead paint (pre-1978 homes)")
+        checklist_items.append("  [ ] Request comprehensive home inspection focusing on outdated systems")
+        checklist_items.append("  [ ] Verify all building permits and additions are code-compliant")
+        checklist_items.append("  [ ] Check electrical panel for aluminum wiring or other hazards")
+        checklist_items.append("  [ ] Inspect plumbing for galvanized pipes or polybutylene")
+        checklist_items.append("  [ ] Request HVAC inspection and service records")
+        checklist_items.append("  [ ] Check for asbestos and lead paint (pre-1978 homes)")
         checklist_items.append("")
     elif prop['infrastructure_risk'] == RiskCategory.MEDIUM:
         checklist_items.append("[MEDIUM PRIORITY] INFRASTRUCTURE RISK")
-        checklist_items.append(f"  [ ] Request standard home inspection with focus on major systems")
-        checklist_items.append(f"  [ ] Verify HVAC age and condition (Arizona climate stressor)")
-        checklist_items.append(f"  [ ] Check roof age and remaining lifespan")
+        checklist_items.append("  [ ] Request standard home inspection with focus on major systems")
+        checklist_items.append("  [ ] Verify HVAC age and condition (Arizona climate stressor)")
+        checklist_items.append("  [ ] Check roof age and remaining lifespan")
         checklist_items.append("")
 
     if prop['solar_risk'] == RiskCategory.HIGH:
         checklist_items.append("[HIGH PRIORITY] SOLAR LEASE RISK")
-        checklist_items.append(f"  [ ] Obtain complete solar lease agreement and review terms")
-        checklist_items.append(f"  [ ] Verify monthly lease payment amount and escalation clauses")
-        checklist_items.append(f"  [ ] Check lease buyout cost and conditions")
-        checklist_items.append(f"  [ ] Confirm lease transferability and approval process")
-        checklist_items.append(f"  [ ] Review solar system warranty coverage")
-        checklist_items.append(f"  [ ] Contact solar company about transfer requirements")
-        checklist_items.append(f"  [ ] Factor lease payment into monthly housing cost")
+        checklist_items.append("  [ ] Obtain complete solar lease agreement and review terms")
+        checklist_items.append("  [ ] Verify monthly lease payment amount and escalation clauses")
+        checklist_items.append("  [ ] Check lease buyout cost and conditions")
+        checklist_items.append("  [ ] Confirm lease transferability and approval process")
+        checklist_items.append("  [ ] Review solar system warranty coverage")
+        checklist_items.append("  [ ] Contact solar company about transfer requirements")
+        checklist_items.append("  [ ] Factor lease payment into monthly housing cost")
         checklist_items.append("")
 
     if prop['cooling_risk'] == RiskCategory.HIGH:
         checklist_items.append("[HIGH PRIORITY] COOLING COST RISK")
-        checklist_items.append(f"  [ ] Request 12 months of utility bills to verify summer cooling costs")
-        checklist_items.append(f"  [ ] Inspect window coverings and insulation quality")
-        checklist_items.append(f"  [ ] Check HVAC SEER rating (higher = more efficient)")
-        checklist_items.append(f"  [ ] Assess quality of insulation in attic and walls")
-        checklist_items.append(f"  [ ] Consider cost of energy-efficiency upgrades (windows, insulation)")
-        checklist_items.append(f"  [ ] Verify dual-zone HVAC for multi-story homes")
+        checklist_items.append("  [ ] Request 12 months of utility bills to verify summer cooling costs")
+        checklist_items.append("  [ ] Inspect window coverings and insulation quality")
+        checklist_items.append("  [ ] Check HVAC SEER rating (higher = more efficient)")
+        checklist_items.append("  [ ] Assess quality of insulation in attic and walls")
+        checklist_items.append("  [ ] Consider cost of energy-efficiency upgrades (windows, insulation)")
+        checklist_items.append("  [ ] Verify dual-zone HVAC for multi-story homes")
         checklist_items.append("")
     elif prop['cooling_risk'] == RiskCategory.MEDIUM:
         checklist_items.append("[MEDIUM PRIORITY] COOLING COST RISK")
-        checklist_items.append(f"  [ ] Request summer utility bills to estimate cooling costs")
-        checklist_items.append(f"  [ ] Check HVAC efficiency rating")
+        checklist_items.append("  [ ] Request summer utility bills to estimate cooling costs")
+        checklist_items.append("  [ ] Check HVAC efficiency rating")
         checklist_items.append("")
 
     if prop['school_risk'] == RiskCategory.HIGH:
         checklist_items.append("[HIGH PRIORITY] SCHOOL QUALITY RISK")
-        checklist_items.append(f"  [ ] Research school rating trends on GreatSchools.org")
-        checklist_items.append(f"  [ ] Visit schools and meet with administration")
-        checklist_items.append(f"  [ ] Review recent test scores and district funding")
-        checklist_items.append(f"  [ ] Check for planned school closures or boundary changes")
-        checklist_items.append(f"  [ ] Assess impact on resale value and buyer pool")
-        checklist_items.append(f"  [ ] Consider private school costs as alternative")
+        checklist_items.append("  [ ] Research school rating trends on GreatSchools.org")
+        checklist_items.append("  [ ] Visit schools and meet with administration")
+        checklist_items.append("  [ ] Review recent test scores and district funding")
+        checklist_items.append("  [ ] Check for planned school closures or boundary changes")
+        checklist_items.append("  [ ] Assess impact on resale value and buyer pool")
+        checklist_items.append("  [ ] Consider private school costs as alternative")
         checklist_items.append("")
     elif prop['school_risk'] == RiskCategory.MEDIUM:
         checklist_items.append("[MEDIUM PRIORITY] SCHOOL QUALITY")
-        checklist_items.append(f"  [ ] Review school ratings and trends")
-        checklist_items.append(f"  [ ] Verify school boundaries haven't changed recently")
+        checklist_items.append("  [ ] Review school ratings and trends")
+        checklist_items.append("  [ ] Verify school boundaries haven't changed recently")
         checklist_items.append("")
 
     if prop['lot_risk'] == RiskCategory.MEDIUM:
         checklist_items.append("[MEDIUM PRIORITY] LOT SIZE MARGIN")
-        checklist_items.append(f"  [ ] Verify actual lot size with county assessor records")
-        checklist_items.append(f"  [ ] Check for encroachments or easements reducing usable space")
-        checklist_items.append(f"  [ ] Assess whether lot feels too small for needs")
-        checklist_items.append(f"  [ ] Consider impact on resale value (smaller lot = smaller buyer pool)")
+        checklist_items.append("  [ ] Verify actual lot size with county assessor records")
+        checklist_items.append("  [ ] Check for encroachments or easements reducing usable space")
+        checklist_items.append("  [ ] Assess whether lot feels too small for needs")
+        checklist_items.append("  [ ] Consider impact on resale value (smaller lot = smaller buyer pool)")
         checklist_items.append("")
 
     if prop['noise_risk'] == RiskCategory.MEDIUM:
         checklist_items.append("[MEDIUM PRIORITY] NOISE RISK")
-        checklist_items.append(f"  [ ] Visit property to assess ambient noise levels")
-        checklist_items.append(f"  [ ] Check noise levels in backyard and bedrooms")
+        checklist_items.append("  [ ] Visit property to assess ambient noise levels")
+        checklist_items.append("  [ ] Check noise levels in backyard and bedrooms")
         checklist_items.append("")
 
     # Add general due diligence items
@@ -642,14 +640,14 @@ def main():
     medium_risk = [p for p in properties_with_risks if 3 <= p['overall_risk_score'] <= 5]
     high_risk = [p for p in properties_with_risks if p['overall_risk_score'] > 5]
 
-    print(f"\nRisk Tier Distribution:")
+    print("\nRisk Tier Distribution:")
     print(f"  Low Risk (0-2 points):    {len(low_risk)} properties")
     print(f"  Medium Risk (3-5 points): {len(medium_risk)} properties")
     print(f"  High Risk (6+ points):    {len(high_risk)} properties")
 
     # Top 3 safest properties
     safest = sorted(properties_with_risks, key=lambda x: x['overall_risk_score'])[:3]
-    print(f"\nTop 3 Safest Properties (Lowest Risk):")
+    print("\nTop 3 Safest Properties (Lowest Risk):")
     for i, prop in enumerate(safest, 1):
         price = prop.get('price', 'N/A')
         print(f"  {i}. {prop['full_address']}")
@@ -665,13 +663,13 @@ def main():
         'MEDIUM Lot Size': sum(1 for p in properties_with_risks if p['lot_risk'] == RiskCategory.MEDIUM),
     }
 
-    print(f"\nMost Common Risk Factors:")
+    print("\nMost Common Risk Factors:")
     sorted_risks = sorted(risk_counts.items(), key=lambda x: x[1], reverse=True)
     for risk_name, count in sorted_risks[:5]:
         if count > 0:
             print(f"  {risk_name}: {count} properties")
 
-    print(f"\nReports generated:")
+    print("\nReports generated:")
     print(f"  - {html_output}")
     print(f"  - {csv_output}")
     if high_risk_properties:

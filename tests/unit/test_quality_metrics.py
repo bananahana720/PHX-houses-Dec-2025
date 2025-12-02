@@ -8,21 +8,17 @@ Tests cover:
 - Quality check script functionality
 """
 
-import json
-import tempfile
 from datetime import datetime
-from pathlib import Path
 
 import pytest
 
 from src.phx_home_analysis.services.quality import (
     DataSource,
     FieldLineage,
-    QualityScore,
     LineageTracker,
     QualityMetricsCalculator,
+    QualityScore,
 )
-
 
 # ============================================================================
 # DataSource Tests
@@ -748,5 +744,5 @@ class TestQualityIntegration:
         assert calculator.meets_threshold(property_data, confidences, threshold=0.95) is True
 
         # Remove some confidence to fail threshold
-        low_confidences = {k: 0.5 for k in confidences}
+        low_confidences = dict.fromkeys(confidences, 0.5)
         assert calculator.meets_threshold(property_data, low_confidences, threshold=0.95) is False

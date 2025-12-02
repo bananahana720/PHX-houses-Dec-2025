@@ -1,6 +1,5 @@
 """Tests for the StateManager module."""
 
-import json
 import tempfile
 from pathlib import Path
 

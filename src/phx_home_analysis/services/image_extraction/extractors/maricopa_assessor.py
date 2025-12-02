@@ -4,10 +4,8 @@ Extracts property images from the Maricopa County Assessor's Office API.
 Requires API token for authentication.
 """
 
-import asyncio
 import logging
 import os
-from typing import Optional
 from urllib.parse import quote
 
 import httpx
@@ -15,11 +13,10 @@ import httpx
 from ....domain.entities import Property
 from ....domain.enums import ImageSource
 from .base import (
-    ImageExtractor,
-    SourceUnavailableError,
-    RateLimitError,
-    ImageDownloadError,
     AuthenticationError,
+    ImageExtractor,
+    RateLimitError,
+    SourceUnavailableError,
 )
 
 logger = logging.getLogger(__name__)
@@ -69,9 +66,9 @@ class MaricopaAssessorExtractor(ImageExtractor):
 
     def __init__(
         self,
-        http_client: Optional[httpx.AsyncClient] = None,
+        http_client: httpx.AsyncClient | None = None,
         timeout: float = 30.0,
-        token: Optional[str] = None,
+        token: str | None = None,
     ):
         """Initialize Maricopa Assessor extractor.
 
@@ -192,7 +189,7 @@ class MaricopaAssessorExtractor(ImageExtractor):
 
         return await self._download_with_retry(url, headers=headers)
 
-    async def _search_for_apn(self, address: str) -> Optional[str]:
+    async def _search_for_apn(self, address: str) -> str | None:
         """Search for property by address to get APN.
 
         Args:
@@ -276,7 +273,7 @@ class MaricopaAssessorExtractor(ImageExtractor):
                 f"Network error during search: {e}",
             )
 
-    async def _get_parcel_details(self, apn: str) -> Optional[dict]:
+    async def _get_parcel_details(self, apn: str) -> dict | None:
         """Get parcel details by APN.
 
         Args:

@@ -1,3 +1,5 @@
+from typing import Any
+
 """Field name mapping between data sources.
 
 This module provides field name translation between different data sources
@@ -302,7 +304,7 @@ class FieldMapper:
 
         return self.reverse_mappings[target_source].get(canonical_name, canonical_name)
 
-    def translate_dict(self, data: dict[str, any], source: str, to_canonical: bool = True) -> dict[str, any]:
+    def translate_dict(self, data: dict[str, Any], source: str, to_canonical: bool = True) -> dict[str, Any]:
         """Translate all field names in a dictionary.
 
         Args:

@@ -55,6 +55,7 @@ class PropertyDataCache:
 
     _instance: Optional['PropertyDataCache'] = None
     _lock_class = threading.Lock()  # Class-level lock for __new__
+    _initialized: bool  # Instance variable (set in __new__)
 
     def __new__(cls) -> 'PropertyDataCache':
         """Create or return singleton instance (thread-safe).
@@ -71,7 +72,7 @@ class PropertyDataCache:
                     cls._instance = instance
         return cls._instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize cache state (only runs once due to singleton pattern)."""
         if self._initialized:
             return
@@ -136,6 +137,7 @@ class PropertyDataCache:
                 self._csv_mtime = current_mtime
                 self._csv_path = csv_path
 
+            assert self._csv_data is not None  # Guaranteed after reload
             return self._csv_data
 
     def get_enrichment_data(
@@ -180,6 +182,7 @@ class PropertyDataCache:
                 self._json_mtime = current_mtime
                 self._json_path = json_path
 
+            assert self._enrichment_data is not None  # Guaranteed after reload
             return self._enrichment_data
 
     def invalidate(self) -> None:

@@ -14,10 +14,10 @@ Usage:
     python scripts/generate_all_reports.py
 """
 
-import sys
 import subprocess
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # Project root directory
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -109,7 +109,7 @@ def verify_outputs():
     print("\nVerifying output files...")
 
     all_exist = True
-    for report_name, output_path in OUTPUT_FILES.items():
+    for _report_name, output_path in OUTPUT_FILES.items():
         if output_path.exists():
             size = output_path.stat().st_size
             print(f"  [OK] {output_path.name} ({size:,} bytes)")

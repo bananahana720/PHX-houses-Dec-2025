@@ -15,21 +15,21 @@ Verdict Logic:
 - severity < 1.5 -> PASS
 """
 
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING
 
 from .base import (
-    KillSwitch,
-    KillSwitchVerdict,
     SEVERITY_FAIL_THRESHOLD,
     SEVERITY_WARNING_THRESHOLD,
+    KillSwitch,
+    KillSwitchVerdict,
 )
 from .criteria import (
-    NoHoaKillSwitch,
     CitySewerKillSwitch,
-    MinGarageKillSwitch,
-    MinBedroomsKillSwitch,
-    MinBathroomsKillSwitch,
     LotSizeKillSwitch,
+    MinBathroomsKillSwitch,
+    MinBedroomsKillSwitch,
+    MinGarageKillSwitch,
+    NoHoaKillSwitch,
     NoNewBuildKillSwitch,
 )
 
@@ -66,7 +66,7 @@ class KillSwitchFilter:
         filter_service = KillSwitchFilter(kill_switches=custom_switches)
     """
 
-    def __init__(self, kill_switches: Optional[List[KillSwitch]] = None):
+    def __init__(self, kill_switches: list[KillSwitch] | None = None):
         """Initialize filter with kill switch criteria.
 
         Args:
@@ -80,7 +80,7 @@ class KillSwitchFilter:
             self._kill_switches = kill_switches
 
     @staticmethod
-    def _get_default_kill_switches() -> List[KillSwitch]:
+    def _get_default_kill_switches() -> list[KillSwitch]:
         """Get default kill switches matching CLAUDE.md buyer requirements.
 
         Returns:
@@ -118,7 +118,7 @@ class KillSwitchFilter:
 
     def evaluate_with_severity(
         self, property: "Property"
-    ) -> Tuple[KillSwitchVerdict, float, List[str]]:
+    ) -> tuple[KillSwitchVerdict, float, list[str]]:
         """Evaluate property with full severity information.
 
         Args:
@@ -130,7 +130,7 @@ class KillSwitchFilter:
             - severity_score: Sum of SOFT weights for failed criteria
             - failure_messages: List of failure messages with severity info
         """
-        failures: List[str] = []
+        failures: list[str] = []
         has_hard_failure: bool = False
         severity_score: float = 0.0
 
@@ -148,7 +148,7 @@ class KillSwitchFilter:
         verdict = self._calculate_verdict(has_hard_failure, severity_score)
         return verdict, severity_score, failures
 
-    def evaluate(self, property: "Property") -> Tuple[bool, List[str]]:
+    def evaluate(self, property: "Property") -> tuple[bool, list[str]]:
         """Evaluate single property against all kill switches.
 
         Applies all kill switches using severity threshold system.
@@ -168,8 +168,8 @@ class KillSwitchFilter:
         return passed, failures
 
     def filter_properties(
-        self, properties: List["Property"]
-    ) -> Tuple[List["Property"], List["Property"]]:
+        self, properties: list["Property"]
+    ) -> tuple[list["Property"], list["Property"]]:
         """Filter list of properties into passed and failed categories.
 
         Evaluates each property using severity threshold system and updates its
@@ -184,8 +184,8 @@ class KillSwitchFilter:
             - passed_properties: Properties with PASS or WARNING verdict
             - failed_properties: Properties with FAIL verdict
         """
-        passed: List["Property"] = []
-        failed: List["Property"] = []
+        passed: list[Property] = []
+        failed: list[Property] = []
 
         for property in properties:
             verdict, severity, failure_messages = self.evaluate_with_severity(property)
@@ -209,7 +209,7 @@ class KillSwitchFilter:
 
         return passed, failed
 
-    def get_kill_switch_names(self) -> List[str]:
+    def get_kill_switch_names(self) -> list[str]:
         """Get list of all active kill switch names.
 
         Returns:
@@ -217,7 +217,7 @@ class KillSwitchFilter:
         """
         return [ks.name for ks in self._kill_switches]
 
-    def get_kill_switch_descriptions(self) -> List[str]:
+    def get_kill_switch_descriptions(self) -> list[str]:
         """Get list of all active kill switch descriptions.
 
         Returns:
@@ -225,7 +225,7 @@ class KillSwitchFilter:
         """
         return [ks.description for ks in self._kill_switches]
 
-    def get_hard_criteria(self) -> List[KillSwitch]:
+    def get_hard_criteria(self) -> list[KillSwitch]:
         """Get list of HARD kill switches (instant fail).
 
         Returns:
@@ -233,7 +233,7 @@ class KillSwitchFilter:
         """
         return [ks for ks in self._kill_switches if ks.is_hard]
 
-    def get_soft_criteria(self) -> List[KillSwitch]:
+    def get_soft_criteria(self) -> list[KillSwitch]:
         """Get list of SOFT kill switches (severity weighted).
 
         Returns:
@@ -248,7 +248,7 @@ class KillSwitchFilter:
             Multi-line string describing all active kill switches
         """
         lines = [
-            f"Kill Switch Filter (Severity Threshold System)",
+            "Kill Switch Filter (Severity Threshold System)",
             f"Total: {len(self._kill_switches)} criteria",
             "",
             "HARD Criteria (instant fail):",

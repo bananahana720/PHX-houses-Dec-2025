@@ -5,22 +5,21 @@ validating property data against Pydantic schemas.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any
 
 from pydantic import BaseModel, ValidationError
 
-from .schemas import (
-    EnrichmentDataSchema,
-    KillSwitchCriteriaSchema,
-    PropertySchema,
-)
 from .normalizer import (
     clean_price,
-    normalize_address,
     normalize_boolean,
     normalize_orientation,
     normalize_sewer_type,
     normalize_solar_status,
+)
+from .schemas import (
+    EnrichmentDataSchema,
+    KillSwitchCriteriaSchema,
+    PropertySchema,
 )
 
 
@@ -36,15 +35,15 @@ class ValidationResult:
     """
 
     is_valid: bool
-    errors: List[Dict[str, Any]] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    normalized_data: Optional[Dict[str, Any]] = None
+    errors: list[dict[str, Any]] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    normalized_data: dict[str, Any] | None = None
 
     def __bool__(self) -> bool:
         """Allow using ValidationResult directly in boolean context."""
         return self.is_valid
 
-    def error_messages(self) -> List[str]:
+    def error_messages(self) -> list[str]:
         """Get human-readable error messages.
 
         Returns:
@@ -52,12 +51,12 @@ class ValidationResult:
         """
         messages = []
         for error in self.errors:
-            loc = ".".join(str(l) for l in error.get("loc", []))
+            loc = ".".join(str(loc_part) for loc_part in error.get("loc", []))
             msg = error.get("msg", "Unknown error")
             messages.append(f"{loc}: {msg}" if loc else msg)
         return messages
 
-    def first_error(self) -> Optional[str]:
+    def first_error(self) -> str | None:
         """Get the first error message, if any.
 
         Returns:
@@ -82,7 +81,7 @@ class PropertyValidator:
         """
         self.normalize = normalize
 
-    def validate(self, data: Dict[str, Any]) -> ValidationResult:
+    def validate(self, data: dict[str, Any]) -> ValidationResult:
         """Validate property data against PropertySchema.
 
         Args:
@@ -93,7 +92,7 @@ class PropertyValidator:
         """
         return self._validate_with_schema(data, PropertySchema)
 
-    def validate_enrichment(self, data: Dict[str, Any]) -> ValidationResult:
+    def validate_enrichment(self, data: dict[str, Any]) -> ValidationResult:
         """Validate enrichment data against EnrichmentDataSchema.
 
         Args:
@@ -104,7 +103,7 @@ class PropertyValidator:
         """
         return self._validate_with_schema(data, EnrichmentDataSchema)
 
-    def validate_kill_switch(self, data: Dict[str, Any]) -> ValidationResult:
+    def validate_kill_switch(self, data: dict[str, Any]) -> ValidationResult:
         """Validate property against kill-switch criteria.
 
         This validates that a property passes all mandatory kill-switch
@@ -120,7 +119,7 @@ class PropertyValidator:
         return self._validate_with_schema(data, KillSwitchCriteriaSchema)
 
     def _validate_with_schema(
-        self, data: Dict[str, Any], schema: Type[BaseModel]
+        self, data: dict[str, Any], schema: type[BaseModel]
     ) -> ValidationResult:
         """Validate data against a Pydantic schema.
 
@@ -131,7 +130,7 @@ class PropertyValidator:
         Returns:
             ValidationResult with validation status and any errors
         """
-        warnings: List[str] = []
+        warnings: list[str] = []
         normalized_data = data.copy()
 
         # Apply normalization if enabled
@@ -150,14 +149,14 @@ class PropertyValidator:
         except ValidationError as e:
             return ValidationResult(
                 is_valid=False,
-                errors=e.errors(),
+                errors=e.errors(),  # type: ignore[arg-type]
                 warnings=warnings,
                 normalized_data=None,
             )
 
     def _normalize_data(
-        self, data: Dict[str, Any], schema: Type[BaseModel]
-    ) -> tuple[Dict[str, Any], List[str]]:
+        self, data: dict[str, Any], schema: type[BaseModel]
+    ) -> tuple[dict[str, Any], list[str]]:
         """Normalize data before validation.
 
         Args:
@@ -168,7 +167,7 @@ class PropertyValidator:
             Tuple of (normalized_data, warnings)
         """
         normalized = data.copy()
-        warnings: List[str] = []
+        warnings: list[str] = []
 
         # Normalize address if present
         if "address" in normalized and isinstance(normalized["address"], str):
@@ -200,9 +199,9 @@ class PropertyValidator:
 
         # Normalize boolean fields
         bool_fields = ["has_pool", "fireplace_present"]
-        for field in bool_fields:
-            if field in normalized:
-                normalized[field] = normalize_boolean(normalized[field])
+        for bool_field in bool_fields:
+            if bool_field in normalized:
+                normalized[bool_field] = normalize_boolean(normalized[bool_field])
 
         # Normalize HOA fee
         if "hoa_fee" in normalized:
@@ -223,7 +222,7 @@ class BatchValidator:
     Validates multiple property records and provides aggregate statistics.
     """
 
-    def __init__(self, validator: Optional[PropertyValidator] = None):
+    def __init__(self, validator: PropertyValidator | None = None):
         """Initialize the batch validator.
 
         Args:
@@ -232,8 +231,8 @@ class BatchValidator:
         self.validator = validator or PropertyValidator()
 
     def validate_batch(
-        self, records: List[Dict[str, Any]]
-    ) -> tuple[List[ValidationResult], Dict[str, Any]]:
+        self, records: list[dict[str, Any]]
+    ) -> tuple[list[ValidationResult], dict[str, Any]]:
         """Validate a batch of property records.
 
         Args:
@@ -245,7 +244,7 @@ class BatchValidator:
         results = []
         valid_count = 0
         invalid_count = 0
-        error_types: Dict[str, int] = {}
+        error_types: dict[str, int] = {}
 
         for record in records:
             result = self.validator.validate(record)
@@ -270,7 +269,7 @@ class BatchValidator:
 
         return results, summary
 
-    def filter_valid(self, records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def filter_valid(self, records: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Filter batch to return only valid records.
 
         Args:
@@ -287,7 +286,7 @@ class BatchValidator:
         return valid_records
 
 
-def validate_property(data: Dict[str, Any], normalize: bool = True) -> ValidationResult:
+def validate_property(data: dict[str, Any], normalize: bool = True) -> ValidationResult:
     """Convenience function to validate a single property.
 
     Args:
@@ -301,7 +300,7 @@ def validate_property(data: Dict[str, Any], normalize: bool = True) -> Validatio
     return validator.validate(data)
 
 
-def validate_enrichment(data: Dict[str, Any], normalize: bool = True) -> ValidationResult:
+def validate_enrichment(data: dict[str, Any], normalize: bool = True) -> ValidationResult:
     """Convenience function to validate enrichment data.
 
     Args:
@@ -313,3 +312,59 @@ def validate_enrichment(data: Dict[str, Any], normalize: bool = True) -> Validat
     """
     validator = PropertyValidator(normalize=normalize)
     return validator.validate_enrichment(data)
+
+
+def validate_enrichment_entry(data: dict[str, Any], normalize: bool = True) -> dict[str, Any]:
+    """Validate a single enrichment entry and return normalized data.
+
+    This function is designed for use by repositories that need to validate
+    enrichment data on load/save operations. Unlike validate_enrichment(),
+    this function raises on validation failure and returns the normalized dict.
+
+    Args:
+        data: Raw dictionary from JSON
+        normalize: Whether to apply normalization before validation
+
+    Returns:
+        Validated and normalized dictionary
+
+    Raises:
+        ValueError: If data is invalid (wraps Pydantic ValidationError)
+    """
+    result = validate_enrichment(data, normalize=normalize)
+    if not result.is_valid:
+        error_msgs = result.error_messages()
+        address = data.get("full_address", "unknown")
+        raise ValueError(f"Validation failed for '{address}': {'; '.join(error_msgs)}")
+    return result.normalized_data or data
+
+
+def validate_enrichment_list(
+    data_list: list[dict[str, Any]], normalize: bool = True
+) -> list[dict[str, Any]]:
+    """Validate a list of enrichment entries.
+
+    Args:
+        data_list: List of raw dictionaries from JSON
+        normalize: Whether to apply normalization before validation
+
+    Returns:
+        List of validated and normalized dictionaries
+
+    Raises:
+        ValueError: If any entry is invalid (includes index and address in error)
+    """
+    validated = []
+    errors = []
+
+    for i, entry in enumerate(data_list):
+        try:
+            validated.append(validate_enrichment_entry(entry, normalize=normalize))
+        except ValueError as e:
+            address = entry.get("full_address", "unknown")
+            errors.append(f"Entry {i} ({address}): {e}")
+
+    if errors:
+        raise ValueError(f"Validation failed for {len(errors)} entries:\n" + "\n".join(errors))
+
+    return validated

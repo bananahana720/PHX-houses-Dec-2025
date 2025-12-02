@@ -5,9 +5,9 @@ Supports multiple output formats: HTML, CSV, and console.
 """
 
 from .base import Reporter
+from .console_reporter import ConsoleReporter
 from .csv_reporter import CsvReporter, RiskCsvReporter
 from .html_reporter import HtmlReportGenerator
-from .console_reporter import ConsoleReporter
 
 __all__ = [
     "Reporter",

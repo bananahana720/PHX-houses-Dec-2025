@@ -5,7 +5,6 @@ Generates structured CSV files for data analysis and spreadsheet import.
 
 import csv
 from pathlib import Path
-from typing import List, Optional
 
 from ..domain.entities import Property
 from ..domain.enums import Tier
@@ -56,7 +55,7 @@ class CsvReporter(Reporter):
 
     def __init__(
         self,
-        columns: Optional[List[str]] = None,
+        columns: list[str] | None = None,
         include_extended: bool = False,
     ) -> None:
         """Initialize CSV reporter.
@@ -72,7 +71,7 @@ class CsvReporter(Reporter):
         else:
             self.columns = self.DEFAULT_COLUMNS
 
-    def generate(self, properties: List[Property], output_path: Path) -> None:
+    def generate(self, properties: list[Property], output_path: Path) -> None:
         """Generate CSV report from properties.
 
         Args:
@@ -190,7 +189,7 @@ class RiskCsvReporter(Reporter):
     and descriptions across all categories.
     """
 
-    def generate(self, properties: List[Property], output_path: Path) -> None:
+    def generate(self, properties: list[Property], output_path: Path) -> None:
         """Generate risk assessment CSV.
 
         Args:

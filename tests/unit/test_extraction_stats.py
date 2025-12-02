@@ -2,8 +2,6 @@
 
 from datetime import datetime, timedelta, timezone
 
-import pytest
-
 from src.phx_home_analysis.services.image_extraction.extraction_stats import (
     ExtractionResult,
     SourceStats,

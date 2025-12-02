@@ -5,7 +5,7 @@ data completeness and confidence levels across property records.
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from .models import QualityScore
 
@@ -63,8 +63,8 @@ class QualityMetricsCalculator:
 
     def __init__(
         self,
-        required_fields: Optional[list[str]] = None,
-        high_confidence_threshold: Optional[float] = None,
+        required_fields: list[str] | None = None,
+        high_confidence_threshold: float | None = None,
     ) -> None:
         """Initialize the calculator with optional custom configuration.
 
@@ -87,7 +87,7 @@ class QualityMetricsCalculator:
     def calculate(
         self,
         property_data: dict[str, Any],
-        field_confidences: Optional[dict[str, float]] = None,
+        field_confidences: dict[str, float] | None = None,
     ) -> QualityScore:
         """Calculate quality score for a property.
 
@@ -147,7 +147,7 @@ class QualityMetricsCalculator:
     def calculate_batch(
         self,
         properties: list[dict[str, Any]],
-        property_confidences: Optional[dict[str, dict[str, float]]] = None,
+        property_confidences: dict[str, dict[str, float]] | None = None,
     ) -> tuple[list[QualityScore], QualityScore]:
         """Calculate quality scores for multiple properties.
 
@@ -203,7 +203,7 @@ class QualityMetricsCalculator:
     def meets_threshold(
         self,
         property_data: dict[str, Any],
-        field_confidences: Optional[dict[str, float]] = None,
+        field_confidences: dict[str, float] | None = None,
         threshold: float = 0.95,
     ) -> bool:
         """Check if property data meets quality threshold.

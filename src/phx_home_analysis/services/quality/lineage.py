@@ -79,23 +79,25 @@ class LineageTracker:
             logger.error(f"Failed to read lineage file: {e}")
 
     def save(self) -> None:
-        """Persist lineage data to file.
+        """Persist lineage data to file atomically.
 
+        Uses atomic write pattern (write-to-temp + rename) to prevent
+        data corruption if the process crashes mid-write.
         Creates parent directories if they don't exist.
         """
-        # Ensure parent directory exists
-        self.lineage_file.parent.mkdir(parents=True, exist_ok=True)
+        from ...utils.file_ops import atomic_json_save
 
         # Serialize to JSON-compatible format
-        data = {}
+        data: dict[str, dict[str, dict[str, Any]]] = {}
         for property_hash, fields in self._lineage.items():
             data[property_hash] = {}
             for field_name, lineage in fields.items():
                 data[property_hash][field_name] = lineage.to_dict()
 
         try:
-            with open(self.lineage_file, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
+            backup = atomic_json_save(self.lineage_file, data, create_backup=True)
+            if backup:
+                logger.debug(f"Created lineage backup: {backup}")
             logger.info(f"Saved lineage for {len(self._lineage)} properties")
         except OSError as e:
             logger.error(f"Failed to write lineage file: {e}")
@@ -298,19 +300,19 @@ class LineageTracker:
         total_fields = sum(len(fields) for fields in self._lineage.values())
 
         # Source breakdown
-        source_counts = {}
+        source_counts: dict[str, int] = {}
         for fields in self._lineage.values():
             for lineage in fields.values():
                 source = lineage.source.value
                 source_counts[source] = source_counts.get(source, 0) + 1
 
         # Confidence statistics
-        all_confidences = []
+        all_confidences: list[float] = []
         for fields in self._lineage.values():
             all_confidences.extend(lineage.confidence for lineage in fields.values())
 
         avg_confidence = sum(all_confidences) / len(all_confidences) if all_confidences else 0
-        high_conf_count = sum(1 for c in all_confidences if c >= 0.8)
+        high_conf_count = sum(1 for c in all_confidences if c >= 0.8)  # type: ignore[misc]
         high_conf_pct = (high_conf_count / len(all_confidences) * 100) if all_confidences else 0
 
         # Build report

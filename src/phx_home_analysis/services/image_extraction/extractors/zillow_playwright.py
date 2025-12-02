@@ -4,13 +4,12 @@ Zillow is a JavaScript-heavy site requiring browser automation to properly
 load images from their dynamic galleries and carousels.
 """
 
-import asyncio
 import logging
 import re
-from typing import Optional
 from urllib.parse import quote_plus
 
-from playwright.async_api import Browser, Page, TimeoutError as PlaywrightTimeoutError, async_playwright
+from playwright.async_api import Browser, Page, async_playwright
+from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 
 from ....domain.entities import Property
 from ....domain.enums import ImageSource
@@ -38,7 +37,7 @@ class ZillowExtractor(ImageExtractor):
 
     def __init__(
         self,
-        http_client: Optional[object] = None,
+        http_client: object | None = None,
         timeout: float = 30.0,
         headless: bool = True,
     ):
@@ -51,7 +50,7 @@ class ZillowExtractor(ImageExtractor):
         """
         super().__init__(http_client, timeout)
         self._headless = headless
-        self._browser: Optional[Browser] = None
+        self._browser: Browser | None = None
         self._playwright = None
 
     @property
@@ -250,7 +249,7 @@ class ZillowExtractor(ImageExtractor):
             ExtractionError: For other extraction failures
         """
         browser = await self._ensure_browser()
-        page: Optional[Page] = None
+        page: Page | None = None
 
         try:
             # Create new page context

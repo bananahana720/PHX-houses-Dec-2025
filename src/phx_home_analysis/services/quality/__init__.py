@@ -46,9 +46,9 @@ Usage:
         print("Data quality gate passed!")
 """
 
-from .models import DataSource, FieldLineage, QualityScore
 from .lineage import LineageTracker
 from .metrics import QualityMetricsCalculator
+from .models import DataSource, FieldLineage, QualityScore
 
 __all__ = [
     # Models

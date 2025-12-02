@@ -18,7 +18,7 @@ def main():
         # Always allow (exit 0)
         sys.exit(0)
 
-    except Exception as e:
+    except Exception:
         # On any error, just allow
         sys.exit(0)
 

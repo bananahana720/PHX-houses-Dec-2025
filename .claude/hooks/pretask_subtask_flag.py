@@ -3,7 +3,6 @@
 PreToolUse hook for Task tool: Creates flag file to indicate we're in a subtask.
 This allows other hooks to adjust their behavior for subagents vs main agent.
 """
-import os
 import sys
 
 # Create a flag file indicating we're entering a subtask

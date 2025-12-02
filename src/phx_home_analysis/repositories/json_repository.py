@@ -1,11 +1,13 @@
 """JSON-based repository for enrichment data."""
 
 import json
+import logging
 from pathlib import Path
-from typing import Optional
 
-from ..domain.entities import Property, EnrichmentData
-from .base import EnrichmentRepository, DataLoadError, DataSaveError
+from ..domain.entities import EnrichmentData, Property
+from .base import DataLoadError, DataSaveError, EnrichmentRepository
+
+logger = logging.getLogger(__name__)
 
 
 class JsonEnrichmentRepository(EnrichmentRepository):
@@ -18,19 +20,26 @@ class JsonEnrichmentRepository(EnrichmentRepository):
             json_file_path: Path to the enrichment data JSON file.
         """
         self.json_file_path = Path(json_file_path)
-        self._enrichment_cache: Optional[dict[str, EnrichmentData]] = None
+        self._enrichment_cache: dict[str, EnrichmentData] | None = None
 
-    def load_all(self) -> dict[str, EnrichmentData]:
-        """Load all enrichment data from the JSON file.
+    def load_all(self, validate: bool = True) -> dict[str, EnrichmentData]:
+        """Load all enrichment data from the JSON file with optional validation.
 
         If the file doesn't exist, creates a template file and returns empty dict.
+
+        Args:
+            validate: Whether to validate data against Pydantic schema (default True).
+                     Set to False for backward compatibility or when loading known-good data.
 
         Returns:
             Dictionary mapping full_address to EnrichmentData objects.
 
         Raises:
-            DataLoadError: If JSON file cannot be read or parsed.
+            DataLoadError: If JSON file cannot be read, parsed, or validated.
         """
+        # Import here to avoid circular imports
+        from ..validation.validators import validate_enrichment_entry
+
         try:
             if not self.json_file_path.exists():
                 # Create default enrichment template
@@ -38,28 +47,65 @@ class JsonEnrichmentRepository(EnrichmentRepository):
                 self._enrichment_cache = {}
                 return {}
 
-            with open(self.json_file_path, 'r', encoding='utf-8') as f:
+            with open(self.json_file_path, encoding='utf-8') as f:
                 data = json.load(f)
 
             # Handle both list and dict formats
             if isinstance(data, list):
-                enrichment_dict = {item['full_address']: self._dict_to_enrichment(item) for item in data}
+                raw_items = data
             elif isinstance(data, dict):
-                enrichment_dict = {address: self._dict_to_enrichment(item) for address, item in data.items()}
+                # Convert dict format to list format, ensuring full_address is in each item
+                raw_items = []
+                for address, item in data.items():
+                    if isinstance(item, dict):
+                        item_copy = item.copy()
+                        item_copy.setdefault("full_address", address)
+                        raw_items.append(item_copy)
+                    else:
+                        raise DataLoadError(f"Invalid item for address '{address}': expected dict")
             else:
                 raise DataLoadError("Invalid JSON format: expected list or dict")
+
+            # Validate each entry if validation is enabled
+            enrichment_dict = {}
+            validation_errors = []
+
+            for i, item in enumerate(raw_items):
+                try:
+                    if validate:
+                        # Validate and normalize the entry
+                        validated_item = validate_enrichment_entry(item, normalize=True)
+                    else:
+                        validated_item = item
+
+                    address = validated_item.get("full_address") or item.get("full_address")
+                    if not address:
+                        raise ValueError("Missing required field: full_address")
+
+                    enrichment_dict[address] = self._dict_to_enrichment(validated_item)
+
+                except ValueError as e:
+                    address = item.get("full_address", f"entry {i}")
+                    validation_errors.append(f"{address}: {e}")
+                    logger.warning("Validation error for %s: %s", address, e)
+
+            if validation_errors:
+                error_summary = "; ".join(validation_errors[:5])
+                if len(validation_errors) > 5:
+                    error_summary += f" ... and {len(validation_errors) - 5} more errors"
+                raise DataLoadError(f"Validation failed for {len(validation_errors)} entries: {error_summary}")
 
             self._enrichment_cache = enrichment_dict
             return enrichment_dict
 
         except json.JSONDecodeError as e:
             raise DataLoadError(f"Invalid JSON format: {e}") from e
-        except (IOError, OSError) as e:
+        except OSError as e:
             raise DataLoadError(f"Failed to read JSON file: {e}") from e
         except KeyError as e:
             raise DataLoadError(f"Missing required field in JSON: {e}") from e
 
-    def load_for_property(self, full_address: str) -> Optional[EnrichmentData]:
+    def load_for_property(self, full_address: str) -> EnrichmentData | None:
         """Load enrichment data for a specific property.
 
         Args:
@@ -76,31 +122,64 @@ class JsonEnrichmentRepository(EnrichmentRepository):
 
         return self._enrichment_cache.get(full_address) if self._enrichment_cache else None
 
-    def save_all(self, enrichment_data: dict[str, EnrichmentData]) -> None:
-        """Save all enrichment data to the JSON file.
+    def save_all(self, enrichment_data: dict[str, EnrichmentData], validate: bool = True) -> None:
+        """Save all enrichment data to the JSON file atomically with optional validation.
+
+        Uses atomic write pattern (write-to-temp + rename) to prevent
+        data corruption if the process crashes mid-write.
 
         Args:
             enrichment_data: Dictionary mapping full_address to EnrichmentData.
+            validate: Whether to validate data before saving (default True).
+                     Set to False for backward compatibility or trusted data.
 
         Raises:
-            DataSaveError: If JSON file cannot be written.
+            DataSaveError: If validation fails or JSON file cannot be written.
         """
-        try:
-            # Ensure parent directory exists
-            self.json_file_path.parent.mkdir(parents=True, exist_ok=True)
+        # Import here to avoid circular imports
+        from ..utils.file_ops import atomic_json_save
+        from ..validation.validators import validate_enrichment_entry
 
+        try:
             # Convert to list format for JSON
             data_list = [self._enrichment_to_dict(enrichment) for enrichment in enrichment_data.values()]
 
-            with open(self.json_file_path, 'w', encoding='utf-8') as f:
-                json.dump(data_list, f, indent=2, ensure_ascii=False)
+            # Validate before saving if enabled
+            if validate:
+                validation_errors = []
+                validated_list = []
+
+                for i, item in enumerate(data_list):
+                    try:
+                        validated_item = validate_enrichment_entry(item, normalize=True)
+                        validated_list.append(validated_item)
+                    except ValueError as e:
+                        address = item.get("full_address", f"entry {i}")
+                        validation_errors.append(f"{address}: {e}")
+                        logger.warning("Validation error for %s: %s", address, e)
+
+                if validation_errors:
+                    error_summary = "; ".join(validation_errors[:5])
+                    if len(validation_errors) > 5:
+                        error_summary += f" ... and {len(validation_errors) - 5} more errors"
+                    raise DataSaveError(
+                        f"Validation failed, not saving. {len(validation_errors)} entries invalid: {error_summary}"
+                    )
+
+                # Use validated data for saving
+                data_list = validated_list
+
+            # Atomic save with backup
+            backup = atomic_json_save(self.json_file_path, data_list, create_backup=True)
+            if backup:
+                logger.debug(f"Created backup: {backup}")
 
             self._enrichment_cache = enrichment_data
 
-        except (IOError, OSError) as e:
+        except OSError as e:
             raise DataSaveError(f"Failed to write JSON file: {e}") from e
 
-    def apply_enrichment_to_property(self, property: Property, enrichment_dict: Optional[dict] = None) -> Property:
+    def apply_enrichment_to_property(self, property: Property, enrichment_dict: dict | None = None) -> Property:
         """Apply enrichment data to a property object.
 
         Args:
@@ -128,20 +207,26 @@ class JsonEnrichmentRepository(EnrichmentRepository):
         if not enrichment_data:
             return property
 
+        # Import enums for conversion
+        from ..domain.enums import Orientation, SewerType, SolarStatus
+
         # Apply enrichment data to property
         property.lot_sqft = enrichment_data.lot_sqft
         property.year_built = enrichment_data.year_built
         property.garage_spaces = enrichment_data.garage_spaces
-        property.sewer_type = enrichment_data.sewer_type
+        # Convert string to enum for sewer_type
+        property.sewer_type = SewerType(enrichment_data.sewer_type) if enrichment_data.sewer_type else None  # type: ignore[arg-type]
         property.tax_annual = enrichment_data.tax_annual
         property.hoa_fee = enrichment_data.hoa_fee
         property.commute_minutes = enrichment_data.commute_minutes
         property.school_district = enrichment_data.school_district
         property.school_rating = enrichment_data.school_rating
-        property.orientation = enrichment_data.orientation
+        # Convert string to enum for orientation
+        property.orientation = Orientation(enrichment_data.orientation) if enrichment_data.orientation else None  # type: ignore[arg-type]
         property.distance_to_grocery_miles = enrichment_data.distance_to_grocery_miles
         property.distance_to_highway_miles = enrichment_data.distance_to_highway_miles
-        property.solar_status = enrichment_data.solar_status
+        # Convert string to enum for solar_status
+        property.solar_status = SolarStatus(enrichment_data.solar_status) if enrichment_data.solar_status else None  # type: ignore[arg-type]
         property.solar_lease_monthly = enrichment_data.solar_lease_monthly
         property.has_pool = enrichment_data.has_pool
         property.pool_equipment_age = enrichment_data.pool_equipment_age
@@ -246,7 +331,7 @@ class JsonEnrichmentRepository(EnrichmentRepository):
             self.json_file_path.parent.mkdir(parents=True, exist_ok=True)
             with open(self.json_file_path, 'w', encoding='utf-8') as f:
                 json.dump(template, f, indent=2, ensure_ascii=False)
-        except (IOError, OSError):
+        except OSError:
             # If template creation fails, silently continue
             # The empty cache will be returned
             pass

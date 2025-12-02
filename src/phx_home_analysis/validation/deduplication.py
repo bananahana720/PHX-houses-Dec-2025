@@ -6,7 +6,6 @@ in CLAUDE.md: MD5 hash of lowercase normalized address, first 8 chars.
 """
 
 import hashlib
-from typing import Dict, List, Tuple
 
 from .normalizer import normalize_address
 
@@ -49,9 +48,9 @@ class DuplicateDetector:
 
     def __init__(self) -> None:
         """Initialize the duplicate detector with empty state."""
-        self._seen_hashes: Dict[str, str] = {}  # hash -> original address
+        self._seen_hashes: dict[str, str] = {}  # hash -> original address
 
-    def check(self, address: str) -> Tuple[bool, str | None]:
+    def check(self, address: str) -> tuple[bool, str | None]:
         """Check if address is a duplicate.
 
         If the address has been seen before (based on normalized hash),
@@ -69,7 +68,7 @@ class DuplicateDetector:
         self._seen_hashes[prop_hash] = address
         return False, None
 
-    def find_duplicates(self, addresses: List[str]) -> Dict[str, List[str]]:
+    def find_duplicates(self, addresses: list[str]) -> dict[str, list[str]]:
         """Find all duplicate groups in a list of addresses.
 
         Groups addresses by their normalized hash and returns only groups
@@ -90,7 +89,7 @@ class DuplicateDetector:
             ... ])
             {'abc12345': ['123 W Main St', '123 West Main Street']}
         """
-        hash_groups: Dict[str, List[str]] = {}
+        hash_groups: dict[str, list[str]] = {}
         for addr in addresses:
             prop_hash = compute_property_hash(addr)
             if prop_hash not in hash_groups:

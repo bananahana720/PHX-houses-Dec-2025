@@ -4,7 +4,6 @@ This module provides the PropertyScorer class that orchestrates scoring across
 all strategies, calculates category totals, and assigns tier classifications.
 """
 
-from typing import List, Optional
 
 from ...config.scoring_weights import ScoringWeights, TierThresholds
 from ...domain.entities import Property
@@ -30,9 +29,9 @@ class PropertyScorer:
 
     def __init__(
         self,
-        strategies: Optional[List[ScoringStrategy]] = None,
-        weights: Optional[ScoringWeights] = None,
-        thresholds: Optional[TierThresholds] = None,
+        strategies: list[ScoringStrategy] | None = None,
+        weights: ScoringWeights | None = None,
+        thresholds: TierThresholds | None = None,
     ) -> None:
         """Initialize PropertyScorer with strategies and config.
 
@@ -47,7 +46,7 @@ class PropertyScorer:
 
         # Initialize strategies (create instances from classes)
         if strategies is None:
-            self._strategies = [strategy_class(self._weights) for strategy_class in ALL_STRATEGIES]
+            self._strategies = [strategy_class(self._weights) for strategy_class in ALL_STRATEGIES]  # type: ignore[abstract]
         else:
             self._strategies = strategies
 
@@ -104,7 +103,7 @@ class PropertyScorer:
             interior_scores=interior_scores,
         )
 
-    def score_all(self, properties: List[Property]) -> List[Property]:
+    def score_all(self, properties: list[Property]) -> list[Property]:
         """Score all properties and assign tier classifications.
 
         Mutates the input Property entities by setting:
@@ -133,7 +132,7 @@ class PropertyScorer:
 
         return properties
 
-    def get_strategies_by_category(self, category: str) -> List[ScoringStrategy]:
+    def get_strategies_by_category(self, category: str) -> list[ScoringStrategy]:
         """Get all strategies for a specific category.
 
         Args:
@@ -144,7 +143,7 @@ class PropertyScorer:
         """
         return [s for s in self._strategies if s.category == category]
 
-    def get_strategy_by_name(self, name: str) -> Optional[ScoringStrategy]:
+    def get_strategy_by_name(self, name: str) -> ScoringStrategy | None:
         """Get strategy by criterion name.
 
         Args:

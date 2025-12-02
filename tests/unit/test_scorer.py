@@ -135,7 +135,7 @@ class TestPropertyScorer:
         scored = scorer.score_all(sample_properties)
 
         # Should be same objects, mutated
-        for orig, scored_prop in zip(original_properties, scored):
+        for orig, scored_prop in zip(original_properties, scored, strict=False):
             assert orig is scored_prop
             assert scored_prop.score_breakdown is not None
             assert scored_prop.tier is not None

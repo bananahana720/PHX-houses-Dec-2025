@@ -15,16 +15,23 @@ Exports:
     - compute_property_hash: Compute property hash from address
 """
 
+from .deduplication import DuplicateDetector, compute_property_hash
+from .normalizer import infer_type, normalize_address
 from .schemas import (
-    PropertySchema,
     EnrichmentDataSchema,
+    OrientationSchema,
+    PropertySchema,
     SewerTypeSchema,
     SolarStatusSchema,
-    OrientationSchema,
 )
-from .validators import PropertyValidator, ValidationResult
-from .normalizer import normalize_address, infer_type
-from .deduplication import DuplicateDetector, compute_property_hash
+from .validators import (
+    PropertyValidator,
+    ValidationResult,
+    validate_enrichment,
+    validate_enrichment_entry,
+    validate_enrichment_list,
+    validate_property,
+)
 
 __all__ = [
     # Schemas
@@ -36,6 +43,10 @@ __all__ = [
     # Validators
     "PropertyValidator",
     "ValidationResult",
+    "validate_property",
+    "validate_enrichment",
+    "validate_enrichment_entry",
+    "validate_enrichment_list",
     # Normalizers
     "normalize_address",
     "infer_type",

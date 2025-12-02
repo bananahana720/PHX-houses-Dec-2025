@@ -22,7 +22,6 @@ from typing import Final
 from ...config.constants import (
     INSURANCE_RATE_PER_1K,
     MAINTENANCE_MINIMUM_MONTHLY,
-    MAINTENANCE_RESERVE_ANNUAL_RATE,
     MAINTENANCE_RESERVE_MONTHLY_RATE,
     MORTGAGE_RATE_30YR,
     MORTGAGE_TERM_MONTHS,
@@ -58,9 +57,9 @@ PMI_THRESHOLD_LTV: Final[float] = 0.80
 # Annual PMI rate (percentage of loan amount)
 PMI_ANNUAL_RATE: Final[float] = 0.005  # 0.5% of loan
 
-# Re-export from constants for backward compatibility
-MORTGAGE_RATE_30YR = MORTGAGE_RATE_30YR  # noqa: F811
-LOAN_TERM_30YR_MONTHS = MORTGAGE_TERM_MONTHS  # noqa: F811
+# Re-export aliases for backward compatibility (already imported from constants)
+#MORTGAGE_RATE_30YR already imported above
+LOAN_TERM_30YR_MONTHS: Final[int] = MORTGAGE_TERM_MONTHS
 
 
 # =============================================================================
@@ -91,10 +90,8 @@ INSURANCE_ANNUAL_PER_1K = INSURANCE_RATE_PER_1K  # noqa: F811
 # See constants.py for documentation
 
 # Maximum monthly utilities cap (very large homes)
-UTILITY_MAXIMUM_MONTHLY: Final[float] = 500.0
-
-# Re-export from constants for backward compatibility
-UTILITY_RATE_PER_SQFT = UTILITY_RATE_PER_SQFT  # noqa: F811
+# Note: UTILITY_MAXIMUM_MONTHLY already imported from constants above
+UTILITY_RATE_PER_SQFT_LOCAL: Final[float] = UTILITY_RATE_PER_SQFT  # Alias for compatibility
 
 
 # =============================================================================
@@ -108,8 +105,7 @@ WATER_MONTHLY_BASE: Final[float] = 30.0  # Base service charge
 WATER_RATE_PER_KGAL: Final[float] = 5.0  # Per 1,000 gallons
 WATER_AVG_USAGE_KGAL: Final[float] = 12.0  # Average AZ household (12k gal/mo)
 
-# Re-export from constants for backward compatibility
-WATER_MONTHLY_ESTIMATE = WATER_MONTHLY_ESTIMATE  # noqa: F811
+# WATER_MONTHLY_ESTIMATE already imported from constants above
 
 
 # =============================================================================
@@ -141,9 +137,8 @@ POOL_BASE_MAINTENANCE = POOL_SERVICE_MONTHLY  # noqa: F811
 # Monthly maintenance reserve rate (derived from annual rate)
 MAINTENANCE_RESERVE_RATE: Final[float] = MAINTENANCE_RESERVE_MONTHLY_RATE  # noqa: F811
 
-# Re-export from constants for backward compatibility
-MAINTENANCE_RESERVE_ANNUAL_RATE = MAINTENANCE_RESERVE_ANNUAL_RATE  # noqa: F811
-
+# Re-import and re-export MAINTENANCE_RESERVE_ANNUAL_RATE for backward compatibility
+from ...config.constants import MAINTENANCE_RESERVE_ANNUAL_RATE  # noqa: F401
 
 # =============================================================================
 # SOLAR LEASE DEFAULTS
@@ -155,8 +150,7 @@ MAINTENANCE_RESERVE_ANNUAL_RATE = MAINTENANCE_RESERVE_ANNUAL_RATE  # noqa: F811
 SOLAR_LEASE_TYPICAL_MIN: Final[float] = 100.0
 SOLAR_LEASE_TYPICAL_MAX: Final[float] = 200.0
 
-# Re-export from constants for backward compatibility
-SOLAR_LEASE_DEFAULT = SOLAR_LEASE_DEFAULT  # noqa: F811
+# SOLAR_LEASE_DEFAULT already imported from constants above
 
 
 # =============================================================================

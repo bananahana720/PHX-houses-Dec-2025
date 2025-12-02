@@ -18,7 +18,6 @@ from src.phx_home_analysis.services.ai_enrichment import (
     TriageResult,
 )
 
-
 # ============================================================================
 # ConfidenceLevel Tests
 # ============================================================================
@@ -569,8 +568,8 @@ class TestConfidenceScorer:
         )
 
         score = scorer.score_inference(inference)
-        # lot_sqft (0.95) * assessor_api (1.0) * confidence (1.0) = 0.95
-        assert score == 0.95
+        # lot_sqft (0.95) * assessor_api (0.95) * confidence (1.0) = 0.9025
+        assert score == 0.9025
 
     def test_score_inference_web_scrape(self):
         """Test scoring for web scrape source."""
@@ -663,7 +662,7 @@ class TestConfidenceScorer:
         """Test get_source_reliability returns correct values."""
         scorer = ConfidenceScorer()
 
-        assert scorer.get_source_reliability("assessor_api") == 1.0
+        assert scorer.get_source_reliability("assessor_api") == 0.95
         assert scorer.get_source_reliability("web_scrape") == 0.85
         assert scorer.get_source_reliability("ai_pending") == 0.0
         assert scorer.get_source_reliability("unknown") == 0.5

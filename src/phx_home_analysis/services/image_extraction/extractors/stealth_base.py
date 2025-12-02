@@ -8,14 +8,12 @@ import asyncio
 import logging
 import random
 from abc import abstractmethod
-from typing import Optional
 
 import httpx
 import nodriver as uc
 
 from ....config.settings import StealthExtractionConfig
 from ....domain.entities import Property
-from ....domain.enums import ImageSource
 from ...infrastructure import BrowserPool, StealthHttpClient
 from .base import ExtractionError, ImageExtractor, SourceUnavailableError
 
@@ -50,9 +48,9 @@ class StealthBrowserExtractor(ImageExtractor):
 
     def __init__(
         self,
-        http_client: Optional[httpx.AsyncClient] = None,
+        http_client: httpx.AsyncClient | None = None,
         timeout: float = 30.0,
-        config: Optional[StealthExtractionConfig] = None,
+        config: StealthExtractionConfig | None = None,
     ):
         """Initialize stealth extractor with browser and HTTP client.
 

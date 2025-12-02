@@ -12,26 +12,25 @@ Tests cover:
 - Edge cases (0 sqft, high LTV, etc.)
 """
 
-import pytest
 from dataclasses import dataclass
-from typing import Optional
+
+import pytest
 
 from src.phx_home_analysis.services.cost_estimation import (
-    MonthlyCostEstimator,
-    MonthlyCosts,
-    CostEstimate,
-    RateConfig,
-    MORTGAGE_RATE_30YR,
     DOWN_PAYMENT_DEFAULT,
-    PROPERTY_TAX_RATE,
     INSURANCE_ANNUAL_PER_1K,
+    MAINTENANCE_RESERVE_RATE,
+    MORTGAGE_RATE_30YR,
+    POOL_TOTAL_MONTHLY,
+    PROPERTY_TAX_RATE,
+    TRASH_MONTHLY,
     UTILITY_RATE_PER_SQFT,
     WATER_MONTHLY_ESTIMATE,
-    TRASH_MONTHLY,
-    POOL_TOTAL_MONTHLY,
-    MAINTENANCE_RESERVE_RATE,
+    CostEstimate,
+    MonthlyCostEstimator,
+    MonthlyCosts,
+    RateConfig,
 )
-
 
 # =============================================================================
 # TEST FIXTURES
@@ -44,10 +43,10 @@ class MockProperty:
 
     price_num: int = 475000
     sqft: int = 2200
-    has_pool: Optional[bool] = False
-    hoa_fee: Optional[int] = 0
-    solar_lease_monthly: Optional[int] = None
-    tax_annual: Optional[int] = None
+    has_pool: bool | None = False
+    hoa_fee: int | None = 0
+    solar_lease_monthly: int | None = None
+    tax_annual: int | None = None
 
 
 @pytest.fixture

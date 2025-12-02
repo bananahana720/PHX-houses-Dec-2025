@@ -309,7 +309,7 @@ class TestAddressValueObject:
             zip_code="85001",
         )
 
-        with pytest.raises(Exception):  # FrozenInstanceError
+        with pytest.raises(AttributeError):  # FrozenInstanceError
             address.street = "456 Oak Ave"
 
     def test_address_string_representation(self):
@@ -386,7 +386,7 @@ class TestRiskAssessmentValueObject:
             description="Test",
         )
 
-        with pytest.raises(Exception):
+        with pytest.raises(AttributeError):
             risk.category = "New Category"
 
     def test_risk_assessment_optional_mitigation(self):
@@ -561,7 +561,8 @@ class TestPropertyEntity:
         sample_property.has_pool = True
         costs = sample_property.monthly_costs
 
-        assert costs["pool_maintenance"] == 125.0
+        # Service uses comprehensive pool cost: $125 service + $75 energy = $200
+        assert costs["pool_maintenance"] == 200.0
 
     def test_property_effective_price_no_renovation(self, sample_property):
         """Test effective_price without renovation estimate."""

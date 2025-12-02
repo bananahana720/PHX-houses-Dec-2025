@@ -48,13 +48,13 @@ def generate_deal_sheets(base_dir=None):
 
     # Generate individual deal sheets
     errors = []
-    for idx, row in df.iterrows():
+    for row in df.itertuples(index=False):
         try:
             filename = generate_deal_sheet(row, output_dir)
-            print(f"  [{int(row['rank']):2d}/{len(df)}] Generated: {filename}")
+            print(f"  [{int(row.rank):2d}/{len(df)}] Generated: {filename}")
         except Exception as e:
-            errors.append((int(row['rank']), row.get('full_address', 'Unknown'), str(e)))
-            print(f"  [{int(row['rank']):2d}/{len(df)}] ERROR: {e}")
+            errors.append((int(row.rank), getattr(row, 'full_address', 'Unknown'), str(e)))
+            print(f"  [{int(row.rank):2d}/{len(df)}] ERROR: {e}")
 
     if errors:
         print(f"\n[WARN] {len(errors)} properties failed to generate:")
@@ -90,16 +90,16 @@ def generate_deal_sheets(base_dir=None):
     print("\n" + "="*60)
     print("TOP 3 PROPERTIES")
     print("="*60)
-    for idx, row in df.head(3).iterrows():
-        status = "PASS" if row[ks_field] == 'PASS' else "FAIL"
-        print(f"\n#{int(row['rank'])}: {row['full_address']}")
-        print(f"  Score: {row['total_score']}/600 | Status: {status}")
+    for row in df.head(3).itertuples(index=False):
+        status = "PASS" if getattr(row, ks_field) == 'PASS' else "FAIL"
+        print(f"\n#{int(row.rank)}: {row.full_address}")
+        print(f"  Score: {row.total_score}/600 | Status: {status}")
         # Get price from price_num if price not available
-        price = row.get('price_num', row.get('price', 0))
+        price = getattr(row, 'price_num', getattr(row, 'price', 0))
         # Convert price to numeric if it's a string (e.g., "$354,000")
         if isinstance(price, str):
             price = float(price.replace('$', '').replace(',', '')) if price else 0
-        city = row.get('city', row['full_address'].split(',')[1].strip() if ',' in row['full_address'] else 'Unknown')
+        city = getattr(row, 'city', row.full_address.split(',')[1].strip() if ',' in row.full_address else 'Unknown')
         print(f"  Price: ${price:,.0f} | {city}")
 
     return output_dir

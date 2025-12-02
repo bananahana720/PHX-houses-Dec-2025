@@ -4,6 +4,7 @@ Tests Pydantic schemas, normalizers, and validators for property data.
 """
 
 import pytest
+from pydantic import ValidationError
 
 from src.phx_home_analysis.validation.deduplication import (
     DuplicateDetector,
@@ -237,7 +238,7 @@ class TestPropertySchema:
 
     def test_lot_sqft_out_of_range_fails(self):
         """Test lot_sqft range validation."""
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             PropertySchema(
                 address="123 Test Ave, Phoenix, AZ",
                 beds=4,
@@ -271,7 +272,7 @@ class TestPropertySchema:
         )
         assert data.garage_spaces == 3
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             PropertySchema(
                 address="123 Test Ave, Phoenix, AZ",
                 beds=4,
@@ -303,13 +304,13 @@ class TestEnrichmentDataSchema:
 
     def test_score_out_of_range_fails(self):
         """Test scores must be in valid range."""
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             EnrichmentDataSchema(
                 full_address="123 Main Street, Phoenix, AZ 85001",
                 school_rating=15.0,  # > 10
             )
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             EnrichmentDataSchema(
                 full_address="123 Main Street, Phoenix, AZ 85001",
                 safety_neighborhood_score=-1.0,  # < 0
@@ -323,7 +324,7 @@ class TestEnrichmentDataSchema:
         )
         assert data.orientation == "north"
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             EnrichmentDataSchema(
                 full_address="123 Main Street, Phoenix, AZ 85001",
                 orientation="invalid_direction",
@@ -337,7 +338,7 @@ class TestEnrichmentDataSchema:
         )
         assert data.solar_status == "owned"
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             EnrichmentDataSchema(
                 full_address="123 Main Street, Phoenix, AZ 85001",
                 solar_status="purchased",  # Invalid value

@@ -89,7 +89,7 @@ def test_csv_data_reloaded_on_mtime_change(temp_csv):
     cache = PropertyDataCache()
 
     # First load
-    data1 = cache.get_csv_data(temp_csv)
+    cache.get_csv_data(temp_csv)
 
     # Modify file (wait to ensure mtime changes)
     time.sleep(0.01)

@@ -100,64 +100,13 @@ class BuyerProfile:
 class ArizonaContext:
     """Arizona-specific considerations for home analysis.
 
-    These factors are unique to the Arizona climate and real estate market,
-    affecting both property value and ongoing costs.
-
-    NOTE: Most cost-related constants have been moved to:
+    NOTE: Cost-related constants have been moved to:
           src/phx_home_analysis/services/cost_estimation/rates.py
-          This class is retained for potential future use but many fields are currently unused.
 
-    Solar Panel Considerations:
-        solar_lease_penalty: Monthly cost burden for leased solar panels
-
-    Pool Maintenance:
-        pool_service_monthly: Monthly pool service cost
-        pool_equipment_replacement_cost: Average equipment replacement cost
-        pool_energy_monthly_summer: Summer energy costs for pool
-
-    HVAC Lifecycle:
-        hvac_lifespan_years: Expected HVAC lifespan in Arizona climate
-        hvac_replacement_cost: Average HVAC replacement cost
-
-    Sun Orientation Impact:
-        west_facing_penalty: Cooling cost penalty for west-facing homes
-        north_facing_bonus: Cooling cost advantage for north-facing homes
-
-    Reference Locations:
-        reference_commute_location: Target commute destination
-        reference_grocery_chains: Preferred grocery store chains
+    This class is retained for potential future use but is currently empty
+    as all active constants are now in the cost_estimation module.
     """
-
-    # Solar considerations
-    # TODO: Consider removing - unused (cost estimation uses rates.SOLAR_LEASE_DEFAULT)
-    solar_lease_penalty: int = 150  # $/month burden
-
-    # Pool maintenance costs
-    # TODO: Consider removing - unused (cost estimation uses rates.POOL_BASE_MAINTENANCE, POOL_ENERGY_MONTHLY)
-    pool_service_monthly: int = 125
-    pool_equipment_replacement_cost: int = 5_500
-    pool_energy_monthly_summer: int = 75
-
-    # HVAC considerations
-    # TODO: Consider removing - unused (no HVAC age/replacement scoring implemented yet)
-    hvac_lifespan_years: int = 12  # Shorter in AZ heat
-    hvac_replacement_cost: int = 8_000
-
-    # Sun orientation impact on cooling costs
-    # TODO: Consider removing - unused (orientation scoring exists but doesn't use these values)
-    west_facing_penalty: int = -15  # Higher afternoon cooling costs
-    north_facing_bonus: int = 15  # Lower cooling costs
-
-    # Reference locations for scoring
-    # TODO: Consider removing - unused (no commute/grocery scoring implemented)
-    reference_commute_location: str = "Desert Ridge, Phoenix, AZ"
-    reference_grocery_chains: tuple[str, ...] = (
-        "Fry's",
-        "Safeway",
-        "Sprouts",
-        "Trader Joe's",
-        "Whole Foods",
-    )
+    pass
 
 
 @dataclass(frozen=True)

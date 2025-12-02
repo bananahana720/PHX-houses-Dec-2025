@@ -7,7 +7,6 @@ import logging
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +80,7 @@ class ProxyManager:
     def __init__(
         self,
         provider: ProxyProvider = ProxyProvider.WEBSHARE,
-        config: Optional[ProxyConfig] = None,
+        config: ProxyConfig | None = None,
     ):
         """Initialize proxy manager.
 
@@ -96,9 +95,10 @@ class ProxyManager:
         if self._provider == ProxyProvider.DIRECT:
             logger.info("Proxy manager initialized in DIRECT mode (no proxy)")
         elif self.is_configured:
+            server = self._config.server if self._config else "unknown"
             logger.info(
                 f"Proxy manager initialized with {self._provider.value} "
-                f"(server: {self._config.server})"
+                f"(server: {server})"
             )
         else:
             logger.warning(
@@ -106,7 +106,7 @@ class ProxyManager:
                 f"(provider: {self._provider.value}). Set PROXY_* env vars or pass config."
             )
 
-    def _load_from_env(self) -> Optional[ProxyConfig]:
+    def _load_from_env(self) -> ProxyConfig | None:
         """Load proxy configuration from environment variables.
 
         Returns:
@@ -120,6 +120,8 @@ class ProxyManager:
         if not all([server, username, password]):
             return None
 
+        # At this point, we know all required values are non-None due to the check above
+        assert server is not None and username is not None and password is not None
         return ProxyConfig(
             server=server,
             username=username,
@@ -127,7 +129,7 @@ class ProxyManager:
             protocol=protocol,
         )
 
-    def get_proxy(self) -> Optional[ProxyConfig]:
+    def get_proxy(self) -> ProxyConfig | None:
         """Get current proxy configuration.
 
         Returns:
@@ -137,7 +139,7 @@ class ProxyManager:
             return None
         return self._config
 
-    def get_proxy_url(self) -> Optional[str]:
+    def get_proxy_url(self) -> str | None:
         """Get proxy URL for HTTP client configuration.
 
         Returns:
@@ -186,7 +188,7 @@ class ProxyManager:
         """
         return self._provider
 
-    def get_httpx_proxies(self) -> Optional[dict]:
+    def get_httpx_proxies(self) -> dict | None:
         """Get proxy configuration for httpx.AsyncClient.
 
         Returns:
@@ -206,7 +208,7 @@ class ProxyManager:
     def __repr__(self) -> str:
         """String representation for debugging."""
         if self._provider == ProxyProvider.DIRECT:
-            return f"ProxyManager(provider=DIRECT, configured=True)"
+            return "ProxyManager(provider=DIRECT, configured=True)"
 
         config_status = "configured" if self.is_configured else "unconfigured"
         server = self._config.server if self._config else "None"

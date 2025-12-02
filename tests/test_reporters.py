@@ -4,22 +4,21 @@ Validates HTML, CSV, and console report generation with proper template renderin
 """
 
 import csv
-from pathlib import Path
 
 import pytest
 
 from phx_home_analysis.domain.entities import Property
-from phx_home_analysis.domain.enums import Tier, RiskLevel, SewerType, SolarStatus, Orientation
+from phx_home_analysis.domain.enums import Orientation, RiskLevel, SewerType, SolarStatus, Tier
 from phx_home_analysis.domain.value_objects import (
-    ScoreBreakdown,
-    Score,
-    RiskAssessment,
     RenovationEstimate,
+    RiskAssessment,
+    Score,
+    ScoreBreakdown,
 )
 from phx_home_analysis.reporters import (
+    ConsoleReporter,
     CsvReporter,
     HtmlReportGenerator,
-    ConsoleReporter,
     RiskCsvReporter,
 )
 
@@ -183,7 +182,7 @@ class TestCsvReporter:
         assert output_path.exists()
 
         # Read and validate CSV
-        with open(output_path, "r", encoding="utf-8") as f:
+        with open(output_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
 
@@ -205,7 +204,7 @@ class TestCsvReporter:
         reporter.generate(sample_properties, output_path)
 
         # Read and validate
-        with open(output_path, "r", encoding="utf-8") as f:
+        with open(output_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
 
@@ -227,7 +226,7 @@ class TestCsvReporter:
         reporter.generate(sample_properties, output_path)
 
         # Read and validate
-        with open(output_path, "r", encoding="utf-8") as f:
+        with open(output_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
 
@@ -256,7 +255,7 @@ class TestRiskCsvReporter:
         assert output_path.exists()
 
         # Read and validate
-        with open(output_path, "r", encoding="utf-8") as f:
+        with open(output_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
 

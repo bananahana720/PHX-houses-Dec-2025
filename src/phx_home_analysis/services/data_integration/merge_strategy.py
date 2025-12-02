@@ -209,7 +209,7 @@ def merge_with_lineage_tracking(
     manual_data: dict[str, Any] | None = None,
     county_data: dict[str, Any] | None = None,
     listing_data: dict[str, Any] | None = None,
-    existing_lineage: dict[str, str] | None = None,
+    existing_lineage: dict[str, dict[str, str]] | None = None,
 ) -> tuple[dict[str, Any], dict[str, dict[str, str]]]:
     """Merge property data and track detailed data lineage.
 

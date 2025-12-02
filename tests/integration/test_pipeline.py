@@ -450,3 +450,513 @@ class TestPipelineErrorHandling:
             assert len(passed) + len(failed) == 1
         except Exception as e:
             pytest.fail(f"Pipeline raised exception with None enum: {e}")
+
+
+# ============================================================================
+# Test AnalysisPipeline Orchestrator
+# ============================================================================
+
+
+class TestAnalysisPipelineInit:
+    """Test AnalysisPipeline initialization with dependency injection."""
+
+    def test_pipeline_init_with_defaults(self):
+        """Test pipeline initializes with default dependencies."""
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+
+        pipeline = AnalysisPipeline()
+
+        # Verify all dependencies are initialized
+        assert pipeline._config is not None
+        assert pipeline._property_repo is not None
+        assert pipeline._enrichment_repo is not None
+        assert pipeline._enrichment_merger is not None
+        assert pipeline._kill_switch_filter is not None
+        assert pipeline._scorer is not None
+        assert pipeline._tier_classifier is not None
+        assert pipeline._property_analyzer is not None
+
+    def test_pipeline_init_with_custom_config(self, mock_config):
+        """Test pipeline initializes with custom config."""
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+
+        pipeline = AnalysisPipeline(config=mock_config)
+
+        # Verify custom config is used
+        assert pipeline.config == mock_config
+        assert pipeline.config.paths is not None
+
+    def test_pipeline_init_with_custom_dependencies(
+        self, mock_config, sample_property
+    ):
+        """Test pipeline initializes with custom injected dependencies."""
+        from unittest.mock import Mock
+
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+
+        # Create mock dependencies
+        mock_property_repo = Mock()
+        mock_enrichment_repo = Mock()
+        mock_merger = Mock()
+        mock_filter = Mock()
+        mock_scorer = Mock()
+        mock_classifier = Mock()
+        mock_analyzer = Mock()
+
+        # Initialize pipeline with custom dependencies
+        pipeline = AnalysisPipeline(
+            config=mock_config,
+            property_repo=mock_property_repo,
+            enrichment_repo=mock_enrichment_repo,
+            enrichment_merger=mock_merger,
+            kill_switch_filter=mock_filter,
+            scorer=mock_scorer,
+            tier_classifier=mock_classifier,
+            property_analyzer=mock_analyzer,
+        )
+
+        # Verify injected dependencies are used
+        assert pipeline._property_repo is mock_property_repo
+        assert pipeline._enrichment_repo is mock_enrichment_repo
+        assert pipeline._enrichment_merger is mock_merger
+        assert pipeline._kill_switch_filter is mock_filter
+        assert pipeline._scorer is mock_scorer
+        assert pipeline._tier_classifier is mock_classifier
+        assert pipeline._property_analyzer is mock_analyzer
+
+    def test_pipeline_config_property_accessor(self, mock_config):
+        """Test pipeline.config property returns configuration."""
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+
+        pipeline = AnalysisPipeline(config=mock_config)
+        assert pipeline.config is mock_config
+
+
+class TestAnalysisPipelineRun:
+    """Test AnalysisPipeline.run() orchestration flow."""
+
+    def test_pipeline_run_empty_properties(self, mock_config):
+        """Test pipeline.run() handles empty property list gracefully."""
+        from unittest.mock import Mock
+
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+
+        # Create mocks that return empty lists
+        mock_property_repo = Mock()
+        mock_property_repo.load_all.return_value = []
+
+        mock_enrichment_repo = Mock()
+        mock_enrichment_repo.load_all.return_value = {}
+
+        mock_merger = Mock()
+        mock_merger.merge_batch.return_value = []
+
+        mock_filter = Mock()
+        mock_filter.filter_properties.return_value = ([], [])
+
+        mock_scorer = Mock()
+        mock_scorer.score_all.return_value = []
+
+        mock_classifier = Mock()
+        mock_classifier.group_by_tier.return_value = ([], [], [])
+
+        pipeline = AnalysisPipeline(
+            config=mock_config,
+            property_repo=mock_property_repo,
+            enrichment_repo=mock_enrichment_repo,
+            enrichment_merger=mock_merger,
+            kill_switch_filter=mock_filter,
+            scorer=mock_scorer,
+            tier_classifier=mock_classifier,
+        )
+
+        # Run pipeline
+        result = pipeline.run()
+
+        # Verify results
+        assert result.total_properties == 0
+        assert result.passed_count == 0
+        assert result.failed_count == 0
+        assert len(result.unicorns) == 0
+        assert len(result.contenders) == 0
+        assert len(result.passed) == 0
+        assert result.execution_time_seconds >= 0
+
+    def test_pipeline_run_all_fail_kill_switch(self, mock_config, sample_properties):
+        """Test pipeline.run() with all properties failing kill switches."""
+        from unittest.mock import Mock
+
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+
+        # Use only properties that fail kill switches
+        failing_props = [
+            sample_properties[1],  # HOA fee
+            sample_properties[2],  # Septic
+            sample_properties[3],  # Lot too small
+            sample_properties[4],  # Not enough beds
+        ]
+
+        mock_property_repo = Mock()
+        mock_property_repo.load_all.return_value = failing_props
+
+        mock_enrichment_repo = Mock()
+        mock_enrichment_repo.load_all.return_value = {}
+
+        mock_merger = Mock()
+        mock_merger.merge_batch.return_value = failing_props
+
+        mock_filter = Mock()
+        mock_filter.filter_properties.return_value = ([], failing_props)
+
+        mock_scorer = Mock()
+        mock_scorer.score_all.return_value = []
+
+        mock_classifier = Mock()
+        mock_classifier.group_by_tier.return_value = ([], [], [])
+
+        pipeline = AnalysisPipeline(
+            config=mock_config,
+            property_repo=mock_property_repo,
+            enrichment_repo=mock_enrichment_repo,
+            enrichment_merger=mock_merger,
+            kill_switch_filter=mock_filter,
+            scorer=mock_scorer,
+            tier_classifier=mock_classifier,
+        )
+
+        # Run pipeline
+        result = pipeline.run()
+
+        # Verify all properties failed
+        assert result.total_properties == 4
+        assert result.passed_count == 0
+        assert result.failed_count == 4
+        assert len(result.unicorns) == 0
+        assert len(result.contenders) == 0
+        assert len(result.passed) == 0
+        assert len(result.failed) == 4
+
+    def test_pipeline_run_success_path(
+        self, mock_config, sample_property, sample_unicorn_property
+    ):
+        """Test pipeline.run() happy path with successful scoring."""
+        from unittest.mock import Mock
+
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+        from src.phx_home_analysis.services.classification import TierClassifier
+
+        properties = [sample_property, sample_unicorn_property]
+
+        mock_property_repo = Mock()
+        mock_property_repo.load_all.return_value = properties
+
+        mock_enrichment_repo = Mock()
+        mock_enrichment_repo.load_all.return_value = {}
+
+        mock_merger = Mock()
+        mock_merger.merge_batch.return_value = properties
+
+        mock_filter = Mock()
+        mock_filter.filter_properties.return_value = (properties, [])
+
+        # Use real scorer for actual scoring
+        scorer = PropertyScorer()
+        scored_props = scorer.score_all(properties)
+
+        # Use real classifier
+        classifier = TierClassifier(scorer.thresholds)
+        classifier.classify_batch(scored_props)
+        unicorns, contenders, passed = classifier.group_by_tier(scored_props)
+
+        mock_scorer = Mock()
+        mock_scorer.score_all.return_value = scored_props
+        mock_scorer.thresholds = scorer.thresholds
+
+        mock_classifier = Mock()
+        mock_classifier.group_by_tier.return_value = (unicorns, contenders, passed)
+
+        pipeline = AnalysisPipeline(
+            config=mock_config,
+            property_repo=mock_property_repo,
+            enrichment_repo=mock_enrichment_repo,
+            enrichment_merger=mock_merger,
+            kill_switch_filter=mock_filter,
+            scorer=mock_scorer,
+            tier_classifier=mock_classifier,
+        )
+
+        # Run pipeline
+        result = pipeline.run()
+
+        # Verify results
+        assert result.total_properties == 2
+        assert result.passed_count == 2
+        assert result.failed_count == 0
+        assert result.execution_time_seconds >= 0
+        # At least one should be in a tier
+        total_scored = len(result.unicorns) + len(result.contenders) + len(result.passed)
+        assert total_scored > 0
+
+    def test_pipeline_run_mixed_pass_fail(self, mock_config, sample_properties):
+        """Test pipeline.run() with mixed passing and failing properties."""
+        from unittest.mock import Mock
+
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+
+        # Separate passing and failing properties
+        passing = [sample_properties[0], sample_properties[5]]  # Passes and Unicorn
+        failing = [
+            sample_properties[1],
+            sample_properties[2],
+            sample_properties[3],
+            sample_properties[4],
+        ]
+
+        mock_property_repo = Mock()
+        mock_property_repo.load_all.return_value = passing + failing
+
+        mock_enrichment_repo = Mock()
+        mock_enrichment_repo.load_all.return_value = {}
+
+        mock_merger = Mock()
+        mock_merger.merge_batch.return_value = passing + failing
+
+        mock_filter = Mock()
+        mock_filter.filter_properties.return_value = (passing, failing)
+
+        scorer = PropertyScorer()
+        scored_props = scorer.score_all(passing)
+
+        mock_scorer = Mock()
+        mock_scorer.score_all.return_value = scored_props
+
+        from src.phx_home_analysis.services.classification import TierClassifier
+
+        classifier = TierClassifier(scorer.thresholds)
+        classifier.classify_batch(scored_props)
+        unicorns, contenders, passed_tier = classifier.group_by_tier(scored_props)
+
+        mock_classifier = Mock()
+        mock_classifier.group_by_tier.return_value = (unicorns, contenders, passed_tier)
+
+        pipeline = AnalysisPipeline(
+            config=mock_config,
+            property_repo=mock_property_repo,
+            enrichment_repo=mock_enrichment_repo,
+            enrichment_merger=mock_merger,
+            kill_switch_filter=mock_filter,
+            scorer=mock_scorer,
+            tier_classifier=mock_classifier,
+        )
+
+        # Run pipeline
+        result = pipeline.run()
+
+        # Verify results
+        assert result.total_properties == 6
+        assert result.passed_count == 2
+        assert result.failed_count == 4
+        assert len(result.failed) == 4
+        assert len(result.unicorns) > 0  # Should have at least one unicorn
+
+    def test_pipeline_run_calls_save_results(self, mock_config, sample_property):
+        """Test pipeline.run() saves results to CSV."""
+        from unittest.mock import Mock
+
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+
+        mock_property_repo = Mock()
+        mock_property_repo.load_all.return_value = [sample_property]
+
+        mock_enrichment_repo = Mock()
+        mock_enrichment_repo.load_all.return_value = {}
+
+        mock_merger = Mock()
+        mock_merger.merge_batch.return_value = [sample_property]
+
+        mock_filter = Mock()
+        mock_filter.filter_properties.return_value = ([sample_property], [])
+
+        scorer = PropertyScorer()
+        scored_props = scorer.score_all([sample_property])
+
+        mock_scorer = Mock()
+        mock_scorer.score_all.return_value = scored_props
+
+        from src.phx_home_analysis.services.classification import TierClassifier
+
+        classifier = TierClassifier(scorer.thresholds)
+        classifier.classify_batch(scored_props)
+        unicorns, contenders, passed = classifier.group_by_tier(scored_props)
+
+        mock_classifier = Mock()
+        mock_classifier.group_by_tier.return_value = (unicorns, contenders, passed)
+
+        pipeline = AnalysisPipeline(
+            config=mock_config,
+            property_repo=mock_property_repo,
+            enrichment_repo=mock_enrichment_repo,
+            enrichment_merger=mock_merger,
+            kill_switch_filter=mock_filter,
+            scorer=mock_scorer,
+            tier_classifier=mock_classifier,
+        )
+
+        # Run pipeline
+        pipeline.run()
+
+        # Verify save_all was called
+        mock_property_repo.save_all.assert_called_once()
+        # Should be called with scored properties + failed properties
+        saved_properties = mock_property_repo.save_all.call_args[0][0]
+        assert len(saved_properties) > 0
+
+
+class TestAnalysisPipelineSingleProperty:
+    """Test AnalysisPipeline.analyze_single() method."""
+
+    def test_analyze_single_property_found(self, mock_config, sample_property):
+        """Test analyze_single() finds and analyzes a specific property."""
+        from unittest.mock import Mock
+
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+
+        mock_property_repo = Mock()
+        mock_property_repo.load_all.return_value = [sample_property]
+
+        mock_enrichment_repo = Mock()
+        mock_enrichment_repo.load_all.return_value = {}
+
+        mock_analyzer = Mock()
+        mock_analyzer.find_and_analyze.return_value = sample_property
+
+        pipeline = AnalysisPipeline(
+            config=mock_config,
+            property_repo=mock_property_repo,
+            enrichment_repo=mock_enrichment_repo,
+            property_analyzer=mock_analyzer,
+        )
+
+        # Analyze single property
+        result = pipeline.analyze_single(sample_property.full_address)
+
+        # Verify result
+        assert result is not None
+        assert result.full_address == sample_property.full_address
+
+        # Verify analyzer was called correctly
+        mock_analyzer.find_and_analyze.assert_called_once()
+
+    def test_analyze_single_property_not_found(self, mock_config):
+        """Test analyze_single() returns None when property not found."""
+        from unittest.mock import Mock
+
+        from src.phx_home_analysis.pipeline import AnalysisPipeline
+
+        mock_property_repo = Mock()
+        mock_property_repo.load_all.return_value = []
+
+        mock_enrichment_repo = Mock()
+        mock_enrichment_repo.load_all.return_value = {}
+
+        mock_analyzer = Mock()
+        mock_analyzer.find_and_analyze.return_value = None
+
+        pipeline = AnalysisPipeline(
+            config=mock_config,
+            property_repo=mock_property_repo,
+            enrichment_repo=mock_enrichment_repo,
+            property_analyzer=mock_analyzer,
+        )
+
+        # Analyze non-existent property
+        result = pipeline.analyze_single("999 Non Existent St, Phoenix, AZ 00000")
+
+        # Verify result is None
+        assert result is None
+
+
+class TestPipelineResultSummary:
+    """Test PipelineResult and summary generation."""
+
+    def test_pipeline_result_summary_text_with_results(self, sample_unicorn_property):
+        """Test PipelineResult.summary_text() with actual results."""
+        from src.phx_home_analysis.pipeline import PipelineResult
+
+        unicorns = [sample_unicorn_property]
+        contenders = []
+        passed = []
+        failed = []
+
+        result = PipelineResult(
+            total_properties=5,
+            passed_count=1,
+            failed_count=4,
+            unicorns=unicorns,
+            contenders=contenders,
+            passed=passed,
+            failed=failed,
+            execution_time_seconds=2.5,
+        )
+
+        # Generate summary
+        summary = result.summary_text()
+
+        # Verify summary contains expected information
+        assert "PHX HOME ANALYSIS PIPELINE RESULTS" in summary
+        assert "Total Properties Processed: 5" in summary
+        assert "Passed: 1" in summary
+        assert "Failed: 4" in summary
+        assert "UNICORN" in summary
+        assert "20.0%" in summary  # 1/5 = 20%
+
+    def test_pipeline_result_summary_text_empty(self):
+        """Test PipelineResult.summary_text() with no results."""
+        from src.phx_home_analysis.pipeline import PipelineResult
+
+        result = PipelineResult(
+            total_properties=0,
+            passed_count=0,
+            failed_count=0,
+            unicorns=[],
+            contenders=[],
+            passed=[],
+            failed=[],
+            execution_time_seconds=0.1,
+        )
+
+        # Generate summary
+        summary = result.summary_text()
+
+        # Verify summary handles zero properties
+        assert "PHX HOME ANALYSIS PIPELINE RESULTS" in summary
+        assert "Total Properties Processed: 0" in summary
+        assert "Passed: 0" in summary
+        assert "Failed: 0" in summary
+
+    def test_pipeline_result_with_all_tiers(
+        self,
+        sample_property,
+        sample_unicorn_property,
+        sample_failed_property,
+    ):
+        """Test PipelineResult with properties in all tiers."""
+        from src.phx_home_analysis.pipeline import PipelineResult
+
+        result = PipelineResult(
+            total_properties=5,
+            passed_count=3,
+            failed_count=2,
+            unicorns=[sample_unicorn_property],
+            contenders=[sample_property],
+            passed=[sample_property],
+            failed=[sample_failed_property, sample_failed_property],
+            execution_time_seconds=3.0,
+        )
+
+        # Verify all tiers are present
+        assert len(result.unicorns) == 1
+        assert len(result.contenders) == 1
+        assert len(result.passed) == 1
+        assert len(result.failed) == 2
+        assert result.execution_time_seconds == 3.0

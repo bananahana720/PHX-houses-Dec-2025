@@ -1,4 +1,11 @@
-"""Consolidated Kill Switch Logic for PHX Home Analysis Scripts.
+"""Compatibility layer for kill switch logic - delegates to service layer.
+
+DEPRECATION NOTICE:
+This module is a compatibility shim that wraps the service layer implementation
+at src/phx_home_analysis/services/kill_switch/. New code should import directly
+from the service layer. This module will be removed in a future release.
+
+For details, see: src/phx_home_analysis/services/kill_switch/
 
 Single source of truth for kill-switch criteria used by:
 - scripts/phx_home_analyzer.py
@@ -27,9 +34,17 @@ Usage with custom config:
     from scripts.lib.kill_switch import KillSwitchFilter
     filter = KillSwitchFilter(config_path='config/buyer_criteria.yaml')
     verdict, severity, failures, results = filter.evaluate(property_data)
+
+MIGRATION GUIDE:
+    OLD: from scripts.lib import evaluate_kill_switches
+    NEW: from scripts.lib import evaluate_kill_switches  # Still works via compat shim
+
+    OLD: from scripts.lib.kill_switch import KillSwitchFilter
+    NEW: from phx_home_analysis.services.kill_switch import KillSwitchFilter
 """
 
 import math
+import warnings
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -262,6 +277,9 @@ def evaluate_kill_switches(
 ) -> tuple[KillSwitchVerdict, float, list[str], list[KillSwitchResult]]:
     """Evaluate all kill switches against property data using severity threshold system.
 
+    DEPRECATED: Use phx_home_analysis.services.kill_switch.KillSwitchFilter.evaluate()
+    instead. This function will be removed in v2.0.
+
     Severity Threshold System:
     - HARD criteria (beds, baths, hoa): Instant FAIL on any failure
     - SOFT criteria (sewer, garage, lot_size, year_built): Weighted severity sum
@@ -282,6 +300,13 @@ def evaluate_kill_switches(
         - failure_messages: List of human-readable failure messages
         - results: List of KillSwitchResult for detailed inspection
     """
+    warnings.warn(
+        "evaluate_kill_switches() is deprecated. "
+        "Use phx_home_analysis.services.kill_switch.KillSwitchFilter.evaluate() instead. "
+        "This function will be removed in v2.0.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     failures: list[str] = []
     results: list[KillSwitchResult] = []
     has_hard_failure: bool = False
@@ -360,6 +385,9 @@ def evaluate_kill_switches_legacy(
 def apply_kill_switch(prop: "PropertyLike") -> "PropertyLike":
     """Apply all kill switch criteria to a Property and update its attributes.
 
+    DEPRECATED: Use phx_home_analysis.services.kill_switch.KillSwitchFilter.filter_properties()
+    instead. This function will be removed in v2.0.
+
     Updates prop.kill_switch_passed, prop.kill_switch_failures, and optionally
     prop.kill_switch_verdict and prop.kill_switch_severity in-place.
 
@@ -369,6 +397,13 @@ def apply_kill_switch(prop: "PropertyLike") -> "PropertyLike":
     Returns:
         The same property instance (modified in-place)
     """
+    warnings.warn(
+        "apply_kill_switch() is deprecated. "
+        "Use phx_home_analysis.services.kill_switch.KillSwitchFilter.filter_properties() instead. "
+        "This function will be removed in v2.0.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     verdict, severity, failures, _ = evaluate_kill_switches(prop)
 
     # PASS and WARNING both count as "passed" for backward compatibility
@@ -398,7 +433,7 @@ def get_kill_switch_summary() -> str:
     ]
 
     # List HARD criteria
-    for name, criteria in KILL_SWITCH_CRITERIA.items():
+    for _name, criteria in KILL_SWITCH_CRITERIA.items():
         if criteria.get("is_hard", False):
             lines.append(f"  - {criteria['description']}")
             lines.append(f"    Requirement: {criteria['requirement']}")
@@ -443,6 +478,9 @@ def evaluate_kill_switches_for_display(
 ) -> dict[str, dict[str, Any]]:
     """Evaluate kill switches with display-friendly output for deal sheets.
 
+    DEPRECATED: Use phx_home_analysis.services.kill_switch module instead.
+    This function will be removed in v2.0.
+
     Compatible with pandas DataFrame rows and rendering use cases.
     Returns results with color coding for UI display.
 
@@ -464,6 +502,13 @@ def evaluate_kill_switches_for_display(
         - verdict: 'PASS' | 'WARNING' | 'FAIL'
         - severity_score: float
     """
+    warnings.warn(
+        "evaluate_kill_switches_for_display() is deprecated. "
+        "Use phx_home_analysis.services.kill_switch module instead. "
+        "This function will be removed in v2.0.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     results: dict[str, dict[str, Any]] = {}
     severity_score = 0.0
     has_hard_failure = False
@@ -546,6 +591,9 @@ KILL_SWITCH_DISPLAY_NAMES = {
 class KillSwitchFilter:
     """Kill switch filter with configurable criteria from YAML.
 
+    DEPRECATED: Use phx_home_analysis.services.kill_switch.KillSwitchFilter instead.
+    This class will be removed in v2.0.
+
     Supports loading buyer criteria from YAML config file while maintaining
     backward compatibility with hardcoded defaults.
 
@@ -566,6 +614,13 @@ class KillSwitchFilter:
         Args:
             config_path: Path to YAML config file. If None, uses hardcoded defaults.
         """
+        warnings.warn(
+            "KillSwitchFilter from scripts.lib is deprecated. "
+            "Use phx_home_analysis.services.kill_switch.KillSwitchFilter instead. "
+            "This class will be removed in v2.0.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.config_path = config_path
         self._load_config()
 

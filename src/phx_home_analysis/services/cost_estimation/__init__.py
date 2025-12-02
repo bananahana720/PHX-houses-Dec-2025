@@ -37,40 +37,40 @@ Usage:
     )
 """
 
-from .models import MonthlyCosts, CostEstimate
+from .estimator import MonthlyCostEstimator, PropertyLike
+from .models import CostEstimate, MonthlyCosts
 from .rates import (
-    # Core rate constants
-    MORTGAGE_RATE_30YR,
-    MORTGAGE_RATE_15YR,
-    LOAN_TERM_30YR_MONTHS,
+    DEFAULT_RATES,
     DOWN_PAYMENT_DEFAULT,
     # Insurance and tax
     INSURANCE_ANNUAL_PER_1K,
-    PROPERTY_TAX_RATE,
-    # Utilities (electric/gas only)
-    UTILITY_RATE_PER_SQFT,
-    UTILITY_MINIMUM_MONTHLY,
-    UTILITY_MAXIMUM_MONTHLY,
-    # Water
-    WATER_MONTHLY_BASE,
-    WATER_RATE_PER_KGAL,
-    WATER_AVG_USAGE_KGAL,
-    WATER_MONTHLY_ESTIMATE,
-    # Trash
-    TRASH_MONTHLY,
+    LOAN_TERM_30YR_MONTHS,
+    MAINTENANCE_MINIMUM_MONTHLY,
+    MAINTENANCE_RESERVE_ANNUAL_RATE,
+    # Maintenance
+    MAINTENANCE_RESERVE_RATE,
+    MORTGAGE_RATE_15YR,
+    # Core rate constants
+    MORTGAGE_RATE_30YR,
     # Pool costs
     POOL_BASE_MAINTENANCE,
     POOL_ENERGY_MONTHLY,
     POOL_TOTAL_MONTHLY,
-    # Maintenance
-    MAINTENANCE_RESERVE_RATE,
-    MAINTENANCE_RESERVE_ANNUAL_RATE,
-    MAINTENANCE_MINIMUM_MONTHLY,
+    PROPERTY_TAX_RATE,
+    # Trash
+    TRASH_MONTHLY,
+    UTILITY_MAXIMUM_MONTHLY,
+    UTILITY_MINIMUM_MONTHLY,
+    # Utilities (electric/gas only)
+    UTILITY_RATE_PER_SQFT,
+    WATER_AVG_USAGE_KGAL,
+    # Water
+    WATER_MONTHLY_BASE,
+    WATER_MONTHLY_ESTIMATE,
+    WATER_RATE_PER_KGAL,
     # Configuration
     RateConfig,
-    DEFAULT_RATES,
 )
-from .estimator import MonthlyCostEstimator, PropertyLike
 
 __all__ = [
     # Main classes

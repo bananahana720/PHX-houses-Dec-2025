@@ -58,7 +58,7 @@ class TestDealSheetDataLoading:
             assert 'rank' in df.columns
             assert 'full_address' in df.columns
             assert 'total_score' in df.columns
-            assert all(df['rank'] == [1, 2, 3])
+            assert list(df['rank'].astype(int)) == [1, 2, 3]
         finally:
             Path(csv_path).unlink()
 

@@ -5,7 +5,7 @@ import csv
 from collections import Counter
 
 # Load data
-with open('renovation_gap_report.csv', 'r') as f:
+with open('renovation_gap_report.csv') as f:
     data = list(csv.DictReader(f))
 
 # Filter to PASSING only

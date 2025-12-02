@@ -7,7 +7,6 @@ Primarily used for image extraction from real estate listing sites.
 
 import asyncio
 import logging
-from typing import Optional
 
 from curl_cffi.requests import AsyncSession
 
@@ -22,7 +21,7 @@ class StealthDownloadError(Exception):
     infrastructure layer independence.
     """
 
-    def __init__(self, url: str, status_code: Optional[int], message: str):
+    def __init__(self, url: str, status_code: int | None, message: str):
         self.url = url
         self.status_code = status_code
         self.message = message
@@ -56,7 +55,7 @@ class StealthHttpClient:
 
     def __init__(
         self,
-        proxy_url: Optional[str] = None,
+        proxy_url: str | None = None,
         timeout: float = 30.0,
         max_retries: int = 3,
     ):
@@ -70,7 +69,7 @@ class StealthHttpClient:
         self.proxy_url = proxy_url
         self.timeout = timeout
         self.max_retries = max_retries
-        self._session: Optional[AsyncSession] = None
+        self._session: AsyncSession | None = None
 
     async def _get_session(self) -> AsyncSession:
         """Get or create the curl_cffi session.
@@ -86,15 +85,15 @@ class StealthHttpClient:
             if self.proxy_url:
                 session_kwargs["proxy"] = self.proxy_url
 
-            self._session = AsyncSession(**session_kwargs)
+            self._session = AsyncSession(**session_kwargs)  # type: ignore[arg-type]
 
         return self._session
 
     async def download_image(
         self,
         url: str,
-        headers: Optional[dict] = None,
-        referer: Optional[str] = None,
+        headers: dict | None = None,
+        referer: str | None = None,
     ) -> tuple[bytes, str]:
         """Download an image with retry logic and exponential backoff.
 
@@ -117,7 +116,7 @@ class StealthHttpClient:
             request_headers["Referer"] = referer
 
         session = await self._get_session()
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
 
         for attempt in range(self.max_retries):
             try:

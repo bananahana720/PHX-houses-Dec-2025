@@ -6,15 +6,13 @@ Generates mock orientation data from street addresses and creates visualizations
 """
 
 import json
-import re
-import csv
-from pathlib import Path
-from typing import Dict, List, Tuple, Optional
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-import pandas as pd
 import random
+import re
+from pathlib import Path
 
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+import pandas as pd
 
 # Orientation Lookup Table - Annual Cooling Cost Impact
 COOLING_COST_IMPACT = {
@@ -68,8 +66,8 @@ def estimate_orientation_from_address(address: str) -> str:
     # Houses on N-S streets typically face E or W
     ns_street_match = re.search(r'\b([NS])\s+\d+(?:st|nd|rd|th)?\s+(way|ave|st|blvd|dr|ln|ct)\b', street, re.IGNORECASE)
     if ns_street_match:
-        street_dir = ns_street_match.group(1).upper()
-        street_type = ns_street_match.group(2).upper()
+        ns_street_match.group(1).upper()
+        ns_street_match.group(2).upper()
 
         # Randomly choose E or W for North-South streets
         # (Without property photos, we can't determine exact orientation)
@@ -80,7 +78,7 @@ def estimate_orientation_from_address(address: str) -> str:
     # Houses on E-W streets typically face N or S
     ew_street_match = re.search(r'\b([EW])\s+([A-Za-z\s]+?)(?:\s+(?:way|ave|st|blvd|dr|ln|ct|cir))\b', street, re.IGNORECASE)
     if ew_street_match:
-        street_dir = ew_street_match.group(1).upper()
+        ew_street_match.group(1).upper()
 
         # West streets - houses likely face North (better for AZ)
         # East streets - houses likely face North (better for AZ)
@@ -92,7 +90,7 @@ def estimate_orientation_from_address(address: str) -> str:
     return 'Unknown'
 
 
-def generate_orientation_estimates(enrichment_data: List[Dict]) -> Dict[str, str]:
+def generate_orientation_estimates(enrichment_data: list[dict]) -> dict[str, str]:
     """
     Generate orientation estimates for all properties.
 
@@ -114,10 +112,10 @@ def generate_orientation_estimates(enrichment_data: List[Dict]) -> Dict[str, str
     return orientations
 
 
-def load_enrichment_data(filepath: str) -> List[Dict]:
+def load_enrichment_data(filepath: str) -> list[dict]:
     """Load enrichment data from JSON file."""
     try:
-        with open(filepath, 'r') as f:
+        with open(filepath) as f:
             return json.load(f)
     except FileNotFoundError:
         print(f"Warning: {filepath} not found")
@@ -129,7 +127,7 @@ def load_ranked_homes(filepath: str) -> pd.DataFrame:
     return pd.read_csv(filepath)
 
 
-def save_orientation_estimates(estimates: Dict[str, str], output_path: str) -> None:
+def save_orientation_estimates(estimates: dict[str, str], output_path: str) -> None:
     """Save orientation estimates to JSON file."""
     output_data = [
         {
@@ -147,7 +145,7 @@ def save_orientation_estimates(estimates: Dict[str, str], output_path: str) -> N
 
 
 def create_orientation_impact_csv(
-    estimates: Dict[str, str],
+    estimates: dict[str, str],
     ranked_homes: pd.DataFrame,
     output_path: str
 ) -> None:
@@ -181,7 +179,7 @@ def create_orientation_impact_csv(
     print(f"Saved impact analysis to {output_path}")
 
 
-def create_visualization(estimates: Dict[str, str], output_path: str) -> None:
+def create_visualization(estimates: dict[str, str], output_path: str) -> None:
     """Create bar chart showing distribution of orientations."""
 
     # Count orientations
@@ -210,7 +208,7 @@ def create_visualization(estimates: Dict[str, str], output_path: str) -> None:
     ax.grid(axis='y', alpha=0.3, linestyle='--')
 
     # Add value labels on bars
-    for bar, count in zip(bars, counts):
+    for bar, count in zip(bars, counts, strict=False):
         height = bar.get_height()
         ax.text(bar.get_x() + bar.get_width()/2., height,
                 f'{int(count)}',
@@ -236,7 +234,7 @@ def create_visualization(estimates: Dict[str, str], output_path: str) -> None:
     plt.close()
 
 
-def print_summary_stats(estimates: Dict[str, str]) -> None:
+def print_summary_stats(estimates: dict[str, str]) -> None:
     """Print summary statistics of orientation distribution."""
 
     print("\n" + "="*70)
@@ -332,7 +330,7 @@ def main():
     print_summary_stats(orientation_estimates)
 
     print("\nAnalysis complete!")
-    print(f"\nOutput files created:")
+    print("\nOutput files created:")
     print(f"  - {orientation_estimates_file}")
     print(f"  - {orientation_impact_file}")
     print(f"  - {visualization_file}")

@@ -66,7 +66,7 @@ def calculate_radar_scores(top_3):
     prices = top_3['price'].values
     price_values = normalize_price_value(prices)
 
-    for idx, (i, row) in enumerate(top_3.iterrows()):
+    for idx, (_i, row) in enumerate(top_3.iterrows()):
         # Handle both old (section_*) and new (score_*) column names
         location_score = row.get('score_location', row.get('section_a_score', 0))
         systems_score = row.get('score_lot_systems', row.get('section_b_score', 0))
@@ -115,43 +115,43 @@ def create_radar_chart(scores):
             fillcolor=colors[idx],
             opacity=0.25,
             name=f"{short_address} (${prop['price']:,.0f})",
-            line=dict(color=colors[idx], width=2),
-            marker=dict(size=8)
+            line={"color": colors[idx], "width": 2},
+            marker={"size": 8}
         ))
 
     # Update layout
     fig.update_layout(
-        polar=dict(
-            radialaxis=dict(
-                visible=True,
-                range=[0, 10],
-                showticklabels=True,
-                ticks='outside',
-                tickvals=[0, 2, 4, 6, 8, 10],
-                tickfont=dict(size=10)
-            ),
-            angularaxis=dict(
-                tickfont=dict(size=12, weight='bold')
-            )
-        ),
+        polar={
+            "radialaxis": {
+                "visible": True,
+                "range": [0, 10],
+                "showticklabels": True,
+                "ticks": 'outside',
+                "tickvals": [0, 2, 4, 6, 8, 10],
+                "tickfont": {"size": 10}
+            },
+            "angularaxis": {
+                "tickfont": {"size": 12, "weight": 'bold'}
+            }
+        },
         showlegend=True,
-        legend=dict(
-            orientation="v",
-            yanchor="top",
-            y=0.99,
-            xanchor="left",
-            x=1.05,
-            font=dict(size=11)
-        ),
-        title=dict(
-            text="Top 3 Phoenix Properties - Radar Comparison<br><sub>All scores normalized to 0-10 scale</sub>",
-            x=0.5,
-            xanchor='center',
-            font=dict(size=18, weight='bold')
-        ),
+        legend={
+            "orientation": "v",
+            "yanchor": "top",
+            "y": 0.99,
+            "xanchor": "left",
+            "x": 1.05,
+            "font": {"size": 11}
+        },
+        title={
+            "text": "Top 3 Phoenix Properties - Radar Comparison<br><sub>All scores normalized to 0-10 scale</sub>",
+            "x": 0.5,
+            "xanchor": 'center',
+            "font": {"size": 18, "weight": 'bold'}
+        },
         width=1000,
         height=700,
-        margin=dict(l=100, r=200, t=100, b=150)
+        margin={"l": 100, "r": 200, "t": 100, "b": 150}
     )
 
     return fig
@@ -198,7 +198,7 @@ def add_analysis_box(fig, analysis_text):
         x=0.5, y=-0.15,
         xanchor='center', yanchor='top',
         showarrow=False,
-        font=dict(size=11, family="monospace"),
+        font={"size": 11, "family": "monospace"},
         align="left",
         bordercolor="black",
         borderwidth=1,
@@ -234,7 +234,7 @@ def main():
     top_3 = get_top_3_passing(df)
 
     print("Top 3 Properties:")
-    for i, row in top_3.iterrows():
+    for _i, row in top_3.iterrows():
         print(f"  {row['rank']}. {row['full_address']} - Score: {row['total_score']}")
 
     print("\nCalculating radar scores...")

@@ -8,8 +8,6 @@ and extract high-resolution image URLs from the DOM.
 import asyncio
 import logging
 import re
-from typing import Optional
-from urllib.parse import quote_plus
 
 import httpx
 from playwright.async_api import (
@@ -24,7 +22,6 @@ from ....domain.entities import Property
 from ....domain.enums import ImageSource
 from .base import (
     ExtractionError,
-    ImageDownloadError,
     ImageExtractor,
     SourceUnavailableError,
 )
@@ -50,7 +47,7 @@ class RedfinExtractor(ImageExtractor):
 
     def __init__(
         self,
-        http_client: Optional[httpx.AsyncClient] = None,
+        http_client: httpx.AsyncClient | None = None,
         timeout: float = 30.0,
         headless: bool = True,
     ):
@@ -63,9 +60,9 @@ class RedfinExtractor(ImageExtractor):
         """
         super().__init__(http_client, timeout)
         self._headless = headless
-        self._playwright: Optional[Playwright] = None
-        self._browser: Optional[Browser] = None
-        self._context: Optional[BrowserContext] = None
+        self._playwright: Playwright | None = None
+        self._browser: Browser | None = None
+        self._context: BrowserContext | None = None
 
     @property
     def source(self) -> ImageSource:
@@ -149,7 +146,7 @@ class RedfinExtractor(ImageExtractor):
         logger.debug(f"Built Redfin search URL: {search_url}")
         return search_url
 
-    async def _find_property_page(self, page: Page, property: Property) -> Optional[str]:
+    async def _find_property_page(self, page: Page, property: Property) -> str | None:
         """Navigate to property page from search results.
 
         Args:

@@ -1,9 +1,8 @@
 """Abstract base classes for repositories."""
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
-from ..domain.entities import Property, EnrichmentData
+from ..domain.entities import EnrichmentData, Property
 
 
 class DataLoadError(Exception):
@@ -32,7 +31,7 @@ class PropertyRepository(ABC):
         pass
 
     @abstractmethod
-    def load_by_address(self, full_address: str) -> Optional[Property]:
+    def load_by_address(self, full_address: str) -> Property | None:
         """Load a single property by its full address.
 
         Args:
@@ -87,7 +86,7 @@ class EnrichmentRepository(ABC):
         pass
 
     @abstractmethod
-    def load_for_property(self, full_address: str) -> Optional[EnrichmentData]:
+    def load_for_property(self, full_address: str) -> EnrichmentData | None:
         """Load enrichment data for a specific property.
 
         Args:

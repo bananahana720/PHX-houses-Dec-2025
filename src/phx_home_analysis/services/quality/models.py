@@ -7,7 +7,7 @@ field-level lineage, and confidence scores across the property analysis pipeline
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class DataSource(Enum):
@@ -62,8 +62,8 @@ class FieldLineage:
     source: DataSource
     confidence: float
     updated_at: datetime
-    original_value: Optional[Any] = None
-    notes: Optional[str] = None
+    original_value: Any | None = None
+    notes: str | None = None
 
     def __post_init__(self) -> None:
         """Validate and normalize field lineage data."""

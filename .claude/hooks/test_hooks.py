@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Test script to validate hook behavior with proper exit codes.
 Run this to verify hooks are working as expected.
@@ -45,14 +44,14 @@ def test_hook(hook_script: str, test_data: dict, expected_exit_code: int, test_n
             print(f"STDERR:\n{result.stderr}")
 
         if result.returncode == expected_exit_code:
-            print(f"✅ PASS")
+            print("✅ PASS")
             return True
         else:
             print(f"❌ FAIL: Expected {expected_exit_code}, got {result.returncode}")
             return False
 
     except subprocess.TimeoutExpired:
-        print(f"❌ FAIL: Hook timed out")
+        print("❌ FAIL: Hook timed out")
         return False
     except Exception as e:
         print(f"❌ FAIL: Exception: {e}")

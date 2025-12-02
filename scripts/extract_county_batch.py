@@ -1,6 +1,3 @@
-import json
-import hashlib
-from datetime import datetime
 
 # Target properties with hashes
 properties = [

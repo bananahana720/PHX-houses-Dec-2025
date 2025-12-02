@@ -4,15 +4,14 @@ This module provides reusable test fixtures for property creation, enrichment da
 and configuration, ensuring consistency across all test modules.
 """
 
+
 import pytest
-from datetime import datetime
 
-from src.phx_home_analysis.domain.entities import Property, EnrichmentData
-from src.phx_home_analysis.domain.enums import SewerType, SolarStatus, Orientation, Tier
-from src.phx_home_analysis.domain.value_objects import Score, ScoreBreakdown
-from src.phx_home_analysis.config.settings import AppConfig
 from src.phx_home_analysis.config.scoring_weights import ScoringWeights, TierThresholds
-
+from src.phx_home_analysis.config.settings import AppConfig
+from src.phx_home_analysis.domain.entities import EnrichmentData, Property
+from src.phx_home_analysis.domain.enums import Orientation, SewerType, SolarStatus
+from src.phx_home_analysis.domain.value_objects import Score, ScoreBreakdown
 
 # ============================================================================
 # PROPERTY FIXTURES
@@ -556,15 +555,7 @@ def mock_config():
     Returns:
         AppConfig: Configuration with default values
     """
-    return AppConfig(
-        csv_input_file="tests/fixtures/sample_properties.csv",
-        json_enrichment_file="tests/fixtures/sample_enrichment.json",
-        csv_output_file="tests/output/phx_homes_ranked.csv",
-        template_output_file="tests/output/enrichment_template.json",
-        max_mortgage_payment=4000,
-        down_payment=50000,
-        interest_rate=0.07,
-    )
+    return AppConfig.default()
 
 
 @pytest.fixture

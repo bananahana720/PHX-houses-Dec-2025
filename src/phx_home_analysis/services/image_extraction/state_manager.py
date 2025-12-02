@@ -9,7 +9,6 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Set
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +21,9 @@ class ExtractionState:
     to enable resumption of interrupted extraction runs.
     """
 
-    completed_properties: Set[str] = field(default_factory=set)
-    failed_properties: Set[str] = field(default_factory=set)
-    last_updated: Optional[str] = None
+    completed_properties: set[str] = field(default_factory=set)
+    failed_properties: set[str] = field(default_factory=set)
+    last_updated: str | None = None
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization.
@@ -69,7 +68,7 @@ class StateManager:
             state_path: Path to state JSON file
         """
         self.state_path = Path(state_path)
-        self._state: Optional[ExtractionState] = None
+        self._state: ExtractionState | None = None
 
     def load(self) -> ExtractionState:
         """Load state from disk.
@@ -82,7 +81,7 @@ class StateManager:
 
         if self.state_path.exists():
             try:
-                with open(self.state_path, "r", encoding="utf-8") as f:
+                with open(self.state_path, encoding="utf-8") as f:
                     data = json.load(f)
                     self._state = ExtractionState.from_dict(data)
                     logger.info(
@@ -90,13 +89,13 @@ class StateManager:
                         f"{len(self._state.failed_properties)} failed"
                     )
                     return self._state
-            except (json.JSONDecodeError, IOError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 logger.warning(f"Failed to load state: {e}")
 
         self._state = ExtractionState()
         return self._state
 
-    def save(self, state: Optional[ExtractionState] = None) -> None:
+    def save(self, state: ExtractionState | None = None) -> None:
         """Save state to disk.
 
         Args:
@@ -116,7 +115,7 @@ class StateManager:
             with open(self.state_path, "w", encoding="utf-8") as f:
                 json.dump(self._state.to_dict(), f, indent=2)
             logger.debug("Saved state to disk")
-        except IOError as e:
+        except OSError as e:
             logger.error(f"Failed to save state: {e}")
 
     def mark_completed(self, property_address: str) -> None:

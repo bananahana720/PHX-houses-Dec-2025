@@ -67,7 +67,7 @@ def find_critical_gaps(data: list[dict[str, Any]], field_stats: dict) -> dict[st
     """Identify properties with critical missing data."""
     critical_gaps = defaultdict(list)
 
-    for idx, prop in enumerate(data):
+    for _idx, prop in enumerate(data):
         address = prop.get('full_address', 'Unknown')
 
         for field in CRITICAL_FIELDS:
@@ -371,7 +371,7 @@ def generate_report(data_path: str) -> str:
     report_lines.append("=" * 80)
 
     properties_with_gaps = defaultdict(list)
-    for idx, prop in enumerate(data):
+    for _idx, prop in enumerate(data):
         missing_fields = []
         for field in CRITICAL_FIELDS:
             if prop.get(field) is None or prop.get(field) == '':

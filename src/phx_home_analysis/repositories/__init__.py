@@ -1,10 +1,10 @@
 """Repository layer for data persistence and retrieval."""
 
 from .base import (
-    PropertyRepository,
-    EnrichmentRepository,
     DataLoadError,
     DataSaveError,
+    EnrichmentRepository,
+    PropertyRepository,
 )
 from .csv_repository import CsvPropertyRepository
 from .json_repository import JsonEnrichmentRepository

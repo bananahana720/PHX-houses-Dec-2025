@@ -6,6 +6,10 @@ both happy path and edge cases as defined in CLAUDE.md buyer requirements.
 
 
 from src.phx_home_analysis.domain.enums import SewerType
+from src.phx_home_analysis.services.kill_switch import KillSwitchVerdict
+from src.phx_home_analysis.services.kill_switch.constants import (
+    SEVERITY_FAIL_THRESHOLD,
+)
 from src.phx_home_analysis.services.kill_switch.criteria import (
     CitySewerKillSwitch,
     LotSizeKillSwitch,
@@ -684,11 +688,6 @@ class TestKillSwitchEdgeCases:
 # ============================================================================
 # Severity Threshold Tests (Wave 1.1)
 # ============================================================================
-
-from src.phx_home_analysis.services.kill_switch import (
-    SEVERITY_FAIL_THRESHOLD,
-    KillSwitchVerdict,
-)
 
 
 class TestSeverityThresholdOOP:

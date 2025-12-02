@@ -28,16 +28,16 @@ USE_PLAYWRIGHT = os.getenv("USE_PLAYWRIGHT_EXTRACTORS", "0") == "1"
 
 if USE_PLAYWRIGHT:
     # Fallback: Use Playwright-based extractors
-    from .zillow_playwright import ZillowExtractor
     from .redfin_playwright import RedfinExtractor
+    from .zillow_playwright import ZillowExtractor
 else:
     # Default: Use nodriver + curl_cffi stealth extractors
-    from .zillow import ZillowExtractor
     from .redfin import RedfinExtractor
+    from .zillow import ZillowExtractor
 
 # Also export Playwright versions directly for explicit usage
-from .zillow_playwright import ZillowExtractor as ZillowPlaywrightExtractor
 from .redfin_playwright import RedfinExtractor as RedfinPlaywrightExtractor
+from .zillow_playwright import ZillowExtractor as ZillowPlaywrightExtractor
 
 __all__ = [
     # Base classes

@@ -5,7 +5,7 @@ address standardization, type inference, and data cleaning.
 """
 
 import re
-from typing import Any, Optional, Union
+from typing import Any
 
 
 def normalize_address(address: str) -> str:
@@ -141,7 +141,7 @@ def infer_type(value: str) -> Any:
     return value
 
 
-def normalize_sewer_type(value: Optional[str]) -> Optional[str]:
+def normalize_sewer_type(value: str | None) -> str | None:
     """Normalize sewer type values to standard enum values.
 
     Args:
@@ -184,7 +184,7 @@ def normalize_sewer_type(value: Optional[str]) -> Optional[str]:
     return "unknown"
 
 
-def normalize_orientation(value: Optional[str]) -> Optional[str]:
+def normalize_orientation(value: str | None) -> str | None:
     """Normalize orientation values to standard enum values.
 
     Args:
@@ -227,7 +227,7 @@ def normalize_orientation(value: Optional[str]) -> Optional[str]:
     return mappings.get(value, "unknown")
 
 
-def normalize_solar_status(value: Optional[str]) -> Optional[str]:
+def normalize_solar_status(value: str | None) -> str | None:
     """Normalize solar status values to standard enum values.
 
     Args:
@@ -259,7 +259,7 @@ def normalize_solar_status(value: Optional[str]) -> Optional[str]:
     return "unknown"
 
 
-def clean_price(value: Union[str, int, float]) -> Optional[int]:
+def clean_price(value: str | int | float) -> int | None:
     """Clean and normalize price values.
 
     Handles various price formats including:
@@ -303,7 +303,7 @@ def clean_price(value: Union[str, int, float]) -> Optional[int]:
         return None
 
 
-def normalize_boolean(value: Any) -> Optional[bool]:
+def normalize_boolean(value: Any) -> bool | None:
     """Normalize various boolean representations.
 
     Args:

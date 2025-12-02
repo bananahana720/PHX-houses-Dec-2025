@@ -4,20 +4,20 @@ Generate golden_zone_map.html with current property locations and tiers.
 Uses ranked CSV data for scores and enrichment JSON for lat/lon geocoding.
 """
 
-import json
 import csv
-from pathlib import Path
-from typing import Optional, Tuple
+import json
 import re
+from pathlib import Path
 
-def extract_address_parts(address: str) -> Tuple[str, str]:
+
+def extract_address_parts(address: str) -> tuple[str, str]:
     """Extract city and zip from full address."""
     match = re.search(r'([A-Za-z\s]+),\s*AZ\s*(\d{5})', address)
     if match:
         return match.group(1).strip(), match.group(2)
     return "", ""
 
-def get_coordinates_from_enrichment(address: str, enrichment_data: list) -> Optional[Tuple[float, float]]:
+def get_coordinates_from_enrichment(address: str, enrichment_data: list) -> tuple[float, float] | None:
     """Look up coordinates in enrichment data based on address."""
     for prop in enrichment_data:
         if prop.get('full_address', '').lower() == address.lower():
@@ -30,16 +30,16 @@ def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_pa
     """Generate the interactive map HTML."""
 
     # Load enrichment data for coordinates
-    with open(enrichment_json_path, 'r') as f:
+    with open(enrichment_json_path) as f:
         enrichment_data = json.load(f)
 
     # Create address -> enrichment data map
-    enrichment_map = {prop['full_address']: prop for prop in enrichment_data if 'full_address' in prop}
+    {prop['full_address']: prop for prop in enrichment_data if 'full_address' in prop}
 
     # Read ranked CSV
     properties = []
     seen_addresses = set()
-    with open(ranked_csv_path, 'r') as f:
+    with open(ranked_csv_path) as f:
         reader = csv.DictReader(f)
         for row in reader:
             if row['full_address']:
@@ -187,7 +187,7 @@ def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_pa
                 else:
                     color = 'orange'
                     radius = 9
-            except:
+            except Exception:
                 color = 'gray'
                 radius = 8
 
@@ -241,7 +241,6 @@ def generate_map_html(ranked_csv_path: str, enrichment_json_path: str, output_pa
     print(f"  Failed: {len(failed)}")
 
 if __name__ == "__main__":
-    import sys
 
     project_root = Path(__file__).parent.parent
     ranked_csv = project_root / "data" / "phx_homes_ranked.csv"

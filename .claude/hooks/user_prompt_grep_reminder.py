@@ -3,8 +3,8 @@
 UserPromptSubmit hook: Reminds user to use rg instead of grep in prompts.
 """
 import json
-import sys
 import re
+import sys
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
         # Always allow (exit 0)
         sys.exit(0)
 
-    except Exception as e:
+    except Exception:
         # On any error, just allow the prompt
         sys.exit(0)
 

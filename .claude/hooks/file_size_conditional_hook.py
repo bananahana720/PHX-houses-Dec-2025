@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-import os
 import json
-import sys
-import subprocess
+import os
 import shutil
-
+import subprocess
+import sys
 
 data = json.load(sys.stdin)
 
@@ -30,11 +29,11 @@ if file_path and os.path.exists(file_path):
                 chunk = f.read(8192)
                 if not chunk:  # Empty file
                     return False
-                
+
                 # Files with null bytes are likely binary
                 if b'\x00' in chunk:
                     return True
-                
+
                 # Try to decode as UTF-8
                 try:
                     chunk.decode('utf-8')
@@ -44,11 +43,11 @@ if file_path and os.path.exists(file_path):
         except Exception:
             # If we can't read the file, assume it's binary to be safe
             return True
-    
+
     # Skip line count check for binary files
     if is_binary_file(file_path):
         sys.exit(0)
-    
+
     import shutil
 
     def _count_lines_fast(path: str) -> int:
@@ -73,7 +72,7 @@ if file_path and os.path.exists(file_path):
 
     line_count = _get_line_count(file_path)
 
-    
+
     # Compute effective number of lines to be read
     if limit > 0:
         # If limit is specified, we read from offset to offset+limit

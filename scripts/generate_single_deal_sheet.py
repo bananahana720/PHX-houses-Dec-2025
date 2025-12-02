@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+
 def generate_deal_sheet(address: str) -> str:
     """Generate HTML deal sheet for a property."""
 

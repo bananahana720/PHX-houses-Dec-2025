@@ -4,6 +4,7 @@ import json
 import re
 from pathlib import Path
 
+
 def main():
     base = Path(__file__).parent.parent
     lookup_path = base / 'data/property_images/metadata/address_folder_lookup.json'

@@ -5,7 +5,6 @@ implement, providing a consistent interface for calculating property scores.
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from ...domain.entities import Property
 from ...domain.value_objects import Score
@@ -71,7 +70,7 @@ class ScoringStrategy(ABC):
         pass
 
     def calculate_weighted_score(
-        self, property: Property, note: Optional[str] = None
+        self, property: Property, note: str | None = None
     ) -> Score:
         """Calculate weighted score for this criterion.
 

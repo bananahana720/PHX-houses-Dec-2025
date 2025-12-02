@@ -246,7 +246,7 @@ class TestCsvPropertyRepositoryLoad:
         repo = CsvPropertyRepository(temp_csv_file)
         assert repo._properties_cache is None
 
-        properties = repo.load_all()
+        repo.load_all()
         assert repo._properties_cache is not None
         assert len(repo._properties_cache) == 2
 
@@ -613,7 +613,6 @@ class TestJsonEnrichmentRepositoryApplyEnrichment:
     def test_apply_enrichment_updates_property(self, sample_property_minimal):
         """Test that enrichment properly updates property fields."""
         repo = JsonEnrichmentRepository(Path("/tmp/nonexistent.json"))
-        original_lot_sqft = sample_property_minimal.lot_sqft
         enrichment_dict = {
             "full_address": sample_property_minimal.full_address,
             "lot_sqft": 12000,
@@ -625,7 +624,7 @@ class TestJsonEnrichmentRepositoryApplyEnrichment:
 
         assert enriched.lot_sqft == 12000
         assert enriched.year_built == 2015
-        assert enriched.sewer_type == "city"
+        assert enriched.sewer_type == SewerType.CITY
 
 
 class TestJsonEnrichmentRepositorySerialization:

@@ -225,10 +225,11 @@ class ImageExtractionOrchestrator:
             f"across {len(self.enabled_sources)} sources"
         )
 
-        # Initialize HTTP client
+        # Initialize HTTP client with connection pool limits
         self._http_client = httpx.AsyncClient(
             timeout=30.0,
             follow_redirects=True,
+            limits=httpx.Limits(max_connections=20, max_keepalive_connections=10),
             headers={
                 "User-Agent": (
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "

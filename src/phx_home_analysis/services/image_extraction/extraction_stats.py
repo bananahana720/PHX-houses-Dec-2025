@@ -6,7 +6,6 @@ progress and generating summary reports.
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, Optional
 
 
 @dataclass
@@ -63,9 +62,9 @@ class ExtractionResult:
     unique_images: int = 0
     duplicate_images: int = 0
     failed_downloads: int = 0
-    by_source: Dict[str, SourceStats] = field(default_factory=dict)
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    by_source: dict[str, SourceStats] = field(default_factory=dict)
+    start_time: datetime | None = None
+    end_time: datetime | None = None
 
     @property
     def duration_seconds(self) -> float:

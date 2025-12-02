@@ -5,7 +5,6 @@ Defines the abstract Reporter interface that all report generators must implemen
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List
 
 from ..domain.entities import Property
 
@@ -18,7 +17,7 @@ class Reporter(ABC):
     """
 
     @abstractmethod
-    def generate(self, properties: List[Property], output_path: Path) -> None:
+    def generate(self, properties: list[Property], output_path: Path) -> None:
         """Generate report from property data.
 
         Args:

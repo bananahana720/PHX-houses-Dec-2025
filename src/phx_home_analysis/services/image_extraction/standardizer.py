@@ -6,7 +6,6 @@ Converts all property images to a consistent format (PNG) and dimensions
 
 import logging
 from io import BytesIO
-from typing import Optional
 
 from PIL import Image
 
@@ -186,7 +185,7 @@ class ImageStandardizer:
         except Exception as e:
             raise ImageProcessingError(f"Failed to get dimensions: {e}") from e
 
-    def get_format(self, image_data: bytes) -> Optional[str]:
+    def get_format(self, image_data: bytes) -> str | None:
         """Detect image format from bytes.
 
         Args:

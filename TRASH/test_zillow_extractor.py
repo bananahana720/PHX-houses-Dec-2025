@@ -7,9 +7,10 @@ This script tests:
 """
 
 import asyncio
-from src.phx_home_analysis.services.image_extraction.extractors.zillow import ZillowExtractor
+
 from src.phx_home_analysis.domain.entities import Property
 from src.phx_home_analysis.domain.enums import ImageSource
+from src.phx_home_analysis.services.image_extraction.extractors.zillow import ZillowExtractor
 
 
 async def test_zillow_extractor():

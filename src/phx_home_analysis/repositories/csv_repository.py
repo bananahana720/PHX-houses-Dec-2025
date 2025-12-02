@@ -2,17 +2,17 @@
 
 import csv
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from ..domain.entities import Property
-from ..domain.enums import SewerType, SolarStatus, Orientation, Tier
-from .base import PropertyRepository, DataLoadError, DataSaveError
+from ..domain.enums import Orientation, SewerType, SolarStatus, Tier
+from .base import DataLoadError, DataSaveError, PropertyRepository
 
 
 class CsvPropertyRepository(PropertyRepository):
     """CSV file-based repository for property data."""
 
-    def __init__(self, csv_file_path: str | Path, ranked_csv_path: Optional[str | Path] = None):
+    def __init__(self, csv_file_path: str | Path, ranked_csv_path: str | Path | None = None):
         """Initialize CSV repository.
 
         Args:
@@ -21,7 +21,7 @@ class CsvPropertyRepository(PropertyRepository):
         """
         self.csv_file_path = Path(csv_file_path)
         self.ranked_csv_path = Path(ranked_csv_path) if ranked_csv_path else None
-        self._properties_cache: Optional[dict[str, Property]] = None
+        self._properties_cache: dict[str, Property] | None = None
 
     def load_all(self) -> list[Property]:
         """Load all properties from the CSV file.
@@ -37,7 +37,7 @@ class CsvPropertyRepository(PropertyRepository):
                 raise DataLoadError(f"CSV file not found: {self.csv_file_path}")
 
             properties = []
-            with open(self.csv_file_path, 'r', encoding='utf-8') as f:
+            with open(self.csv_file_path, encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
                     property_obj = self._row_to_property(row)
@@ -47,12 +47,12 @@ class CsvPropertyRepository(PropertyRepository):
             self._properties_cache = {p.full_address: p for p in properties}
             return properties
 
-        except (IOError, OSError) as e:
+        except OSError as e:
             raise DataLoadError(f"Failed to read CSV file: {e}") from e
         except (ValueError, KeyError) as e:
             raise DataLoadError(f"Failed to parse CSV data: {e}") from e
 
-    def load_by_address(self, full_address: str) -> Optional[Property]:
+    def load_by_address(self, full_address: str) -> Property | None:
         """Load a single property by its full address.
 
         Args:
@@ -98,7 +98,7 @@ class CsvPropertyRepository(PropertyRepository):
                     row = self._property_to_row(property_obj)
                     writer.writerow(row)
 
-        except (IOError, OSError) as e:
+        except OSError as e:
             raise DataSaveError(f"Failed to write CSV file: {e}") from e
 
     def save_one(self, property: Property) -> None:
@@ -131,13 +131,13 @@ class CsvPropertyRepository(PropertyRepository):
             zip_code=row.get('zip', row.get('zip_code', '')).strip(),
             full_address=row['full_address'].strip(),
 
-            # Basic listing data
+            # Basic listing data (required fields with fallback to 0)
             price=row['price'].strip(),
-            price_num=self._parse_int(row.get('price_num')),
-            beds=self._parse_int(row.get('beds')),
-            baths=self._parse_float(row.get('baths')),
-            sqft=self._parse_int(row.get('sqft')),
-            price_per_sqft_raw=self._parse_float(row.get('price_per_sqft')),
+            price_num=self._parse_int(row.get('price_num')),  # Can be None if unparseable
+            beds=self._parse_int(row.get('beds')) or 0,
+            baths=self._parse_float(row.get('baths')) or 0.0,
+            sqft=self._parse_int(row.get('sqft')) or 0,
+            price_per_sqft_raw=self._parse_float(row.get('price_per_sqft')) or 0.0,
 
             # County assessor data (may be in ranked CSV)
             lot_sqft=self._parse_int(row.get('lot_sqft')),
@@ -223,7 +223,7 @@ class CsvPropertyRepository(PropertyRepository):
             'lot_sqft': property_obj.lot_sqft or '',
             'year_built': property_obj.year_built or '',
             'garage_spaces': property_obj.garage_spaces or '',
-            'sewer_type': property_obj.sewer_type.value if hasattr(property_obj.sewer_type, 'value') else (property_obj.sewer_type or ''),
+            'sewer_type': property_obj.sewer_type.value if property_obj.sewer_type else '',
             'tax_annual': property_obj.tax_annual or '',
 
             # HOA and location data
@@ -231,12 +231,12 @@ class CsvPropertyRepository(PropertyRepository):
             'commute_minutes': property_obj.commute_minutes or '',
             'school_district': property_obj.school_district or '',
             'school_rating': f"{property_obj.school_rating:.1f}" if property_obj.school_rating else '',
-            'orientation': property_obj.orientation.value if hasattr(property_obj.orientation, 'value') else (property_obj.orientation or ''),
+            'orientation': property_obj.orientation.value if property_obj.orientation else '',
             'distance_to_grocery_miles': f"{property_obj.distance_to_grocery_miles:.1f}" if property_obj.distance_to_grocery_miles else '',
             'distance_to_highway_miles': f"{property_obj.distance_to_highway_miles:.1f}" if property_obj.distance_to_highway_miles else '',
 
             # Arizona-specific features
-            'solar_status': property_obj.solar_status.value if hasattr(property_obj.solar_status, 'value') else (property_obj.solar_status or ''),
+            'solar_status': property_obj.solar_status.value if property_obj.solar_status else '',
             'solar_lease_monthly': property_obj.solar_lease_monthly or '',
             'has_pool': str(property_obj.has_pool).lower() if property_obj.has_pool is not None else '',
             'pool_equipment_age': property_obj.pool_equipment_age or '',
@@ -301,7 +301,7 @@ class CsvPropertyRepository(PropertyRepository):
         ]
 
     @staticmethod
-    def _parse_int(value: Optional[str]) -> Optional[int]:
+    def _parse_int(value: str | None) -> int | None:
         """Parse integer from CSV string, handling empty/None values.
 
         Args:
@@ -318,7 +318,7 @@ class CsvPropertyRepository(PropertyRepository):
             return None
 
     @staticmethod
-    def _parse_float(value: Optional[str]) -> Optional[float]:
+    def _parse_float(value: str | None) -> float | None:
         """Parse float from CSV string, handling empty/None values.
 
         Args:
@@ -335,7 +335,7 @@ class CsvPropertyRepository(PropertyRepository):
             return None
 
     @staticmethod
-    def _parse_bool(value: Optional[str]) -> Optional[bool]:
+    def _parse_bool(value: str | None) -> bool | None:
         """Parse boolean from CSV string.
 
         Args:
@@ -354,7 +354,7 @@ class CsvPropertyRepository(PropertyRepository):
         return None
 
     @staticmethod
-    def _parse_list(value: Optional[str], delimiter: str = ';') -> list[str]:
+    def _parse_list(value: str | None, delimiter: str = ';') -> list[str]:
         """Parse list from delimited CSV string.
 
         Args:
@@ -369,7 +369,7 @@ class CsvPropertyRepository(PropertyRepository):
         return [item.strip() for item in value.split(delimiter) if item.strip()]
 
     @staticmethod
-    def _parse_enum(value: Optional[str], enum_class: type) -> Optional[Any]:
+    def _parse_enum(value: str | None, enum_class: type[Any]) -> Any | None:
         """Parse enum from CSV string.
 
         Args:

@@ -1,20 +1,17 @@
 """Unit tests for ImageExtractionOrchestrator."""
 
-import asyncio
-import json
-from pathlib import Path
-from unittest.mock import AsyncMock, Mock, patch, MagicMock
 from datetime import datetime
+from unittest.mock import patch
 
 import pytest
 
 from src.phx_home_analysis.domain.entities import Property
-from src.phx_home_analysis.domain.enums import ImageSource, ImageStatus
-from src.phx_home_analysis.domain.value_objects import ImageMetadata, PerceptualHash
+from src.phx_home_analysis.domain.enums import ImageSource
+from src.phx_home_analysis.domain.value_objects import ImageMetadata
 from src.phx_home_analysis.services.image_extraction.orchestrator import (
-    ImageExtractionOrchestrator,
     ExtractionResult,
     ExtractionState,
+    ImageExtractionOrchestrator,
     SourceStats,
 )
 

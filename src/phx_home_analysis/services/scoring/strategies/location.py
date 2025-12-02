@@ -11,11 +11,9 @@ This module implements scoring strategies for location-related criteria:
 Total Section A maximum: 250 points
 """
 
-from typing import Optional
 
 from ....config.scoring_weights import ScoringWeights
 from ....domain.entities import Property
-from ....domain.enums import Orientation
 from ..base import ScoringStrategy
 
 
@@ -32,7 +30,7 @@ class SchoolDistrictScorer(ScoringStrategy):
     - Unknown: 5 pts (neutral)
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -78,7 +76,7 @@ class QuietnessScorer(ScoringStrategy):
     Data source: Google Maps
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -134,7 +132,7 @@ class SafetyScorer(ScoringStrategy):
     - 0: Poor (visible issues)
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -181,7 +179,7 @@ class SupermarketScorer(ScoringStrategy):
     Data source: Google Maps
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -239,7 +237,7 @@ class ParksWalkabilityScorer(ScoringStrategy):
     - 0: Poor (no amenities)
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -292,7 +290,7 @@ class OrientationScorer(ScoringStrategy):
     Data source: Google Maps satellite view
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:

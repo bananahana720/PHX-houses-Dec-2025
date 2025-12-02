@@ -217,7 +217,15 @@ class EnrichmentDataSchema(BaseModel):
         None, ge=0, le=500, description="Monthly solar lease payment"
     )
 
-    model_config = {"str_strip_whitespace": True}
+    # Metadata fields (prefixed with _) for tracking data freshness
+    # These are optional timestamps in ISO 8601 format
+    # Note: Pydantic doesn't support fields starting with _ directly,
+    # so we use model_config extra="allow" to accept them
+
+    model_config = {
+        "str_strip_whitespace": True,
+        "extra": "allow",  # Allow metadata fields like _last_updated, _last_county_sync
+    }
 
     @field_validator("orientation")
     @classmethod

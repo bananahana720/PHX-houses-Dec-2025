@@ -15,7 +15,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 
 from lib.kill_switch import (
+    HARD_CRITERIA,
     KILL_SWITCH_CRITERIA,
+    SEVERITY_FAIL_THRESHOLD,
+    SEVERITY_WARNING_THRESHOLD,
+    SOFT_SEVERITY_WEIGHTS,
+    KillSwitchVerdict,
     apply_kill_switch,
     evaluate_kill_switches,
     evaluate_kill_switches_for_display,
@@ -384,14 +389,6 @@ class TestGetKillSwitchSummary:
 # =============================================================================
 # SEVERITY THRESHOLD TESTS (Wave 1.1 Implementation)
 # =============================================================================
-
-from lib.kill_switch import (
-    HARD_CRITERIA,
-    SEVERITY_FAIL_THRESHOLD,
-    SEVERITY_WARNING_THRESHOLD,
-    SOFT_SEVERITY_WEIGHTS,
-    KillSwitchVerdict,
-)
 
 
 class TestSeverityThresholdConstants:

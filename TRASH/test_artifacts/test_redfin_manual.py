@@ -6,6 +6,7 @@ without requiring a full test suite setup.
 
 import asyncio
 import logging
+
 from src.phx_home_analysis.domain.entities import Property
 from src.phx_home_analysis.services.image_extraction.extractors.redfin import (
     RedfinExtractor,
@@ -39,7 +40,7 @@ async def test_redfin_extractor():
 
     try:
         print(f"\n{'='*60}")
-        print(f"Testing Redfin Extractor")
+        print("Testing Redfin Extractor")
         print(f"{'='*60}")
         print(f"Property: {property.full_address}")
         print(f"Source: {extractor.source.display_name}")

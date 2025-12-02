@@ -12,7 +12,6 @@ This module implements scoring strategies for interior features:
 Total Section C maximum: 190 points
 """
 
-from typing import Optional
 
 from ....config.scoring_weights import ScoringWeights
 from ....domain.entities import Property
@@ -34,7 +33,7 @@ class KitchenLayoutScorer(ScoringStrategy):
     Data source: Listing photos
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -83,7 +82,7 @@ class MasterSuiteScorer(ScoringStrategy):
     Data source: Listing photos
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -132,7 +131,7 @@ class NaturalLightScorer(ScoringStrategy):
     Data source: Listing photos
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -182,7 +181,7 @@ class HighCeilingsScorer(ScoringStrategy):
     Data source: Listing description/photos
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -230,7 +229,7 @@ class FireplaceScorer(ScoringStrategy):
     Data source: Listing photos/description
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -288,7 +287,7 @@ class LaundryAreaScorer(ScoringStrategy):
     Data source: Listing photos
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:
@@ -336,7 +335,7 @@ class AestheticsScorer(ScoringStrategy):
     Data source: Listing photos
     """
 
-    def __init__(self, weights: Optional[ScoringWeights] = None) -> None:
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
         """Initialize with scoring weights.
 
         Args:

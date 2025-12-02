@@ -137,7 +137,7 @@ def load_confidences(data_dir: Path) -> dict[str, dict[str, float]]:
         return {}
 
     try:
-        tracker = LineageTracker(lineage_file)
+        LineageTracker(lineage_file)
         # The tracker stores by property hash
         # For now, return empty if no lineage data
         return {}
@@ -310,13 +310,10 @@ def compare_to_baseline(
         # Format arrow indicator
         if delta > 0.001:
             arrow = "+"
-            indicator = "IMPROVED"
         elif delta < -0.001:
             arrow = ""
-            indicator = "DECLINED"
         else:
             arrow = ""
-            indicator = "="
 
         print(f"{label:<25} {old:>11.1%} {new:>11.1%} {arrow}{delta:>+10.1%}")
 

@@ -3,8 +3,8 @@
 PostToolUse hook: Formats Python files with black and ruff after Edit/Write operations.
 """
 import json
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 

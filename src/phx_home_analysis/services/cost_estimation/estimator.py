@@ -5,14 +5,13 @@ comprehensive monthly housing costs including mortgage, taxes, insurance,
 utilities, maintenance, and Arizona-specific costs like pool maintenance.
 """
 
-from typing import Optional, Protocol, Union
+from typing import Protocol
 
-from .models import MonthlyCosts, CostEstimate
+from .models import CostEstimate, MonthlyCosts
 from .rates import (
-    RateConfig,
-    DEFAULT_RATES,
-    MORTGAGE_RATE_30YR,
     DOWN_PAYMENT_DEFAULT,
+    MORTGAGE_RATE_30YR,
+    RateConfig,
 )
 
 
@@ -25,10 +24,10 @@ class PropertyLike(Protocol):
 
     price_num: int
     sqft: int
-    has_pool: Optional[bool]
-    hoa_fee: Optional[int]
-    solar_lease_monthly: Optional[int]
-    tax_annual: Optional[int]
+    has_pool: bool | None
+    hoa_fee: int | None
+    solar_lease_monthly: int | None
+    tax_annual: int | None
 
 
 class MonthlyCostEstimator:
@@ -56,8 +55,8 @@ class MonthlyCostEstimator:
     def __init__(
         self,
         down_payment: float = DOWN_PAYMENT_DEFAULT,
-        rate: Optional[float] = None,
-        config: Optional[RateConfig] = None,
+        rate: float | None = None,
+        config: RateConfig | None = None,
     ) -> None:
         """Initialize the cost estimator.
 
@@ -161,7 +160,7 @@ class MonthlyCostEstimator:
         has_pool: bool = False,
         hoa_fee: int = 0,
         solar_lease: int = 0,
-        tax_annual: Optional[int] = None,
+        tax_annual: int | None = None,
     ) -> MonthlyCosts:
         """Calculate monthly costs from individual values.
 
@@ -241,7 +240,7 @@ class MonthlyCostEstimator:
     def _calculate_property_tax(
         self,
         home_value: float,
-        tax_annual: Optional[int],
+        tax_annual: int | None,
     ) -> float:
         """Calculate monthly property tax.
 
@@ -326,7 +325,7 @@ class MonthlyCostEstimator:
         """
         return self._config.trash_monthly
 
-    def _calculate_pool_costs(self, has_pool: Optional[bool]) -> float:
+    def _calculate_pool_costs(self, has_pool: bool | None) -> float:
         """Calculate monthly pool maintenance and energy costs.
 
         Arizona pools require year-round maintenance:
@@ -360,7 +359,7 @@ class MonthlyCostEstimator:
         # Apply minimum
         return round(max(monthly_reserve, self._config.maintenance_min), 2)
 
-    def _get_hoa_fee(self, hoa_fee: Optional[int]) -> float:
+    def _get_hoa_fee(self, hoa_fee: int | None) -> float:
         """Get monthly HOA fee.
 
         Args:
@@ -373,7 +372,7 @@ class MonthlyCostEstimator:
             return 0.0
         return float(hoa_fee)
 
-    def _get_solar_lease(self, solar_lease_monthly: Optional[int]) -> float:
+    def _get_solar_lease(self, solar_lease_monthly: int | None) -> float:
         """Get monthly solar lease payment.
 
         Args:

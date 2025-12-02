@@ -5,21 +5,21 @@ used across analysis scripts, eliminating code duplication.
 """
 
 from .kill_switch import (
+    HARD_CRITERIA,
     # Constants
     KILL_SWITCH_CRITERIA,
     KILL_SWITCH_DISPLAY_NAMES,
-    HARD_CRITERIA,
-    SOFT_SEVERITY_WEIGHTS,
     SEVERITY_FAIL_THRESHOLD,
     SEVERITY_WARNING_THRESHOLD,
+    SOFT_SEVERITY_WEIGHTS,
     # Types
     KillSwitchResult,
     KillSwitchVerdict,
     # Functions
     apply_kill_switch,
     evaluate_kill_switches,
-    evaluate_kill_switches_legacy,
     evaluate_kill_switches_for_display,
+    evaluate_kill_switches_legacy,
     get_kill_switch_summary,
 )
 

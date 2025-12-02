@@ -43,6 +43,7 @@ warnings.warn(
 )
 
 # Import canonical kill switch evaluation function
+from lib.kill_switch import evaluate_kill_switches_for_display
 
 # HTML Template for individual deal sheet
 DEAL_SHEET_TEMPLATE = """<!DOCTYPE html>
@@ -991,18 +992,18 @@ def main():
     enrichment_lookup = {item['full_address']: item for item in enrichment_data}
 
     # Merge enrichment data into dataframe
-    for idx, row in df.iterrows():
+    for _idx, row in df.iterrows():
         address = row['full_address']
         if address in enrichment_lookup:
             enrich = enrichment_lookup[address]
             for key, value in enrich.items():
                 if key not in df.columns:
-                    df.at[idx, key] = value
+                    df.at[_idx, key] = value
 
     print(f"Generating deal sheets for {len(df)} properties...")
 
     # Generate individual deal sheets
-    for idx, row in df.iterrows():
+    for _idx, row in df.iterrows():
         filename = generate_deal_sheet(row, output_dir)
         print(f"  [{row['rank']:2d}/{len(df)}] Generated: {filename}")
 
@@ -1028,7 +1029,7 @@ def main():
     print("\n" + "="*60)
     print("TOP 3 PROPERTIES")
     print("="*60)
-    for idx, row in df.head(3).iterrows():
+    for _idx, row in df.head(3).iterrows():
         status = "PASS" if row['kill_switch_passed'] == 'PASS' else "FAIL"
         print(f"\n#{row['rank']}: {row['full_address']}")
         print(f"  Score: {row['total_score']}/600 | Status: {status}")

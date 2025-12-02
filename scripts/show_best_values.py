@@ -4,14 +4,14 @@
 import csv
 
 # Load data
-with open('renovation_gap_report.csv', 'r') as f:
+with open('renovation_gap_report.csv') as f:
     data = list(csv.DictReader(f))
 
 # Filter to PASSING only
 passing = [r for r in data if r['kill_switch_passed'] == 'PASS']
 
 print(f"Total PASSING properties: {len(passing)}")
-print(f"\nTop 10 PASSING properties by TRUE COST (move-in ready price):")
+print("\nTop 10 PASSING properties by TRUE COST (move-in ready price):")
 print("="*100)
 
 sorted_passing = sorted(passing, key=lambda x: float(x['true_cost']))

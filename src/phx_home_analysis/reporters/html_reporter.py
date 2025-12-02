@@ -6,7 +6,6 @@ using pre-designed Jinja2 templates.
 
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -25,7 +24,7 @@ class HtmlReportGenerator(Reporter):
     Template directory defaults to project root/templates but can be configured.
     """
 
-    def __init__(self, template_dir: Optional[Path] = None) -> None:
+    def __init__(self, template_dir: Path | None = None) -> None:
         """Initialize HTML report generator.
 
         Args:
@@ -50,7 +49,7 @@ class HtmlReportGenerator(Reporter):
             lstrip_blocks=True,
         )
 
-    def generate(self, properties: List[Property], output_path: Path) -> None:
+    def generate(self, properties: list[Property], output_path: Path) -> None:
         """Generate HTML report (legacy interface - use specific methods).
 
         This is a compatibility method. Use generate_risk_report() or
@@ -70,7 +69,7 @@ class HtmlReportGenerator(Reporter):
         self.generate_risk_report(properties, output_path)
 
     def generate_risk_report(
-        self, properties: List[Property], output_path: Path
+        self, properties: list[Property], output_path: Path
     ) -> None:
         """Generate risk assessment HTML report.
 
@@ -109,7 +108,7 @@ class HtmlReportGenerator(Reporter):
         output_path.write_text(html_content, encoding="utf-8")
 
     def generate_renovation_report(
-        self, properties: List[Property], output_path: Path
+        self, properties: list[Property], output_path: Path
     ) -> None:
         """Generate renovation gap analysis HTML report.
 
@@ -169,7 +168,7 @@ class HtmlReportGenerator(Reporter):
 
     def generate_custom_report(
         self,
-        properties: List[Property],
+        properties: list[Property],
         output_path: Path,
         template_name: str,
         **context,

@@ -13,7 +13,6 @@ Output:
 import csv
 import json
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 
 # Arizona-specific cost estimation rules
@@ -78,19 +77,19 @@ def estimate_kitchen_cost(year_built: int, score_interior: float) -> int:
     return 0
 
 
-def load_csv_data(csv_path: Path) -> List[Dict]:
+def load_csv_data(csv_path: Path) -> list[dict]:
     """Load property data from ranked CSV."""
     properties = []
-    with open(csv_path, 'r', encoding='utf-8') as f:
+    with open(csv_path, encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
             properties.append(row)
     return properties
 
 
-def load_enrichment_data(json_path: Path) -> Dict[str, Dict]:
+def load_enrichment_data(json_path: Path) -> dict[str, dict]:
     """Load enrichment data and index by full_address."""
-    with open(json_path, 'r', encoding='utf-8') as f:
+    with open(json_path, encoding='utf-8') as f:
         enrichment_list = json.load(f)
 
     # Index by address
@@ -103,7 +102,7 @@ def load_enrichment_data(json_path: Path) -> Dict[str, Dict]:
     return enrichment_dict
 
 
-def calculate_renovation_costs(property_data: Dict, enrichment: Dict) -> Tuple[int, int, int, int, int]:
+def calculate_renovation_costs(property_data: dict, enrichment: dict) -> tuple[int, int, int, int, int]:
     """
     Calculate all renovation costs for a property.
 
@@ -149,7 +148,7 @@ def format_percentage(value: float) -> str:
     return f"{value:.1f}%"
 
 
-def generate_csv_report(results: List[Dict], output_path: Path):
+def generate_csv_report(results: list[dict], output_path: Path):
     """Generate CSV report with renovation costs."""
     fieldnames = [
         'rank', 'address', 'kill_switch_passed', 'tier', 'total_score',
@@ -166,7 +165,7 @@ def generate_csv_report(results: List[Dict], output_path: Path):
     print(f"[OK] CSV report saved: {output_path}")
 
 
-def generate_html_report(results: List[Dict], output_path: Path):
+def generate_html_report(results: list[dict], output_path: Path):
     """Generate interactive HTML report with sortable table."""
 
     html = """<!DOCTYPE html>
@@ -505,7 +504,7 @@ def generate_html_report(results: List[Dict], output_path: Path):
     print(f"[OK] HTML report saved: {output_path}")
 
 
-def print_summary_report(results: List[Dict]):
+def print_summary_report(results: list[dict]):
     """Print summary statistics to console."""
     print("\n" + "="*80)
     print("RENOVATION GAP ANALYSIS SUMMARY")
@@ -537,7 +536,7 @@ def print_summary_report(results: List[Dict]):
             print(f"\n#{i}: {prop['address']}")
             print(f"    Rank: #{prop['rank']} | Tier: {prop['tier']} | Score: {prop['total_score']:.1f}")
             print(f"    List Price: {format_currency(prop['list_price'])}")
-            print(f"    Renovation Costs:")
+            print("    Renovation Costs:")
             print(f"      - Roof: {format_currency(prop['roof_cost'])}")
             print(f"      - HVAC: {format_currency(prop['hvac_cost'])}")
             print(f"      - Pool: {format_currency(prop['pool_cost'])}")
@@ -665,8 +664,8 @@ def main():
     # Print summary
     print_summary_report(results)
 
-    print(f"[OK] Analysis complete!")
-    print(f"\nOutput files:")
+    print("[OK] Analysis complete!")
+    print("\nOutput files:")
     print(f"  - {output_csv}")
     print(f"  - {output_html}")
 

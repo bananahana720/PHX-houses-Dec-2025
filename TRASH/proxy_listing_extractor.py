@@ -214,7 +214,7 @@ async def extract_zillow_listing(address: str, proxy: dict = None) -> dict:
                                     box = await elem.bounding_box()
                                     if box and box["y"] > 300:  # Must be in center/lower area
                                         hold_button = elem
-                                        print(f"  Found button by exact text match")
+                                        print("  Found button by exact text match")
                                         break
                             except:
                                 continue

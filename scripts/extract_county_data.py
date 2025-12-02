@@ -29,6 +29,8 @@ import asyncio
 import json
 import logging
 import sys
+from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 
 # Load environment variables from .env file
@@ -37,10 +39,126 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 # Requires: uv pip install -e .
+from phx_home_analysis.domain.entities import Property
 from phx_home_analysis.repositories.csv_repository import CsvPropertyRepository
 from phx_home_analysis.services.county_data import MaricopaAssessorClient, ParcelData
-from phx_home_analysis.services.quality import DataSource, LineageTracker
-from phx_home_analysis.validation.deduplication import compute_property_hash
+from phx_home_analysis.services.quality import LineageTracker
+
+
+@dataclass
+class ExtractionResult:
+    """Result of a single property extraction for concurrent processing."""
+
+    full_address: str
+    street: str
+    parcel: ParcelData | None
+    error: str | None = None
+
+    @property
+    def success(self) -> bool:
+        """Return True if extraction succeeded with valid parcel data."""
+        return self.parcel is not None and self.error is None
+
+
+async def extract_single_property(
+    client: MaricopaAssessorClient,
+    prop: Property,
+    semaphore: asyncio.Semaphore,
+) -> ExtractionResult:
+    """Extract data for a single property with semaphore-controlled concurrency.
+
+    Args:
+        client: Assessor API client
+        prop: Property to extract
+        semaphore: Semaphore to limit concurrent requests
+
+    Returns:
+        ExtractionResult with parcel data or error
+    """
+    async with semaphore:
+        try:
+            parcel = await client.extract_for_address(prop.street)
+            return ExtractionResult(
+                full_address=prop.full_address,
+                street=prop.street,
+                parcel=parcel,
+            )
+        except Exception as e:
+            return ExtractionResult(
+                full_address=prop.full_address,
+                street=prop.street,
+                parcel=None,
+                error=str(e),
+            )
+
+
+async def extract_batch_concurrent(
+    client: MaricopaAssessorClient,
+    properties: list[Property],
+    max_concurrent: int = 5,
+    progress_callback: Callable[[int, int, ExtractionResult], None] | None = None,
+) -> list[ExtractionResult]:
+    """Extract data for multiple properties concurrently.
+
+    Uses asyncio.Semaphore to limit concurrent requests to avoid
+    overwhelming the API server while still achieving significant
+    speedup over sequential processing.
+
+    Args:
+        client: Assessor API client
+        properties: List of properties to extract
+        max_concurrent: Maximum concurrent requests (default 5)
+        progress_callback: Optional callback for progress updates,
+            receives (current_index, total_count, result)
+
+    Returns:
+        List of ExtractionResults in same order as input properties
+    """
+    semaphore = asyncio.Semaphore(max_concurrent)
+
+    async def extract_with_progress(prop: Property, index: int) -> ExtractionResult:
+        result = await extract_single_property(client, prop, semaphore)
+        if progress_callback:
+            progress_callback(index + 1, len(properties), result)
+        return result
+
+    tasks = [extract_with_progress(prop, i) for i, prop in enumerate(properties)]
+
+    return await asyncio.gather(*tasks)
+
+
+def validate_path(path: Path, base_dir: Path, arg_name: str) -> Path:
+    """Validate that path is within allowed directory to prevent path traversal.
+
+    Security: Prevents path traversal attacks (e.g., --csv ../../etc/passwd)
+    by ensuring all file paths remain within the project directory.
+
+    Args:
+        path: Path from CLI argument
+        base_dir: Project base directory (allowed root)
+        arg_name: Argument name for error messages
+
+    Returns:
+        Resolved absolute path
+
+    Raises:
+        SystemExit: If path traversal attempt detected
+    """
+    # Resolve to absolute path, following symlinks
+    resolved = path.resolve()
+    base_resolved = base_dir.resolve()
+
+    # Check that resolved path starts with base directory
+    # Use os.path for reliable cross-platform comparison
+    try:
+        resolved.relative_to(base_resolved)
+    except ValueError:
+        # Path is outside base directory - potential path traversal attack
+        print(f"Error: {arg_name} path '{path}' is outside project directory", file=sys.stderr)
+        print(f"Allowed base: {base_resolved}", file=sys.stderr)
+        sys.exit(1)
+
+    return resolved
 
 
 def parse_args() -> argparse.Namespace:
@@ -99,8 +217,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--rate-limit",
         type=float,
-        default=1.5,
-        help="Seconds between API calls (default: 1.5)",
+        default=0.5,
+        help="Seconds between API calls per worker (default: 0.5)",
+    )
+    parser.add_argument(
+        "--max-concurrent",
+        type=int,
+        default=5,
+        help="Maximum concurrent API requests (default: 5)",
     )
 
     return parser.parse_args()
@@ -133,11 +257,12 @@ def load_enrichment(path: Path) -> dict:
 
 
 def save_enrichment(path: Path, data: dict) -> None:
-    """Save enrichment data to JSON.
+    """Save enrichment data to JSON atomically with backup.
 
     Converts dict format back to list format for storage.
+    Uses atomic write pattern to prevent corruption on crash.
     """
-    path.parent.mkdir(parents=True, exist_ok=True)
+    from phx_home_analysis.utils.file_ops import atomic_json_save
 
     # Convert dict back to list format
     data_list = [
@@ -145,185 +270,13 @@ def save_enrichment(path: Path, data: dict) -> None:
         for addr, props in data.items()
     ]
 
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data_list, f, indent=2, ensure_ascii=False)
-
-
-def should_update_field(
-    entry: dict,
-    field_name: str,
-    county_value: any,
-    logger: logging.Logger,
-) -> tuple[bool, str]:
-    """Determine if a field should be updated with county data.
-
-    Args:
-        entry: Existing enrichment entry for the property
-        field_name: Name of the field to update
-        county_value: New value from county data
-        logger: Logger for warnings
-
-    Returns:
-        Tuple of (should_update: bool, reason: str)
-    """
-    existing_value = entry.get(field_name)
-    source_field = f"{field_name}_source"
-    existing_source = entry.get(source_field, "")
-
-    # Never overwrite manually researched data
-    if existing_source in ("manual", "manual_research", "user", "web_research"):
-        logger.warning(
-            f"  {field_name}: PRESERVING manual research value {existing_value} "
-            f"(source={existing_source}) - county has {county_value}"
-        )
-        return False, f"Preserving manual research (source={existing_source})"
-
-    # If no existing value, always update
-    if existing_value is None:
-        return True, "No existing value"
-
-    # If values match, no need to update
-    if existing_value == county_value:
-        return False, "Values match"
-
-    # Conflict: county differs from existing non-manual value
-    # Log but still update (county is authoritative for non-manual data)
-    logger.info(
-        f"  {field_name}: Updating {existing_value} → {county_value} "
-        f"(existing source: {existing_source or 'unknown'})"
-    )
-    return True, f"Updating: {existing_value} → {county_value}"
-
-
-def merge_parcel_into_enrichment(
-    existing: dict,
-    full_address: str,
-    parcel: ParcelData,
-    update_only: bool = False,
-    logger: logging.Logger | None = None,
-    lineage_tracker: LineageTracker | None = None,
-) -> tuple[dict, dict]:
-    """Merge parcel data into existing enrichment entry.
-
-    Args:
-        existing: Existing enrichment data dict
-        full_address: Property full address (key)
-        parcel: Extracted parcel data
-        update_only: If True, only fill None/missing fields
-        logger: Logger for conflict reporting
-        lineage_tracker: Optional LineageTracker to record field updates
-
-    Returns:
-        Tuple of (updated enrichment dict, conflict report dict)
-    """
-    if logger is None:
-        logger = logging.getLogger(__name__)
-
-    entry = existing.get(full_address, {}).copy()
-    conflicts = {
-        "preserved_manual": [],
-        "updated": [],
-        "skipped_no_change": [],
-        "new_fields": [],
-    }
-
-    # Compute property hash for lineage tracking
-    prop_hash = compute_property_hash(full_address) if lineage_tracker else None
-
-    # Fields to merge from parcel
-    merge_fields = {
-        "lot_sqft": parcel.lot_sqft,
-        "year_built": parcel.year_built,
-        "garage_spaces": parcel.garage_spaces,
-        "sewer_type": parcel.sewer_type,
-        "has_pool": parcel.has_pool,
-        "tax_annual": parcel.tax_annual,
-    }
-
-    for field, value in merge_fields.items():
-        if value is not None:
-            existing_value = entry.get(field)
-
-            if update_only:
-                # Only set if missing or None
-                if existing_value is None:
-                    entry[field] = value
-                    conflicts["new_fields"].append(field)
-
-                    # Track lineage for new field
-                    if lineage_tracker and prop_hash:
-                        lineage_tracker.record_field(
-                            property_hash=prop_hash,
-                            field_name=field,
-                            source=DataSource.ASSESSOR_API,
-                            confidence=DataSource.ASSESSOR_API.default_confidence,
-                            original_value=value,
-                            notes=f"County API source: {parcel.source}"
-                        )
-            else:
-                # Check if we should update
-                should_update, reason = should_update_field(entry, field, value, logger)
-
-                if should_update:
-                    entry[field] = value
-                    if existing_value is None:
-                        conflicts["new_fields"].append(field)
-                    else:
-                        conflicts["updated"].append({
-                            "field": field,
-                            "old": existing_value,
-                            "new": value,
-                            "reason": reason,
-                        })
-
-                    # Track lineage for updated field
-                    if lineage_tracker and prop_hash:
-                        lineage_tracker.record_field(
-                            property_hash=prop_hash,
-                            field_name=field,
-                            source=DataSource.ASSESSOR_API,
-                            confidence=DataSource.ASSESSOR_API.default_confidence,
-                            original_value=value,
-                            notes=f"County API source: {parcel.source}, updated from {existing_value}"
-                        )
-                else:
-                    if "manual" in reason.lower():
-                        conflicts["preserved_manual"].append({
-                            "field": field,
-                            "value": existing_value,
-                            "county_value": value,
-                            "reason": reason,
-                        })
-                    else:
-                        conflicts["skipped_no_change"].append(field)
-
-    # Add coordinates if available (from ArcGIS fallback)
-    if parcel.latitude and parcel.longitude:
-        for coord_field, coord_value in [("latitude", parcel.latitude), ("longitude", parcel.longitude)]:
-            if not update_only or entry.get(coord_field) is None:
-                existing_coord = entry.get(coord_field)
-                should_update, reason = should_update_field(entry, coord_field, coord_value, logger)
-                if should_update:
-                    entry[coord_field] = coord_value
-                    if existing_coord is None:
-                        conflicts["new_fields"].append(coord_field)
-
-                    # Track lineage for coordinates
-                    if lineage_tracker and prop_hash:
-                        lineage_tracker.record_field(
-                            property_hash=prop_hash,
-                            field_name=coord_field,
-                            source=DataSource.ASSESSOR_API,
-                            confidence=0.90,  # Slightly lower confidence for ArcGIS coordinates
-                            original_value=coord_value,
-                            notes="ArcGIS API coordinates"
-                        )
-
-    return entry, conflicts
+    backup = atomic_json_save(path, data_list, create_backup=True)
+    if backup:
+        logging.getLogger(__name__).info(f"Created backup: {backup}")
 
 
 def print_banner(num_properties: int, args: argparse.Namespace) -> None:
-    """Print startup banner."""
+    """Print startup banner with concurrency settings."""
     print()
     print("=" * 60)
     print("Maricopa County Assessor Data Extraction")
@@ -332,7 +285,11 @@ def print_banner(num_properties: int, args: argparse.Namespace) -> None:
     print(f"Enrichment file: {args.enrichment}")
     mode = "Dry run" if args.dry_run else "Update-only" if args.update_only else "Full extraction"
     print(f"Mode: {mode}")
-    print(f"Rate limit: {args.rate_limit}s between API calls")
+    print(f"Concurrency: {args.max_concurrent} concurrent requests")
+    print(f"Rate limit: {args.rate_limit}s between requests per worker")
+    # Estimate time based on concurrent processing
+    estimated_time = (num_properties / args.max_concurrent) * args.rate_limit
+    print(f"Estimated time: ~{estimated_time:.1f}s (vs ~{num_properties * 1.5:.1f}s sequential)")
     print("=" * 60)
     print()
 
@@ -414,6 +371,11 @@ async def main() -> int:
     configure_logging(args.verbose)
     logger = logging.getLogger(__name__)
 
+    # Security: Validate paths are within project directory to prevent path traversal
+    base_dir = Path(__file__).parent.parent
+    args.csv = validate_path(args.csv, base_dir, "--csv")
+    args.enrichment = validate_path(args.enrichment, base_dir, "--enrichment")
+
     # Validate CSV exists
     if not args.csv.exists():
         print(f"Error: CSV file not found: {args.csv}", file=sys.stderr)
@@ -448,47 +410,61 @@ async def main() -> int:
     enrichment = load_enrichment(args.enrichment)
     logger.info(f"Loaded {len(enrichment)} existing enrichment records")
 
-    # Initialize lineage tracker
+    # Initialize lineage tracker and merge service
     lineage_file = Path("data/field_lineage.json")
     tracker = LineageTracker(lineage_file)
     logger.info(f"Loaded lineage tracker with {tracker.property_count()} properties")
 
-    # Extract data
+    # Initialize merge service with lineage tracking
+    from phx_home_analysis.services.enrichment import EnrichmentMergeService
+
+    merge_service = EnrichmentMergeService(lineage_tracker=tracker)
+
+    # Extract data using concurrent processing
     results = []
     failed = []
-    all_conflicts = {}
+    all_conflicts: dict[str, dict] = {}
+
+    # Progress callback for real-time updates
+    def on_progress(current: int, total: int, result: ExtractionResult) -> None:
+        status = "OK" if result.success else "FAILED" if result.error else "NO DATA"
+        print(f"[{current}/{total}] {result.street} - {status}")
+        if result.parcel:
+            print_parcel_summary(result.parcel)
+        elif result.error:
+            print(f"  Error: {result.error}")
+
+    print(f"\nExtracting with {args.max_concurrent} concurrent requests...")
+    print("(HTTP/2 enabled for multiplexed connections)\n")
 
     async with MaricopaAssessorClient(rate_limit_seconds=args.rate_limit) as client:
-        for i, prop in enumerate(properties, 1):
-            print(f"[{i}/{len(properties)}] {prop.street}")
+        extraction_results = await extract_batch_concurrent(
+            client,
+            properties,
+            max_concurrent=args.max_concurrent,
+            progress_callback=on_progress,
+        )
 
-            try:
-                parcel = await client.extract_for_address(prop.street)
+    # Process results after concurrent extraction completes
+    for result in extraction_results:
+        if result.success:
+            results.append((result.full_address, result.parcel))
 
-                if not parcel:
-                    print("  No data found")
-                    failed.append(prop.full_address)
-                    continue
-
-                print_parcel_summary(parcel)
-                results.append((prop.full_address, parcel))
-
-                # Merge into enrichment with conflict tracking and lineage
-                if not args.dry_run:
-                    updated_entry, conflicts = merge_parcel_into_enrichment(
-                        enrichment,
-                        prop.full_address,
-                        parcel,
-                        args.update_only,
-                        logger,
-                        tracker,
-                    )
-                    enrichment[prop.full_address] = updated_entry
-                    all_conflicts[prop.full_address] = conflicts
-
-            except Exception as e:
-                logger.error(f"  Error: {e}")
-                failed.append(prop.full_address)
+            # Merge into enrichment with conflict tracking and lineage
+            if not args.dry_run:
+                merge_result = merge_service.merge_parcel(
+                    enrichment,
+                    result.full_address,
+                    result.parcel,
+                    args.update_only,
+                )
+                enrichment[result.full_address] = merge_result.updated_entry
+                # Convert to legacy dict format for backward compatibility with print_summary
+                all_conflicts[result.full_address] = merge_result.to_legacy_dict()
+        else:
+            failed.append(result.full_address)
+            if result.error:
+                logger.error(f"Failed {result.street}: {result.error}")
 
     # Save updated enrichment
     if not args.dry_run and results:

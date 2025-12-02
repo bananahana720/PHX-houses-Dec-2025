@@ -29,7 +29,7 @@ class Property:
 
     # Basic listing data (from CSV)
     price: str  # Formatted string like "$475,000"
-    price_num: int
+    price_num: int | None  # None if unable to parse
     beds: int
     baths: float
     sqft: int
@@ -214,6 +214,9 @@ class Property:
     def monthly_costs(self) -> dict[str, float]:
         """Estimated monthly costs breakdown.
 
+        Delegates to MonthlyCostEstimator service for comprehensive cost calculation.
+        Returns a simplified dict for backward compatibility with existing code.
+
         Includes:
         - Mortgage payment (30-year, $50k down, 7% rate estimate)
         - Property tax
@@ -224,48 +227,21 @@ class Property:
         Returns:
             Dict mapping cost category to monthly amount
         """
-        costs: dict[str, float] = {}
+        # Delegate to cost estimation service
+        from ..services.cost_estimation import MonthlyCostEstimator
 
-        # Mortgage (30-year, $50k down, 7% APR estimate)
-        loan_amount = max(0, self.price_num - 50000)
-        if loan_amount > 0:
-            monthly_rate = 0.07 / 12
-            num_payments = 360  # 30 years
-            if monthly_rate > 0:
-                mortgage = loan_amount * (
-                    monthly_rate * (1 + monthly_rate) ** num_payments
-                ) / ((1 + monthly_rate) ** num_payments - 1)
-            else:
-                mortgage = loan_amount / num_payments
-            costs["mortgage"] = mortgage
-        else:
-            costs["mortgage"] = 0.0
+        estimator = MonthlyCostEstimator()
+        monthly_costs_obj = estimator.estimate(self)
 
-        # Property tax (annual / 12)
-        if self.tax_annual:
-            costs["property_tax"] = self.tax_annual / 12
-        else:
-            costs["property_tax"] = 0.0
-
-        # HOA fee
-        if self.hoa_fee:
-            costs["hoa"] = float(self.hoa_fee)
-        else:
-            costs["hoa"] = 0.0
-
-        # Solar lease
-        if self.solar_lease_monthly:
-            costs["solar_lease"] = float(self.solar_lease_monthly)
-        else:
-            costs["solar_lease"] = 0.0
-
-        # Pool maintenance estimate ($100-150/mo average)
-        if self.has_pool:
-            costs["pool_maintenance"] = 125.0
-        else:
-            costs["pool_maintenance"] = 0.0
-
-        return costs
+        # Return dict for backward compatibility with legacy code
+        # Map service result to expected keys
+        return {
+            "mortgage": monthly_costs_obj.mortgage,
+            "property_tax": monthly_costs_obj.property_tax,
+            "hoa": monthly_costs_obj.hoa_fee,
+            "solar_lease": monthly_costs_obj.solar_lease,
+            "pool_maintenance": monthly_costs_obj.pool_maintenance,
+        }
 
     @property
     def total_monthly_cost(self) -> float:

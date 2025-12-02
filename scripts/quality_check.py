@@ -108,7 +108,7 @@ def load_confidences(data_dir: Path) -> dict[str, dict[str, float]]:
     if not lineage_file.exists():
         return {}
 
-    tracker = LineageTracker(lineage_file)
+    LineageTracker(lineage_file)
     confidences = {}
 
     # The tracker stores by property hash, but we need to map to addresses

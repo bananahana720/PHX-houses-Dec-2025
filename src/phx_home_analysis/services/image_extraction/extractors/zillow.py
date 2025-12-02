@@ -7,7 +7,6 @@ browser automation to properly load images from dynamic galleries and carousels.
 import asyncio
 import logging
 import re
-from typing import Optional
 from urllib.parse import quote_plus
 
 import httpx
@@ -46,9 +45,9 @@ class ZillowExtractor(StealthBrowserExtractor):
 
     def __init__(
         self,
-        http_client: Optional[httpx.AsyncClient] = None,
+        http_client: httpx.AsyncClient | None = None,
         timeout: float = 30.0,
-        config: Optional[StealthExtractionConfig] = None,
+        config: StealthExtractionConfig | None = None,
     ):
         """Initialize Zillow extractor with stealth configuration.
 
