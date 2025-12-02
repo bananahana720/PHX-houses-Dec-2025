@@ -568,7 +568,7 @@ class TestCostEfficiencyScorer:
         scorer = CostEfficiencyScorer()
         assert scorer.name == "Cost Efficiency"
         assert scorer.category == "systems"
-        assert scorer.weight == 30  # reduced from 40 to maintain Section B = 180 with roof at 50
+        assert scorer.weight == 35
 
     def test_scorer_with_custom_weights(self):
         """Test CostEfficiencyScorer with custom weights."""
@@ -830,7 +830,7 @@ class TestCostEfficiencyScorer:
         assert no_hoa_score > hoa_score
 
     def test_weighted_score_calculation(self):
-        """Test weighted score uses correct weight (30 pts)."""
+        """Test weighted score uses correct weight (35 pts)."""
         scorer = CostEfficiencyScorer()
 
         prop = Property(
@@ -853,9 +853,9 @@ class TestCostEfficiencyScorer:
         score = scorer.calculate_weighted_score(prop)
 
         assert score.criterion == "Cost Efficiency"
-        assert score.weight == 30.0  # reduced from 40
+        assert score.weight == 35.0
         # Weighted score should be base_score / 10 * weight
-        expected_weighted = (score.base_score / 10) * 30
+        expected_weighted = (score.base_score / 10) * 35
         assert abs(score.weighted_score - expected_weighted) < 0.01
 
 
@@ -872,35 +872,35 @@ class TestScoringWeights:
         weights = ScoringWeights()
         assert weights.total_possible_score == 600
 
-    def test_section_a_max_equals_230(self):
-        """Test that Section A max equals 230 points."""
+    def test_section_a_max_equals_250(self):
+        """Test that Section A max equals 250 points."""
         weights = ScoringWeights()
-        assert weights.section_a_max == 230
+        assert weights.section_a_max == 250
 
-    def test_section_b_max_equals_180(self):
-        """Test that Section B max equals 180 points."""
+    def test_section_b_max_equals_170(self):
+        """Test that Section B max equals 170 points."""
         weights = ScoringWeights()
-        assert weights.section_b_max == 180
+        assert weights.section_b_max == 170
 
-    def test_section_c_max_equals_190(self):
-        """Test that Section C max equals 190 points."""
+    def test_section_c_max_equals_180(self):
+        """Test that Section C max equals 180 points."""
         weights = ScoringWeights()
-        assert weights.section_c_max == 190
+        assert weights.section_c_max == 180
 
-    def test_cost_efficiency_weight_is_30(self):
-        """Test that cost_efficiency weight is 30 points (reduced from 40)."""
+    def test_cost_efficiency_weight_is_35(self):
+        """Test that cost_efficiency weight is 35 points."""
         weights = ScoringWeights()
-        assert weights.cost_efficiency == 30
+        assert weights.cost_efficiency == 35
 
-    def test_quietness_weight_is_40(self):
-        """Test that quietness weight is 40 points (reduced from 50)."""
+    def test_quietness_weight_is_30(self):
+        """Test that quietness weight is 30 points."""
         weights = ScoringWeights()
-        assert weights.quietness == 40
+        assert weights.quietness == 30
 
-    def test_supermarket_proximity_weight_is_30(self):
-        """Test that supermarket_proximity weight is 30 points (reduced from 40)."""
+    def test_supermarket_proximity_weight_is_25(self):
+        """Test that supermarket_proximity weight is 25 points."""
         weights = ScoringWeights()
-        assert weights.supermarket_proximity == 30
+        assert weights.supermarket_proximity == 25
 
     def test_pool_condition_weight_is_20(self):
         """Test that pool_condition weight is 20 points (reduced from 30)."""
