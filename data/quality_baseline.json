@@ -1,0 +1,23 @@
+{
+  "measured_at": "2025-12-01T15:30:33.238404",
+  "version": "1.0",
+  "metrics": {
+    "avg_completeness": 0.7777777777777778,
+    "avg_confidence": 0.7777777777777778,
+    "avg_overall": 0.7777777777777778,
+    "property_count": 35,
+    "quality_tiers": {
+      "excellent": 0,
+      "good": 0,
+      "fair": 35,
+      "poor": 0
+    },
+    "missing_fields_freq": {
+      "sqft": 35,
+      "price": 35
+    },
+    "low_quality_count": 35,
+    "excellent_pct": 0.0,
+    "passing_pct": 0.0
+  }
+}

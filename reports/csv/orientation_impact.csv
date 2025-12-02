@@ -1,0 +1,34 @@
+address,estimated_orientation,cooling_cost_impact_annual,property_score,tier
+"2353 W Tierra Buena Ln, Phoenix, AZ 85023",N,$0,364.0,Contender
+"2846 W Villa Rita Dr, Phoenix, AZ 85053",N,$0,365.0,Contender
+"5004 W Kaler Dr, Glendale, AZ 85301",N,$0,345.0,Contender
+"4001 W Libby St, Glendale, AZ 85308",N,$0,374.0,Contender
+"4342 W Claremont St, Glendale, AZ 85301",N,$0,345.0,Contender
+"11035 E Clinton St, Scottsdale, AZ 85259",N,$0,366.5,Contender
+"8426 E Lincoln Dr, Scottsdale, AZ 85250",N,$0,382.5,Contender
+"8714 E Plaza Ave, Scottsdale, AZ 85250",N,$0,372.5,Contender
+"7126 W Columbine Dr, Peoria, AZ 85381",N,$0,365.0,Contender
+"7233 W Corrine Dr, Peoria, AZ 85381",N,$0,365.0,Contender
+"8931 W Villa Rita Dr, Peoria, AZ 85382",N,$0,368.0,Contender
+"14622 N 37th St, Phoenix, AZ 85032",E,$200,345.0,Contender
+"18825 N 34th St, Phoenix, AZ 85050",E,$200,342.5,Contender
+"13307 N 84th Ave, Peoria, AZ 85381",E,$200,381.0,Contender
+"18820 N 35th Way, Phoenix, AZ 85050",E,$200,350.5,Contender
+"20021 N 38th Ln, Glendale, AZ 85308",E,$200,375.0,Contender
+"8803 N 105th Dr, Peoria, AZ 85345",E,$200,333.0,Contender
+"14353 N 76th Dr, Peoria, AZ 85381",E,$200,347.0,Contender
+"12808 N 27th St, Phoenix, AZ 85032",E,$200,355.0,Contender
+"4136 W Hearn Rd, Phoenix, AZ 85053",Unknown,$250,353.0,Contender
+"4137 W Cielo Grande, Glendale, AZ 85310",Unknown,$250,374.0,Contender
+"4732 W Davis Rd, Glendale, AZ 85306",Unknown,$250,368.5,Contender
+"4209 W Wahalla Ln, Glendale, AZ 85308",S,$300,382.0,Contender
+"2344 W Marconi Ave, Phoenix, AZ 85023",S,$300,364.0,Contender
+"4020 W Anderson Dr, Glendale, AZ 85308",S,$300,374.0,Contender
+"4417 W Sandra Cir, Glendale, AZ 85308",S,$300,370.0,Contender
+"5522 W Carol Ave, Glendale, AZ 85302",S,$300,354.5,Contender
+"9150 W Villa Rita Dr, Peoria, AZ 85382",S,$300,365.0,Contender
+"14014 N 39th Ave, Phoenix, AZ 85053",W,$600,361.0,Contender
+"25841 N 66th Dr, Phoenix, AZ 85083",W,$600,366.5,Contender
+"17244 N 36th Ln, Glendale, AZ 85308",W,$600,363.0,Contender
+"15225 N 37th Way, Phoenix, AZ 85032",W,$600,355.0,Contender
+"16814 N 31st Ave, Phoenix, AZ 85053",W,$600,361.0,Contender

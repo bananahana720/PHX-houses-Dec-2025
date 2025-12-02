@@ -1,0 +1,587 @@
+{
+  "version": "1.0.0",
+  "images": {
+    "1b8742cd-6710-4033-a929-1c35fbb34ca5": {
+      "phash": "e968e32694dc50f3",
+      "dhash": "660391b22f4ec3ca",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "da52c331-9f4a-454e-aaa0-697a3d5917c8": {
+      "phash": "ca62bdbd024ac4bd",
+      "dhash": "030781e9d9410307",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "ca67e5a8-77fc-4a0e-95a5-f6eab969e538": {
+      "phash": "fed0810f952b6ad4",
+      "dhash": "0035352d256d5300",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "20c9fa07-2692-43ea-b303-0afb21444022": {
+      "phash": "b8f2e695112a7cd4",
+      "dhash": "1600059bbabac706",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "a9e26c64-13e0-439e-85ce-d2886ead858f": {
+      "phash": "eb5478d40b97a32a",
+      "dhash": "94954b4b4d5e1d0b",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "d61615a1-846f-4f86-9876-f1ca96a20bf1": {
+      "phash": "81a07efe87517a8c",
+      "dhash": "0fa5fedae0005828",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "0054f3ff-1a45-4e24-8adf-a9412a182638": {
+      "phash": "c02f4b2f76389879",
+      "dhash": "60c0b0a4a4a4a494",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "a9adf7f2-92ca-47c4-8185-20ef7b10681b": {
+      "phash": "aac79144afd157a8",
+      "dhash": "f8f0d84fa78c997f",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "3a58efc6-3aa5-41db-a633-25b2d69c9f9c": {
+      "phash": "be3ab16165d38aa8",
+      "dhash": "5f3f3d6467832e1f",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "61a8fe85-7bd1-4a61-9d83-166ecb757b9f": {
+      "phash": "d42a9d21379fc06b",
+      "dhash": "3f1501288a809868",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "865d6ab8-5f5c-4dee-8ba3-e5907fc96b4b": {
+      "phash": "c3c12c9a4e329fe5",
+      "dhash": "e1c0c8c0e179c960",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "b1564156-dd39-45c0-83e0-be3c126fd5aa": {
+      "phash": "b12a1f6417ec0b76",
+      "dhash": "3a9bbb9a8e933418",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "d93dc14f-2c4a-4a8a-b4cd-0a4ed06c1403": {
+      "phash": "bd35a56046d7a899",
+      "dhash": "1e3b3b3a3317707a",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "92d8a65b-05ab-49b9-a56b-e738a1e3e2d8": {
+      "phash": "e3bb4c0e51b82f46",
+      "dhash": "03214a99c8c3a5c0",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "762cac31-5aef-492a-91e5-cfa460a0773a": {
+      "phash": "e50db316b3038ed3",
+      "dhash": "8ea6c6c6c6e4ce8e",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "694f94de-409d-4592-9aab-b68d423fd68a": {
+      "phash": "a0f61fbe73080e72",
+      "dhash": "8d8d8d8f8d333353",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "1afd16f0-7aba-460d-9b9e-a1c3b4f0771e": {
+      "phash": "d2cd610ef316892f",
+      "dhash": "c0c0e04c41e92988",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "e03fcc3d-9de9-4711-bdc0-6d417fb9e957": {
+      "phash": "c1395cb69379ac13",
+      "dhash": "d8d8b3d8dce3f0f0",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "483d347d-d3ab-4370-bf9c-b24652d6be94": {
+      "phash": "ca89777766e2c484",
+      "dhash": "0339f3f3e1e0e0e1",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "5b1a9e9b-41d4-4251-99f9-3c5787c586fe": {
+      "phash": "cfa2347f83d33c20",
+      "dhash": "61c3d1c962627070",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "0cd21d43-511d-4173-b7e9-6dfc308746b1": {
+      "phash": "efc8c25a5a52e4b4",
+      "dhash": "4163367673732533",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "b55fe4ef-b83e-4a13-a8ca-1b0448265f23": {
+      "phash": "bcc3e73058a5ac4b",
+      "dhash": "7468633438ae2e2f",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "b068fc78-81ac-48e4-b2bf-4eb26af1e571": {
+      "phash": "b8679d786e13640d",
+      "dhash": "279c9f8d87ad18b5",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "a03373c6-3b4b-4eb4-9d55-a6da246350b5": {
+      "phash": "c44fb2328374e9f8",
+      "dhash": "ad683060c1a596cb",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "7083036a-cad5-4f7c-b622-85593a801c05": {
+      "phash": "c95bb22637e0893d",
+      "dhash": "e9c1706062e28a70",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "cad6ad04-338e-47bf-afc2-e75e6d600510": {
+      "phash": "a5e39e2061634cdf",
+      "dhash": "8f9ce4ded6b67c2e",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "ddb96102-0ecb-40a1-adde-d52740e43619": {
+      "phash": "fce010e89cbe684f",
+      "dhash": "388e8784d3871c7c",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "1b173aff-5895-4938-956e-37f795b79574": {
+      "phash": "8991573ade89c1d9",
+      "dhash": "d8d8d2f239eb7262",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "2b984942-5538-4a1d-8e82-6998187992f7": {
+      "phash": "ce1eff6c90c41259",
+      "dhash": "2f6b69ec93c7a27a",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "deff9c5e-c485-4f7d-bbaf-43e13384652c": {
+      "phash": "c5193b165658a9ed",
+      "dhash": "024c93e0e6e4e4cc",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "c6875918-607a-45b8-8aa1-266e9ef5d7e7": {
+      "phash": "b9843fa746b3829c",
+      "dhash": "ccb6b3d9d40b0b1f",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "f593a8f0-5141-48ff-a456-25485602f2be": {
+      "phash": "d7e0f0d07e6c8c86",
+      "dhash": "0048ca516de86878",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "2596eb09-d0ea-4fc3-862a-6f4ee935cf32": {
+      "phash": "b3e72bb006a9e48d",
+      "dhash": "0f49d244d494bb39",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "4289aec3-7508-4808-a298-23ab102e2940": {
+      "phash": "a1ac5e9225fdda42",
+      "dhash": "02c00316d4f80a51",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "a97a17c4-1c0b-4ca8-a0c6-ed8d55539021": {
+      "phash": "93ee2c4332fd8d06",
+      "dhash": "0499661ac852da78",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "1783ca4f-1933-404b-8381-621a9e6d132e": {
+      "phash": "b1d5ce31275cf04a",
+      "dhash": "181010dedd9b3565",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "de5ddda7-9122-4ab4-af1e-15a67a83a74a": {
+      "phash": "991cf4e36b3c1c19",
+      "dhash": "07d973dbdb798c87",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "f06f202f-08c7-4298-8e98-60aeed46e29f": {
+      "phash": "b873c30cec937364",
+      "dhash": "cfdf1d3d373efcc8",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "d01039ec-8687-47d2-9ad5-838e23b993a3": {
+      "phash": "da2471fb94691ce2",
+      "dhash": "9bcdf57169798918",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "8d845d1c-3430-4637-9d25-3809b3373ea8": {
+      "phash": "d08eb393ece00e3e",
+      "dhash": "94d8b397b5b99a9c",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "f58a4dfe-c082-4e7f-bf53-03309d9a98a6": {
+      "phash": "b8d48b73064fdc98",
+      "dhash": "e2963047961e1337",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "fa8ceac5-3764-4ff6-9129-63cb532ca137": {
+      "phash": "9cb7a160bfdc6025",
+      "dhash": "9edeec383485a633",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "1043179c-f58b-4d2d-ba18-37d208855f38": {
+      "phash": "cd3a72651e8ce163",
+      "dhash": "4d0ca67a66c62664",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "693a2402-c3a8-48ad-b4d8-cc0c3687000c": {
+      "phash": "9f9a8a1e35a496a6",
+      "dhash": "79d1ed1e2e66e330",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "a9147b09-8b87-4663-8924-8b56508a5051": {
+      "phash": "8981d4e3b9cf3692",
+      "dhash": "f6e27753dbc366a4",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "94d512ec-b00c-4c3f-9b89-2d7d5e9d6100": {
+      "phash": "bfe2840d1d52d8ab",
+      "dhash": "f24f195a7b345766",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "da6484cb-6b1c-4d7d-8274-e27d9733fe38": {
+      "phash": "818a4f3734cae9b5",
+      "dhash": "f1eed3b19ecfc142",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "342e7a98-49f2-419e-b6fb-9efbd198c4b3": {
+      "phash": "e82db56921948fa7",
+      "dhash": "361667b883818c27",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "9d11532d-81e7-4930-a379-4da9407b9de8": {
+      "phash": "ef8230c5fa20db59",
+      "dhash": "eece400762600621",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "48b4572a-4d93-42fb-a5ec-3d89586ffdfa": {
+      "phash": "9dac40a3bf5e20d3",
+      "dhash": "e5f6b22a6a8bd8f8",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "346a71b5-560c-4d1e-8b49-226fcc16594e": {
+      "phash": "e87a15a5497a8799",
+      "dhash": "0f33332b938e2b33",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "a3edbc32-4541-40aa-aacf-df795a371ceb": {
+      "phash": "adcea8f0670cb01f",
+      "dhash": "0393de6e4c9eb29b",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "3d67e28b-c8d4-40b3-b718-c02c712e573f": {
+      "phash": "c989f1f56779880c",
+      "dhash": "90d07349c590080d",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "2b5e5821-4fc5-4b61-9c61-c69df675615e": {
+      "phash": "e2499db65a21a5e6",
+      "dhash": "e024c7898d4e4f29",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "c9755e7d-6355-4355-820f-74b8a1e1b74e": {
+      "phash": "c58c995b1f68ca96",
+      "dhash": "331ea4824cc30a58",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "58dc7789-c663-4096-bc09-b52854b08925": {
+      "phash": "e2edac38594e9453",
+      "dhash": "1707cf411bada59c",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "257080e0-eb1d-4520-9ef7-95c5c68da47e": {
+      "phash": "bea5c1983ecbd418",
+      "dhash": "2386242d3d7001b8",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "8ae58857-516b-4f87-8aca-36d162ff50cc": {
+      "phash": "f6c9fb122419c26e",
+      "dhash": "0204459684fc3c0c",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "0f2b7b04-c974-4e42-86a1-5a90040b418f": {
+      "phash": "c3a53e56311b26c7",
+      "dhash": "d8a6e2d2c0e86869",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "416e0edd-8a88-42f0-a1d2-2188c84555e7": {
+      "phash": "f9a01ec3a317d28b",
+      "dhash": "8c96969ecb193252",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "f41c8a24-ccb8-4ec0-92a0-2e68ca649ea1": {
+      "phash": "e2e2e917132accd6",
+      "dhash": "4387a5cbccf0a311",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "c880c1bd-29bd-44c5-bbe5-cf5e758080a0": {
+      "phash": "9998f267472ab899",
+      "dhash": "f0bc3b725209cf80",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "14232308-9145-445e-8e7d-df525f534dce": {
+      "phash": "9f617e414adad03a",
+      "dhash": "d3461c62625a6e61",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "9d6a8d47-0819-4431-aa48-9a7a0bb22464": {
+      "phash": "bcf18be21ca3221f",
+      "dhash": "964086b6148c7332",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "9be679a4-60f5-4071-9226-53bf6df3e863": {
+      "phash": "8183b7347ae9c12f",
+      "dhash": "defcf1932ef6b6c7",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "6d1b740d-e1d2-4ce0-9959-6178c4503d37": {
+      "phash": "a0b6feca04f5a23a",
+      "dhash": "8c48cfc6d5c728cf",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "01e07d1a-6322-494e-9d5a-dfc8f2dc22d5": {
+      "phash": "f9a506fb2d06d30c",
+      "dhash": "40c0a297931969e3",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "15648001-af64-408a-9785-b4f0eb4823ba": {
+      "phash": "f2372db28458c9cd",
+      "dhash": "8ccc490d0d0d39e0",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "33ec693b-dd25-449b-85fa-90e2c0e514db": {
+      "phash": "eb9c79e192896968",
+      "dhash": "1b145767efcbc39b",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "0d680a64-ca24-40e6-b139-80a1ef557fa5": {
+      "phash": "eac38599f28c336c",
+      "dhash": "f0e9a5ad2539b78d",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "2b838ee4-8ac8-44a9-ad8c-51dab13216f6": {
+      "phash": "8482832f437fdcd9",
+      "dhash": "edcfb0eae326d6e1",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "924fadf8-1c67-46fc-9066-0e806a9b55bf": {
+      "phash": "ea5a976d2980ce5a",
+      "dhash": "8361699713675f8f",
+      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "source": "zillow"
+    },
+    "9ebbb135-367d-4609-99c7-e67c1d7df64c": {
+      "phash": "e5163969e286bd4a",
+      "dhash": "0e1cecccce12861e",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "dfb5d301-bb41-4e33-84db-65ea0be0cffa": {
+      "phash": "c9e0929ee98e9636",
+      "dhash": "b0d0c6d3537070ba",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "425ddc36-2ad9-4d4f-b597-31b140d632e1": {
+      "phash": "cc49bbc419936ec6",
+      "dhash": "11852530e5a4e43b",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "c69e57d8-8900-4508-b829-941d3994c80a": {
+      "phash": "ecf10432f383cbcc",
+      "dhash": "8e3633333333b3f3",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "5ad0a866-782b-4034-8d4e-2e4a9f0a03e2": {
+      "phash": "d1758ccc41339eb3",
+      "dhash": "e2c45c8aca2558f0",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "37156903-61f4-4b15-aa12-dd5e7c42fce1": {
+      "phash": "f93286f97804b19b",
+      "dhash": "9828ac999b9be2c0",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "ce597c1d-a57e-47e8-8536-213ccf6cf40a": {
+      "phash": "bc930216064fdede",
+      "dhash": "cc16323236373337",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "60ec60f9-8176-4d2c-9b45-7e963671270c": {
+      "phash": "c436bbc9e045b7a4",
+      "dhash": "8b31e4848360e2cc",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "6a45fd16-7300-4bf9-afaa-9a5c8dea956d": {
+      "phash": "b0f44b95c6439cda",
+      "dhash": "0c9e1e9e1c56d3c1",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "9ecce287-767d-4085-9d63-952c1b87b152": {
+      "phash": "8d25b19c1d6be5c4",
+      "dhash": "72ec4b6320a290e6",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "593da1b8-173e-4867-9228-0663034905f9": {
+      "phash": "954e68b117ce1cd5",
+      "dhash": "191f747e5e9a91c4",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "11473704-ceb1-4509-96bf-34adbbf8226c": {
+      "phash": "9571ac21769f1b58",
+      "dhash": "8e8230448efef3b0",
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "source": "zillow"
+    },
+    "e65b8ac3-348e-4d6b-801a-4afbc0804367": {
+      "phash": "a44d1f3061eedf03",
+      "dhash": "96a562839abc2de0",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "c84ef395-bee1-43e8-a8c3-b7cb0fa5bb3d": {
+      "phash": "e8c1be1e91b76c60",
+      "dhash": "b3a7868aab330e3f",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "5fbfcdff-facc-4fa8-ab49-0e838194b83e": {
+      "phash": "a690d8a31fcdd338",
+      "dhash": "9dad14440d8d2727",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "aefff9b9-e06d-40f0-8f21-8a070d693b96": {
+      "phash": "e4154da91b5f32a3",
+      "dhash": "d226444ccf862363",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "b965d0ee-acd8-4602-8004-4d2a23609fb0": {
+      "phash": "87477830d62f955a",
+      "dhash": "d7cf72e7dcde33f8",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "d46c04ce-0f1a-406c-89ea-cc5d348186d5": {
+      "phash": "8bb5705f9462ad16",
+      "dhash": "36d7dfcc7073d9d9",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "aab4bf05-a8ba-438b-8c18-97bdfb04df28": {
+      "phash": "e5e09b6ec817611b",
+      "dhash": "238ec68623475cf2",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "a593dee2-4b5e-426f-8f4f-818c26a1b56b": {
+      "phash": "8a2abf572189cf34",
+      "dhash": "7f3de5d3ace03ee7",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "7c652595-cd70-491f-92a1-b70b6fce3a9e": {
+      "phash": "e68bc6342958d4f9",
+      "dhash": "e1efc5130e848486",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "21e640d3-c026-4453-a918-30309921ef1e": {
+      "phash": "9fe091bde1aa2e50",
+      "dhash": "f2b2651519767958",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "f254f186-88eb-4334-ada2-c8c9085003b3": {
+      "phash": "cafb8581630ed87a",
+      "dhash": "bb59494949b9b4f6",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "924061a8-06c3-4060-bb4a-2f596d945286": {
+      "phash": "d622a1be5fabc830",
+      "dhash": "ff3c95483c31cef0",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    },
+    "ed81689a-692c-410e-9c0a-bc54a22dcd92": {
+      "phash": "ad30f23333c30fd8",
+      "dhash": "8fb62646566ee225",
+      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
+      "source": "zillow"
+    }
+  }
+}

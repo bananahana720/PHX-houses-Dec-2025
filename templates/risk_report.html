@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Due Diligence Risk Report - Phoenix Homes{% endblock %}
+
+{% block extra_styles %}
+.address-col {
+    font-weight: 500;
+    color: #007bff;
+    max-width: 250px;
+}
+
+.price-col {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.risk-score-col {
+    font-weight: bold;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.score-low {
+    color: #28a745;
+}
+
+.score-medium {
+    color: #ffc107;
+}
+
+.score-high {
+    color: #dc3545;
+}
+{% endblock %}
+
+{% block content %}
+<h1>Due Diligence Risk Report - Phoenix Homes Dec 2025</h1>
+
+<div class="legend">
+    <h3>Risk Scoring Guide</h3>
+    <div class="legend-item">Overall Risk Score: Sum of individual risks</div>
+    <div class="legend-item">HIGH = 3 points</div>
+    <div class="legend-item">MEDIUM = 1 point</div>
+    <div class="legend-item">UNKNOWN = 1 point</div>
+    <div class="legend-item">LOW/POSITIVE = 0 points</div>
+    <br>
+    <div class="legend-item"><strong>Low Risk:</strong> 0-2 points (safest)</div>
+    <div class="legend-item"><strong>Medium Risk:</strong> 3-5 points (moderate caution)</div>
+    <div class="legend-item"><strong>High Risk:</strong> 6+ points (extensive due diligence needed)</div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Address</th>
+            <th>Price</th>
+            <th>Noise</th>
+            <th>Infrastructure</th>
+            <th>Solar</th>
+            <th>Cooling</th>
+            <th>Schools</th>
+            <th>Lot Size</th>
+            <th>Overall Risk</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for prop in properties %}
+        {% set overall_score = prop.risk_count_by_level.get('high', 0) * 3 + prop.risk_count_by_level.get('medium', 0) + prop.risk_count_by_level.get('unknown', 0) %}
+        {% set score_class = 'score-low' if overall_score <= 2 else ('score-medium' if overall_score <= 5 else 'score-high') %}
+
+        <tr>
+            <td class="address-col" title="{{ prop.full_address }}">{{ prop.full_address }}</td>
+            <td class="price-col">{{ prop.price }}</td>
+
+            {% for risk in prop.risk_assessments %}
+                {% if risk.category == 'Noise' %}
+                    <td title="{{ risk.description }}">
+                        {% with risk_level=risk.level %}
+                            {% include 'components/risk_badge.html' %}
+                        {% endwith %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+
+            {% for risk in prop.risk_assessments %}
+                {% if risk.category == 'Infrastructure' %}
+                    <td title="{{ risk.description }}">
+                        {% with risk_level=risk.level %}
+                            {% include 'components/risk_badge.html' %}
+                        {% endwith %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+
+            {% for risk in prop.risk_assessments %}
+                {% if risk.category == 'Solar' %}
+                    <td title="{{ risk.description }}">
+                        {% with risk_level=risk.level %}
+                            {% include 'components/risk_badge.html' %}
+                        {% endwith %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+
+            {% for risk in prop.risk_assessments %}
+                {% if risk.category == 'Cooling Cost' %}
+                    <td title="{{ risk.description }}">
+                        {% with risk_level=risk.level %}
+                            {% include 'components/risk_badge.html' %}
+                        {% endwith %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+
+            {% for risk in prop.risk_assessments %}
+                {% if risk.category == 'Schools' %}
+                    <td title="{{ risk.description }}">
+                        {% with risk_level=risk.level %}
+                            {% include 'components/risk_badge.html' %}
+                        {% endwith %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+
+            {% for risk in prop.risk_assessments %}
+                {% if risk.category == 'Lot Size' %}
+                    <td title="{{ risk.description }}">
+                        {% with risk_level=risk.level %}
+                            {% include 'components/risk_badge.html' %}
+                        {% endwith %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+
+            <td class="risk-score-col {{ score_class }}">{{ overall_score }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div style="margin-top: 30px; padding: 15px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <h3>Risk Category Definitions</h3>
+    <ul>
+        <li><strong>Noise Risk:</strong> Based on highway distance (&lt;0.5mi = HIGH, 0.5-1.0mi = MEDIUM, &gt;1.0mi = LOW)</li>
+        <li><strong>Infrastructure Risk:</strong> Based on year built (pre-1970 = HIGH, 1970-1989 = MEDIUM, 1990+ = LOW)</li>
+        <li><strong>Solar Risk:</strong> Based on solar status (leased = HIGH, owned = POSITIVE, none = LOW)</li>
+        <li><strong>Cooling Cost Risk:</strong> Based on orientation (W/SW = HIGH, S/SE = MEDIUM, N/NE/NW/E = LOW)</li>
+        <li><strong>School Stability:</strong> Based on GreatSchools rating (&lt;6.0 = HIGH, 6.0-7.5 = MEDIUM, &gt;7.5 = LOW)</li>
+        <li><strong>Lot Size Margin:</strong> Based on proximity to 7,000 sqft minimum (7000-7500 = MEDIUM, &gt;7500 = LOW)</li>
+    </ul>
+</div>
+{% endblock %}

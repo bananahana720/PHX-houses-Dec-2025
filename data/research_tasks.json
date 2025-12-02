@@ -1,0 +1,22 @@
+{
+  "tasks": [
+    {
+      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "task_type": "image_re_extraction",
+      "priority": "high",
+      "reason": "Contaminated image set - folder contains photos from 10+ different properties",
+      "fields_affected": [
+        "kitchen_layout_score",
+        "master_suite_score",
+        "natural_light_score",
+        "high_ceilings_score",
+        "fireplace_score",
+        "laundry_area_score",
+        "aesthetics_score"
+      ],
+      "created": "2025-12-01T20:10:15.935999",
+      "status": "pending",
+      "fallback_command": "python scripts/extract_images.py --address \"14353 N 76th Dr, Peoria, AZ 85381\" --fresh --sources zillow,redfin"
+    }
+  ]
+}

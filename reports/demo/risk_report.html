@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Due Diligence Risk Report - Phoenix Homes</title>
+    <style>
+        /* Base Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Typography & Body */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #f5f5f5;
+            margin: 20px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Headers */
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 6px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Legend Box */
+        .legend {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .legend h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 8px;
+        }
+
+        /* Summary Statistics */
+        .summary {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            .no-print {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+
+.address-col {
+    font-weight: 500;
+    color: #007bff;
+    max-width: 250px;
+}
+
+.price-col {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.risk-score-col {
+    font-weight: bold;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.score-low {
+    color: #28a745;
+}
+
+.score-medium {
+    color: #ffc107;
+}
+
+.score-high {
+    color: #dc3545;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+<h1>Due Diligence Risk Report - Phoenix Homes Dec 2025</h1>
+
+<div class="legend">
+    <h3>Risk Scoring Guide</h3>
+    <div class="legend-item">Overall Risk Score: Sum of individual risks</div>
+    <div class="legend-item">HIGH = 3 points</div>
+    <div class="legend-item">MEDIUM = 1 point</div>
+    <div class="legend-item">UNKNOWN = 1 point</div>
+    <div class="legend-item">LOW/POSITIVE = 0 points</div>
+    <br>
+    <div class="legend-item"><strong>Low Risk:</strong> 0-2 points (safest)</div>
+    <div class="legend-item"><strong>Medium Risk:</strong> 3-5 points (moderate caution)</div>
+    <div class="legend-item"><strong>High Risk:</strong> 6+ points (extensive due diligence needed)</div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Address</th>
+            <th>Price</th>
+            <th>Noise</th>
+            <th>Infrastructure</th>
+            <th>Solar</th>
+            <th>Cooling</th>
+            <th>Schools</th>
+            <th>Lot Size</th>
+            <th>Overall Risk</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <td class="address-col" title="123 Unicorn Lane, Phoenix, AZ 85001">123 Unicorn Lane, Phoenix, AZ 85001</td>
+            <td class="price-col">$475,000</td>
+
+                    <td title="Quiet location">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+                    <td title="Modern construction">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+                    <td title="Owned solar - value add">
+
+
+<span class="risk-badge risk-positive"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #007bff; color: white;">
+    POSITIVE
+</span>                    </td>
+
+                    <td title="North-facing - best orientation">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+                    <td title="Strong school district">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+                    <td title="Comfortable lot size">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+            <td class="risk-score-col score-low">0</td>
+        </tr>
+
+        <tr>
+            <td class="address-col" title="456 Contender Ave, Scottsdale, AZ 85250">456 Contender Ave, Scottsdale, AZ 85250</td>
+            <td class="price-col">$525,000</td>
+
+                    <td title="Some highway noise possible">
+
+
+<span class="risk-badge risk-medium"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">
+    MEDIUM
+</span>                    </td>
+
+                    <td title="Modern construction">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+                    <td title="No solar complications">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+                    <td title="East-facing - good">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+                    <td title="Average schools">
+
+
+<span class="risk-badge risk-medium"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">
+    MEDIUM
+</span>                    </td>
+
+                    <td title="Comfortable lot size">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+            <td class="risk-score-col score-low">2</td>
+        </tr>
+
+        <tr>
+            <td class="address-col" title="789 Pass Blvd, Tempe, AZ 85281">789 Pass Blvd, Tempe, AZ 85281</td>
+            <td class="price-col">$450,000</td>
+
+                    <td title="Moderate traffic noise">
+
+
+<span class="risk-badge risk-medium"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">
+    MEDIUM
+</span>                    </td>
+
+                    <td title="Modern construction">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+                    <td title="No solar complications">
+
+
+<span class="risk-badge risk-low"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">
+    LOW
+</span>                    </td>
+
+                    <td title="South-facing - moderate">
+
+
+<span class="risk-badge risk-medium"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">
+    MEDIUM
+</span>                    </td>
+
+                    <td title="Average schools">
+
+
+<span class="risk-badge risk-medium"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">
+    MEDIUM
+</span>                    </td>
+
+                    <td title="Near minimum requirement">
+
+
+<span class="risk-badge risk-medium"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">
+    MEDIUM
+</span>                    </td>
+
+            <td class="risk-score-col score-medium">4</td>
+        </tr>
+    </tbody>
+</table>
+
+<div style="margin-top: 30px; padding: 15px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <h3>Risk Category Definitions</h3>
+    <ul>
+        <li><strong>Noise Risk:</strong> Based on highway distance (&lt;0.5mi = HIGH, 0.5-1.0mi = MEDIUM, &gt;1.0mi = LOW)</li>
+        <li><strong>Infrastructure Risk:</strong> Based on year built (pre-1970 = HIGH, 1970-1989 = MEDIUM, 1990+ = LOW)</li>
+        <li><strong>Solar Risk:</strong> Based on solar status (leased = HIGH, owned = POSITIVE, none = LOW)</li>
+        <li><strong>Cooling Cost Risk:</strong> Based on orientation (W/SW = HIGH, S/SE = MEDIUM, N/NE/NW/E = LOW)</li>
+        <li><strong>School Stability:</strong> Based on GreatSchools rating (&lt;6.0 = HIGH, 6.0-7.5 = MEDIUM, &gt;7.5 = LOW)</li>
+        <li><strong>Lot Size Margin:</strong> Based on proximity to 7,000 sqft minimum (7000-7500 = MEDIUM, &gt;7500 = LOW)</li>
+    </ul>
+</div>
+    </div>
+</body>
+</html>

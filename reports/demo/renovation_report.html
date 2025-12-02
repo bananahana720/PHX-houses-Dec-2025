@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renovation Gap Report - Phoenix Homes</title>
+    <style>
+        /* Base Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Typography & Body */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #f5f5f5;
+            margin: 20px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Headers */
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 6px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Legend Box */
+        .legend {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .legend h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 8px;
+        }
+
+        /* Summary Statistics */
+        .summary {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            .no-print {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+
+.delta-low {
+    background: #c8e6c9;
+}
+
+.delta-medium {
+    background: #fff9c4;
+}
+
+.delta-high {
+    background: #ffcdd2;
+}
+
+.best-value {
+    border-left: 4px solid #4CAF50;
+    font-weight: bold;
+}
+
+.fail {
+    opacity: 0.5;
+    background: #f0f0f0;
+}
+
+.currency {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+}
+
+.tier-contender {
+    color: #2196F3;
+    font-weight: bold;
+}
+
+.tier-unicorn {
+    color: #9C27B0;
+    font-weight: bold;
+}
+
+.tier-pass {
+    color: #666;
+}
+
+.legend-box {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+<h1>Renovation Gap Analysis - Phoenix Homes</h1>
+<p><strong>Analysis Date:</strong> 2025-11-29</p>
+
+<div class="summary">
+    <h2>Summary Statistics</h2>
+    <div class="summary-grid">
+        <div class="stat">
+            <div class="stat-label">Total Properties</div>
+            <div class="stat-value">3</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Average Renovation</div>
+            <div class="stat-value">$21,333</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Min Renovation</div>
+            <div class="stat-value">$10,000</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Max Renovation</div>
+            <div class="stat-value">$31,000</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">High Cost (&gt;$20k)</div>
+            <div class="stat-value">2</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Best True Value</div>
+            <div class="stat-value">789 Pass Blvd, Tempe, AZ 85281</div>
+        </div>
+    </div>
+</div>
+
+<div class="legend">
+    <strong>Color Legend:</strong>
+    <div class="legend-item">
+        <span class="legend-box delta-low"></span> Green: &lt;5% renovation cost
+    </div>
+    <div class="legend-item">
+        <span class="legend-box delta-medium"></span> Yellow: 5-10% renovation cost
+    </div>
+    <div class="legend-item">
+        <span class="legend-box delta-high"></span> Red: &gt;10% renovation cost
+    </div>
+    <div class="legend-item" style="margin-top: 10px;">
+        <span style="border-left: 4px solid #4CAF50; padding-left: 10px;">Bold border = Best True Value (lowest among PASS)</span>
+    </div>
+</div>
+
+<table id="dataTable">
+    <thead>
+        <tr>
+            <th onclick="sortTable(0)">Rank</th>
+            <th onclick="sortTable(1)">Address</th>
+            <th onclick="sortTable(2)">Status</th>
+            <th onclick="sortTable(3)">Tier</th>
+            <th onclick="sortTable(4)">Score</th>
+            <th onclick="sortTable(5)">List Price</th>
+            <th onclick="sortTable(6)">Roof</th>
+            <th onclick="sortTable(7)">HVAC</th>
+            <th onclick="sortTable(8)">Pool</th>
+            <th onclick="sortTable(9)">Other</th>
+            <th onclick="sortTable(10)">Total Reno</th>
+            <th onclick="sortTable(11)">True Cost</th>
+            <th onclick="sortTable(12)">Delta %</th>
+        </tr>
+    </thead>
+    <tbody>
+
+
+        <tr class="delta-low pass">
+            <td>1</td>
+            <td>123 Unicorn Lane, Phoenix, AZ 85001</td>
+            <td>PASS</td>
+            <td class="tier-unicorn">Unicorn</td>
+            <td>241.5</td>
+            <td class="currency">$475,000</td>
+            <td class="currency">$5,000</td>
+            <td class="currency">$3,000</td>
+            <td class="currency">$0</td>
+            <td class="currency">$2,000</td>
+            <td class="currency">$10,000</td>
+            <td class="currency">$485,000</td>
+            <td class="currency">2.1%</td>
+        </tr>
+
+
+        <tr class="delta-low pass">
+            <td>2</td>
+            <td>456 Contender Ave, Scottsdale, AZ 85250</td>
+            <td>PASS</td>
+            <td class="tier-contender">Contender</td>
+            <td>168.0</td>
+            <td class="currency">$525,000</td>
+            <td class="currency">$10,000</td>
+            <td class="currency">$8,000</td>
+            <td class="currency">$0</td>
+            <td class="currency">$5,000</td>
+            <td class="currency">$23,000</td>
+            <td class="currency">$548,000</td>
+            <td class="currency">4.4%</td>
+        </tr>
+
+
+        <tr class="delta-medium pass best-value">
+            <td>3</td>
+            <td>789 Pass Blvd, Tempe, AZ 85281</td>
+            <td>PASS</td>
+            <td class="tier-pass">Pass</td>
+            <td>145.5</td>
+            <td class="currency">$450,000</td>
+            <td class="currency">$15,000</td>
+            <td class="currency">$8,000</td>
+            <td class="currency">$5,000</td>
+            <td class="currency">$3,000</td>
+            <td class="currency">$31,000</td>
+            <td class="currency">$481,000</td>
+            <td class="currency">6.9%</td>
+        </tr>
+    </tbody>
+</table>
+    </div>
+<script>
+    function sortTable(columnIndex) {
+        const table = document.getElementById("dataTable");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        // Determine sort direction
+        const currentDirection = table.dataset.sortDirection || 'asc';
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        table.dataset.sortDirection = newDirection;
+
+        rows.sort((a, b) => {
+            let aValue = a.cells[columnIndex].textContent.trim();
+            let bValue = b.cells[columnIndex].textContent.trim();
+
+            // Try to parse as number (remove $ and , for currency)
+            const aNum = parseFloat(aValue.replace(/[$,%]/g, ''));
+            const bNum = parseFloat(bValue.replace(/[$,%]/g, ''));
+
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return newDirection === 'asc' ? aNum - bNum : bNum - aNum;
+            } else {
+                return newDirection === 'asc'
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
+            }
+        });
+
+        // Re-append sorted rows
+        rows.forEach(row => tbody.appendChild(row));
+    }
+</script>
+</body>
+</html>

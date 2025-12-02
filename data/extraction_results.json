@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-11-30T18:25:03.167922",
+  "results": [
+    {
+      "address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "property_hash": "ef7cd95f",
+      "source": "redfin",
+      "status": "failed",
+      "url": "https://www.redfin.com/AZ/Phoenix/4732-W-Davis-Rd-Glendale",
+      "data": {},
+      "images": [],
+      "errors": [
+        {
+          "source": "redfin",
+          "error": "HTTP 202"
+        }
+      ]
+    }
+  ]
+}

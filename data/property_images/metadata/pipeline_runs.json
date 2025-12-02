@@ -1,0 +1,83 @@
+{
+  "runs": [
+    {
+      "run_id": "test_2025-12-01T00:15",
+      "mode": "--test",
+      "started_at": "2025-12-01T00:15:00",
+      "completed_at": "2025-12-01T00:36:41.200930",
+      "properties_requested": 5,
+      "properties_completed": 5,
+      "properties_failed": 0,
+      "images_extracted": 89,
+      "sources_used": [
+        "zillow"
+      ],
+      "sources_blocked": [
+        "redfin"
+      ],
+      "phase_results": {
+        "phase0_county": "all_complete",
+        "phase1_listing": "all_complete",
+        "phase1_map": "all_complete",
+        "phase2_images": "all_complete",
+        "phase3_synthesis": "all_complete"
+      },
+      "properties": [
+        {
+          "address": "4732 W Davis Rd, Glendale, AZ 85306",
+          "hash": "ef7cd95f",
+          "folder": "686067a4",
+          "score": 375,
+          "tier": "contender"
+        },
+        {
+          "address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+          "hash": "9654bc8e",
+          "folder": "3e28ac5f",
+          "score": 383,
+          "tier": "contender"
+        },
+        {
+          "address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+          "hash": "5b8b1e28",
+          "folder": "6505014b",
+          "score": 371,
+          "tier": "contender"
+        },
+        {
+          "address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+          "hash": "d07c4ec2",
+          "folder": "97c061f9",
+          "score": 365,
+          "tier": "contender"
+        },
+        {
+          "address": "15225 N 37th Way, Phoenix, AZ 85032",
+          "hash": "e2936db6",
+          "folder": "05e62943",
+          "score": 314,
+          "tier": "contender"
+        }
+      ],
+      "notes": "Test run successful. Zillow extraction working with nodriver+webshare proxy. Redfin returning empty results but not blocking."
+    },
+    {
+      "run_id": "single_2025-12-01T01:04",
+      "mode": "single-property",
+      "properties_completed": 1,
+      "properties": [
+        {
+          "address": "5038 W Echo Ln, Glendale, AZ 85302",
+          "folder": "dfdff3c8",
+          "score": 386,
+          "tier": "CONTENDER",
+          "notes": "Kill-switch override (1-car garage). Low confidence interior due to image contamination."
+        }
+      ],
+      "notes": "Single property analysis with garage kill-switch override per user request"
+    }
+  ],
+  "version": "1.0.0",
+  "last_run": "single_2025-12-01T01:04",
+  "last_updated": "2025-12-01T01:04:26.145683"
+}

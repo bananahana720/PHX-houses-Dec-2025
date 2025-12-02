@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Renovation Gap Report - Phoenix Homes{% endblock %}
+
+{% block extra_styles %}
+.delta-low {
+    background: #c8e6c9;
+}
+
+.delta-medium {
+    background: #fff9c4;
+}
+
+.delta-high {
+    background: #ffcdd2;
+}
+
+.best-value {
+    border-left: 4px solid #4CAF50;
+    font-weight: bold;
+}
+
+.fail {
+    opacity: 0.5;
+    background: #f0f0f0;
+}
+
+.currency {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+}
+
+.tier-contender {
+    color: #2196F3;
+    font-weight: bold;
+}
+
+.tier-unicorn {
+    color: #9C27B0;
+    font-weight: bold;
+}
+
+.tier-pass {
+    color: #666;
+}
+
+.legend-box {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+}
+{% endblock %}
+
+{% block content %}
+<h1>Renovation Gap Analysis - Phoenix Homes</h1>
+<p><strong>Analysis Date:</strong> {{ analysis_date }}</p>
+
+<div class="summary">
+    <h2>Summary Statistics</h2>
+    <div class="summary-grid">
+        <div class="stat">
+            <div class="stat-label">Total Properties</div>
+            <div class="stat-value">{{ total_properties }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Average Renovation</div>
+            <div class="stat-value">${{ "{:,.0f}".format(avg_renovation) }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Min Renovation</div>
+            <div class="stat-value">${{ "{:,.0f}".format(min_renovation) }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Max Renovation</div>
+            <div class="stat-value">${{ "{:,.0f}".format(max_renovation) }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">High Cost (&gt;$20k)</div>
+            <div class="stat-value">{{ high_cost_count }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Best True Value</div>
+            <div class="stat-value">{{ best_value_address }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="legend">
+    <strong>Color Legend:</strong>
+    <div class="legend-item">
+        <span class="legend-box delta-low"></span> Green: &lt;5% renovation cost
+    </div>
+    <div class="legend-item">
+        <span class="legend-box delta-medium"></span> Yellow: 5-10% renovation cost
+    </div>
+    <div class="legend-item">
+        <span class="legend-box delta-high"></span> Red: &gt;10% renovation cost
+    </div>
+    <div class="legend-item" style="margin-top: 10px;">
+        <span style="border-left: 4px solid #4CAF50; padding-left: 10px;">Bold border = Best True Value (lowest among PASS)</span>
+    </div>
+</div>
+
+<table id="dataTable">
+    <thead>
+        <tr>
+            <th onclick="sortTable(0)">Rank</th>
+            <th onclick="sortTable(1)">Address</th>
+            <th onclick="sortTable(2)">Status</th>
+            <th onclick="sortTable(3)">Tier</th>
+            <th onclick="sortTable(4)">Score</th>
+            <th onclick="sortTable(5)">List Price</th>
+            <th onclick="sortTable(6)">Roof</th>
+            <th onclick="sortTable(7)">HVAC</th>
+            <th onclick="sortTable(8)">Pool</th>
+            <th onclick="sortTable(9)">Other</th>
+            <th onclick="sortTable(10)">Total Reno</th>
+            <th onclick="sortTable(11)">True Cost</th>
+            <th onclick="sortTable(12)">Delta %</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for prop in properties %}
+        {% set reno_total = prop.renovation_estimate.total if prop.renovation_estimate else 0 %}
+        {% set delta_pct = (reno_total / prop.price_num * 100) if prop.price_num > 0 else 0 %}
+        {% set delta_class = 'delta-low' if delta_pct < 5 else ('delta-medium' if delta_pct <= 10 else 'delta-high') %}
+        {% set status_class = 'pass' if prop.kill_switch_passed else 'fail' %}
+        {% set row_class = delta_class + ' ' + status_class %}
+        {% if prop.kill_switch_passed and prop.full_address == best_value_address %}
+            {% set row_class = row_class + ' best-value' %}
+        {% endif %}
+
+        {% set tier_class = 'tier-unicorn' if prop.tier.value == 'unicorn' else ('tier-contender' if prop.tier.value == 'contender' else 'tier-pass') %}
+
+        <tr class="{{ row_class }}">
+            <td>{{ loop.index }}</td>
+            <td>{{ prop.full_address }}</td>
+            <td>{{ 'PASS' if prop.kill_switch_passed else 'FAIL' }}</td>
+            <td class="{{ tier_class }}">{{ prop.tier.label }}</td>
+            <td>{{ "%.1f"|format(prop.total_score) }}</td>
+            <td class="currency">${{ "{:,}".format(prop.price_num) }}</td>
+            <td class="currency">${{ "{:,}".format((prop.renovation_estimate.roof if prop.renovation_estimate else 0)|int) }}</td>
+            <td class="currency">${{ "{:,}".format((prop.renovation_estimate.hvac if prop.renovation_estimate else 0)|int) }}</td>
+            <td class="currency">${{ "{:,}".format((prop.renovation_estimate.pool if prop.renovation_estimate else 0)|int) }}</td>
+            <td class="currency">${{ "{:,}".format((prop.renovation_estimate.other if prop.renovation_estimate else 0)|int) }}</td>
+            <td class="currency">${{ "{:,}".format(reno_total|int) }}</td>
+            <td class="currency">${{ "{:,}".format(prop.effective_price|int) }}</td>
+            <td class="currency">{{ "%.1f"|format(delta_pct) }}%</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function sortTable(columnIndex) {
+        const table = document.getElementById("dataTable");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        // Determine sort direction
+        const currentDirection = table.dataset.sortDirection || 'asc';
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        table.dataset.sortDirection = newDirection;
+
+        rows.sort((a, b) => {
+            let aValue = a.cells[columnIndex].textContent.trim();
+            let bValue = b.cells[columnIndex].textContent.trim();
+
+            // Try to parse as number (remove $ and , for currency)
+            const aNum = parseFloat(aValue.replace(/[$,%]/g, ''));
+            const bNum = parseFloat(bValue.replace(/[$,%]/g, ''));
+
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return newDirection === 'asc' ? aNum - bNum : bNum - aNum;
+            } else {
+                return newDirection === 'asc'
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
+            }
+        });
+
+        // Re-append sorted rows
+        rows.forEach(row => tbody.appendChild(row));
+    }
+</script>
+{% endblock %}

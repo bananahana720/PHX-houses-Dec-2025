@@ -1,0 +1,142 @@
+[
+  {
+    "full_address": "4732 W Davis Rd, Glendale, AZ 85306",
+    "lat": 33.6314,
+    "lng": -112.1998
+  },
+  {
+    "full_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+    "lat": 33.6287,
+    "lng": -112.1105
+  },
+  {
+    "full_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+    "lat": 33.6307,
+    "lng": -112.11
+  },
+  {
+    "full_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+    "lat": 33.6505,
+    "lng": -112.1212
+  },
+  {
+    "full_address": "15225 N 37th Way, Phoenix, AZ 85032",
+    "lat": 33.625,
+    "lng": -112.0011
+  },
+  {
+    "full_address": "18820 N 35th Way, Phoenix, AZ 85050",
+    "lat": 33.6581,
+    "lng": -112.0061
+  },
+  {
+    "full_address": "4209 W Wahalla Ln, Glendale, AZ 85308",
+    "lat": 33.6658,
+    "lng": -112.1999
+  },
+  {
+    "full_address": "13307 N 84th Ave, Peoria, AZ 85381",
+    "lat": 33.6055,
+    "lng": -112.2393
+  },
+  {
+    "full_address": "14014 N 39th Ave, Phoenix, AZ 85053",
+    "lat": 33.6128,
+    "lng": -112.1428
+  },
+  {
+    "full_address": "25841 N 66th Dr, Phoenix, AZ 85083",
+    "lat": 33.7211,
+    "lng": -112.2022
+  },
+  {
+    "full_address": "4001 W Libby St, Glendale, AZ 85308",
+    "lat": 33.6479,
+    "lng": -112.1841
+  },
+  {
+    "full_address": "5522 W Carol Ave, Glendale, AZ 85302",
+    "lat": 33.5718,
+    "lng": -112.1788
+  },
+  {
+    "full_address": "5004 W Kaler Dr, Glendale, AZ 85301",
+    "lat": 33.5489,
+    "lng": -112.1664
+  },
+  {
+    "full_address": "4342 W Claremont St, Glendale, AZ 85301",
+    "lat": 33.5292,
+    "lng": -112.1538
+  },
+  {
+    "full_address": "20021 N 38th Ln, Glendale, AZ 85308",
+    "lat": 33.6684,
+    "lng": -112.1423
+  },
+  {
+    "full_address": "18825 N 34th St, Phoenix, AZ 85050",
+    "lat": 33.6583,
+    "lng": -112.009
+  },
+  {
+    "full_address": "4136 W Hearn Rd, Phoenix, AZ 85053",
+    "lat": 33.615,
+    "lng": -112.1474
+  },
+  {
+    "full_address": "8426 E Lincoln Dr, Scottsdale, AZ 85250",
+    "lat": 33.5316,
+    "lng": -111.8989
+  },
+  {
+    "full_address": "11035 E Clinton St, Scottsdale, AZ 85259",
+    "lat": 33.5836,
+    "lng": -111.8425
+  },
+  {
+    "full_address": "14622 N 37th St, Phoenix, AZ 85032",
+    "lat": 33.6199,
+    "lng": -112.0032
+  },
+  {
+    "full_address": "12808 N 27th St, Phoenix, AZ 85032",
+    "lat": 33.6032,
+    "lng": -112.0252
+  },
+  {
+    "full_address": "16814 N 31st Ave, Phoenix, AZ 85053",
+    "lat": 33.6376,
+    "lng": -112.1253
+  },
+  {
+    "full_address": "7126 W Columbine Dr, Peoria, AZ 85381",
+    "lat": 33.5992,
+    "lng": -112.2127
+  },
+  {
+    "full_address": "14353 N 76th Dr, Peoria, AZ 85381",
+    "lat": 33.6158,
+    "lng": -112.2227
+  },
+  {
+    "full_address": "7233 W Corrine Dr, Peoria, AZ 85381",
+    "lat": 33.6,
+    "lng": -112.2151
+  },
+  {
+    "full_address": "8803 N 105th Dr, Peoria, AZ 85345",
+    "lat": 33.5631,
+    "lng": -112.2862
+  },
+  {
+    "full_address": "8931 W Villa Rita Dr, Peoria, AZ 85382",
+    "lat": 33.6486,
+    "lng": -112.2514
+  },
+  {
+    "full_address": "9150 W Villa Rita Dr, Peoria, AZ 85382",
+    "lat": 33.6479,
+    "lng": -112.2562
+  }
+]

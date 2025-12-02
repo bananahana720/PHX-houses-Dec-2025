@@ -1,0 +1,145 @@
+{# Property card component for compact display
+
+   Usage:
+   {% include 'components/property_card.html' with property=<Property> %}
+
+   Displays property summary with key metrics
+#}
+<div class="property-card {% if property.is_failed %}failed{% endif %}">
+    <div class="property-header">
+        <h3 class="property-address">{{ property.full_address }}</h3>
+        <span class="tier-badge tier-{{ property.tier.value }}">{{ property.tier.label }}</span>
+    </div>
+
+    <div class="property-metrics">
+        <div class="metric">
+            <span class="metric-label">Price</span>
+            <span class="metric-value">{{ property.price }}</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Beds/Baths</span>
+            <span class="metric-value">{{ property.beds }}bd / {{ property.baths }}ba</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Sqft</span>
+            <span class="metric-value">{{ "{:,}".format(property.sqft) }}</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Score</span>
+            <span class="metric-value">{{ "%.1f"|format(property.total_score) }}/600</span>
+        </div>
+    </div>
+
+    {% if property.kill_switch_failures %}
+    <div class="kill-switch-failures">
+        <strong>Kill Switch Failures:</strong>
+        <ul>
+            {% for failure in property.kill_switch_failures %}
+            <li>{{ failure }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.property-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.property-card.failed {
+    background: #fef2f2;
+    border-color: #ef4444;
+}
+
+.property-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.property-address {
+    margin: 0;
+    font-size: 18px;
+    color: #007bff;
+}
+
+.property-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-label {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.kill-switch-failures {
+    margin-top: 10px;
+    padding: 10px;
+    background: #fee2e2;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.kill-switch-failures ul {
+    margin: 5px 0 0 20px;
+}
+
+.kill-switch-failures li {
+    color: #991b1b;
+}
+
+.tier-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tier-unicorn {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    color: white;
+}
+
+.tier-contender {
+    background: #3b82f6;
+    color: white;
+}
+
+.tier-pass {
+    background: #06d6a0;
+    color: white;
+}
+
+.tier-failed {
+    background: #ef476f;
+    color: white;
+}
+</style>

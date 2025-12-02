@@ -1,0 +1,135 @@
+================================================================================
+PHX HOUSES ENRICHMENT DATA - QUALITY REPORT
+================================================================================
+
+Report Generated: 2025-11-29 13:43:39
+Data File: enrichment_data.json
+
+Total Properties Analyzed: 33
+
+================================================================================
+1. FIELD COMPLETENESS ANALYSIS
+================================================================================
+
+Required Fields (Kill Switches & Core Data):
+
+  lot_sqft                       [COMPLETE]                (33/33)
+  year_built                     [COMPLETE]                (33/33)
+  garage_spaces                  [COMPLETE]                (33/33)
+  sewer_type                     [COMPLETE]                (33/33)
+  tax_annual                     [COMPLETE]                (33/33)
+  hoa_fee                        [COMPLETE]                (33/33)
+  commute_minutes                [COMPLETE]                (33/33)
+  school_district                [COMPLETE]                (33/33)
+  school_rating                  [COMPLETE]                (33/33)
+  distance_to_grocery_miles      [COMPLETE]                (33/33)
+  distance_to_highway_miles      [COMPLETE]                (33/33)
+
+
+Optional Fields (Condition & Features):
+
+  orientation                    [0.0%]                    (0/33)
+  pool_equipment_age             [0.0%]                    (0/33)
+  roof_age                       [6.1%]                    (2/33)
+  hvac_age                       [9.1%]                    (3/33)
+  solar_status                   [27.3%]                   (9/33)
+  has_pool                       [87.9%]                   (29/33)
+
+
+================================================================================
+2. CRITICAL GAPS (Properties Missing Key Data)
+================================================================================
+
+No critical gaps found in required fields.
+
+
+================================================================================
+3. DATA QUALITY ISSUES & OUTLIERS
+================================================================================
+
+[CRITICAL] Kill Switch Violations: 4
+  • 18820 N 35th Way, Phoenix, AZ 85050
+    Field: hoa_fee | Issue: HOA fee $85/month (violates kill switch: NO HOA)
+  • 18825 N 34th St, Phoenix, AZ 85050
+    Field: hoa_fee | Issue: HOA fee $55/month (violates kill switch: NO HOA)
+  • 25841 N 66th Dr, Phoenix, AZ 85083
+    Field: hoa_fee | Issue: HOA fee $75/month (violates kill switch: NO HOA)
+  • 4137 W Cielo Grande, Glendale, AZ 85310
+    Field: hoa_fee | Issue: HOA fee $45/month (violates kill switch: NO HOA)
+
+[WARNING] Suspicious Values: 9
+  • 11035 E Clinton St, Scottsdale, AZ 85259
+    Field: lot_sqft | Issue: Lot size 6978 sqft outside target range (7,000-15,000)
+  • 12808 N 27th St, Phoenix, AZ 85032
+    Field: lot_sqft | Issue: Lot size 6900 sqft outside target range (7,000-15,000)
+  • 14622 N 37th St, Phoenix, AZ 85032
+    Field: lot_sqft | Issue: Lot size 6913 sqft outside target range (7,000-15,000)
+  • 16814 N 31st Ave, Phoenix, AZ 85053
+    Field: solar_lease_monthly | Issue: Solar status is "leased" but lease cost is missing
+  • 18820 N 35th Way, Phoenix, AZ 85050
+    Field: lot_sqft | Issue: Lot size 6098 sqft outside target range (7,000-15,000)
+  • 18825 N 34th St, Phoenix, AZ 85050
+    Field: lot_sqft | Issue: Lot size 6098 sqft outside target range (7,000-15,000)
+  • 25841 N 66th Dr, Phoenix, AZ 85083
+    Field: lot_sqft | Issue: Lot size 6534 sqft outside target range (7,000-15,000)
+  • 8714 E Plaza Ave, Scottsdale, AZ 85250
+    Field: lot_sqft | Issue: Lot size 6712 sqft outside target range (7,000-15,000)
+  • 9150 W Villa Rita Dr, Peoria, AZ 85382
+    Field: lot_sqft | Issue: Lot size 6534 sqft outside target range (7,000-15,000)
+
+
+================================================================================
+4. DATA ENRICHMENT PRIORITIES
+================================================================================
+
+Fields with <50% Completion (Priority Order):
+
+  1. roof_age                       -   6.1% complete (2/33, missing 31)
+  2. hvac_age                       -   9.1% complete (3/33, missing 30)
+  3. solar_status                   -  27.3% complete (9/33, missing 24)
+  4. has_pool                       -  87.9% complete (29/33, missing 4)
+
+
+Recommended Enrichment Actions:
+
+  1. Orientation Data (0% complete)
+     - Use property maps to determine cardinal direction
+     - Critical for solar panel and cooling cost assessment
+     - Impacts weighted scoring
+
+  2. Solar Status & Lease Costs (15% complete)
+     - Research Maricopa County property tax records
+     - Check property deeds for solar lease terms
+     - Critical for cost analysis
+
+  3. Age/Condition Data (roof_age, hvac_age, pool_equipment_age)
+     - Estimate based on year_built or research county records
+     - Critical for long-term maintenance cost assessment
+
+  4. Pool Status (9% null values)
+     - Verify in property photos and listing details
+     - Impacts maintenance cost calculations
+
+  5. Solar Lease Costs (where solar_status='leased')
+     - Research solar lease agreements
+     - Critical for monthly payment calculations
+
+
+================================================================================
+5. PROPERTIES REQUIRING ATTENTION
+================================================================================
+
+All properties have complete critical field data.
+
+
+================================================================================
+6. SUMMARY STATISTICS
+================================================================================
+
+Average Critical Field Completeness: 100.0%
+Total Data Issues Found: 13
+Critical Issues: 4
+Warnings: 9
+Properties Ready for Visualization: 33/33
+
+================================================================================

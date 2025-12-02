@@ -1,0 +1,701 @@
+19:33:41 [INFO] Loading properties from data\phx_homes.csv
+19:33:41 [INFO] Loaded 1 properties
+Error: Unknown source 'realtor'. Valid options: maricopa_assessor, zillow, redfin, phoenix_mls
+19:33:56 [INFO] Loading properties from data\phx_homes.csv
+19:33:56 [INFO] Loaded 1 properties
+19:33:56 [INFO] Loaded 1142 hashes from index
+19:33:56 [INFO] Loaded manifest with 38 properties
+19:33:56 [INFO] Loaded state: 2 completed, 1 failed
+19:33:56 [INFO] Starting extraction for 1 properties across 2 sources
+19:33:56 [INFO] Processing property: 7233 W Corrine Dr, Peoria, AZ 85381
+19:33:56 [INFO] BrowserPool configured: headless=False, viewport=1280x720, proxy=enabled (auth=yes)
+19:33:56 [INFO] Zillow initialized with stealth config: headless=False, proxy=enabled
+19:33:56 [INFO] Zillow initialized for stealth extraction
+19:33:56 [INFO] Enabled extractor: Zillow
+19:33:56 [INFO] BrowserPool configured: headless=False, viewport=1280x720, proxy=enabled (auth=yes)
+19:33:56 [INFO] Redfin initialized with stealth config: headless=False, proxy=enabled
+19:33:56 [INFO] RedfinExtractor initialized with stealth configuration
+19:33:56 [INFO] Enabled extractor: Redfin
+19:33:56 [INFO] Zillow extracting images for: 7233 W Corrine Dr, Peoria, AZ 85381
+19:33:56 [INFO] Zillow navigating to: https://www.zillow.com/homes/7233-W-Corrine-Dr-Peoria-AZ-85381_rb/
+19:33:59 [INFO] Initializing new browser instance with stealth configuration
+19:33:59 [INFO] Creating proxy authentication extension for: p.webshare.io:80
+19:33:59 [INFO] Parsed proxy URL: p.webshare.io:80 (scheme: http)
+19:33:59 [INFO] ProxyExtensionBuilder initialized: p.webshare.io:80 (user: svcvoqpm-US-rotate)
+19:33:59 [INFO] Created temporary extension directory: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_hk75w3f2
+19:33:59 [INFO] Proxy extension created successfully at: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_hk75w3f2 (proxy: p.webshare.io:80)
+19:33:59 [INFO] Proxy extension loaded from: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_hk75w3f2
+19:33:59 [INFO] starting
+	executable :C:\Program Files\Google\Chrome\Application\chrome.exe
+
+arguments:
+--remote-allow-origins=*
+	--no-first-run
+	--no-service-autorun
+	--no-default-browser-check
+	--homepage=about:blank
+	--no-pings
+	--password-store=basic
+	--disable-infobars
+	--disable-breakpad
+	--disable-dev-shm-usage
+	--disable-session-crashed-bubble
+	--disable-search-engine-choice-screen
+	--user-data-dir=C:\Users\Andrew\AppData\Local\Temp\uc_318mqse9
+	--disable-session-crashed-bubble
+	--disable-features=IsolateOrigins,site-per-process
+	--disable-blink-features=AutomationControlled
+	--window-size=1280,720
+	--load-extension=C:\Users\Andrew\AppData\Local\Temp\proxy_ext_hk75w3f2
+	--disable-extensions-except=C:\Users\Andrew\AppData\Local\Temp\proxy_ext_hk75w3f2
+	--remote-debugging-host=127.0.0.1
+	--remote-debugging-port=57781
+19:33:59 [INFO] enabling autodiscover targets
+19:33:59 [INFO] Browser initialized successfully (headless=False)
+19:34:04 [INFO] Zillow navigation complete
+19:34:07 [INFO] Zillow extracting image URLs from page
+19:34:09 [INFO] Zillow filtered to 18 high-quality URLs from 33 total
+19:34:09 [INFO] Zillow extracted 18 image URLs for 7233 W Corrine Dr, Peoria, AZ 85381
+19:34:09 [INFO] Zillow: found 18 images
+19:34:14 [INFO] Zillow closing resources
+19:34:14 [INFO] Closing browser instance
+19:34:14 [ERROR] Error closing browser: object NoneType can't be used in 'await' expression
+19:34:14 [INFO] Cleaning up proxy extension
+19:34:14 [INFO] Cleaning up extension directory: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_hk75w3f2
+19:34:14 [INFO] Zillow resources closed
+19:34:14 [INFO] Redfin extracting images for: 7233 W Corrine Dr, Peoria, AZ 85381
+19:34:14 [INFO] Redfin: warming up with homepage visit
+19:34:17 [INFO] Initializing new browser instance with stealth configuration
+19:34:17 [INFO] Creating proxy authentication extension for: p.webshare.io:80
+19:34:17 [INFO] Parsed proxy URL: p.webshare.io:80 (scheme: http)
+19:34:17 [INFO] ProxyExtensionBuilder initialized: p.webshare.io:80 (user: svcvoqpm-US-rotate)
+19:34:17 [INFO] Created temporary extension directory: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_i7ep99d1
+19:34:17 [INFO] Proxy extension created successfully at: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_i7ep99d1 (proxy: p.webshare.io:80)
+19:34:17 [INFO] Proxy extension loaded from: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_i7ep99d1
+19:34:17 [INFO] starting
+	executable :C:\Program Files\Google\Chrome\Application\chrome.exe
+
+arguments:
+--remote-allow-origins=*
+	--no-first-run
+	--no-service-autorun
+	--no-default-browser-check
+	--homepage=about:blank
+	--no-pings
+	--password-store=basic
+	--disable-infobars
+	--disable-breakpad
+	--disable-dev-shm-usage
+	--disable-session-crashed-bubble
+	--disable-search-engine-choice-screen
+	--user-data-dir=C:\Users\Andrew\AppData\Local\Temp\uc_m8t9f32h
+	--disable-session-crashed-bubble
+	--disable-features=IsolateOrigins,site-per-process
+	--disable-blink-features=AutomationControlled
+	--window-size=1280,720
+	--load-extension=C:\Users\Andrew\AppData\Local\Temp\proxy_ext_i7ep99d1
+	--disable-extensions-except=C:\Users\Andrew\AppData\Local\Temp\proxy_ext_i7ep99d1
+	--remote-debugging-host=127.0.0.1
+	--remote-debugging-port=56628
+19:34:17 [INFO] enabling autodiscover targets
+19:34:17 [INFO] Browser initialized successfully (headless=False)
+19:34:21 [INFO] Redfin: homepage loaded
+19:34:21 [INFO] Redfin: Starting interactive search for: 7233 W Corrine Dr, Peoria, AZ 85381
+19:34:21 [INFO] Redfin: Found search input with selector: input[name="searchInputBox"]
+19:34:21 [INFO] Redfin: Clicked search input
+19:34:21 [INFO] Redfin: Typed address: 7233 W Corrine Dr, Peoria, AZ 85381
+19:34:24 [INFO] Redfin: Waiting for autocomplete results...
+19:34:25 [INFO] Redfin: Found 15 autocomplete results with selector: a[href*="/AZ/"]
+19:34:25 [INFO] Redfin: Clicked first autocomplete result
+19:34:29 [INFO] Redfin: Property page should be loaded
+19:34:29 [INFO] Redfin: Final URL: https://www.redfin.com/city/3104/AZ/Chandler
+19:34:30 [INFO] Extracting image URLs from Redfin page
+19:34:34 [INFO] Page title: Chandler, AZ Homes for Sale &amp; Real Estate | Redfin
+19:34:34 [INFO] Extracted 47 unique high-resolution URLs from Redfin
+19:34:34 [INFO] Redfin extracted 47 image URLs for 7233 W Corrine Dr, Peoria, AZ 85381
+19:34:34 [INFO] Redfin: found 47 images
+19:35:02 [INFO] Redfin closing resources
+19:35:02 [INFO] Closing browser instance
+19:35:02 [ERROR] Error closing browser: object NoneType can't be used in 'await' expression
+19:35:02 [INFO] Cleaning up proxy extension
+19:35:02 [INFO] Cleaning up extension directory: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_i7ep99d1
+19:35:02 [INFO] Redfin resources closed
+19:35:02 [INFO] Property complete: 0 unique images extracted
+19:35:02 [INFO] Progress: 1/1 properties (0 ok, 1 failed)
+19:35:02 [INFO] Extraction complete: 0/1 succeeded, 0 unique images, 65 duplicates
+Error: All properties failed
+
+============================================================
+Image Extraction Pipeline
+============================================================
+Properties: 1
+Sources: Zillow, Redfin
+Output directory: data\property_images
+Mode: Full extraction
+Resume: Yes
+============================================================
+
+
+============================================================
+Summary
+============================================================
+Properties: 0 processed, 1 failed
+Images: 0 total, 0 unique, 65 duplicates
+
+By source:
+  zillow: 0 images, 18 duplicates, 0 failed
+  redfin: 0 images, 47 duplicates, 0 failed
+
+Duration: 1m 6s
+Success rate: 0.0%
+============================================================
+successfully removed temp profile C:\Users\Andrew\AppData\Local\Temp\uc_318mqse9
+successfully removed temp profile C:\Users\Andrew\AppData\Local\Temp\uc_m8t9f32h
+19:35:49 [INFO] Loading properties from data\phx_homes.csv
+19:35:49 [INFO] Loaded 1 properties
+19:35:49 [INFO] Loaded 1142 hashes from index
+19:35:49 [INFO] Loaded manifest with 38 properties
+19:35:49 [INFO] Loaded state: 0 completed, 0 failed
+19:35:49 [INFO] Fresh start requested, clearing previous state
+19:35:49 [INFO] Cleared extraction state
+19:35:49 [INFO] Starting extraction for 1 properties across 2 sources
+19:35:49 [INFO] Processing property: 7233 W Corrine Dr, Peoria, AZ 85381
+19:35:49 [INFO] BrowserPool configured: headless=False, viewport=1280x720, proxy=enabled (auth=yes)
+19:35:49 [INFO] Zillow initialized with stealth config: headless=False, proxy=enabled
+19:35:49 [INFO] Zillow initialized for stealth extraction
+19:35:49 [INFO] Enabled extractor: Zillow
+19:35:49 [INFO] BrowserPool configured: headless=False, viewport=1280x720, proxy=enabled (auth=yes)
+19:35:49 [INFO] Redfin initialized with stealth config: headless=False, proxy=enabled
+19:35:49 [INFO] RedfinExtractor initialized with stealth configuration
+19:35:49 [INFO] Enabled extractor: Redfin
+19:35:49 [INFO] Zillow extracting images for: 7233 W Corrine Dr, Peoria, AZ 85381
+19:35:49 [INFO] Zillow navigating to: https://www.zillow.com/homes/7233-W-Corrine-Dr-Peoria-AZ-85381_rb/
+19:35:50 [INFO] Initializing new browser instance with stealth configuration
+19:35:50 [INFO] Creating proxy authentication extension for: p.webshare.io:80
+19:35:50 [INFO] Parsed proxy URL: p.webshare.io:80 (scheme: http)
+19:35:50 [INFO] ProxyExtensionBuilder initialized: p.webshare.io:80 (user: svcvoqpm-US-rotate)
+19:35:50 [INFO] Created temporary extension directory: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_8e04ciuu
+19:35:50 [INFO] Proxy extension created successfully at: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_8e04ciuu (proxy: p.webshare.io:80)
+19:35:50 [INFO] Proxy extension loaded from: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_8e04ciuu
+19:35:50 [INFO] starting
+	executable :C:\Program Files\Google\Chrome\Application\chrome.exe
+
+arguments:
+--remote-allow-origins=*
+	--no-first-run
+	--no-service-autorun
+	--no-default-browser-check
+	--homepage=about:blank
+	--no-pings
+	--password-store=basic
+	--disable-infobars
+	--disable-breakpad
+	--disable-dev-shm-usage
+	--disable-session-crashed-bubble
+	--disable-search-engine-choice-screen
+	--user-data-dir=C:\Users\Andrew\AppData\Local\Temp\uc_rsk366v2
+	--disable-session-crashed-bubble
+	--disable-features=IsolateOrigins,site-per-process
+	--disable-blink-features=AutomationControlled
+	--window-size=1280,720
+	--load-extension=C:\Users\Andrew\AppData\Local\Temp\proxy_ext_8e04ciuu
+	--disable-extensions-except=C:\Users\Andrew\AppData\Local\Temp\proxy_ext_8e04ciuu
+	--remote-debugging-host=127.0.0.1
+	--remote-debugging-port=65342
+19:35:51 [INFO] enabling autodiscover targets
+19:35:51 [INFO] Browser initialized successfully (headless=False)
+19:35:53 [INFO] Zillow navigation complete
+19:35:54 [INFO] Zillow extracting image URLs from page
+19:35:57 [INFO] Zillow filtered to 18 high-quality URLs from 33 total
+19:35:57 [INFO] Zillow extracted 18 image URLs for 7233 W Corrine Dr, Peoria, AZ 85381
+19:35:57 [INFO] Zillow: found 18 images
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-112' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-103' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-104' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-108' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-111' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-107' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-102' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-106' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-105' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-109' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:35:59 [ERROR] Task exception was never retrieved
+future: <Task finished name='Task-110' coro=<Browser.update_targets() done, defined at C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py:571> exception=ConnectionRefusedError(22, 'The remote computer refused the network connection', None, 1225, None)>
+Traceback (most recent call last):
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 573, in update_targets
+    targets = await self._get_targets()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\browser.py", line 568, in _get_targets
+    info = await self.connection.send(cdp.target.get_targets(), _is_update=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 514, in send
+    await self.connect()
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\nodriver\core\connection.py", line 329, in connect
+    self._websocket = await websockets.connect(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 541, in __await_impl__
+    self.connection = await self.create_connection()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\.venv\Lib\site-packages\websockets\asyncio\client.py", line 467, in create_connection
+    _, connection = await loop.create_connection(factory, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1132, in create_connection
+    raise exceptions[0]
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1107, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1010, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 729, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection
+19:36:09 [INFO] Zillow closing resources
+19:36:09 [INFO] Closing browser instance
+19:36:09 [ERROR] Error closing browser: object NoneType can't be used in 'await' expression
+19:36:09 [INFO] Cleaning up proxy extension
+19:36:09 [INFO] Cleaning up extension directory: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_8e04ciuu
+19:36:09 [INFO] Zillow resources closed
+19:36:09 [INFO] Redfin extracting images for: 7233 W Corrine Dr, Peoria, AZ 85381
+19:36:09 [INFO] Redfin: warming up with homepage visit
+19:36:11 [INFO] Initializing new browser instance with stealth configuration
+19:36:11 [INFO] Creating proxy authentication extension for: p.webshare.io:80
+19:36:11 [INFO] Parsed proxy URL: p.webshare.io:80 (scheme: http)
+19:36:11 [INFO] ProxyExtensionBuilder initialized: p.webshare.io:80 (user: svcvoqpm-US-rotate)
+19:36:11 [INFO] Created temporary extension directory: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_5sf6_ixi
+19:36:11 [INFO] Proxy extension created successfully at: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_5sf6_ixi (proxy: p.webshare.io:80)
+19:36:11 [INFO] Proxy extension loaded from: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_5sf6_ixi
+19:36:11 [INFO] starting
+	executable :C:\Program Files\Google\Chrome\Application\chrome.exe
+
+arguments:
+--remote-allow-origins=*
+	--no-first-run
+	--no-service-autorun
+	--no-default-browser-check
+	--homepage=about:blank
+	--no-pings
+	--password-store=basic
+	--disable-infobars
+	--disable-breakpad
+	--disable-dev-shm-usage
+	--disable-session-crashed-bubble
+	--disable-search-engine-choice-screen
+	--user-data-dir=C:\Users\Andrew\AppData\Local\Temp\uc_kn9aj530
+	--disable-session-crashed-bubble
+	--disable-features=IsolateOrigins,site-per-process
+	--disable-blink-features=AutomationControlled
+	--window-size=1280,720
+	--load-extension=C:\Users\Andrew\AppData\Local\Temp\proxy_ext_5sf6_ixi
+	--disable-extensions-except=C:\Users\Andrew\AppData\Local\Temp\proxy_ext_5sf6_ixi
+	--remote-debugging-host=127.0.0.1
+	--remote-debugging-port=55837
+19:36:12 [INFO] enabling autodiscover targets
+19:36:12 [INFO] Browser initialized successfully (headless=False)
+19:36:15 [INFO] Redfin: homepage loaded
+19:36:15 [INFO] Redfin: Starting interactive search for: 7233 W Corrine Dr, Peoria, AZ 85381
+19:36:15 [INFO] Redfin: Found search input with selector: input[name="searchInputBox"]
+19:36:16 [INFO] Redfin: Clicked search input
+19:36:16 [INFO] Redfin: Typed address: 7233 W Corrine Dr, Peoria, AZ 85381
+19:36:19 [INFO] Redfin: Waiting for autocomplete results...
+19:36:19 [INFO] Redfin: Found 15 autocomplete results with selector: a[href*="/AZ/"]
+19:36:19 [INFO] Redfin: Clicked first autocomplete result
+19:36:23 [INFO] Redfin: Property page should be loaded
+19:36:23 [INFO] Redfin: Final URL: https://www.redfin.com/city/3104/AZ/Chandler
+19:36:25 [INFO] Extracting image URLs from Redfin page
+19:36:29 [INFO] Page title: Chandler, AZ Homes for Sale &amp; Real Estate | Redfin
+19:36:29 [INFO] Extracted 47 unique high-resolution URLs from Redfin
+19:36:29 [INFO] Redfin extracted 47 image URLs for 7233 W Corrine Dr, Peoria, AZ 85381
+19:36:29 [INFO] Redfin: found 47 images
+19:36:35 [INFO] Redfin closing resources
+19:36:35 [INFO] Closing browser instance
+19:36:35 [ERROR] Error closing browser: object NoneType can't be used in 'await' expression
+19:36:35 [INFO] Cleaning up proxy extension
+19:36:35 [INFO] Cleaning up extension directory: C:\Users\Andrew\AppData\Local\Temp\proxy_ext_5sf6_ixi
+19:36:35 [INFO] Redfin resources closed
+19:36:35 [INFO] Property complete: 0 unique images extracted
+19:36:35 [INFO] Progress: 1/1 properties (0 ok, 1 failed)
+19:36:35 [INFO] Extraction complete: 0/1 succeeded, 0 unique images, 65 duplicates
+Error: All properties failed
+
+============================================================
+Image Extraction Pipeline
+============================================================
+Properties: 1
+Sources: Zillow, Redfin
+Output directory: data\property_images
+Mode: Full extraction
+Resume: No (fresh start)
+============================================================
+
+
+============================================================
+Summary
+============================================================
+Properties: 0 processed, 1 failed
+Images: 0 total, 0 unique, 65 duplicates
+
+By source:
+  zillow: 0 images, 18 duplicates, 0 failed
+  redfin: 0 images, 47 duplicates, 0 failed
+
+Duration: 0m 45s
+Success rate: 0.0%
+============================================================
+successfully removed temp profile C:\Users\Andrew\AppData\Local\Temp\uc_kn9aj530
+successfully removed temp profile C:\Users\Andrew\AppData\Local\Temp\uc_rsk366v2

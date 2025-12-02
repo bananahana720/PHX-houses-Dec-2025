@@ -1,0 +1,38 @@
+DUE DILIGENCE CHECKLIST: 16814 N 31st Ave, Phoenix, AZ 85053
+================================================================================
+Overall Risk Score: 7 (High Risk)
+
+[MEDIUM PRIORITY] INFRASTRUCTURE RISK
+  [ ] Request standard home inspection with focus on major systems
+  [ ] Verify HVAC age and condition (Arizona climate stressor)
+  [ ] Check roof age and remaining lifespan
+
+[HIGH PRIORITY] SOLAR LEASE RISK
+  [ ] Obtain complete solar lease agreement and review terms
+  [ ] Verify monthly lease payment amount and escalation clauses
+  [ ] Check lease buyout cost and conditions
+  [ ] Confirm lease transferability and approval process
+  [ ] Review solar system warranty coverage
+  [ ] Contact solar company about transfer requirements
+  [ ] Factor lease payment into monthly housing cost
+
+[HIGH PRIORITY] COOLING COST RISK
+  [ ] Request 12 months of utility bills to verify summer cooling costs
+  [ ] Inspect window coverings and insulation quality
+  [ ] Check HVAC SEER rating (higher = more efficient)
+  [ ] Assess quality of insulation in attic and walls
+  [ ] Consider cost of energy-efficiency upgrades (windows, insulation)
+  [ ] Verify dual-zone HVAC for multi-story homes
+
+GENERAL DUE DILIGENCE (ALL PROPERTIES)
+  [ ] Order professional home inspection
+  [ ] Schedule termite/pest inspection
+  [ ] Review HOA documents and CC&Rs (if applicable)
+  [ ] Verify property taxes and special assessments
+  [ ] Check for liens or title issues
+  [ ] Confirm sewer type (city vs septic)
+  [ ] Inspect pool equipment if present (pump, filter, heater)
+  [ ] Walk the neighborhood at different times
+  [ ] Research crime statistics for area
+  [ ] Verify flood zone status
+  [ ] Check for planned development or zoning changes nearby

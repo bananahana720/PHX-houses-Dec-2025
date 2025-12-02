@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Due Diligence Risk Report - Phoenix Homes</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        .address-col {
+            font-weight: 500;
+            color: #007bff;
+            max-width: 250px;
+        }
+        .price-col {
+            font-weight: 600;
+            color: #28a745;
+        }
+        .risk-score-col {
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        .score-low {
+            color: #28a745;
+        }
+        .score-medium {
+            color: #ffc107;
+        }
+        .score-high {
+            color: #dc3545;
+        }
+        .legend {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .legend h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Due Diligence Risk Report - Phoenix Homes</h1>
+    <p><strong>Analysis Date:</strong> 2025-12-01</p>
+
+    <div class="legend">
+        <h3>Risk Scoring Guide</h3>
+        <div class="legend-item">Overall Risk Score: Sum of individual risks</div>
+        <div class="legend-item">HIGH = 3 points</div>
+        <div class="legend-item">MEDIUM = 1 point</div>
+        <div class="legend-item">UNKNOWN = 1 point</div>
+        <div class="legend-item">LOW/POSITIVE = 0 points</div>
+        <br>
+        <div class="legend-item"><strong>Low Risk:</strong> 0-2 points (safest)</div>
+        <div class="legend-item"><strong>Medium Risk:</strong> 3-5 points (moderate caution)</div>
+        <div class="legend-item"><strong>High Risk:</strong> 6+ points (extensive due diligence needed)</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Address</th>
+                <th>Price</th>
+                <th>Noise</th>
+                <th>Infrastructure</th>
+                <th>Solar</th>
+                <th>Cooling</th>
+                <th>Schools</th>
+                <th>Lot Size</th>
+                <th>Overall Risk</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                <td class="address-col" title="20021 N 38th Ln, Glendale, AZ 85308">20021 N 38th Ln, Glendale, AZ 85308</td>
+                <td class="price-col">545000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Modern construction"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-low">1</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="7233 W Corrine Dr, Peoria, AZ 85381">7233 W Corrine Dr, Peoria, AZ 85381</td>
+                <td class="price-col">749999</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Value-add, transferable"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #007bff; color: white;">POSITIVE</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-low">1</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="7126 W Columbine Dr, Peoria, AZ 85381">7126 W Columbine Dr, Peoria, AZ 85381</td>
+                <td class="price-col">565000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="No solar complications"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-low">1</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="2353 W Tierra Buena Ln, Phoenix, AZ 85023">2353 W Tierra Buena Ln, Phoenix, AZ 85023</td>
+                <td class="price-col">499900</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-low">2</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="4417 W Sandra Cir, Glendale, AZ 85308">4417 W Sandra Cir, Glendale, AZ 85308</td>
+                <td class="price-col">354000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Value-add, transferable"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #007bff; color: white;">POSITIVE</span></td>
+                <td title="Moderate cooling impact"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-low">2</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="2846 W Villa Rita Dr, Phoenix, AZ 85053">2846 W Villa Rita Dr, Phoenix, AZ 85053</td>
+                <td class="price-col">540000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-low">2</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="2344 W Marconi Ave, Phoenix, AZ 85023">2344 W Marconi Ave, Phoenix, AZ 85023</td>
+                <td class="price-col">560000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Value-add, transferable"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #007bff; color: white;">POSITIVE</span></td>
+                <td title="Moderate cooling impact"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-low">2</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="4209 W Wahalla Ln, Glendale, AZ 85308">4209 W Wahalla Ln, Glendale, AZ 85308</td>
+                <td class="price-col">625000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Modern construction"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Moderate cooling impact"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-low">2</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="8931 W Villa Rita Dr, Peoria, AZ 85382">8931 W Villa Rita Dr, Peoria, AZ 85382</td>
+                <td class="price-col">549900</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Modern construction"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="No solar complications"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Average schools"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-low">2</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="13307 N 84th Ave, Peoria, AZ 85381">13307 N 84th Ave, Peoria, AZ 85381</td>
+                <td class="price-col">490000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-low">2</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="11035 E Clinton St, Scottsdale, AZ 85259">11035 E Clinton St, Scottsdale, AZ 85259</td>
+                <td class="price-col">775000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="No solar complications"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-low">2</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="14353 N 76th Dr, Peoria, AZ 85381">14353 N 76th Dr, Peoria, AZ 85381</td>
+                <td class="price-col">550000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Modern construction"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Average schools"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-low">2</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="4137 W Cielo Grande, Glendale, AZ 85310">4137 W Cielo Grande, Glendale, AZ 85310</td>
+                <td class="price-col">519900</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Modern construction"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Verify sun orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-medium">3</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="4732 W Davis Rd, Glendale, AZ 85306">4732 W Davis Rd, Glendale, AZ 85306</td>
+                <td class="price-col">475000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Verify sun orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-medium">3</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="4020 W Anderson Dr, Glendale, AZ 85308">4020 W Anderson Dr, Glendale, AZ 85308</td>
+                <td class="price-col">479900</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Moderate cooling impact"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-medium">3</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="4136 W Hearn Rd, Phoenix, AZ 85053">4136 W Hearn Rd, Phoenix, AZ 85053</td>
+                <td class="price-col">457000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Verify sun orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-medium">3</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="5038 W Echo Ln, Glendale, AZ 85302">5038 W Echo Ln, Glendale, AZ 85302</td>
+                <td class="price-col">634000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="No solar complications"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Verify sun orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Average schools"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-medium">3</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="4001 W Libby St, Glendale, AZ 85308">4001 W Libby St, Glendale, AZ 85308</td>
+                <td class="price-col">458000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-medium">3</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="9150 W Villa Rita Dr, Peoria, AZ 85382">9150 W Villa Rita Dr, Peoria, AZ 85382</td>
+                <td class="price-col">605000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Modern construction"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Moderate cooling impact"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-medium">3</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="8426 E Lincoln Dr, Scottsdale, AZ 85250">8426 E Lincoln Dr, Scottsdale, AZ 85250</td>
+                <td class="price-col">849900</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Pre-modern building codes, verify permits"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="No solar complications"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Average schools"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-medium">4</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="14622 N 37th St, Phoenix, AZ 85032">14622 N 37th St, Phoenix, AZ 85032</td>
+                <td class="price-col">510000</td>
+                <td title="Some highway noise possible"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-medium">4</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="12808 N 27th St, Phoenix, AZ 85032">12808 N 27th St, Phoenix, AZ 85032</td>
+                <td class="price-col">509000</td>
+                <td title="Some highway noise possible"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-medium">4</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="8803 N 105th Dr, Peoria, AZ 85345">8803 N 105th Dr, Peoria, AZ 85345</td>
+                <td class="price-col">509000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="No solar complications"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Below-average schools, verify trends"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-medium">4</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="25841 N 66th Dr, Phoenix, AZ 85083">25841 N 66th Dr, Phoenix, AZ 85083</td>
+                <td class="price-col">499777</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Modern construction"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="West-facing, expect high cooling costs"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-medium">5</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="18825 N 34th St, Phoenix, AZ 85050">18825 N 34th St, Phoenix, AZ 85050</td>
+                <td class="price-col">550000</td>
+                <td title="Highway noise likely audible"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Modern construction"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-medium">5</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="18820 N 35th Way, Phoenix, AZ 85050">18820 N 35th Way, Phoenix, AZ 85050</td>
+                <td class="price-col">582000</td>
+                <td title="Highway noise likely audible"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Modern construction"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-medium">5</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="14014 N 39th Ave, Phoenix, AZ 85053">14014 N 39th Ave, Phoenix, AZ 85053</td>
+                <td class="price-col">495000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="West-facing, expect high cooling costs"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-medium">5</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="17244 N 36th Ln, Glendale, AZ 85308">17244 N 36th Ln, Glendale, AZ 85308</td>
+                <td class="price-col">425000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="West-facing, expect high cooling costs"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-medium">5</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="8714 E Plaza Ave, Scottsdale, AZ 85250">8714 E Plaza Ave, Scottsdale, AZ 85250</td>
+                <td class="price-col">750000</td>
+                <td title="Some highway noise possible"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Pre-modern building codes, verify permits"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="No solar complications"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Average schools"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Near minimum requirement"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td class="risk-score-col score-high">6</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="5522 W Carol Ave, Glendale, AZ 85302">5522 W Carol Ave, Glendale, AZ 85302</td>
+                <td class="price-col">442000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Pre-modern building codes, verify permits"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Moderate cooling impact"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Average schools"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-high">6</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="15225 N 37th Way, Phoenix, AZ 85032">15225 N 37th Way, Phoenix, AZ 85032</td>
+                <td class="price-col">565000</td>
+                <td title="Some highway noise possible"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="West-facing, expect high cooling costs"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-high">6</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="5004 W Kaler Dr, Glendale, AZ 85301">5004 W Kaler Dr, Glendale, AZ 85301</td>
+                <td class="price-col">459900</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Pre-modern building codes, verify permits"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Below-average schools, verify trends"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-high">7</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="9832 N 29th St, Phoenix, AZ 85028">9832 N 29th St, Phoenix, AZ 85028</td>
+                <td class="price-col">765000</td>
+                <td title="Highway noise likely audible"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Pre-modern building codes, verify permits"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="No solar complications"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Verify sun orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-high">7</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="16814 N 31st Ave, Phoenix, AZ 85053">16814 N 31st Ave, Phoenix, AZ 85053</td>
+                <td class="price-col">400000</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="May have dated systems"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #ffc107; color: black;">MEDIUM</span></td>
+                <td title="Solar lease transfer required, verify terms"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="West-facing, expect high cooling costs"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Strong school district"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-high">7</td>
+            </tr>
+
+            <tr>
+                <td class="address-col" title="4342 W Claremont St, Glendale, AZ 85301">4342 W Claremont St, Glendale, AZ 85301</td>
+                <td class="price-col">514800</td>
+                <td title="Quiet location"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Pre-modern building codes, verify permits"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Verify solar status"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #6c757d; color: white;">UNKNOWN</span></td>
+                <td title="Favorable orientation"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td title="Below-average schools, verify trends"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #dc3545; color: white;">HIGH</span></td>
+                <td title="Comfortable lot size"><span style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; background-color: #28a745; color: white;">LOW</span></td>
+                <td class="risk-score-col score-high">7</td>
+            </tr>
+
+        </tbody>
+    </table>
+
+    <div style="margin-top: 30px; padding: 15px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3>Risk Category Definitions</h3>
+        <ul>
+            <li><strong>Noise Risk:</strong> Based on highway distance (&lt;0.5mi = HIGH, 0.5-1.0mi = MEDIUM, &gt;1.0mi = LOW)</li>
+            <li><strong>Infrastructure Risk:</strong> Based on year built (pre-1970 = HIGH, 1970-1989 = MEDIUM, 1990+ = LOW)</li>
+            <li><strong>Solar Risk:</strong> Based on solar status (leased = HIGH, owned = POSITIVE, none = LOW)</li>
+            <li><strong>Cooling Cost Risk:</strong> Based on orientation (W/SW = HIGH, S/SE = MEDIUM, N/NE/NW/E = LOW)</li>
+            <li><strong>School Stability:</strong> Based on GreatSchools rating (&lt;6.0 = HIGH, 6.0-7.5 = MEDIUM, &gt;7.5 = LOW)</li>
+            <li><strong>Lot Size Margin:</strong> Based on proximity to 7,000 sqft minimum (7000-7500 = MEDIUM, &gt;7500 = LOW)</li>
+        </ul>
+    </div>
+</body>
+</html>

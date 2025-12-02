@@ -1,0 +1,33 @@
+DUE DILIGENCE CHECKLIST: 15225 N 37th Way, Phoenix, AZ 85032
+================================================================================
+Overall Risk Score: 6 (High Risk)
+
+[MEDIUM PRIORITY] INFRASTRUCTURE RISK
+  [ ] Request standard home inspection with focus on major systems
+  [ ] Verify HVAC age and condition (Arizona climate stressor)
+  [ ] Check roof age and remaining lifespan
+
+[HIGH PRIORITY] COOLING COST RISK
+  [ ] Request 12 months of utility bills to verify summer cooling costs
+  [ ] Inspect window coverings and insulation quality
+  [ ] Check HVAC SEER rating (higher = more efficient)
+  [ ] Assess quality of insulation in attic and walls
+  [ ] Consider cost of energy-efficiency upgrades (windows, insulation)
+  [ ] Verify dual-zone HVAC for multi-story homes
+
+[MEDIUM PRIORITY] NOISE RISK
+  [ ] Visit property to assess ambient noise levels
+  [ ] Check noise levels in backyard and bedrooms
+
+GENERAL DUE DILIGENCE (ALL PROPERTIES)
+  [ ] Order professional home inspection
+  [ ] Schedule termite/pest inspection
+  [ ] Review HOA documents and CC&Rs (if applicable)
+  [ ] Verify property taxes and special assessments
+  [ ] Check for liens or title issues
+  [ ] Confirm sewer type (city vs septic)
+  [ ] Inspect pool equipment if present (pump, filter, heater)
+  [ ] Walk the neighborhood at different times
+  [ ] Research crime statistics for area
+  [ ] Verify flood zone status
+  [ ] Check for planned development or zoning changes nearby

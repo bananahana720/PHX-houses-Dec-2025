@@ -1,0 +1,777 @@
+"""Unit tests for kill switch filtering logic.
+
+Tests all kill switch criteria individually and in combination, covering
+both happy path and edge cases as defined in CLAUDE.md buyer requirements.
+"""
+
+
+from src.phx_home_analysis.domain.enums import SewerType
+from src.phx_home_analysis.services.kill_switch.criteria import (
+    CitySewerKillSwitch,
+    LotSizeKillSwitch,
+    MinBathroomsKillSwitch,
+    MinBedroomsKillSwitch,
+    MinGarageKillSwitch,
+    NoHoaKillSwitch,
+    NoNewBuildKillSwitch,
+)
+from src.phx_home_analysis.services.kill_switch.filter import KillSwitchFilter
+
+# ============================================================================
+# NoHoaKillSwitch Tests
+# ============================================================================
+
+
+class TestNoHoaKillSwitch:
+    """Test the NO HOA kill switch criterion."""
+
+    def test_pass_with_zero_hoa_fee(self, sample_property):
+        """Test property with hoa_fee=0 passes."""
+        sample_property.hoa_fee = 0
+        kill_switch = NoHoaKillSwitch()
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_none_hoa_fee(self, sample_property):
+        """Test property with hoa_fee=None passes (treated as no HOA)."""
+        sample_property.hoa_fee = None
+        kill_switch = NoHoaKillSwitch()
+        assert kill_switch.check(sample_property) is True
+
+    def test_fail_with_positive_hoa_fee(self, sample_property):
+        """Test property with any positive HOA fee fails."""
+        sample_property.hoa_fee = 100
+        kill_switch = NoHoaKillSwitch()
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_large_hoa_fee(self, sample_property):
+        """Test property with large HOA fee fails."""
+        sample_property.hoa_fee = 500
+        kill_switch = NoHoaKillSwitch()
+        assert kill_switch.check(sample_property) is False
+
+    def test_failure_message_with_hoa(self, sample_property):
+        """Test failure message includes HOA fee amount."""
+        sample_property.hoa_fee = 200
+        kill_switch = NoHoaKillSwitch()
+        message = kill_switch.failure_message(sample_property)
+        assert "$200/month" in message
+        assert "NO HOA" in message
+
+    def test_kill_switch_name(self):
+        """Test kill switch has correct name."""
+        kill_switch = NoHoaKillSwitch()
+        assert kill_switch.name == "no_hoa"
+
+    def test_kill_switch_description(self):
+        """Test kill switch has correct description."""
+        kill_switch = NoHoaKillSwitch()
+        assert "NO HOA" in kill_switch.description
+
+
+# ============================================================================
+# CitySewerKillSwitch Tests
+# ============================================================================
+
+
+class TestCitySewerKillSwitch:
+    """Test the city sewer kill switch criterion."""
+
+    def test_pass_with_city_sewer(self, sample_property):
+        """Test property with city sewer passes."""
+        sample_property.sewer_type = SewerType.CITY
+        kill_switch = CitySewerKillSwitch()
+        assert kill_switch.check(sample_property) is True
+
+    def test_fail_with_septic(self, sample_property):
+        """Test property with septic system fails."""
+        sample_property.sewer_type = SewerType.SEPTIC
+        kill_switch = CitySewerKillSwitch()
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_unknown_sewer(self, sample_property):
+        """Test property with unknown sewer type fails."""
+        sample_property.sewer_type = SewerType.UNKNOWN
+        kill_switch = CitySewerKillSwitch()
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_none_sewer(self, sample_property):
+        """Test property with None sewer_type fails (cannot verify)."""
+        sample_property.sewer_type = None
+        kill_switch = CitySewerKillSwitch()
+        assert kill_switch.check(sample_property) is False
+
+    def test_failure_message_septic(self, sample_property):
+        """Test failure message for septic system."""
+        sample_property.sewer_type = SewerType.SEPTIC
+        kill_switch = CitySewerKillSwitch()
+        message = kill_switch.failure_message(sample_property)
+        assert "Septic" in message
+        assert "city sewer" in message
+
+    def test_failure_message_unknown(self, sample_property):
+        """Test failure message for unknown sewer type."""
+        sample_property.sewer_type = SewerType.UNKNOWN
+        kill_switch = CitySewerKillSwitch()
+        message = kill_switch.failure_message(sample_property)
+        assert "unknown" in message.lower()
+
+    def test_kill_switch_name(self):
+        """Test kill switch has correct name."""
+        kill_switch = CitySewerKillSwitch()
+        assert kill_switch.name == "city_sewer"
+
+
+# ============================================================================
+# MinGarageKillSwitch Tests
+# ============================================================================
+
+
+class TestMinGarageKillSwitch:
+    """Test the minimum garage kill switch criterion."""
+
+    def test_pass_with_two_spaces(self, sample_property):
+        """Test property with exactly 2 garage spaces passes."""
+        sample_property.garage_spaces = 2
+        kill_switch = MinGarageKillSwitch(min_spaces=2)
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_more_spaces(self, sample_property):
+        """Test property with more than minimum garage spaces passes."""
+        sample_property.garage_spaces = 3
+        kill_switch = MinGarageKillSwitch(min_spaces=2)
+        assert kill_switch.check(sample_property) is True
+
+    def test_fail_with_one_space(self, sample_property):
+        """Test property with only 1 garage space fails."""
+        sample_property.garage_spaces = 1
+        kill_switch = MinGarageKillSwitch(min_spaces=2)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_zero_spaces(self, sample_property):
+        """Test property with no garage spaces fails."""
+        sample_property.garage_spaces = 0
+        kill_switch = MinGarageKillSwitch(min_spaces=2)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_none_spaces(self, sample_property):
+        """Test property with None garage_spaces fails (cannot verify)."""
+        sample_property.garage_spaces = None
+        kill_switch = MinGarageKillSwitch(min_spaces=2)
+        assert kill_switch.check(sample_property) is False
+
+    def test_custom_minimum(self, sample_property):
+        """Test custom minimum garage requirement."""
+        sample_property.garage_spaces = 3
+        kill_switch = MinGarageKillSwitch(min_spaces=3)
+        assert kill_switch.check(sample_property) is True
+
+        sample_property.garage_spaces = 2
+        assert kill_switch.check(sample_property) is False
+
+    def test_failure_message(self, sample_property):
+        """Test failure message includes actual garage count."""
+        sample_property.garage_spaces = 1
+        kill_switch = MinGarageKillSwitch(min_spaces=2)
+        message = kill_switch.failure_message(sample_property)
+        assert "1-car" in message
+        assert "2+" in message
+
+
+# ============================================================================
+# MinBedroomsKillSwitch Tests
+# ============================================================================
+
+
+class TestMinBedroomsKillSwitch:
+    """Test the minimum bedrooms kill switch criterion."""
+
+    def test_pass_with_four_beds(self, sample_property):
+        """Test property with exactly 4 bedrooms passes."""
+        sample_property.beds = 4
+        kill_switch = MinBedroomsKillSwitch(min_beds=4)
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_more_beds(self, sample_property):
+        """Test property with more than 4 bedrooms passes."""
+        sample_property.beds = 5
+        kill_switch = MinBedroomsKillSwitch(min_beds=4)
+        assert kill_switch.check(sample_property) is True
+
+    def test_fail_with_three_beds(self, sample_property):
+        """Test property with 3 bedrooms fails."""
+        sample_property.beds = 3
+        kill_switch = MinBedroomsKillSwitch(min_beds=4)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_one_bed(self, sample_property):
+        """Test property with 1 bedroom fails."""
+        sample_property.beds = 1
+        kill_switch = MinBedroomsKillSwitch(min_beds=4)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_none_beds(self, sample_property):
+        """Test property with None beds fails (cannot verify)."""
+        sample_property.beds = None
+        kill_switch = MinBedroomsKillSwitch(min_beds=4)
+        assert kill_switch.check(sample_property) is False
+
+    def test_custom_minimum(self, sample_property):
+        """Test custom minimum bedroom requirement."""
+        sample_property.beds = 3
+        kill_switch = MinBedroomsKillSwitch(min_beds=3)
+        assert kill_switch.check(sample_property) is True
+
+    def test_failure_message(self, sample_property):
+        """Test failure message includes actual bedroom count."""
+        sample_property.beds = 3
+        kill_switch = MinBedroomsKillSwitch(min_beds=4)
+        message = kill_switch.failure_message(sample_property)
+        assert "3 bedrooms" in message
+        assert "4+" in message
+
+
+# ============================================================================
+# MinBathroomsKillSwitch Tests
+# ============================================================================
+
+
+class TestMinBathroomsKillSwitch:
+    """Test the minimum bathrooms kill switch criterion."""
+
+    def test_pass_with_two_baths(self, sample_property):
+        """Test property with exactly 2 bathrooms passes."""
+        sample_property.baths = 2.0
+        kill_switch = MinBathroomsKillSwitch(min_baths=2.0)
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_fractional_baths(self, sample_property):
+        """Test property with 2.5 bathrooms passes."""
+        sample_property.baths = 2.5
+        kill_switch = MinBathroomsKillSwitch(min_baths=2.0)
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_more_baths(self, sample_property):
+        """Test property with 3 bathrooms passes."""
+        sample_property.baths = 3.0
+        kill_switch = MinBathroomsKillSwitch(min_baths=2.0)
+        assert kill_switch.check(sample_property) is True
+
+    def test_fail_with_one_bath(self, sample_property):
+        """Test property with 1 bathroom fails."""
+        sample_property.baths = 1.0
+        kill_switch = MinBathroomsKillSwitch(min_baths=2.0)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_one_half_bath(self, sample_property):
+        """Test property with 1.5 bathrooms fails."""
+        sample_property.baths = 1.5
+        kill_switch = MinBathroomsKillSwitch(min_baths=2.0)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_none_baths(self, sample_property):
+        """Test property with None baths fails (cannot verify)."""
+        sample_property.baths = None
+        kill_switch = MinBathroomsKillSwitch(min_baths=2.0)
+        assert kill_switch.check(sample_property) is False
+
+    def test_custom_minimum(self, sample_property):
+        """Test custom minimum bathroom requirement."""
+        sample_property.baths = 2.5
+        kill_switch = MinBathroomsKillSwitch(min_baths=2.5)
+        assert kill_switch.check(sample_property) is True
+
+    def test_failure_message(self, sample_property):
+        """Test failure message includes actual bathroom count."""
+        sample_property.baths = 1.5
+        kill_switch = MinBathroomsKillSwitch(min_baths=2.0)
+        message = kill_switch.failure_message(sample_property)
+        assert "1.5 bathrooms" in message
+
+
+# ============================================================================
+# LotSizeKillSwitch Tests
+# ============================================================================
+
+
+class TestLotSizeKillSwitch:
+    """Test the lot size kill switch criterion."""
+
+    def test_pass_with_minimum_lot(self, sample_property):
+        """Test property with exactly 7000 sqft (minimum) passes."""
+        sample_property.lot_sqft = 7000
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_maximum_lot(self, sample_property):
+        """Test property with exactly 15000 sqft (maximum) passes."""
+        sample_property.lot_sqft = 15000
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_middle_lot(self, sample_property):
+        """Test property with lot size between min and max passes."""
+        sample_property.lot_sqft = 9500
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        assert kill_switch.check(sample_property) is True
+
+    def test_fail_with_lot_too_small(self, sample_property):
+        """Test property with lot size below 7000 fails."""
+        sample_property.lot_sqft = 6999
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_lot_too_large(self, sample_property):
+        """Test property with lot size above 15000 fails."""
+        sample_property.lot_sqft = 15001
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_very_small_lot(self, sample_property):
+        """Test property with very small lot fails."""
+        sample_property.lot_sqft = 3000
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_very_large_lot(self, sample_property):
+        """Test property with very large lot fails."""
+        sample_property.lot_sqft = 25000
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_none_lot(self, sample_property):
+        """Test property with None lot_sqft fails (cannot verify)."""
+        sample_property.lot_sqft = None
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        assert kill_switch.check(sample_property) is False
+
+    def test_failure_message_too_small(self, sample_property):
+        """Test failure message for lot too small."""
+        sample_property.lot_sqft = 6500
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        message = kill_switch.failure_message(sample_property)
+        assert "too small" in message.lower()
+        assert "6,500" in message
+
+    def test_failure_message_too_large(self, sample_property):
+        """Test failure message for lot too large."""
+        sample_property.lot_sqft = 20000
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        message = kill_switch.failure_message(sample_property)
+        assert "too large" in message.lower()
+        assert "20,000" in message
+
+    def test_custom_lot_size_range(self, sample_property):
+        """Test custom lot size range."""
+        kill_switch = LotSizeKillSwitch(min_sqft=5000, max_sqft=10000)
+
+        sample_property.lot_sqft = 5000
+        assert kill_switch.check(sample_property) is True
+
+        sample_property.lot_sqft = 10000
+        assert kill_switch.check(sample_property) is True
+
+        sample_property.lot_sqft = 4999
+        assert kill_switch.check(sample_property) is False
+
+        sample_property.lot_sqft = 10001
+        assert kill_switch.check(sample_property) is False
+
+
+# ============================================================================
+# NoNewBuildKillSwitch Tests
+# ============================================================================
+
+
+class TestNoNewBuildKillSwitch:
+    """Test the no new build kill switch criterion."""
+
+    def test_pass_with_2023_build(self, sample_property):
+        """Test property built in 2023 passes."""
+        sample_property.year_built = 2023
+        kill_switch = NoNewBuildKillSwitch(max_year=2023)
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_older_build(self, sample_property):
+        """Test property built before 2023 passes."""
+        sample_property.year_built = 2010
+        kill_switch = NoNewBuildKillSwitch(max_year=2023)
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_very_old_build(self, sample_property):
+        """Test old property built in 1980 passes."""
+        sample_property.year_built = 1980
+        kill_switch = NoNewBuildKillSwitch(max_year=2023)
+        assert kill_switch.check(sample_property) is True
+
+    def test_fail_with_current_year_build(self, sample_property):
+        """Test property built in current year fails."""
+        from datetime import datetime
+        sample_property.year_built = datetime.now().year
+        kill_switch = NoNewBuildKillSwitch()
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_future_build(self, sample_property):
+        """Test property built in future year fails."""
+        from datetime import datetime
+        sample_property.year_built = datetime.now().year + 1
+        kill_switch = NoNewBuildKillSwitch()
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_none_year(self, sample_property):
+        """Test property with None year_built fails (cannot verify)."""
+        sample_property.year_built = None
+        kill_switch = NoNewBuildKillSwitch(max_year=2023)
+        assert kill_switch.check(sample_property) is False
+
+    def test_failure_message_new_build(self, sample_property):
+        """Test failure message for new build."""
+        from datetime import datetime
+        current_year = datetime.now().year
+        sample_property.year_built = current_year
+        kill_switch = NoNewBuildKillSwitch()
+        message = kill_switch.failure_message(sample_property)
+        assert str(current_year) in message
+        assert str(current_year - 1) in message or "earlier" in message
+
+    def test_custom_year_threshold(self, sample_property):
+        """Test custom year threshold."""
+        kill_switch = NoNewBuildKillSwitch(max_year=2020)
+
+        sample_property.year_built = 2020
+        assert kill_switch.check(sample_property) is True
+
+        sample_property.year_built = 2021
+        assert kill_switch.check(sample_property) is False
+
+
+# ============================================================================
+# KillSwitchFilter Integration Tests
+# ============================================================================
+
+
+class TestKillSwitchFilter:
+    """Test the integrated KillSwitchFilter that applies all criteria."""
+
+    def test_all_pass_with_good_property(self, sample_property):
+        """Test property that passes all kill switches."""
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_property])
+
+        assert len(passed) == 1
+        assert len(failed) == 0
+        assert passed[0].kill_switch_passed is True
+        assert passed[0].kill_switch_failures == []
+
+    def test_fail_with_hoa(self, sample_failed_property):
+        """Test property that fails on HOA."""
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_failed_property])
+
+        assert len(passed) == 0
+        assert len(failed) == 1
+        assert failed[0].kill_switch_passed is False
+        assert any("HOA" in msg for msg in failed[0].kill_switch_failures)
+
+    def test_warning_with_septic(self, sample_septic_property):
+        """Test property with septic gets WARNING verdict (SOFT criterion).
+
+        Septic alone has severity 2.5, which is >= 1.5 (WARNING threshold)
+        but < 3.0 (FAIL threshold), so property passes with WARNING.
+        """
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_septic_property])
+
+        # Septic is a SOFT criterion with severity 2.5 = WARNING, not FAIL
+        # WARNING is considered "passed" for backward compatibility
+        assert len(passed) == 1
+        assert len(failed) == 0
+        assert any("Septic" in msg for msg in passed[0].kill_switch_failures)
+
+    def test_multiple_properties_mixed(self, sample_properties):
+        """Test filtering multiple properties with mixed results."""
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties(sample_properties)
+
+        # Expect mixed results
+        assert len(passed) > 0
+        assert len(failed) > 0
+        assert len(passed) + len(failed) == len(sample_properties)
+
+    def test_filter_maintains_property_order(self, sample_properties):
+        """Test that filter maintains property references."""
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties(sample_properties)
+
+        # All original properties should appear in either passed or failed
+        original_addresses = {p.full_address for p in sample_properties}
+        filtered_addresses = {p.full_address for p in passed + failed}
+        assert original_addresses == filtered_addresses
+
+    def test_custom_kill_switches(self, sample_property):
+        """Test filter with custom kill switches."""
+        custom_switches = [
+            NoHoaKillSwitch(),
+            MinBedroomsKillSwitch(min_beds=3),  # Relaxed requirement
+        ]
+        filter_service = KillSwitchFilter(kill_switches=custom_switches)
+        passed, failed = filter_service.filter_properties([sample_property])
+
+        assert len(passed) == 1
+        assert len(failed) == 0
+
+    def test_default_kill_switches_count(self):
+        """Test that default filter has all 7 kill switches."""
+        filter_service = KillSwitchFilter()
+        assert len(filter_service.get_kill_switch_names()) == 7
+
+    def test_default_kill_switch_names(self):
+        """Test that all expected kill switch names are present."""
+        filter_service = KillSwitchFilter()
+        names = filter_service.get_kill_switch_names()
+
+        expected_names = {
+            "no_hoa",
+            "city_sewer",
+            "min_garage",
+            "min_bedrooms",
+            "min_bathrooms",
+            "lot_size",
+            "no_new_build",
+        }
+        assert set(names) == expected_names
+
+    def test_evaluate_single_property(self, sample_property):
+        """Test evaluating a single property."""
+        filter_service = KillSwitchFilter()
+        passed, failures = filter_service.evaluate(sample_property)
+
+        assert passed is True
+        assert failures == []
+
+    def test_evaluate_failing_property(self, sample_failed_property):
+        """Test evaluating property that fails."""
+        filter_service = KillSwitchFilter()
+        passed, failures = filter_service.evaluate(sample_failed_property)
+
+        assert passed is False
+        assert len(failures) > 0
+
+    def test_multiple_kill_switch_failures(self, sample_property):
+        """Test property that fails multiple kill switches."""
+        # Create property that fails both HOA and lot size
+        sample_property.hoa_fee = 150
+        sample_property.lot_sqft = 5000  # Too small
+
+        filter_service = KillSwitchFilter()
+        passed, failures = filter_service.evaluate(sample_property)
+
+        assert passed is False
+        assert len(failures) >= 2  # At least HOA and lot size
+
+    def test_failure_messages_are_descriptive(self, sample_failed_property):
+        """Test that failure messages are descriptive."""
+        filter_service = KillSwitchFilter()
+        passed, failures = filter_service.evaluate(sample_failed_property)
+
+        assert all(len(msg) > 10 for msg in failures)  # Messages are descriptive
+
+
+# ============================================================================
+# Edge Case Tests
+# ============================================================================
+
+
+class TestKillSwitchEdgeCases:
+    """Test edge cases and boundary conditions."""
+
+    def test_lot_size_boundary_below(self, sample_property):
+        """Test lot size exactly 1 sqft below minimum.
+
+        Lot size is a SOFT criterion (severity 1.0), so a single failure
+        results in PASS (1.0 < 1.5 WARNING threshold).
+        """
+        sample_property.lot_sqft = 6999
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_property])
+        # Lot size alone (1.0) is below WARNING threshold (1.5) = PASS
+        assert len(passed) == 1
+        assert len(failed) == 0
+        # But the property has a failure recorded
+        assert any("lot" in msg.lower() for msg in passed[0].kill_switch_failures)
+
+    def test_lot_size_boundary_above(self, sample_property):
+        """Test lot size exactly 1 sqft above maximum.
+
+        Lot size is a SOFT criterion (severity 1.0), so a single failure
+        results in PASS (1.0 < 1.5 WARNING threshold).
+        """
+        sample_property.lot_sqft = 15001
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_property])
+        # Lot size alone (1.0) is below WARNING threshold (1.5) = PASS
+        assert len(passed) == 1
+        assert len(failed) == 0
+
+    def test_year_built_boundary_below(self, sample_property):
+        """Test year built exactly at threshold (2023)."""
+        sample_property.year_built = 2023
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_property])
+        assert len(passed) == 1
+
+    def test_year_built_boundary_above(self, sample_property):
+        """Test year built exactly above threshold (2024).
+
+        Year built is a SOFT criterion (severity 2.0), so a single failure
+        results in WARNING (2.0 >= 1.5 but < 3.0 FAIL threshold).
+        """
+        sample_property.year_built = 2024
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_property])
+        # Year built alone (2.0) is WARNING, not FAIL
+        assert len(passed) == 1
+        assert len(failed) == 0
+
+    def test_garage_spaces_boundary(self, sample_property):
+        """Test garage spaces at exact threshold."""
+        sample_property.garage_spaces = 2
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_property])
+        assert len(passed) == 1
+
+        # Garage is a SOFT criterion (severity 1.5), so a single failure
+        # results in WARNING (1.5 = WARNING threshold, < 3.0 FAIL threshold)
+        sample_property.garage_spaces = 1
+        passed, failed = filter_service.filter_properties([sample_property])
+        # WARNING passes, not FAIL
+        assert len(passed) == 1
+        assert len(failed) == 0
+
+    def test_bedrooms_boundary(self, sample_property):
+        """Test bedrooms at exact threshold."""
+        sample_property.beds = 4
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_property])
+        assert len(passed) == 1
+
+        sample_property.beds = 3
+        passed, failed = filter_service.filter_properties([sample_property])
+        assert len(failed) == 1
+
+    def test_bathrooms_boundary(self, sample_property):
+        """Test bathrooms at exact threshold."""
+        sample_property.baths = 2.0
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_property])
+        assert len(passed) == 1
+
+        sample_property.baths = 1.9
+        passed, failed = filter_service.filter_properties([sample_property])
+        assert len(failed) == 1
+
+    def test_hoa_fee_boundary(self, sample_property):
+        """Test HOA fee exactly at boundary (0)."""
+        sample_property.hoa_fee = 0
+        filter_service = KillSwitchFilter()
+        passed, failed = filter_service.filter_properties([sample_property])
+        assert len(passed) == 1
+
+        sample_property.hoa_fee = 1
+        passed, failed = filter_service.filter_properties([sample_property])
+        assert len(failed) == 1
+
+
+# ============================================================================
+# Severity Threshold Tests (Wave 1.1)
+# ============================================================================
+
+from src.phx_home_analysis.services.kill_switch import (
+    SEVERITY_FAIL_THRESHOLD,
+    KillSwitchVerdict,
+)
+
+
+class TestSeverityThresholdOOP:
+    """Test the OOP implementation of severity threshold system."""
+
+    def test_evaluate_with_severity_returns_verdict(self, sample_property):
+        """evaluate_with_severity should return verdict, severity, and failures."""
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(
+            sample_property
+        )
+        assert isinstance(verdict, KillSwitchVerdict)
+        assert isinstance(severity, float)
+        assert isinstance(failures, list)
+
+    def test_perfect_property_passes(self, sample_property):
+        """Property passing all criteria should have PASS verdict."""
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(
+            sample_property
+        )
+        assert verdict == KillSwitchVerdict.PASS
+        assert severity == 0.0
+        assert len(failures) == 0
+
+    def test_septic_alone_is_warning(self, sample_septic_property):
+        """Septic alone (2.5) should be WARNING, not FAIL."""
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(
+            sample_septic_property
+        )
+        assert verdict == KillSwitchVerdict.WARNING
+        assert severity == 2.5
+        assert len(failures) == 1
+
+    def test_hoa_is_hard_fail(self, sample_failed_property):
+        """HOA failure (HARD criterion) should result in FAIL."""
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(
+            sample_failed_property
+        )
+        assert verdict == KillSwitchVerdict.FAIL
+        # Severity for HARD fails doesn't contribute
+        assert any("HOA" in msg for msg in failures)
+
+    def test_multiple_soft_failures_exceed_threshold(self, sample_property):
+        """Multiple SOFT failures should accumulate and exceed FAIL threshold."""
+        # Configure property to fail multiple SOFT criteria
+        sample_property.sewer_type = None  # SOFT: 2.5 (fails as unknown in OOP)
+        sample_property.year_built = 2024  # SOFT: 2.0
+        # Actually OOP is stricter - unknown sewer fails
+
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(
+            sample_property
+        )
+        # sewer (2.5) + year (2.0) = 4.5 >= 3.0 = FAIL
+        assert verdict == KillSwitchVerdict.FAIL
+        assert severity >= SEVERITY_FAIL_THRESHOLD
+
+    def test_get_hard_criteria(self):
+        """get_hard_criteria should return HARD kill switches."""
+        filter_service = KillSwitchFilter()
+        hard = filter_service.get_hard_criteria()
+        hard_names = [ks.name for ks in hard]
+        assert "no_hoa" in hard_names
+        assert "min_bedrooms" in hard_names
+        assert "min_bathrooms" in hard_names
+
+    def test_get_soft_criteria(self):
+        """get_soft_criteria should return SOFT kill switches."""
+        filter_service = KillSwitchFilter()
+        soft = filter_service.get_soft_criteria()
+        soft_names = [ks.name for ks in soft]
+        assert "city_sewer" in soft_names
+        assert "min_garage" in soft_names
+        assert "lot_size" in soft_names
+        assert "no_new_build" in soft_names
+
+    def test_summary_includes_hard_and_soft_sections(self):
+        """summary() should include HARD and SOFT sections."""
+        filter_service = KillSwitchFilter()
+        summary = filter_service.summary()
+        assert "HARD" in summary
+        assert "SOFT" in summary
+        assert "severity" in summary.lower() or "weight" in summary.lower()

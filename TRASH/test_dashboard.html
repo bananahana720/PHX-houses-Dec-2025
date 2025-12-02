@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Test</title>
+</head>
+<body>
+    <h1>Testing CSV Parse</h1>
+    <div id="output"></div>
+
+    <script>
+        // Simple CSV parser (same as dashboard)
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',');
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                const obj = {};
+                headers.forEach((header, index) => {
+                    obj[header.trim()] = values[index] ? values[index].trim() : '';
+                });
+                data.push(obj);
+            }
+
+            return data;
+        }
+
+        async function testLoad() {
+            try {
+                const response = await fetch('data/phx_homes_ranked.csv');
+                const text = await response.text();
+                const properties = parseCSV(text);
+
+                const passed = properties.filter(p => p.kill_switch_passed === 'PASS');
+                const top3 = passed.slice(0, 3);
+
+                let html = '<h2>Success! Loaded ' + properties.length + ' properties</h2>';
+                html += '<h3>Passed: ' + passed.length + '</h3>';
+                html += '<h3>Top 3:</h3><ol>';
+
+                top3.forEach(p => {
+                    html += '<li>' + p.full_address + ' - $' + p.price + ' - Score: ' + p.total_score + '</li>';
+                });
+                html += '</ol>';
+
+                document.getElementById('output').innerHTML = html;
+            } catch (error) {
+                document.getElementById('output').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+            }
+        }
+
+        testLoad();
+    </script>
+</body>
+</html>

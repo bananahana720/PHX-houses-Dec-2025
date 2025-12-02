@@ -1,0 +1,167 @@
+[
+  {
+    "full_address": "4732 W Davis Rd, Glendale, AZ 85306",
+    "estimated_orientation": "Unknown",
+    "cooling_cost_impact": 250
+  },
+  {
+    "full_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+    "estimated_orientation": "S",
+    "cooling_cost_impact": 300
+  },
+  {
+    "full_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "15225 N 37th Way, Phoenix, AZ 85032",
+    "estimated_orientation": "W",
+    "cooling_cost_impact": 600
+  },
+  {
+    "full_address": "18820 N 35th Way, Phoenix, AZ 85050",
+    "estimated_orientation": "E",
+    "cooling_cost_impact": 200
+  },
+  {
+    "full_address": "4209 W Wahalla Ln, Glendale, AZ 85308",
+    "estimated_orientation": "S",
+    "cooling_cost_impact": 300
+  },
+  {
+    "full_address": "4137 W Cielo Grande, Glendale, AZ 85310",
+    "estimated_orientation": "Unknown",
+    "cooling_cost_impact": 250
+  },
+  {
+    "full_address": "13307 N 84th Ave, Peoria, AZ 85381",
+    "estimated_orientation": "E",
+    "cooling_cost_impact": 200
+  },
+  {
+    "full_address": "14014 N 39th Ave, Phoenix, AZ 85053",
+    "estimated_orientation": "W",
+    "cooling_cost_impact": 600
+  },
+  {
+    "full_address": "25841 N 66th Dr, Phoenix, AZ 85083",
+    "estimated_orientation": "W",
+    "cooling_cost_impact": 600
+  },
+  {
+    "full_address": "4001 W Libby St, Glendale, AZ 85308",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "5522 W Carol Ave, Glendale, AZ 85302",
+    "estimated_orientation": "S",
+    "cooling_cost_impact": 300
+  },
+  {
+    "full_address": "5004 W Kaler Dr, Glendale, AZ 85301",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "4342 W Claremont St, Glendale, AZ 85301",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "20021 N 38th Ln, Glendale, AZ 85308",
+    "estimated_orientation": "E",
+    "cooling_cost_impact": 200
+  },
+  {
+    "full_address": "18825 N 34th St, Phoenix, AZ 85050",
+    "estimated_orientation": "E",
+    "cooling_cost_impact": 200
+  },
+  {
+    "full_address": "4136 W Hearn Rd, Phoenix, AZ 85053",
+    "estimated_orientation": "Unknown",
+    "cooling_cost_impact": 250
+  },
+  {
+    "full_address": "4020 W Anderson Dr, Glendale, AZ 85308",
+    "estimated_orientation": "S",
+    "cooling_cost_impact": 300
+  },
+  {
+    "full_address": "8714 E Plaza Ave, Scottsdale, AZ 85250",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "8426 E Lincoln Dr, Scottsdale, AZ 85250",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "11035 E Clinton St, Scottsdale, AZ 85259",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "14622 N 37th St, Phoenix, AZ 85032",
+    "estimated_orientation": "E",
+    "cooling_cost_impact": 200
+  },
+  {
+    "full_address": "12808 N 27th St, Phoenix, AZ 85032",
+    "estimated_orientation": "E",
+    "cooling_cost_impact": 200
+  },
+  {
+    "full_address": "16814 N 31st Ave, Phoenix, AZ 85053",
+    "estimated_orientation": "W",
+    "cooling_cost_impact": 600
+  },
+  {
+    "full_address": "4417 W Sandra Cir, Glendale, AZ 85308",
+    "estimated_orientation": "S",
+    "cooling_cost_impact": 300
+  },
+  {
+    "full_address": "17244 N 36th Ln, Glendale, AZ 85308",
+    "estimated_orientation": "W",
+    "cooling_cost_impact": 600
+  },
+  {
+    "full_address": "7126 W Columbine Dr, Peoria, AZ 85381",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "14353 N 76th Dr, Peoria, AZ 85381",
+    "estimated_orientation": "E",
+    "cooling_cost_impact": 200
+  },
+  {
+    "full_address": "7233 W Corrine Dr, Peoria, AZ 85381",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "8803 N 105th Dr, Peoria, AZ 85345",
+    "estimated_orientation": "E",
+    "cooling_cost_impact": 200
+  },
+  {
+    "full_address": "8931 W Villa Rita Dr, Peoria, AZ 85382",
+    "estimated_orientation": "N",
+    "cooling_cost_impact": 0
+  },
+  {
+    "full_address": "9150 W Villa Rita Dr, Peoria, AZ 85382",
+    "estimated_orientation": "S",
+    "cooling_cost_impact": 300
+  }
+]

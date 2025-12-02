@@ -1,0 +1,3 @@
+Image folder: data/property_images/processed/a909aa74/
+Image count: 33
+data/property_images/processed/a909aa74/

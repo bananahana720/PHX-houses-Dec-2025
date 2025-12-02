@@ -1,0 +1,106 @@
+{# Score breakdown component with progress bars
+
+   Usage:
+   {% include 'components/score_breakdown.html' with score_breakdown=<ScoreBreakdown> %}
+
+   Displays three-section scorecard with progress bars
+#}
+<div class="scorecard">
+    <div class="score-row">
+        <div class="score-label">Location:</div>
+        <div class="score-value">{{ "%.1f"|format(score_breakdown.location_total) }}/230</div>
+        <div class="score-bar-container">
+            <div class="score-bar" style="width: {{ "%.1f"|format(score_breakdown.location_percentage) }}%">
+                <span class="score-bar-percentage">{{ "%.0f"|format(score_breakdown.location_percentage) }}%</span>
+            </div>
+        </div>
+    </div>
+    <div class="score-row">
+        <div class="score-label">Systems:</div>
+        <div class="score-value">{{ "%.1f"|format(score_breakdown.systems_total) }}/180</div>
+        <div class="score-bar-container">
+            <div class="score-bar" style="width: {{ "%.1f"|format(score_breakdown.systems_percentage) }}%">
+                <span class="score-bar-percentage">{{ "%.0f"|format(score_breakdown.systems_percentage) }}%</span>
+            </div>
+        </div>
+    </div>
+    <div class="score-row">
+        <div class="score-label">Interior:</div>
+        <div class="score-value">{{ "%.1f"|format(score_breakdown.interior_total) }}/190</div>
+        <div class="score-bar-container">
+            <div class="score-bar" style="width: {{ "%.1f"|format(score_breakdown.interior_percentage) }}%">
+                <span class="score-bar-percentage">{{ "%.0f"|format(score_breakdown.interior_percentage) }}%</span>
+            </div>
+        </div>
+    </div>
+    <div class="score-row total">
+        <div class="score-label">TOTAL:</div>
+        <div class="score-value">{{ "%.1f"|format(score_breakdown.total_score) }}/600</div>
+        <div class="score-bar-container">
+            <div class="score-bar" style="width: {{ "%.1f"|format(score_breakdown.total_percentage) }}%">
+                <span class="score-bar-percentage">{{ "%.0f"|format(score_breakdown.total_percentage) }}%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.scorecard {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.score-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 15px;
+}
+
+.score-row:last-child {
+    margin-bottom: 0;
+    padding-top: 12px;
+    border-top: 2px solid #d1d5db;
+    font-weight: 700;
+}
+
+.score-label {
+    min-width: 100px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.score-value {
+    min-width: 80px;
+    font-weight: 700;
+    color: #1e40af;
+    font-size: 14px;
+}
+
+.score-bar-container {
+    flex: 1;
+    height: 24px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.score-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+}
+
+.score-bar-percentage {
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+}
+</style>

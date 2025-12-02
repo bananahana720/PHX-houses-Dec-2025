@@ -1,0 +1,21 @@
+{# Risk badge component with color coding
+
+   Usage:
+   {% include 'components/risk_badge.html' with risk_level=<RiskLevel enum> %}
+
+   Renders a colored badge for risk levels: HIGH, MEDIUM, LOW, POSITIVE, UNKNOWN
+#}
+{% set badge_styles = {
+    'high': 'background-color: #dc3545; color: white;',
+    'medium': 'background-color: #ffc107; color: black;',
+    'low': 'background-color: #28a745; color: white;',
+    'positive': 'background-color: #007bff; color: white;',
+    'unknown': 'background-color: #6c757d; color: white;'
+} %}
+
+{% set style = badge_styles.get(risk_level.value, badge_styles['unknown']) %}
+
+<span class="risk-badge risk-{{ risk_level.value }}"
+      style="padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; {{ style }}">
+    {{ risk_level.value|upper }}
+</span>

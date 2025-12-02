@@ -1,0 +1,4 @@
+full_address,price,noise_risk,noise_desc,infrastructure_risk,infrastructure_desc,solar_risk,solar_desc,cooling_risk,cooling_desc,school_risk,school_desc,lot_risk,lot_desc,overall_risk_score
+"123 Unicorn Lane, Phoenix, AZ 85001","$475,000",LOW,Quiet location,LOW,Modern construction,POSITIVE,Owned solar - value add,LOW,North-facing - best orientation,LOW,Strong school district,LOW,Comfortable lot size,0
+"456 Contender Ave, Scottsdale, AZ 85250","$525,000",MEDIUM,Some highway noise possible,LOW,Modern construction,LOW,No solar complications,LOW,East-facing - good,MEDIUM,Average schools,LOW,Comfortable lot size,2
+"789 Pass Blvd, Tempe, AZ 85281","$450,000",MEDIUM,Moderate traffic noise,LOW,Modern construction,LOW,No solar complications,MEDIUM,South-facing - moderate,MEDIUM,Average schools,MEDIUM,Near minimum requirement,4

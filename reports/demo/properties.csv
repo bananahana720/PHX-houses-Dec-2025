@@ -1,0 +1,4 @@
+rank,full_address,city,price,price_num,beds,baths,sqft,price_per_sqft,kill_switch_passed,tier,total_score,score_location,score_systems,score_interior,lot_sqft,year_built,garage_spaces,sewer_type,hoa_fee,commute_minutes,school_rating,orientation,distance_to_grocery_miles,distance_to_highway_miles,solar_status,has_pool,roof_age,hvac_age
+1,"123 Unicorn Lane, Phoenix, AZ 85001",Phoenix,"$475,000",475000,4,2.5,2400,197.92,PASS,Unicorn,241.5,112.5,59.0,70.0,9000,2010,2,city,0,,8.5,north,,,owned,Yes,5,8
+2,"456 Contender Ave, Scottsdale, AZ 85250",Scottsdale,"$525,000",525000,4,3.0,2600,201.92,PASS,Contender,168.0,65.0,45.0,58.0,8500,2005,2,city,0,,7.0,east,,,none,No,12,10
+3,"789 Pass Blvd, Tempe, AZ 85281",Tempe,"$450,000",450000,4,2.0,2200,204.55,PASS,Pass,145.5,57.5,38.0,50.0,7500,2000,2,city,0,,6.5,south,,,none,Yes,15,12

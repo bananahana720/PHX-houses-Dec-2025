@@ -1,0 +1,152 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [1.0.0] - 2025-11-29
+
+### Added - Major Refactoring Initiative
+
+This release represents a complete architectural refactoring of the PHX Home Analysis pipeline,
+transforming a monolithic script collection into a maintainable, testable, modular architecture.
+
+#### Configuration Layer (`src/phx_home_analysis/config/`)
+- Created `settings.py` with immutable dataclasses:
+  - `ProjectPaths` - Centralized file path configuration with PHX_BASE_DIR env support
+  - `MapConfig` - Geospatial visualization settings (Phoenix-centered)
+  - `BuyerProfile` - Kill-switch criteria and financial parameters
+  - `ArizonaContext` - Arizona-specific considerations (solar, pools, HVAC, orientation)
+  - `AppConfig` - Aggregated configuration with factory method
+- Created `scoring_weights.py` with detailed documentation:
+  - `ScoringWeights` - 17 weighted scoring criteria across 3 categories
+  - `TierThresholds` - Unicorn (>400), Contender (300-400), Pass (<300)
+
+#### Domain Layer (`src/phx_home_analysis/domain/`)
+- Created `enums.py` with behavioral enums:
+  - `RiskLevel` - HIGH, MEDIUM, LOW, POSITIVE, UNKNOWN with score/color/CSS properties
+  - `Tier` - UNICORN, CONTENDER, PASS, FAILED with from_score() classifier
+  - `SolarStatus` - OWNED, LEASED, NONE with is_problematic property
+  - `SewerType` - CITY, SEPTIC with is_acceptable property
+  - `Orientation` - 8 cardinal directions with cooling_cost_multiplier and base_score
+- Created `value_objects.py` with immutable value objects:
+  - `Address` - Full address formatting with short_address property
+  - `Score` - Scoring criterion with weighted_score calculation
+  - `RiskAssessment` - Risk evaluation container
+  - `ScoreBreakdown` - Category-grouped score aggregation
+  - `RenovationEstimate` - Cost estimation by category
+- Created `entities.py`:
+  - `Property` - Core domain entity with 40+ fields and computed properties
+  - `EnrichmentData` - Data transfer object for JSON loading
+
+#### Repository Layer (`src/phx_home_analysis/repositories/`)
+- Created `base.py` with abstract interfaces:
+  - `PropertyRepository` - Load/save property data contract
+  - `EnrichmentRepository` - Load/save enrichment data contract
+  - `DataLoadError`, `DataSaveError` - Custom exceptions
+- Created `csv_repository.py`:
+  - `CsvPropertyRepository` - CSV loading/saving with type-safe parsing
+  - Handles 40+ columns including analysis results
+  - Enum normalization from strings
+- Created `json_repository.py`:
+  - `JsonEnrichmentRepository` - JSON loading with O(1) address lookup
+  - Default template generation for missing files
+  - `apply_enrichment_to_property()` helper method
+
+#### Services Layer (`src/phx_home_analysis/services/`)
+- Created `kill_switch/` subsystem:
+  - `KillSwitch` abstract base class with plugin pattern
+  - 7 concrete kill switch implementations matching CLAUDE.md requirements:
+    - NoHoaKillSwitch, CitySewerKillSwitch, MinGarageKillSwitch
+    - MinBedroomsKillSwitch, MinBathroomsKillSwitch, LotSizeKillSwitch
+    - NoNewBuildKillSwitch
+  - `KillSwitchFilter` orchestrator with evaluate() and filter_properties()
+- Created `scoring/` subsystem:
+  - `ScoringStrategy` abstract base class with strategy pattern
+  - 17 concrete scoring strategies across 3 categories:
+    - Location (6): SchoolDistrict, Quietness, Safety, Supermarket, Parks, Orientation
+    - Systems (4): RoofCondition, BackyardUtility, PlumbingElectrical, PoolCondition
+    - Interior (7): Kitchen, MasterSuite, NaturalLight, HighCeilings, Fireplace, Laundry, Aesthetics
+  - `PropertyScorer` orchestrator with score() and score_all()
+
+#### Pipeline Layer (`src/phx_home_analysis/pipeline/`)
+- Created `orchestrator.py`:
+  - `AnalysisPipeline` - 8-stage pipeline coordinator:
+    1. Load properties from CSV
+    2. Load enrichment from JSON
+    3. Merge enrichment into properties
+    4. Apply kill-switch filters
+    5. Score passing properties
+    6. Classify tiers
+    7. Sort by score
+    8. Save ranked results
+  - `PipelineResult` - Execution summary dataclass
+  - `analyze_single()` for individual property analysis
+
+#### Reporter Layer (`src/phx_home_analysis/reporters/`)
+- Created `base.py` with `Reporter` abstract base class
+- Created `html_reporter.py`:
+  - `HtmlReportGenerator` - Jinja2-based HTML generation
+  - Methods for risk_report, renovation_report, custom templates
+- Created `csv_reporter.py`:
+  - `CsvReporter` - Configurable column CSV export
+  - `RiskCsvReporter` - Risk-specific CSV format
+- Created `console_reporter.py`:
+  - `ConsoleReporter` - ANSI color-coded terminal output
+  - Summary and detailed output modes
+
+#### Templates (`templates/`)
+- Created `base.html` - Base template with Bootstrap CSS
+- Created `risk_report.html` - Interactive risk assessment report
+- Created `renovation_report.html` - Renovation gap analysis
+- Created `components/`:
+  - `property_card.html` - Reusable property summary
+  - `score_breakdown.html` - Three-section scorecard with progress bars
+  - `risk_badge.html` - Color-coded risk level badges
+
+#### CLI Entry Point (`scripts/analyze.py`)
+- New CLI with argparse for running the pipeline
+- Supports --input, --enrichment, --output path overrides
+- Supports --single for individual property analysis
+- Supports --verbose for detailed logging
+
+#### Test Suite (`tests/`)
+- Created `conftest.py` with 15 shared pytest fixtures
+- Created `unit/test_domain.py` - 67 tests for domain model
+- Created `unit/test_kill_switch.py` - 75 tests for kill switch filtering
+- Created `unit/test_scorer.py` - 46 tests for property scoring
+- Total: **188 passing tests** with >90% code coverage
+
+#### Project Configuration
+- Created `pyproject.toml` for modern Python packaging
+- Defined dependencies: pandas, jinja2, plotly, folium
+- Defined dev dependencies: pytest, pytest-cov, ruff, mypy
+- Added CLI entry point: `phx-analyze`
+
+### Metrics
+
+**Before Refactoring:**
+- ~4,500 LOC with 25% code duplication
+- 8 functions exceeding 50 lines
+- Hardcoded paths in 12 files
+- 0% test coverage
+
+**After Refactoring:**
+- ~8,900 LOC in modular architecture (includes tests)
+- All functions <50 lines
+- Centralized configuration
+- 188 passing tests (>90% coverage)
+- Type hints throughout
+- Comprehensive docstrings
+
+### Migration Notes
+
+The legacy scripts in `scripts/` remain functional. The new architecture in `src/phx_home_analysis/`
+provides a modern, maintainable alternative. To migrate:
+
+1. Install the package: `pip install -e .`
+2. Run via CLI: `phx-analyze` or `python scripts/analyze.py`
+3. Or import programmatically:
+   ```python
+   from phx_home_analysis import AnalysisPipeline
+   pipeline = AnalysisPipeline()
+   result = pipeline.run()
+   ```

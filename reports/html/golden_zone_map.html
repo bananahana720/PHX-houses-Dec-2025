@@ -1,0 +1,2535 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_92fb1d15fecb7b3069a1f4f37b80c5f6 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+    <div style="
+        position: fixed;
+        bottom: 50px;
+        left: 50px;
+        width: 280px;
+        background-color: white;
+        border: 2px solid grey;
+        z-index: 9999;
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+        font-family: Arial, sans-serif;
+    ">
+        <h4 style="margin-top: 0; margin-bottom: 10px; text-align: center;">
+            Golden Zone Legend
+        </h4>
+        <p style="margin: 5px 0;">
+            <span style="color: green; font-size: 20px;">●</span>
+            <b>PASS</b> - Meets all kill switches
+        </p>
+        <p style="margin: 5px 0;">
+            <span style="color: red; font-size: 20px;">●</span>
+            <b>FAIL</b> - Failed one or more kill switches
+        </p>
+        <p style="margin: 5px 0; margin-top: 10px; font-size: 12px;">
+            <b>Marker Size:</b> Larger = Higher total score
+        </p>
+        <hr style="margin: 10px 0;">
+        <p style="margin: 5px 0; font-size: 12px;">
+            <b>Buyer Priorities:</b><br>
+            • Schools: 8+ rating<br>
+            • Grocery: &lt; 1.5 mi<br>
+            • Highway: &gt; 1 mi (quiet)
+        </p>
+    </div>
+    
+    
+            <div class="folium-map" id="map_92fb1d15fecb7b3069a1f4f37b80c5f6" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_92fb1d15fecb7b3069a1f4f37b80c5f6 = L.map(
+                "map_92fb1d15fecb7b3069a1f4f37b80c5f6",
+                {
+                    center: [33.55, -112.05],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_57d51d5064b73341c047711ed4d378ca = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_57d51d5064b73341c047711ed4d378ca.addTo(map_92fb1d15fecb7b3069a1f4f37b80c5f6);
+        
+    
+            var feature_group_52847aa07422c446bdf2c6bedb3b3564 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_309bb6fea4398f08ac5b0977a9ede7d6 = L.circleMarker(
+                [33.6314, -112.1998],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_0038ef6cdf6057f384d50b658850afb0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0b7444fa9bc3470428000b8a4403bc39 = $(`<div id="html_0b7444fa9bc3470428000b8a4403bc39" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 4732 W Davis Rd, Glendale, AZ 85306             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>475000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>417.5 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 2,241 sqft<br>                 School Rating: 8.1<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_0038ef6cdf6057f384d50b658850afb0.setContent(html_0b7444fa9bc3470428000b8a4403bc39);
+            
+        
+
+        circle_marker_309bb6fea4398f08ac5b0977a9ede7d6.bindPopup(popup_0038ef6cdf6057f384d50b658850afb0)
+        ;
+
+        
+    
+    
+            circle_marker_309bb6fea4398f08ac5b0977a9ede7d6.bindTooltip(
+                `<div>
+                     4732 W Davis Rd, Glendale, AZ 85306<br>Score: 417.5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b10f91c528673b4ea3c44f0f4e3c70dc = L.circleMarker(
+                [33.6287, -112.1105],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_ec49da4ba48ce618170876b595edebe7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1e44b9ee51b2d88d24ae85f06b274539 = $(`<div id="html_1e44b9ee51b2d88d24ae85f06b274539" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 2353 W Tierra Buena Ln, Phoenix, AZ 85023             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>499900</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>436.2 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,752 sqft<br>                 School Rating: 8.6<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_ec49da4ba48ce618170876b595edebe7.setContent(html_1e44b9ee51b2d88d24ae85f06b274539);
+            
+        
+
+        circle_marker_b10f91c528673b4ea3c44f0f4e3c70dc.bindPopup(popup_ec49da4ba48ce618170876b595edebe7)
+        ;
+
+        
+    
+    
+            circle_marker_b10f91c528673b4ea3c44f0f4e3c70dc.bindTooltip(
+                `<div>
+                     2353 W Tierra Buena Ln, Phoenix, AZ 85023<br>Score: 436.2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5dd161b932ed98b91a9faad62513e2c7 = L.circleMarker(
+                [33.6307, -112.11],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14.819999999999999, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_54303a575fe0b809d95cae037adcf38f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_76a86057ba9e11d77bbe6171b7a2ccb2 = $(`<div id="html_76a86057ba9e11d77bbe6171b7a2ccb2" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 2344 W Marconi Ave, Phoenix, AZ 85023             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>560000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>398.2 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 3.0 bath, 2,048 sqft<br>                 School Rating: 8.6<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_54303a575fe0b809d95cae037adcf38f.setContent(html_76a86057ba9e11d77bbe6171b7a2ccb2);
+            
+        
+
+        circle_marker_5dd161b932ed98b91a9faad62513e2c7.bindPopup(popup_54303a575fe0b809d95cae037adcf38f)
+        ;
+
+        
+    
+    
+            circle_marker_5dd161b932ed98b91a9faad62513e2c7.bindTooltip(
+                `<div>
+                     2344 W Marconi Ave, Phoenix, AZ 85023<br>Score: 398.2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d57da7afe4e45d0c8bc5966a533b9599 = L.circleMarker(
+                [33.6505, -112.1212],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_2f0b786d7c22cbaafe1ba82c6ff32577 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d6a53258727508dcec21a37b4bea7b9d = $(`<div id="html_d6a53258727508dcec21a37b4bea7b9d" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 2846 W Villa Rita Dr, Phoenix, AZ 85053             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>540000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>405.2 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 5 bed, 3.0 bath, 2,076 sqft<br>                 School Rating: 8.0<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_2f0b786d7c22cbaafe1ba82c6ff32577.setContent(html_d6a53258727508dcec21a37b4bea7b9d);
+            
+        
+
+        circle_marker_d57da7afe4e45d0c8bc5966a533b9599.bindPopup(popup_2f0b786d7c22cbaafe1ba82c6ff32577)
+        ;
+
+        
+    
+    
+            circle_marker_d57da7afe4e45d0c8bc5966a533b9599.bindTooltip(
+                `<div>
+                     2846 W Villa Rita Dr, Phoenix, AZ 85053<br>Score: 405.2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_edde4ffb0dc4c50810dc5eae8f0e1993 = L.circleMarker(
+                [33.625, -112.0011],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12.069999999999999, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_b89be3ac8674db1cafdc67ffbc45dab8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_39d37b9ad686b51467f5d2c2c5aec874 = $(`<div id="html_39d37b9ad686b51467f5d2c2c5aec874" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 15225 N 37th Way, Phoenix, AZ 85032             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>565000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>370.7 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,748 sqft<br>                 School Rating: 8.8<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_b89be3ac8674db1cafdc67ffbc45dab8.setContent(html_39d37b9ad686b51467f5d2c2c5aec874);
+            
+        
+
+        circle_marker_edde4ffb0dc4c50810dc5eae8f0e1993.bindPopup(popup_b89be3ac8674db1cafdc67ffbc45dab8)
+        ;
+
+        
+    
+    
+            circle_marker_edde4ffb0dc4c50810dc5eae8f0e1993.bindTooltip(
+                `<div>
+                     15225 N 37th Way, Phoenix, AZ 85032<br>Score: 370.7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ddb71ceea35914052e58e26710eba997 = L.circleMarker(
+                [33.6658, -112.1999],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 13.37, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_57d2dcc994667fb48642cfb22e5239c3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9c0eac996957a5e92556fc1833646225 = $(`<div id="html_9c0eac996957a5e92556fc1833646225" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 4209 W Wahalla Ln, Glendale, AZ 85308             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>625000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>383.7 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 2,349 sqft<br>                 School Rating: 8.4<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_57d2dcc994667fb48642cfb22e5239c3.setContent(html_9c0eac996957a5e92556fc1833646225);
+            
+        
+
+        circle_marker_ddb71ceea35914052e58e26710eba997.bindPopup(popup_57d2dcc994667fb48642cfb22e5239c3)
+        ;
+
+        
+    
+    
+            circle_marker_ddb71ceea35914052e58e26710eba997.bindTooltip(
+                `<div>
+                     4209 W Wahalla Ln, Glendale, AZ 85308<br>Score: 383.7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ee1ec3cd469c18c48871d4fc2211f746 = L.circleMarker(
+                [33.6055, -112.2393],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10.27, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_c76ac58c1b75197d4cdf351a891d482c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_efe91b37ff868ed762948de33b77263f = $(`<div id="html_efe91b37ff868ed762948de33b77263f" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 13307 N 84th Ave, Peoria, AZ 85381             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>490000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>352.7 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 3.0 bath, 2,052 sqft<br>                 School Rating: 8.2<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_c76ac58c1b75197d4cdf351a891d482c.setContent(html_efe91b37ff868ed762948de33b77263f);
+            
+        
+
+        circle_marker_ee1ec3cd469c18c48871d4fc2211f746.bindPopup(popup_c76ac58c1b75197d4cdf351a891d482c)
+        ;
+
+        
+    
+    
+            circle_marker_ee1ec3cd469c18c48871d4fc2211f746.bindTooltip(
+                `<div>
+                     13307 N 84th Ave, Peoria, AZ 85381<br>Score: 352.7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_417df51970f99819de3d73c01204d310 = L.circleMarker(
+                [33.6128, -112.1428],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10.27, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_0ebc35cb78381c30d25bf24ae76ddd36 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ba41d035025aff063e3e4aad0231df14 = $(`<div id="html_ba41d035025aff063e3e4aad0231df14" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 14014 N 39th Ave, Phoenix, AZ 85053             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>495000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>352.7 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,930 sqft<br>                 School Rating: 8.0<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_0ebc35cb78381c30d25bf24ae76ddd36.setContent(html_ba41d035025aff063e3e4aad0231df14);
+            
+        
+
+        circle_marker_417df51970f99819de3d73c01204d310.bindPopup(popup_0ebc35cb78381c30d25bf24ae76ddd36)
+        ;
+
+        
+    
+    
+            circle_marker_417df51970f99819de3d73c01204d310.bindTooltip(
+                `<div>
+                     14014 N 39th Ave, Phoenix, AZ 85053<br>Score: 352.7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3a7583720ea7cc6abf356adfbeda819e = L.circleMarker(
+                [33.6479, -112.1841],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 11.25, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_264b45bbcc3ca266282c911ceef43d88 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_057496219087d1e740067723e862b22a = $(`<div id="html_057496219087d1e740067723e862b22a" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 4001 W Libby St, Glendale, AZ 85308             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>458000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>362.5 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,873 sqft<br>                 School Rating: 8.4<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_264b45bbcc3ca266282c911ceef43d88.setContent(html_057496219087d1e740067723e862b22a);
+            
+        
+
+        circle_marker_3a7583720ea7cc6abf356adfbeda819e.bindPopup(popup_264b45bbcc3ca266282c911ceef43d88)
+        ;
+
+        
+    
+    
+            circle_marker_3a7583720ea7cc6abf356adfbeda819e.bindTooltip(
+                `<div>
+                     4001 W Libby St, Glendale, AZ 85308<br>Score: 362.5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_40ced05736568efaffadf2e10fff0c22 = L.circleMarker(
+                [33.5718, -112.1788],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12.45, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_2551c72dd3a6e657e3b0d2b15f8862cd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8a85e39852f34bafaaf830350e591744 = $(`<div id="html_8a85e39852f34bafaaf830350e591744" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 5522 W Carol Ave, Glendale, AZ 85302             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>442000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>374.5 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 5 bed, 3.0 bath, 2,139 sqft<br>                 School Rating: 6.7<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_2551c72dd3a6e657e3b0d2b15f8862cd.setContent(html_8a85e39852f34bafaaf830350e591744);
+            
+        
+
+        circle_marker_40ced05736568efaffadf2e10fff0c22.bindPopup(popup_2551c72dd3a6e657e3b0d2b15f8862cd)
+        ;
+
+        
+    
+    
+            circle_marker_40ced05736568efaffadf2e10fff0c22.bindTooltip(
+                `<div>
+                     5522 W Carol Ave, Glendale, AZ 85302<br>Score: 374.5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_903711416af5e744e3a0fc49ef3e5ba2 = L.circleMarker(
+                [33.5489, -112.1664],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12.2, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_b5c8fc5ab176994283a854b402111a9e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f1830e1da9b67cc19dbd26eeb7fb5619 = $(`<div id="html_f1830e1da9b67cc19dbd26eeb7fb5619" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 5004 W Kaler Dr, Glendale, AZ 85301             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>459900</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>372.0 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 4.0 bath, 2,405 sqft<br>                 School Rating: 4.8<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_b5c8fc5ab176994283a854b402111a9e.setContent(html_f1830e1da9b67cc19dbd26eeb7fb5619);
+            
+        
+
+        circle_marker_903711416af5e744e3a0fc49ef3e5ba2.bindPopup(popup_b5c8fc5ab176994283a854b402111a9e)
+        ;
+
+        
+    
+    
+            circle_marker_903711416af5e744e3a0fc49ef3e5ba2.bindTooltip(
+                `<div>
+                     5004 W Kaler Dr, Glendale, AZ 85301<br>Score: 372.0
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5fbbf0c519077ec81b442321abc0d663 = L.circleMarker(
+                [33.5292, -112.1538],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9.069999999999999, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_265f6cd40e030804ac2300d62406c546 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3296885ca07daa879d4c6a03045d2aa4 = $(`<div id="html_3296885ca07daa879d4c6a03045d2aa4" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 4342 W Claremont St, Glendale, AZ 85301             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>514800</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>340.7 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 5 bed, 3.0 bath, 2,160 sqft<br>                 School Rating: 4.8<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_265f6cd40e030804ac2300d62406c546.setContent(html_3296885ca07daa879d4c6a03045d2aa4);
+            
+        
+
+        circle_marker_5fbbf0c519077ec81b442321abc0d663.bindPopup(popup_265f6cd40e030804ac2300d62406c546)
+        ;
+
+        
+    
+    
+            circle_marker_5fbbf0c519077ec81b442321abc0d663.bindTooltip(
+                `<div>
+                     4342 W Claremont St, Glendale, AZ 85301<br>Score: 340.7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9e661961b731374ae157d9a32a3fb019 = L.circleMarker(
+                [33.6684, -112.1423],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12.52, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_a3100ffb8e79f9a666bf97c728e6e8aa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_64a3159f740c06fd7e2fe23f10f021b8 = $(`<div id="html_64a3159f740c06fd7e2fe23f10f021b8" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 20021 N 38th Ln, Glendale, AZ 85308             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>545000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>375.2 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 3.0 bath, 2,627 sqft<br>                 School Rating: 8.4<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_a3100ffb8e79f9a666bf97c728e6e8aa.setContent(html_64a3159f740c06fd7e2fe23f10f021b8);
+            
+        
+
+        circle_marker_9e661961b731374ae157d9a32a3fb019.bindPopup(popup_a3100ffb8e79f9a666bf97c728e6e8aa)
+        ;
+
+        
+    
+    
+            circle_marker_9e661961b731374ae157d9a32a3fb019.bindTooltip(
+                `<div>
+                     20021 N 38th Ln, Glendale, AZ 85308<br>Score: 375.2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_474fe97f26737c202ae469bc957565ce = L.circleMarker(
+                [33.615, -112.1474],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 13.2, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_73933136c0f951d61650034bfbf46f93 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e7ed22d60e69410ec64f81bb98c4159b = $(`<div id="html_e7ed22d60e69410ec64f81bb98c4159b" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 4136 W Hearn Rd, Phoenix, AZ 85053             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>457000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>382.0 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 3.0 bath, 2,228 sqft<br>                 School Rating: 8.0<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_73933136c0f951d61650034bfbf46f93.setContent(html_e7ed22d60e69410ec64f81bb98c4159b);
+            
+        
+
+        circle_marker_474fe97f26737c202ae469bc957565ce.bindPopup(popup_73933136c0f951d61650034bfbf46f93)
+        ;
+
+        
+    
+    
+            circle_marker_474fe97f26737c202ae469bc957565ce.bindTooltip(
+                `<div>
+                     4136 W Hearn Rd, Phoenix, AZ 85053<br>Score: 382.0
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b549d5792ce70e57d6cfb500d6d10165 = L.circleMarker(
+                [33.5316, -111.8989],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14.25, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_5c2a83d0e3f3f3683c39b82fec484ec6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f9b09abc7dddf4a11aafe09d33ae172b = $(`<div id="html_f9b09abc7dddf4a11aafe09d33ae172b" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 8426 E Lincoln Dr, Scottsdale, AZ 85250             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>849900</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>392.5 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.5 bath, 2,373 sqft<br>                 School Rating: 7.3<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_5c2a83d0e3f3f3683c39b82fec484ec6.setContent(html_f9b09abc7dddf4a11aafe09d33ae172b);
+            
+        
+
+        circle_marker_b549d5792ce70e57d6cfb500d6d10165.bindPopup(popup_5c2a83d0e3f3f3683c39b82fec484ec6)
+        ;
+
+        
+    
+    
+            circle_marker_b549d5792ce70e57d6cfb500d6d10165.bindTooltip(
+                `<div>
+                     8426 E Lincoln Dr, Scottsdale, AZ 85250<br>Score: 392.5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8cdbbd340d24879f095d8a18d876c627 = L.circleMarker(
+                [33.5836, -111.8425],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10.030000000000001, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_a5bdf3ea8c88f4dfda1a77ab9125040d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8d1fd54b5ea941e30abec76c1bd58a6d = $(`<div id="html_8d1fd54b5ea941e30abec76c1bd58a6d" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 11035 E Clinton St, Scottsdale, AZ 85259             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>775000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>350.3 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,971 sqft<br>                 School Rating: 8.3<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_a5bdf3ea8c88f4dfda1a77ab9125040d.setContent(html_8d1fd54b5ea941e30abec76c1bd58a6d);
+            
+        
+
+        circle_marker_8cdbbd340d24879f095d8a18d876c627.bindPopup(popup_a5bdf3ea8c88f4dfda1a77ab9125040d)
+        ;
+
+        
+    
+    
+            circle_marker_8cdbbd340d24879f095d8a18d876c627.bindTooltip(
+                `<div>
+                     11035 E Clinton St, Scottsdale, AZ 85259<br>Score: 350.3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_843bd295774ef320c9600af5d0a165b8 = L.circleMarker(
+                [33.6199, -112.0032],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 13.510000000000002, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_76a8ad40f72674c72ed96b401a77267e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9d898f8a5b9c8958330af32381698be1 = $(`<div id="html_9d898f8a5b9c8958330af32381698be1" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 14622 N 37th St, Phoenix, AZ 85032             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>510000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>385.1 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Contender</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,350 sqft<br>                 School Rating: 8.8<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_76a8ad40f72674c72ed96b401a77267e.setContent(html_9d898f8a5b9c8958330af32381698be1);
+            
+        
+
+        circle_marker_843bd295774ef320c9600af5d0a165b8.bindPopup(popup_76a8ad40f72674c72ed96b401a77267e)
+        ;
+
+        
+    
+    
+            circle_marker_843bd295774ef320c9600af5d0a165b8.bindTooltip(
+                `<div>
+                     14622 N 37th St, Phoenix, AZ 85032<br>Score: 385.1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4ceadc0fc28093943c81a07e1bfee026 = L.circleMarker(
+                [33.6032, -112.0252],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10.62, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_06e78ffad0312fdc901772f215cea18b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b881f80152048c0ecef49e76383e0562 = $(`<div id="html_b881f80152048c0ecef49e76383e0562" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 12808 N 27th St, Phoenix, AZ 85032             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>509000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>356.2 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,909 sqft<br>                 School Rating: 8.8<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_06e78ffad0312fdc901772f215cea18b.setContent(html_b881f80152048c0ecef49e76383e0562);
+            
+        
+
+        circle_marker_4ceadc0fc28093943c81a07e1bfee026.bindPopup(popup_06e78ffad0312fdc901772f215cea18b)
+        ;
+
+        
+    
+    
+            circle_marker_4ceadc0fc28093943c81a07e1bfee026.bindTooltip(
+                `<div>
+                     12808 N 27th St, Phoenix, AZ 85032<br>Score: 356.2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fd6a14779a55cdef9baac9b7607469e8 = L.circleMarker(
+                [33.6376, -112.1253],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10.35, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_dd1f12a8f1d99e31776b789833f135f3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7c7cc42bd231d46af1659cebcdd261b7 = $(`<div id="html_7c7cc42bd231d46af1659cebcdd261b7" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 16814 N 31st Ave, Phoenix, AZ 85053             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>400000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>353.5 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,921 sqft<br>                 School Rating: 8.0<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_dd1f12a8f1d99e31776b789833f135f3.setContent(html_7c7cc42bd231d46af1659cebcdd261b7);
+            
+        
+
+        circle_marker_fd6a14779a55cdef9baac9b7607469e8.bindPopup(popup_dd1f12a8f1d99e31776b789833f135f3)
+        ;
+
+        
+    
+    
+            circle_marker_fd6a14779a55cdef9baac9b7607469e8.bindTooltip(
+                `<div>
+                     16814 N 31st Ave, Phoenix, AZ 85053<br>Score: 353.5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_487071d597a4c12d16df0500067d9055 = L.circleMarker(
+                [33.5992, -112.2127],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9.569999999999999, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_f696bbdec1666d5f2dfd0ae69a99c7e9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c6553c5111f6a9169c29de1e0057c6a4 = $(`<div id="html_c6553c5111f6a9169c29de1e0057c6a4" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 7126 W Columbine Dr, Peoria, AZ 85381             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>565000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>345.7 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 2,459 sqft<br>                 School Rating: 8.0<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_f696bbdec1666d5f2dfd0ae69a99c7e9.setContent(html_c6553c5111f6a9169c29de1e0057c6a4);
+            
+        
+
+        circle_marker_487071d597a4c12d16df0500067d9055.bindPopup(popup_f696bbdec1666d5f2dfd0ae69a99c7e9)
+        ;
+
+        
+    
+    
+            circle_marker_487071d597a4c12d16df0500067d9055.bindTooltip(
+                `<div>
+                     7126 W Columbine Dr, Peoria, AZ 85381<br>Score: 345.7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_868c1fcad3228c06c88c4c7dc5e2a906 = L.circleMarker(
+                [33.6158, -112.2227],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.160000000000002, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_715cb8c3599fe971731f30a89b89877d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ad2f469563d9cd4200645fef41faa11b = $(`<div id="html_ad2f469563d9cd4200645fef41faa11b" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 14353 N 76th Dr, Peoria, AZ 85381             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>550000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>331.6 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,700 sqft<br>                 School Rating: 6.0<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_715cb8c3599fe971731f30a89b89877d.setContent(html_ad2f469563d9cd4200645fef41faa11b);
+            
+        
+
+        circle_marker_868c1fcad3228c06c88c4c7dc5e2a906.bindPopup(popup_715cb8c3599fe971731f30a89b89877d)
+        ;
+
+        
+    
+    
+            circle_marker_868c1fcad3228c06c88c4c7dc5e2a906.bindTooltip(
+                `<div>
+                     14353 N 76th Dr, Peoria, AZ 85381<br>Score: 331.6
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f307385b66c5f2eccb908574ada52a81 = L.circleMarker(
+                [33.6, -112.2151],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9.63, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_2f2997c5ebd1611cce5f893ad572976f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5d8e70c968bc17992650a550144decdb = $(`<div id="html_5d8e70c968bc17992650a550144decdb" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 7233 W Corrine Dr, Peoria, AZ 85381             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>749999</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>346.3 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 3.0 bath, 1,982 sqft<br>                 School Rating: 8.0<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_2f2997c5ebd1611cce5f893ad572976f.setContent(html_5d8e70c968bc17992650a550144decdb);
+            
+        
+
+        circle_marker_f307385b66c5f2eccb908574ada52a81.bindPopup(popup_2f2997c5ebd1611cce5f893ad572976f)
+        ;
+
+        
+    
+    
+            circle_marker_f307385b66c5f2eccb908574ada52a81.bindTooltip(
+                `<div>
+                     7233 W Corrine Dr, Peoria, AZ 85381<br>Score: 346.3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fa1602fb81cfac9dee421b48bb3fe831 = L.circleMarker(
+                [33.5631, -112.2862],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.530000000000001, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_52db5bb50c2b6a1709ab73a2acfc8c17 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4f89fda2e8feb34f0e52153f25e4dceb = $(`<div id="html_4f89fda2e8feb34f0e52153f25e4dceb" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 8803 N 105th Dr, Peoria, AZ 85345             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>509000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>335.3 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 2,225 sqft<br>                 School Rating: 4.0<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_52db5bb50c2b6a1709ab73a2acfc8c17.setContent(html_4f89fda2e8feb34f0e52153f25e4dceb);
+            
+        
+
+        circle_marker_fa1602fb81cfac9dee421b48bb3fe831.bindPopup(popup_52db5bb50c2b6a1709ab73a2acfc8c17)
+        ;
+
+        
+    
+    
+            circle_marker_fa1602fb81cfac9dee421b48bb3fe831.bindTooltip(
+                `<div>
+                     8803 N 105th Dr, Peoria, AZ 85345<br>Score: 335.3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a8d0e5358a76f5a454ca2d0822b175c4 = L.circleMarker(
+                [33.6486, -112.2514],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10.87, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_a0eb0b051267fb5b3b8c57f6813df907 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_54a3af267026394fe49cdf374f8ba410 = $(`<div id="html_54a3af267026394fe49cdf374f8ba410" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 8931 W Villa Rita Dr, Peoria, AZ 85382             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>549900</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>358.7 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 5 bed, 2.5 bath, 2,672 sqft<br>                 School Rating: 7.0<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_a0eb0b051267fb5b3b8c57f6813df907.setContent(html_54a3af267026394fe49cdf374f8ba410);
+            
+        
+
+        circle_marker_a8d0e5358a76f5a454ca2d0822b175c4.bindPopup(popup_a0eb0b051267fb5b3b8c57f6813df907)
+        ;
+
+        
+    
+    
+            circle_marker_a8d0e5358a76f5a454ca2d0822b175c4.bindTooltip(
+                `<div>
+                     8931 W Villa Rita Dr, Peoria, AZ 85382<br>Score: 358.7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6eea4b00d95d774b7f5a04cc132487d6 = L.circleMarker(
+                [33.6479, -112.2562],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9.160000000000002, "stroke": true, "weight": 1}
+            ).addTo(feature_group_52847aa07422c446bdf2c6bedb3b3564);
+        
+    
+        var popup_2fd88cd780ede4813f6d065439b2cc19 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cee53d7baeaeb057185ba8dacbaa4ce5 = $(`<div id="html_cee53d7baeaeb057185ba8dacbaa4ce5" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: green;">                 9150 W Villa Rita Dr, Peoria, AZ 85382             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>605000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>341.6 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Pass</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: green; font-weight: bold;">                         PASS                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 3.0 bath, 1,919 sqft<br>                 School Rating: 8.0<br>                 Commute: N/A min             </div>                      </div>         </div>`)[0];
+                popup_2fd88cd780ede4813f6d065439b2cc19.setContent(html_cee53d7baeaeb057185ba8dacbaa4ce5);
+            
+        
+
+        circle_marker_6eea4b00d95d774b7f5a04cc132487d6.bindPopup(popup_2fd88cd780ede4813f6d065439b2cc19)
+        ;
+
+        
+    
+    
+            circle_marker_6eea4b00d95d774b7f5a04cc132487d6.bindTooltip(
+                `<div>
+                     9150 W Villa Rita Dr, Peoria, AZ 85382<br>Score: 341.6
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_52847aa07422c446bdf2c6bedb3b3564.addTo(map_92fb1d15fecb7b3069a1f4f37b80c5f6);
+        
+    
+            var feature_group_28977744396b9847d820f2df2c56759a = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_06e7150153d23700668ce9b98811969d = L.circleMarker(
+                [33.6581, -112.0061],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12.23, "stroke": true, "weight": 1}
+            ).addTo(feature_group_28977744396b9847d820f2df2c56759a);
+        
+    
+        var popup_ca7e0192d9c26d2e1179fec8a493ad96 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f17b91ab153443ddf8e0e7a7b283516d = $(`<div id="html_f17b91ab153443ddf8e0e7a7b283516d" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: red;">                 18820 N 35th Way, Phoenix, AZ 85050             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>582000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>372.3 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Failed</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: red; font-weight: bold;">                         FAIL                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 3.0 bath, 1,972 sqft<br>                 School Rating: 8.3<br>                 Commute: N/A min             </div>             <div style="margin-top: 4px; color: red; font-size: 11px;"><b>Failed Kill Switches</b></div>         </div>         </div>`)[0];
+                popup_ca7e0192d9c26d2e1179fec8a493ad96.setContent(html_f17b91ab153443ddf8e0e7a7b283516d);
+            
+        
+
+        circle_marker_06e7150153d23700668ce9b98811969d.bindPopup(popup_ca7e0192d9c26d2e1179fec8a493ad96)
+        ;
+
+        
+    
+    
+            circle_marker_06e7150153d23700668ce9b98811969d.bindTooltip(
+                `<div>
+                     18820 N 35th Way, Phoenix, AZ 85050<br>Score: 372.3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8dde6ea69210406c1b095e49ae931320 = L.circleMarker(
+                [33.7211, -112.2022],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12.95, "stroke": true, "weight": 1}
+            ).addTo(feature_group_28977744396b9847d820f2df2c56759a);
+        
+    
+        var popup_d1a6a605b1a79c6f071cc0d74b29a110 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1ccdcc8db353b8aa6fb293a249b7913e = $(`<div id="html_1ccdcc8db353b8aa6fb293a249b7913e" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: red;">                 25841 N 66th Dr, Phoenix, AZ 85083             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>499777</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>379.5 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Failed</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: red; font-weight: bold;">                         FAIL                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,884 sqft<br>                 School Rating: 8.7<br>                 Commute: N/A min             </div>             <div style="margin-top: 4px; color: red; font-size: 11px;"><b>Failed Kill Switches</b></div>         </div>         </div>`)[0];
+                popup_d1a6a605b1a79c6f071cc0d74b29a110.setContent(html_1ccdcc8db353b8aa6fb293a249b7913e);
+            
+        
+
+        circle_marker_8dde6ea69210406c1b095e49ae931320.bindPopup(popup_d1a6a605b1a79c6f071cc0d74b29a110)
+        ;
+
+        
+    
+    
+            circle_marker_8dde6ea69210406c1b095e49ae931320.bindTooltip(
+                `<div>
+                     25841 N 66th Dr, Phoenix, AZ 85083<br>Score: 379.5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_68e7cbb30678b9fe8df0e4a6df32c626 = L.circleMarker(
+                [33.6583, -112.009],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12.780000000000001, "stroke": true, "weight": 1}
+            ).addTo(feature_group_28977744396b9847d820f2df2c56759a);
+        
+    
+        var popup_4fd865e545badf3c16702f5ac3741601 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_29903910bcef14610b84d2fce467bae9 = $(`<div id="html_29903910bcef14610b84d2fce467bae9" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 250px;">             <h4 style="margin-bottom: 8px; color: red;">                 18825 N 34th St, Phoenix, AZ 85050             </h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td><b>Price:</b></td>                     <td>550000</td>                 </tr>                 <tr>                     <td><b>Total Score:</b></td>                     <td>377.8 / 500</td>                 </tr>                 <tr>                     <td><b>Tier:</b></td>                     <td>Failed</td>                 </tr>                 <tr>                     <td><b>Kill Switch:</b></td>                     <td style="color: red; font-weight: bold;">                         FAIL                     </td>                 </tr>             </table>             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ccc;">                 <b>Details:</b><br>                 4 bed, 2.0 bath, 1,952 sqft<br>                 School Rating: 8.3<br>                 Commute: N/A min             </div>             <div style="margin-top: 4px; color: red; font-size: 11px;"><b>Failed Kill Switches</b></div>         </div>         </div>`)[0];
+                popup_4fd865e545badf3c16702f5ac3741601.setContent(html_29903910bcef14610b84d2fce467bae9);
+            
+        
+
+        circle_marker_68e7cbb30678b9fe8df0e4a6df32c626.bindPopup(popup_4fd865e545badf3c16702f5ac3741601)
+        ;
+
+        
+    
+    
+            circle_marker_68e7cbb30678b9fe8df0e4a6df32c626.bindTooltip(
+                `<div>
+                     18825 N 34th St, Phoenix, AZ 85050<br>Score: 377.8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_28977744396b9847d820f2df2c56759a.addTo(map_92fb1d15fecb7b3069a1f4f37b80c5f6);
+        
+    
+            var feature_group_a6c5e99f78cd140662dff4d4b552a4a9 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_1dd50e13e3b7fac5ec290ae977f27a45 = L.circle(
+                [33.6314, -112.1998],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_88a95df279f5772f8e82308480203f3f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_7810ead8392b04f4b375f252e1c913bd = $(`<div id="html_7810ead8392b04f4b375f252e1c913bd" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 4732 W Davis Rd, Glendale, AZ 85306</div>`)[0];
+                popup_88a95df279f5772f8e82308480203f3f.setContent(html_7810ead8392b04f4b375f252e1c913bd);
+            
+        
+
+        circle_1dd50e13e3b7fac5ec290ae977f27a45.bindPopup(popup_88a95df279f5772f8e82308480203f3f)
+        ;
+
+        
+    
+    
+            circle_1dd50e13e3b7fac5ec290ae977f27a45.bindTooltip(
+                `<div>
+                     Grocery zone: 4732 W Davis Rd, Glendale, AZ 85306
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_87f9a5ea4905e12309fd2551aaec56eb = L.circle(
+                [33.6287, -112.1105],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_626f87291fe68218cfc6688257af4544 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_7d41e2cece7ff6454cbf80c2a0aad270 = $(`<div id="html_7d41e2cece7ff6454cbf80c2a0aad270" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 2353 W Tierra Buena Ln, Phoenix, AZ 85023</div>`)[0];
+                popup_626f87291fe68218cfc6688257af4544.setContent(html_7d41e2cece7ff6454cbf80c2a0aad270);
+            
+        
+
+        circle_87f9a5ea4905e12309fd2551aaec56eb.bindPopup(popup_626f87291fe68218cfc6688257af4544)
+        ;
+
+        
+    
+    
+            circle_87f9a5ea4905e12309fd2551aaec56eb.bindTooltip(
+                `<div>
+                     Grocery zone: 2353 W Tierra Buena Ln, Phoenix, AZ 85023
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_36e23f891facf4be4c3f6ff96457b55b = L.circle(
+                [33.6307, -112.11],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_87291a0a9ca29be60f94e45098929d7b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c544371874bf7516b3e64a98ecde3ef1 = $(`<div id="html_c544371874bf7516b3e64a98ecde3ef1" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 2344 W Marconi Ave, Phoenix, AZ 85023</div>`)[0];
+                popup_87291a0a9ca29be60f94e45098929d7b.setContent(html_c544371874bf7516b3e64a98ecde3ef1);
+            
+        
+
+        circle_36e23f891facf4be4c3f6ff96457b55b.bindPopup(popup_87291a0a9ca29be60f94e45098929d7b)
+        ;
+
+        
+    
+    
+            circle_36e23f891facf4be4c3f6ff96457b55b.bindTooltip(
+                `<div>
+                     Grocery zone: 2344 W Marconi Ave, Phoenix, AZ 85023
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_ee58f2296868f01b89d29e88fdd3e083 = L.circle(
+                [33.6505, -112.1212],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_d0598f78e16873e032bf88e56f330cfd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_13016cf5767e704193947c8772428bd2 = $(`<div id="html_13016cf5767e704193947c8772428bd2" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 2846 W Villa Rita Dr, Phoenix, AZ 85053</div>`)[0];
+                popup_d0598f78e16873e032bf88e56f330cfd.setContent(html_13016cf5767e704193947c8772428bd2);
+            
+        
+
+        circle_ee58f2296868f01b89d29e88fdd3e083.bindPopup(popup_d0598f78e16873e032bf88e56f330cfd)
+        ;
+
+        
+    
+    
+            circle_ee58f2296868f01b89d29e88fdd3e083.bindTooltip(
+                `<div>
+                     Grocery zone: 2846 W Villa Rita Dr, Phoenix, AZ 85053
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_b6326b7d3841b782a3f6982efa993bfc = L.circle(
+                [33.625, -112.0011],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_e86aef5fbee190fa52d829209c1605e1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e0db7469d48771c2783560c2fb8a7d96 = $(`<div id="html_e0db7469d48771c2783560c2fb8a7d96" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 15225 N 37th Way, Phoenix, AZ 85032</div>`)[0];
+                popup_e86aef5fbee190fa52d829209c1605e1.setContent(html_e0db7469d48771c2783560c2fb8a7d96);
+            
+        
+
+        circle_b6326b7d3841b782a3f6982efa993bfc.bindPopup(popup_e86aef5fbee190fa52d829209c1605e1)
+        ;
+
+        
+    
+    
+            circle_b6326b7d3841b782a3f6982efa993bfc.bindTooltip(
+                `<div>
+                     Grocery zone: 15225 N 37th Way, Phoenix, AZ 85032
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_178da27bd519c59c032ca167ad85322a = L.circle(
+                [33.6658, -112.1999],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_af4346190dafec3a2e6e1f0a9d2a1486 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a97fdc43bd02655c0116c50d837f284f = $(`<div id="html_a97fdc43bd02655c0116c50d837f284f" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 4209 W Wahalla Ln, Glendale, AZ 85308</div>`)[0];
+                popup_af4346190dafec3a2e6e1f0a9d2a1486.setContent(html_a97fdc43bd02655c0116c50d837f284f);
+            
+        
+
+        circle_178da27bd519c59c032ca167ad85322a.bindPopup(popup_af4346190dafec3a2e6e1f0a9d2a1486)
+        ;
+
+        
+    
+    
+            circle_178da27bd519c59c032ca167ad85322a.bindTooltip(
+                `<div>
+                     Grocery zone: 4209 W Wahalla Ln, Glendale, AZ 85308
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_596df15120a13df486ac2c951499ac52 = L.circle(
+                [33.6055, -112.2393],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_394244bb567605a4e8abf5212b16e0c1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d6d588608ce333c04b9aec7d9b55dd31 = $(`<div id="html_d6d588608ce333c04b9aec7d9b55dd31" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 13307 N 84th Ave, Peoria, AZ 85381</div>`)[0];
+                popup_394244bb567605a4e8abf5212b16e0c1.setContent(html_d6d588608ce333c04b9aec7d9b55dd31);
+            
+        
+
+        circle_596df15120a13df486ac2c951499ac52.bindPopup(popup_394244bb567605a4e8abf5212b16e0c1)
+        ;
+
+        
+    
+    
+            circle_596df15120a13df486ac2c951499ac52.bindTooltip(
+                `<div>
+                     Grocery zone: 13307 N 84th Ave, Peoria, AZ 85381
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_1c41238c2b8a66cf78531d8f496db6d3 = L.circle(
+                [33.6128, -112.1428],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_b2cdc1d3ae1a658aeb525ce5a6edd5d8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_64e53380dfb1540a84001e8a004ee912 = $(`<div id="html_64e53380dfb1540a84001e8a004ee912" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 14014 N 39th Ave, Phoenix, AZ 85053</div>`)[0];
+                popup_b2cdc1d3ae1a658aeb525ce5a6edd5d8.setContent(html_64e53380dfb1540a84001e8a004ee912);
+            
+        
+
+        circle_1c41238c2b8a66cf78531d8f496db6d3.bindPopup(popup_b2cdc1d3ae1a658aeb525ce5a6edd5d8)
+        ;
+
+        
+    
+    
+            circle_1c41238c2b8a66cf78531d8f496db6d3.bindTooltip(
+                `<div>
+                     Grocery zone: 14014 N 39th Ave, Phoenix, AZ 85053
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_588504668fffb9756077b52e745048a3 = L.circle(
+                [33.6479, -112.1841],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_cbb382f7633f7ef4d1f76e8904688c39 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c2b73ca2af75a5e859b0d629d7e4363b = $(`<div id="html_c2b73ca2af75a5e859b0d629d7e4363b" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 4001 W Libby St, Glendale, AZ 85308</div>`)[0];
+                popup_cbb382f7633f7ef4d1f76e8904688c39.setContent(html_c2b73ca2af75a5e859b0d629d7e4363b);
+            
+        
+
+        circle_588504668fffb9756077b52e745048a3.bindPopup(popup_cbb382f7633f7ef4d1f76e8904688c39)
+        ;
+
+        
+    
+    
+            circle_588504668fffb9756077b52e745048a3.bindTooltip(
+                `<div>
+                     Grocery zone: 4001 W Libby St, Glendale, AZ 85308
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_7b95ea56ed251ee332d895a38c9fd73d = L.circle(
+                [33.5718, -112.1788],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_b9b6d6cdd823dce5d019cebce9e0d880 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_484ae8d960da8466bad0af81d429c883 = $(`<div id="html_484ae8d960da8466bad0af81d429c883" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 5522 W Carol Ave, Glendale, AZ 85302</div>`)[0];
+                popup_b9b6d6cdd823dce5d019cebce9e0d880.setContent(html_484ae8d960da8466bad0af81d429c883);
+            
+        
+
+        circle_7b95ea56ed251ee332d895a38c9fd73d.bindPopup(popup_b9b6d6cdd823dce5d019cebce9e0d880)
+        ;
+
+        
+    
+    
+            circle_7b95ea56ed251ee332d895a38c9fd73d.bindTooltip(
+                `<div>
+                     Grocery zone: 5522 W Carol Ave, Glendale, AZ 85302
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_eda118462ddbe0f6372440ae94a933db = L.circle(
+                [33.5489, -112.1664],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_b057775ad9cf3811bbfeec13c3583098 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_64809439deca567d24f4853fd4f0734f = $(`<div id="html_64809439deca567d24f4853fd4f0734f" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 5004 W Kaler Dr, Glendale, AZ 85301</div>`)[0];
+                popup_b057775ad9cf3811bbfeec13c3583098.setContent(html_64809439deca567d24f4853fd4f0734f);
+            
+        
+
+        circle_eda118462ddbe0f6372440ae94a933db.bindPopup(popup_b057775ad9cf3811bbfeec13c3583098)
+        ;
+
+        
+    
+    
+            circle_eda118462ddbe0f6372440ae94a933db.bindTooltip(
+                `<div>
+                     Grocery zone: 5004 W Kaler Dr, Glendale, AZ 85301
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_6eb693d8597c864225e8c63cdedb8b27 = L.circle(
+                [33.5292, -112.1538],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_551047b4a6f47bca9ae28b87c8809ce9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6f4440244e6a923529c3d60692579cc9 = $(`<div id="html_6f4440244e6a923529c3d60692579cc9" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 4342 W Claremont St, Glendale, AZ 85301</div>`)[0];
+                popup_551047b4a6f47bca9ae28b87c8809ce9.setContent(html_6f4440244e6a923529c3d60692579cc9);
+            
+        
+
+        circle_6eb693d8597c864225e8c63cdedb8b27.bindPopup(popup_551047b4a6f47bca9ae28b87c8809ce9)
+        ;
+
+        
+    
+    
+            circle_6eb693d8597c864225e8c63cdedb8b27.bindTooltip(
+                `<div>
+                     Grocery zone: 4342 W Claremont St, Glendale, AZ 85301
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_7c706759610b2afc249a0742034fca8f = L.circle(
+                [33.6684, -112.1423],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_bbbe1d0ab8fe1c1cf99840a29ecebc21 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_635fae62765a398d4b745b578ad06c91 = $(`<div id="html_635fae62765a398d4b745b578ad06c91" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 20021 N 38th Ln, Glendale, AZ 85308</div>`)[0];
+                popup_bbbe1d0ab8fe1c1cf99840a29ecebc21.setContent(html_635fae62765a398d4b745b578ad06c91);
+            
+        
+
+        circle_7c706759610b2afc249a0742034fca8f.bindPopup(popup_bbbe1d0ab8fe1c1cf99840a29ecebc21)
+        ;
+
+        
+    
+    
+            circle_7c706759610b2afc249a0742034fca8f.bindTooltip(
+                `<div>
+                     Grocery zone: 20021 N 38th Ln, Glendale, AZ 85308
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_1b53ab3238728929f5f1be9a979295b7 = L.circle(
+                [33.615, -112.1474],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_8ae957d5e3953e988effc9f3288d7092 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e3c4afee9a6105fab340324a66ea8d58 = $(`<div id="html_e3c4afee9a6105fab340324a66ea8d58" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 4136 W Hearn Rd, Phoenix, AZ 85053</div>`)[0];
+                popup_8ae957d5e3953e988effc9f3288d7092.setContent(html_e3c4afee9a6105fab340324a66ea8d58);
+            
+        
+
+        circle_1b53ab3238728929f5f1be9a979295b7.bindPopup(popup_8ae957d5e3953e988effc9f3288d7092)
+        ;
+
+        
+    
+    
+            circle_1b53ab3238728929f5f1be9a979295b7.bindTooltip(
+                `<div>
+                     Grocery zone: 4136 W Hearn Rd, Phoenix, AZ 85053
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_8fbf089ece57f80ba9ea46f40b08a240 = L.circle(
+                [33.5316, -111.8989],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_df909567034d6d4871549db967269fe5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6f7044489b5637f9d4b125d771a972fa = $(`<div id="html_6f7044489b5637f9d4b125d771a972fa" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 8426 E Lincoln Dr, Scottsdale, AZ 85250</div>`)[0];
+                popup_df909567034d6d4871549db967269fe5.setContent(html_6f7044489b5637f9d4b125d771a972fa);
+            
+        
+
+        circle_8fbf089ece57f80ba9ea46f40b08a240.bindPopup(popup_df909567034d6d4871549db967269fe5)
+        ;
+
+        
+    
+    
+            circle_8fbf089ece57f80ba9ea46f40b08a240.bindTooltip(
+                `<div>
+                     Grocery zone: 8426 E Lincoln Dr, Scottsdale, AZ 85250
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_e578adfd50f954e853c6f974e3146339 = L.circle(
+                [33.5836, -111.8425],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_08e6af00fb7584c0cd3daf75bc0f97f3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e9372a8da86a25991aa5ca9e7c4fb65d = $(`<div id="html_e9372a8da86a25991aa5ca9e7c4fb65d" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 11035 E Clinton St, Scottsdale, AZ 85259</div>`)[0];
+                popup_08e6af00fb7584c0cd3daf75bc0f97f3.setContent(html_e9372a8da86a25991aa5ca9e7c4fb65d);
+            
+        
+
+        circle_e578adfd50f954e853c6f974e3146339.bindPopup(popup_08e6af00fb7584c0cd3daf75bc0f97f3)
+        ;
+
+        
+    
+    
+            circle_e578adfd50f954e853c6f974e3146339.bindTooltip(
+                `<div>
+                     Grocery zone: 11035 E Clinton St, Scottsdale, AZ 85259
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_4046e681ee61615d62c99035e9a70d9b = L.circle(
+                [33.6199, -112.0032],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_4f81a06ca6f6693d9128cd9a15f265d2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c0d2856b2224c1ae4d1f1d9eda609727 = $(`<div id="html_c0d2856b2224c1ae4d1f1d9eda609727" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 14622 N 37th St, Phoenix, AZ 85032</div>`)[0];
+                popup_4f81a06ca6f6693d9128cd9a15f265d2.setContent(html_c0d2856b2224c1ae4d1f1d9eda609727);
+            
+        
+
+        circle_4046e681ee61615d62c99035e9a70d9b.bindPopup(popup_4f81a06ca6f6693d9128cd9a15f265d2)
+        ;
+
+        
+    
+    
+            circle_4046e681ee61615d62c99035e9a70d9b.bindTooltip(
+                `<div>
+                     Grocery zone: 14622 N 37th St, Phoenix, AZ 85032
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_e910ac5a1690901486f03d8c718cc7ec = L.circle(
+                [33.6032, -112.0252],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_e06de52eb8b4cb08ac75942e3bc2b2fc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6c90a10e84ec89ee05c748cdfe94b357 = $(`<div id="html_6c90a10e84ec89ee05c748cdfe94b357" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 12808 N 27th St, Phoenix, AZ 85032</div>`)[0];
+                popup_e06de52eb8b4cb08ac75942e3bc2b2fc.setContent(html_6c90a10e84ec89ee05c748cdfe94b357);
+            
+        
+
+        circle_e910ac5a1690901486f03d8c718cc7ec.bindPopup(popup_e06de52eb8b4cb08ac75942e3bc2b2fc)
+        ;
+
+        
+    
+    
+            circle_e910ac5a1690901486f03d8c718cc7ec.bindTooltip(
+                `<div>
+                     Grocery zone: 12808 N 27th St, Phoenix, AZ 85032
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_8814ac26577d2842fa838db05f1a16cf = L.circle(
+                [33.6376, -112.1253],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_c083fa524dd8996f6fb816b0e2f2a1ff = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_35384546d75861233f80a0437f44dbd7 = $(`<div id="html_35384546d75861233f80a0437f44dbd7" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 16814 N 31st Ave, Phoenix, AZ 85053</div>`)[0];
+                popup_c083fa524dd8996f6fb816b0e2f2a1ff.setContent(html_35384546d75861233f80a0437f44dbd7);
+            
+        
+
+        circle_8814ac26577d2842fa838db05f1a16cf.bindPopup(popup_c083fa524dd8996f6fb816b0e2f2a1ff)
+        ;
+
+        
+    
+    
+            circle_8814ac26577d2842fa838db05f1a16cf.bindTooltip(
+                `<div>
+                     Grocery zone: 16814 N 31st Ave, Phoenix, AZ 85053
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_bfa8664d4287a17c87cf86030910718d = L.circle(
+                [33.5992, -112.2127],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_27b936b5ece54d40035030cc41bf000f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fcfc707c18a8f88c9cdb58c268c1607a = $(`<div id="html_fcfc707c18a8f88c9cdb58c268c1607a" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 7126 W Columbine Dr, Peoria, AZ 85381</div>`)[0];
+                popup_27b936b5ece54d40035030cc41bf000f.setContent(html_fcfc707c18a8f88c9cdb58c268c1607a);
+            
+        
+
+        circle_bfa8664d4287a17c87cf86030910718d.bindPopup(popup_27b936b5ece54d40035030cc41bf000f)
+        ;
+
+        
+    
+    
+            circle_bfa8664d4287a17c87cf86030910718d.bindTooltip(
+                `<div>
+                     Grocery zone: 7126 W Columbine Dr, Peoria, AZ 85381
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_2b532a1852d72ec3b452afcd647fbb84 = L.circle(
+                [33.6158, -112.2227],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_99d569aaf652b032120ad8a735d53877 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_5d8a877b03c10bca1afcaaa47ad5e81c = $(`<div id="html_5d8a877b03c10bca1afcaaa47ad5e81c" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 14353 N 76th Dr, Peoria, AZ 85381</div>`)[0];
+                popup_99d569aaf652b032120ad8a735d53877.setContent(html_5d8a877b03c10bca1afcaaa47ad5e81c);
+            
+        
+
+        circle_2b532a1852d72ec3b452afcd647fbb84.bindPopup(popup_99d569aaf652b032120ad8a735d53877)
+        ;
+
+        
+    
+    
+            circle_2b532a1852d72ec3b452afcd647fbb84.bindTooltip(
+                `<div>
+                     Grocery zone: 14353 N 76th Dr, Peoria, AZ 85381
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_7801f6409223d3ce11518597e8a3a585 = L.circle(
+                [33.6, -112.2151],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_a0cb237de8eccf2414a5e40f05be5a40 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d50c7f6aa825b1eb03ea8051310944ce = $(`<div id="html_d50c7f6aa825b1eb03ea8051310944ce" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 7233 W Corrine Dr, Peoria, AZ 85381</div>`)[0];
+                popup_a0cb237de8eccf2414a5e40f05be5a40.setContent(html_d50c7f6aa825b1eb03ea8051310944ce);
+            
+        
+
+        circle_7801f6409223d3ce11518597e8a3a585.bindPopup(popup_a0cb237de8eccf2414a5e40f05be5a40)
+        ;
+
+        
+    
+    
+            circle_7801f6409223d3ce11518597e8a3a585.bindTooltip(
+                `<div>
+                     Grocery zone: 7233 W Corrine Dr, Peoria, AZ 85381
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_d5cb57ff88d1e6e10d94856b2a0e118d = L.circle(
+                [33.5631, -112.2862],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_4c44578e51579316697358528c379ea4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_672b89ac230495dc6c1cc351edcaae2b = $(`<div id="html_672b89ac230495dc6c1cc351edcaae2b" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 8803 N 105th Dr, Peoria, AZ 85345</div>`)[0];
+                popup_4c44578e51579316697358528c379ea4.setContent(html_672b89ac230495dc6c1cc351edcaae2b);
+            
+        
+
+        circle_d5cb57ff88d1e6e10d94856b2a0e118d.bindPopup(popup_4c44578e51579316697358528c379ea4)
+        ;
+
+        
+    
+    
+            circle_d5cb57ff88d1e6e10d94856b2a0e118d.bindTooltip(
+                `<div>
+                     Grocery zone: 8803 N 105th Dr, Peoria, AZ 85345
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_82789d477afc05b280e97a8d0ffa31eb = L.circle(
+                [33.6486, -112.2514],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_bb81b68202109db9d3cdc3f0e474e0cc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9f153f684eeeb9bfd968e223376ea110 = $(`<div id="html_9f153f684eeeb9bfd968e223376ea110" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 8931 W Villa Rita Dr, Peoria, AZ 85382</div>`)[0];
+                popup_bb81b68202109db9d3cdc3f0e474e0cc.setContent(html_9f153f684eeeb9bfd968e223376ea110);
+            
+        
+
+        circle_82789d477afc05b280e97a8d0ffa31eb.bindPopup(popup_bb81b68202109db9d3cdc3f0e474e0cc)
+        ;
+
+        
+    
+    
+            circle_82789d477afc05b280e97a8d0ffa31eb.bindTooltip(
+                `<div>
+                     Grocery zone: 8931 W Villa Rita Dr, Peoria, AZ 85382
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_5c7d814d78a3a2df3ce8c6303a447581 = L.circle(
+                [33.6479, -112.2562],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2414.0099999999998, "stroke": true, "weight": 1}
+            ).addTo(feature_group_a6c5e99f78cd140662dff4d4b552a4a9);
+        
+    
+        var popup_7c01780b4c18a3a827cf671d627c087a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c59c28872e8dbc14c45a8c7fdca82eb9 = $(`<div id="html_c59c28872e8dbc14c45a8c7fdca82eb9" style="width: 100.0%; height: 100.0%;">1.5 mi radius from 9150 W Villa Rita Dr, Peoria, AZ 85382</div>`)[0];
+                popup_7c01780b4c18a3a827cf671d627c087a.setContent(html_c59c28872e8dbc14c45a8c7fdca82eb9);
+            
+        
+
+        circle_5c7d814d78a3a2df3ce8c6303a447581.bindPopup(popup_7c01780b4c18a3a827cf671d627c087a)
+        ;
+
+        
+    
+    
+            circle_5c7d814d78a3a2df3ce8c6303a447581.bindTooltip(
+                `<div>
+                     Grocery zone: 9150 W Villa Rita Dr, Peoria, AZ 85382
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var feature_group_c18a13342cfdd7a732a497ab68d42c3e = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_832aecedb617459edfc3c550cb7fc981 = L.circle(
+                [33.45, -112.1],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_b2a9fcb6369139da972722ad4379129c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_da082018f1c28d0cee4a4e56ccff0283 = $(`<div id="html_da082018f1c28d0cee4a4e56ccff0283" style="width: 100.0%; height: 100.0%;">I-17 (1 mi buffer)</div>`)[0];
+                popup_b2a9fcb6369139da972722ad4379129c.setContent(html_da082018f1c28d0cee4a4e56ccff0283);
+            
+        
+
+        circle_832aecedb617459edfc3c550cb7fc981.bindPopup(popup_b2a9fcb6369139da972722ad4379129c)
+        ;
+
+        
+    
+    
+            circle_832aecedb617459edfc3c550cb7fc981.bindTooltip(
+                `<div>
+                     I-17 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_48b89a53fd10795785176f6952433d6e = L.circle(
+                [33.5, -112.1],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_eb36b8fe5bf723cf3e82a89687e7d511 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_de8b05d1cf09b84e75e1d7046508ddfc = $(`<div id="html_de8b05d1cf09b84e75e1d7046508ddfc" style="width: 100.0%; height: 100.0%;">I-17 (1 mi buffer)</div>`)[0];
+                popup_eb36b8fe5bf723cf3e82a89687e7d511.setContent(html_de8b05d1cf09b84e75e1d7046508ddfc);
+            
+        
+
+        circle_48b89a53fd10795785176f6952433d6e.bindPopup(popup_eb36b8fe5bf723cf3e82a89687e7d511)
+        ;
+
+        
+    
+    
+            circle_48b89a53fd10795785176f6952433d6e.bindTooltip(
+                `<div>
+                     I-17 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_5bf76c9ba39a8b20314d728390a87ec4 = L.circle(
+                [33.55, -112.1],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_e68476f8a21e64a9b8dd546ee5ffcbd3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_8e69aa01f65020d1eb985b815bf4fd9e = $(`<div id="html_8e69aa01f65020d1eb985b815bf4fd9e" style="width: 100.0%; height: 100.0%;">I-17 (1 mi buffer)</div>`)[0];
+                popup_e68476f8a21e64a9b8dd546ee5ffcbd3.setContent(html_8e69aa01f65020d1eb985b815bf4fd9e);
+            
+        
+
+        circle_5bf76c9ba39a8b20314d728390a87ec4.bindPopup(popup_e68476f8a21e64a9b8dd546ee5ffcbd3)
+        ;
+
+        
+    
+    
+            circle_5bf76c9ba39a8b20314d728390a87ec4.bindTooltip(
+                `<div>
+                     I-17 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_39726d4c7c317502c3fcb1b9ea5ae778 = L.circle(
+                [33.6, -112.1],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_07cea0b5d2c505a9790bfe0ff0d632bd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_aa17ae70aa5d854f87653eac6f3b52e3 = $(`<div id="html_aa17ae70aa5d854f87653eac6f3b52e3" style="width: 100.0%; height: 100.0%;">I-17 (1 mi buffer)</div>`)[0];
+                popup_07cea0b5d2c505a9790bfe0ff0d632bd.setContent(html_aa17ae70aa5d854f87653eac6f3b52e3);
+            
+        
+
+        circle_39726d4c7c317502c3fcb1b9ea5ae778.bindPopup(popup_07cea0b5d2c505a9790bfe0ff0d632bd)
+        ;
+
+        
+    
+    
+            circle_39726d4c7c317502c3fcb1b9ea5ae778.bindTooltip(
+                `<div>
+                     I-17 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_f8bc20bd6d7fd688730a700e8357bc93 = L.circle(
+                [33.65, -112.1],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_8df2829e74995df58a7df478c81e99d0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fae3e877643895a5d2a4314594605cc6 = $(`<div id="html_fae3e877643895a5d2a4314594605cc6" style="width: 100.0%; height: 100.0%;">I-17 (1 mi buffer)</div>`)[0];
+                popup_8df2829e74995df58a7df478c81e99d0.setContent(html_fae3e877643895a5d2a4314594605cc6);
+            
+        
+
+        circle_f8bc20bd6d7fd688730a700e8357bc93.bindPopup(popup_8df2829e74995df58a7df478c81e99d0)
+        ;
+
+        
+    
+    
+            circle_f8bc20bd6d7fd688730a700e8357bc93.bindTooltip(
+                `<div>
+                     I-17 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_47f7a1bdb713552c51b025c09ee37ceb = L.circle(
+                [33.7, -112.1],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_95d4fef559d2fb0e6e90312ea9204ed1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_34fe3b48e3319bc973792236284afb51 = $(`<div id="html_34fe3b48e3319bc973792236284afb51" style="width: 100.0%; height: 100.0%;">I-17 (1 mi buffer)</div>`)[0];
+                popup_95d4fef559d2fb0e6e90312ea9204ed1.setContent(html_34fe3b48e3319bc973792236284afb51);
+            
+        
+
+        circle_47f7a1bdb713552c51b025c09ee37ceb.bindPopup(popup_95d4fef559d2fb0e6e90312ea9204ed1)
+        ;
+
+        
+    
+    
+            circle_47f7a1bdb713552c51b025c09ee37ceb.bindTooltip(
+                `<div>
+                     I-17 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_d84c233f16346d8e419d63e413841ccf = L.circle(
+                [33.45, -112.2],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_fb8cc4b08f9610e82e3df38e5f7d5201 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_253a93a6869a944d747d2392509c5640 = $(`<div id="html_253a93a6869a944d747d2392509c5640" style="width: 100.0%; height: 100.0%;">I-10 (1 mi buffer)</div>`)[0];
+                popup_fb8cc4b08f9610e82e3df38e5f7d5201.setContent(html_253a93a6869a944d747d2392509c5640);
+            
+        
+
+        circle_d84c233f16346d8e419d63e413841ccf.bindPopup(popup_fb8cc4b08f9610e82e3df38e5f7d5201)
+        ;
+
+        
+    
+    
+            circle_d84c233f16346d8e419d63e413841ccf.bindTooltip(
+                `<div>
+                     I-10 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_5ae32d56b7021a6e73af00b221011a73 = L.circle(
+                [33.45, -112.1],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_7ba0deb4918c5b1e595115c211dbbdc5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_eafffe074c3464af33cc546e3d7c0707 = $(`<div id="html_eafffe074c3464af33cc546e3d7c0707" style="width: 100.0%; height: 100.0%;">I-10 (1 mi buffer)</div>`)[0];
+                popup_7ba0deb4918c5b1e595115c211dbbdc5.setContent(html_eafffe074c3464af33cc546e3d7c0707);
+            
+        
+
+        circle_5ae32d56b7021a6e73af00b221011a73.bindPopup(popup_7ba0deb4918c5b1e595115c211dbbdc5)
+        ;
+
+        
+    
+    
+            circle_5ae32d56b7021a6e73af00b221011a73.bindTooltip(
+                `<div>
+                     I-10 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_46c7eea42a8f9f3ab3542dcd41d5e575 = L.circle(
+                [33.45, -112.0],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_a0e4e8850a07d640d83c855bfb1d9767 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e19fa797f3ab4c5ffdb0e0551f3afc54 = $(`<div id="html_e19fa797f3ab4c5ffdb0e0551f3afc54" style="width: 100.0%; height: 100.0%;">I-10 (1 mi buffer)</div>`)[0];
+                popup_a0e4e8850a07d640d83c855bfb1d9767.setContent(html_e19fa797f3ab4c5ffdb0e0551f3afc54);
+            
+        
+
+        circle_46c7eea42a8f9f3ab3542dcd41d5e575.bindPopup(popup_a0e4e8850a07d640d83c855bfb1d9767)
+        ;
+
+        
+    
+    
+            circle_46c7eea42a8f9f3ab3542dcd41d5e575.bindTooltip(
+                `<div>
+                     I-10 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_f8a0fe61df97fbca6fd5b2b9a745159b = L.circle(
+                [33.45, -111.9],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_f8b669ed9b1441bfbe9c3e307f00328d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_0a551f7721f8934ac796d0fb8b0b3582 = $(`<div id="html_0a551f7721f8934ac796d0fb8b0b3582" style="width: 100.0%; height: 100.0%;">I-10 (1 mi buffer)</div>`)[0];
+                popup_f8b669ed9b1441bfbe9c3e307f00328d.setContent(html_0a551f7721f8934ac796d0fb8b0b3582);
+            
+        
+
+        circle_f8a0fe61df97fbca6fd5b2b9a745159b.bindPopup(popup_f8b669ed9b1441bfbe9c3e307f00328d)
+        ;
+
+        
+    
+    
+            circle_f8a0fe61df97fbca6fd5b2b9a745159b.bindTooltip(
+                `<div>
+                     I-10 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_96826042fd38d2c5423fe337ccc226a0 = L.circle(
+                [33.5, -111.95],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_9d09260196cf21ea68d5310870fea769 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_19e834fad1374a9e9dc28bbc2837d71b = $(`<div id="html_19e834fad1374a9e9dc28bbc2837d71b" style="width: 100.0%; height: 100.0%;">Loop-101 (1 mi buffer)</div>`)[0];
+                popup_9d09260196cf21ea68d5310870fea769.setContent(html_19e834fad1374a9e9dc28bbc2837d71b);
+            
+        
+
+        circle_96826042fd38d2c5423fe337ccc226a0.bindPopup(popup_9d09260196cf21ea68d5310870fea769)
+        ;
+
+        
+    
+    
+            circle_96826042fd38d2c5423fe337ccc226a0.bindTooltip(
+                `<div>
+                     Loop-101 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_f6390080bd9ede3b1e09c392a7dd0c79 = L.circle(
+                [33.55, -111.9],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_f876f985ec53de5f064e7128ec613b34 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e8a4566dd40904b24a0aba0be88f7278 = $(`<div id="html_e8a4566dd40904b24a0aba0be88f7278" style="width: 100.0%; height: 100.0%;">Loop-101 (1 mi buffer)</div>`)[0];
+                popup_f876f985ec53de5f064e7128ec613b34.setContent(html_e8a4566dd40904b24a0aba0be88f7278);
+            
+        
+
+        circle_f6390080bd9ede3b1e09c392a7dd0c79.bindPopup(popup_f876f985ec53de5f064e7128ec613b34)
+        ;
+
+        
+    
+    
+            circle_f6390080bd9ede3b1e09c392a7dd0c79.bindTooltip(
+                `<div>
+                     Loop-101 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_19bb077fabb55f91cc4fdc4f6fbd9f43 = L.circle(
+                [33.6, -111.9],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_a36c5616922fb0534d64a0af516281ef = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_85cdfced9eee10c838955bafa82991b2 = $(`<div id="html_85cdfced9eee10c838955bafa82991b2" style="width: 100.0%; height: 100.0%;">Loop-101 (1 mi buffer)</div>`)[0];
+                popup_a36c5616922fb0534d64a0af516281ef.setContent(html_85cdfced9eee10c838955bafa82991b2);
+            
+        
+
+        circle_19bb077fabb55f91cc4fdc4f6fbd9f43.bindPopup(popup_a36c5616922fb0534d64a0af516281ef)
+        ;
+
+        
+    
+    
+            circle_19bb077fabb55f91cc4fdc4f6fbd9f43.bindTooltip(
+                `<div>
+                     Loop-101 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_1e69ea0cce3158973e6a0c975d45915d = L.circle(
+                [33.65, -111.95],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_97ef7523d3d536cf488d6a59fe4d8247 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_7f40ae5d31f0f01c9fff9ca43c06d15e = $(`<div id="html_7f40ae5d31f0f01c9fff9ca43c06d15e" style="width: 100.0%; height: 100.0%;">Loop-101 (1 mi buffer)</div>`)[0];
+                popup_97ef7523d3d536cf488d6a59fe4d8247.setContent(html_7f40ae5d31f0f01c9fff9ca43c06d15e);
+            
+        
+
+        circle_1e69ea0cce3158973e6a0c975d45915d.bindPopup(popup_97ef7523d3d536cf488d6a59fe4d8247)
+        ;
+
+        
+    
+    
+            circle_1e69ea0cce3158973e6a0c975d45915d.bindTooltip(
+                `<div>
+                     Loop-101 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_87d98c0a3a57cde86f5c17518238df1b = L.circle(
+                [33.65, -112.0],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_212bfb18ded3f15449b55e89c7f54c42 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e769bad95955c3aeb0bae8eb381eaf4f = $(`<div id="html_e769bad95955c3aeb0bae8eb381eaf4f" style="width: 100.0%; height: 100.0%;">Loop-101 (1 mi buffer)</div>`)[0];
+                popup_212bfb18ded3f15449b55e89c7f54c42.setContent(html_e769bad95955c3aeb0bae8eb381eaf4f);
+            
+        
+
+        circle_87d98c0a3a57cde86f5c17518238df1b.bindPopup(popup_212bfb18ded3f15449b55e89c7f54c42)
+        ;
+
+        
+    
+    
+            circle_87d98c0a3a57cde86f5c17518238df1b.bindTooltip(
+                `<div>
+                     Loop-101 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_480b48f3a5eb2b475daa9ac982198ad8 = L.circle(
+                [33.65, -112.1],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_fd4fecdc0baeb13c24d949c602d6803e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f8c0228b8d914a8918b8b52769d21463 = $(`<div id="html_f8c0228b8d914a8918b8b52769d21463" style="width: 100.0%; height: 100.0%;">Loop-101 (1 mi buffer)</div>`)[0];
+                popup_fd4fecdc0baeb13c24d949c602d6803e.setContent(html_f8c0228b8d914a8918b8b52769d21463);
+            
+        
+
+        circle_480b48f3a5eb2b475daa9ac982198ad8.bindPopup(popup_fd4fecdc0baeb13c24d949c602d6803e)
+        ;
+
+        
+    
+    
+            circle_480b48f3a5eb2b475daa9ac982198ad8.bindTooltip(
+                `<div>
+                     Loop-101 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_174a62a4293c31ca0382a797322b47c4 = L.circle(
+                [33.65, -112.2],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_74b7fc54c528977994aeefb2438add49 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a55ccbca0c10d50e42e04913b560e55e = $(`<div id="html_a55ccbca0c10d50e42e04913b560e55e" style="width: 100.0%; height: 100.0%;">Loop-101 (1 mi buffer)</div>`)[0];
+                popup_74b7fc54c528977994aeefb2438add49.setContent(html_a55ccbca0c10d50e42e04913b560e55e);
+            
+        
+
+        circle_174a62a4293c31ca0382a797322b47c4.bindPopup(popup_74b7fc54c528977994aeefb2438add49)
+        ;
+
+        
+    
+    
+            circle_174a62a4293c31ca0382a797322b47c4.bindTooltip(
+                `<div>
+                     Loop-101 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_84b41fe7af4581d4cf82bf55c5747184 = L.circle(
+                [33.6, -112.25],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1609.34, "stroke": true, "weight": 1}
+            ).addTo(feature_group_c18a13342cfdd7a732a497ab68d42c3e);
+        
+    
+        var popup_2c2b88eee9ff5132cd18bb18808fb60d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_37236877c55f6fdb2a7081df9b75891f = $(`<div id="html_37236877c55f6fdb2a7081df9b75891f" style="width: 100.0%; height: 100.0%;">Loop-101 (1 mi buffer)</div>`)[0];
+                popup_2c2b88eee9ff5132cd18bb18808fb60d.setContent(html_37236877c55f6fdb2a7081df9b75891f);
+            
+        
+
+        circle_84b41fe7af4581d4cf82bf55c5747184.bindPopup(popup_2c2b88eee9ff5132cd18bb18808fb60d)
+        ;
+
+        
+    
+    
+            circle_84b41fe7af4581d4cf82bf55c5747184.bindTooltip(
+                `<div>
+                     Loop-101 noise zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var layer_control_a6b0679cf488c635547d5eedf91408d9_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_57d51d5064b73341c047711ed4d378ca,
+                },
+                overlays :  {
+                    "Properties PASSING Kill Switches" : feature_group_52847aa07422c446bdf2c6bedb3b3564,
+                    "Properties FAILING Kill Switches" : feature_group_28977744396b9847d820f2df2c56759a,
+                    "Grocery Proximity Zones (1.5 mi)" : feature_group_a6c5e99f78cd140662dff4d4b552a4a9,
+                    "Highway Buffer Zones (1 mi)" : feature_group_c18a13342cfdd7a732a497ab68d42c3e,
+                },
+            };
+            let layer_control_a6b0679cf488c635547d5eedf91408d9 = L.control.layers(
+                layer_control_a6b0679cf488c635547d5eedf91408d9_layers.base_layers,
+                layer_control_a6b0679cf488c635547d5eedf91408d9_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": false,
+  "autoZIndex": true,
+}
+            ).addTo(map_92fb1d15fecb7b3069a1f4f37b80c5f6);
+
+        
+</script>
+</html>

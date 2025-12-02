@@ -1,0 +1,98 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "phx-home-analysis"
+version = "1.0.0"
+description = "Phoenix metropolitan home listing analysis with kill-switch filtering and weighted scoring"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "PHX Home Analysis Team"}
+]
+keywords = ["real-estate", "analysis", "phoenix", "home-buying"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business",
+]
+
+dependencies = [
+    "pandas>=2.0.0",
+    "pydantic>=2.5.0",
+    "jinja2>=3.1.0",
+    "plotly>=5.0.0",
+    "folium>=0.14.0",
+    # Image extraction dependencies
+    "Pillow>=10.0.0",
+    "imagehash>=4.3.0",
+    "httpx>=0.25.0",
+    "playwright>=1.40.0",  # Keep for fallback
+    "beautifulsoup4>=4.12.0",
+    "python-dotenv>=1.0.0",
+    # Stealth browser automation (PerimeterX bypass)
+    "nodriver>=0.35",
+    "curl-cffi>=0.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "respx>=0.20.0",
+]
+
+[project.scripts]
+phx-analyze = "phx_home_analysis.pipeline.orchestrator:main"
+
+[project.urls]
+"Homepage" = "https://github.com/example/phx-home-analysis"
+"Documentation" = "https://github.com/example/phx-home-analysis#readme"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/phx_home_analysis"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+
+[tool.ruff.isort]
+known-first-party = ["phx_home_analysis"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+ignore_missing_imports = true

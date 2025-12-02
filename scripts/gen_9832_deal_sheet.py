@@ -1,0 +1,186 @@
+#!/usr/bin/env python3
+"""Generate deal sheet for 9832 N 29th St with kill-switch override."""
+from datetime import datetime
+from pathlib import Path
+
+html = """<!DOCTYPE html>
+<html>
+<head>
+    <title>Deal Sheet: 9832 N 29th St, Phoenix, AZ 85028</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .header { background: linear-gradient(135deg, #2c3e50, #3498db); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; }
+        .tier-badge { background: #f39c12; padding: 10px 20px; border-radius: 25px; font-weight: bold; display: inline-block; }
+        .override-badge { background: #e74c3c; color: white; padding: 6px 12px; border-radius: 6px; font-size: 14px; margin-left: 10px; }
+        .section { background: white; margin: 20px 0; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section h3 { margin-top: 0; color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 12px; }
+        .score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .score-box { background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 20px; border-radius: 10px; text-align: center; }
+        .score-value { font-size: 32px; font-weight: bold; color: #2c3e50; }
+        .score-label { color: #7f8c8d; font-size: 12px; margin-top: 5px; }
+        .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .detail-item { display: flex; justify-content: space-between; padding: 10px; background: #f8f9fa; border-radius: 6px; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .danger { background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .strength { color: #27ae60; padding: 8px 0; }
+        .concern { color: #e74c3c; padding: 8px 0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; }
+        .pass { color: #27ae60; font-weight: bold; }
+        .fail { color: #e74c3c; font-weight: bold; }
+        .override { color: #f39c12; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>9832 N 29th St, Phoenix, AZ 85028</h1>
+        <span class="tier-badge">CONTENDER</span>
+        <span class="override-badge">KILL SWITCH OVERRIDE</span>
+        <p style="margin-top:15px; opacity:0.9;">Generated: """ + datetime.now().strftime('%Y-%m-%d %H:%M') + """</p>
+    </div>
+
+    <div class="danger">
+        <strong>Kill Switch Failures (Override Active):</strong><br>
+        - Lot size: 17,032 sqft (exceeds 15,000 max)<br>
+        - Sewer type: Unknown (requires verification)
+    </div>
+
+    <div class="section">
+        <h3>FINAL SCORE: 401 / 600 (67%)</h3>
+        <div class="score-grid">
+            <div class="score-box">
+                <div class="score-value">401</div>
+                <div class="score-label">TOTAL SCORE</div>
+            </div>
+            <div class="score-box">
+                <div class="score-value">161</div>
+                <div class="score-label">LOCATION (250 max)</div>
+            </div>
+            <div class="score-box">
+                <div class="score-value">118</div>
+                <div class="score-label">LOT/SYSTEMS (160 max)</div>
+            </div>
+            <div class="score-box">
+                <div class="score-value">122</div>
+                <div class="score-label">INTERIOR (190 max)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Property Details</h3>
+        <div class="detail-grid">
+            <div class="detail-item"><span>Price:</span><b>$765,000</b></div>
+            <div class="detail-item"><span>Price/sqft:</span><b>$420.56</b></div>
+            <div class="detail-item"><span>Beds/Baths:</span><b>4 bed / 2 bath</b></div>
+            <div class="detail-item"><span>Living Area:</span><b>1,819 sqft</b></div>
+            <div class="detail-item"><span>Lot Size:</span><b>17,032 sqft (exceeds max)</b></div>
+            <div class="detail-item"><span>Year Built:</span><b>1962</b></div>
+            <div class="detail-item"><span>Garage:</span><b>2-car</b></div>
+            <div class="detail-item"><span>Pool:</span><b>Yes (recently renovated)</b></div>
+            <div class="detail-item"><span>HOA:</span><b>$0/month</b></div>
+            <div class="detail-item"><span>Sewer:</span><b>Unknown (verify)</b></div>
+            <div class="detail-item"><span>APN:</span><b>165-28-048</b></div>
+            <div class="detail-item"><span>Subdivision:</span><b>Paradise Valley Oasis 1-A</b></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Location Analysis</h3>
+        <div class="warning"><strong>Major Concern:</strong> Property is only 0.3 miles from Interstate 17 - significant freeway noise expected</div>
+        <div class="detail-grid">
+            <div class="detail-item"><span>School Rating:</span><b>8.1/10</b></div>
+            <div class="detail-item"><span>School District:</span><b>Paradise Valley Unified #69</b></div>
+            <div class="detail-item"><span>Orientation:</span><b>East-facing</b></div>
+            <div class="detail-item"><span>Grocery Distance:</span><b>0.8 mi</b></div>
+            <div class="detail-item"><span>Highway Distance:</span><b>0.3 mi (NOISE CONCERN)</b></div>
+            <div class="detail-item"><span>Nearest Park:</span><b>Western Star (0.4 mi)</b></div>
+            <div class="detail-item"><span>Safety Score:</span><b>7/10</b></div>
+            <div class="detail-item"><span>Quietness Score:</span><b>3/10 (freeway)</b></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Interior Scores (High Confidence - 24 Images)</h3>
+        <div class="detail-grid">
+            <div class="detail-item"><span>Kitchen:</span><b>8/10 (32/40 pts)</b></div>
+            <div class="detail-item"><span>Master Suite:</span><b>9/10 (36/40 pts)</b></div>
+            <div class="detail-item"><span>Natural Light:</span><b>7/10 (21/30 pts)</b></div>
+            <div class="detail-item"><span>Ceilings:</span><b>5/10 (15/30 pts)</b></div>
+            <div class="detail-item"><span>Fireplace:</span><b>0/10 (0/20 pts)</b></div>
+            <div class="detail-item"><span>Laundry:</span><b>5/10 (10/20 pts)</b></div>
+            <div class="detail-item"><span>Aesthetics:</span><b>8/10 (8/10 pts)</b></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Top Strengths</h3>
+        <ul>
+            <li class="strength">Extensive high-end renovation - modern finishes throughout</li>
+            <li class="strength">Resort-style pool with spa - recently renovated, pebble-tech finish</li>
+            <li class="strength">Luxury master bathroom with soaking tub, walk-in shower</li>
+            <li class="strength">Modern kitchen with quartz counters, island, stainless appliances</li>
+            <li class="strength">Top school district - Paradise Valley Unified (8.1/10)</li>
+            <li class="strength">Excellent parks proximity (0.4 mi to Western Star Park)</li>
+            <li class="strength">No HOA - $0/month</li>
+            <li class="strength">Move-in ready condition</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>Top Concerns</h3>
+        <ul>
+            <li class="concern">FREEWAY NOISE - Only 0.3 miles from I-17 (critical concern)</li>
+            <li class="concern">Lot size exceeds target (17,032 sqft vs 15,000 max)</li>
+            <li class="concern">Price point likely pushes monthly payment over $4k target</li>
+            <li class="concern">1962 mechanicals - plumbing/electrical may need updates</li>
+            <li class="concern">No fireplace present</li>
+            <li class="concern">Standard 8ft ceilings (1962 construction)</li>
+            <li class="concern">Sewer type unverified</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>Kill Switch Status</h3>
+        <table>
+            <tr><th>Criterion</th><th>Required</th><th>Actual</th><th>Status</th></tr>
+            <tr><td>HOA Fee</td><td>$0</td><td>$0</td><td class="pass">PASS</td></tr>
+            <tr><td>Sewer</td><td>City</td><td>Unknown</td><td class="fail">VERIFY</td></tr>
+            <tr><td>Garage</td><td>2+ cars</td><td>2 cars</td><td class="pass">PASS</td></tr>
+            <tr><td>Bedrooms</td><td>4+</td><td>4</td><td class="pass">PASS</td></tr>
+            <tr><td>Bathrooms</td><td>2+</td><td>2</td><td class="pass">PASS</td></tr>
+            <tr><td>Lot Size</td><td>7k-15k sqft</td><td>17,032 sqft</td><td class="override">OVERRIDE</td></tr>
+            <tr><td>Year Built</td><td>&lt;2024</td><td>1962</td><td class="pass">PASS</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>Due Diligence Checklist</h3>
+        <ol>
+            <li>Visit property to assess I-17 noise impact in person</li>
+            <li>Verify city sewer connection (not septic)</li>
+            <li>Confirm bedroom count (must be 4+)</li>
+            <li>Request plumbing/electrical inspection (1962 systems)</li>
+            <li>Confirm which listing photos represent CURRENT condition</li>
+            <li>Get pool equipment age documentation</li>
+            <li>Calculate full monthly payment with taxes/insurance</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h3>Recommendation</h3>
+        <p><strong>CONDITIONAL CONTENDER</strong> - This property has exceptional renovation quality and a stunning backyard, but the freeway noise (0.3 mi from I-17) is a potential deal-breaker. Visit in person at different times of day to assess noise levels before proceeding. Price negotiation recommended given the location factor.</p>
+    </div>
+
+</body>
+</html>"""
+
+# Save
+output_path = Path('reports/deal_sheets/9832_n_29th_st_override.html')
+output_path.parent.mkdir(parents=True, exist_ok=True)
+with open(output_path, 'w') as f:
+    f.write(html)
+
+print(f'Deal sheet generated: {output_path}')
+print(f'Open in browser: file:///{output_path.absolute()}')
