@@ -1,0 +1,91 @@
+# Scoring and Value Zone Configuration
+# This file contains weights, thresholds, and zone definitions for property analysis
+
+# =============================================================================
+# VALUE ZONES - Score/Price Analysis Zones
+# =============================================================================
+# Defines regions in the score/price scatter plot for property classification
+# Used by value_spotter.py for identifying underpriced, high-quality properties
+
+value_zones:
+  sweet_spot:
+    min_score: 365              # Minimum score to be considered "high value"
+    max_price: 550000           # Maximum price to be considered "affordable"
+    label: "Value Sweet Spot"   # Display label for analysis
+    description: "High-quality properties (score > 365) at affordable prices (< $550k)"
+
+  # Premium tier for reference (not currently used in visualization)
+  premium:
+    min_score: 480              # Unicorn-tier threshold
+    max_price: null             # No upper price limit for premium properties
+    label: "Unicorn Territory"
+    description: "Top-tier properties scoring above 480 points"
+
+# =============================================================================
+# SCORING SECTION WEIGHTS (600 pts total)
+# =============================================================================
+# Each section's point allocation within the 600-point scoring system
+
+section_weights:
+  location:           # Section A: Location factors
+    points: 230
+    weight: 0.3833    # 230/600
+    criteria:
+      school: 50
+      quietness: 40
+      safety: 50
+      supermarket: 30
+      parks: 30
+      sun_orientation: 30
+
+  systems:            # Section B: Lot and Systems
+    points: 180
+    weight: 0.3000    # 180/600
+    criteria:
+      roof: 50
+      backyard: 40
+      plumbing: 40
+      pool: 20
+      cost_efficiency: 30
+
+  interior:           # Section C: Interior
+    points: 190
+    weight: 0.3167    # 190/600
+    criteria:
+      kitchen: 40
+      master_bedroom: 40
+      light: 30
+      ceilings: 30
+      fireplace: 20
+      laundry: 20
+      aesthetics: 10
+
+# =============================================================================
+# TIER THRESHOLDS
+# =============================================================================
+# Classification tiers based on total_score (out of 600 points)
+
+tier_thresholds:
+  unicorn:
+    min_score: 480    # Exceptional properties
+    label: "Unicorn"
+    description: "Exceptional properties (480+ pts)"
+
+  contender:
+    min_score: 360    # Good properties worth considering
+    label: "Contender"
+    description: "Strong properties (360-480 pts)"
+
+  pass:
+    min_score: 0      # Minimum passing score
+    label: "Pass"
+    description: "Acceptable properties (0-360 pts)"
+
+# =============================================================================
+# DEFAULTS (for backward compatibility)
+# =============================================================================
+# These values are used if specific config sections are missing
+
+defaults:
+  value_zone_min_score: 365
+  value_zone_max_price: 550000

@@ -10,11 +10,40 @@ from pathlib import Path
 
 import pandas as pd
 import plotly.graph_objects as go
+import yaml
 
 # Load data
 project_root = Path(__file__).parent.parent
 csv_path = project_root / "data" / "phx_homes_ranked.csv"
 json_path = project_root / "data" / "enrichment_data.json"
+config_path = project_root / "config" / "scoring_weights.yaml"
+
+# Load value zone config with fallback defaults
+def load_value_zone_config():
+    """Load value zone thresholds from config file with fallback defaults."""
+    defaults = {
+        'min_score': 365,
+        'max_price': 550000,
+    }
+
+    if config_path.exists():
+        try:
+            with open(config_path) as f:
+                config = yaml.safe_load(f)
+            if config and 'value_zones' in config and 'sweet_spot' in config['value_zones']:
+                zone = config['value_zones']['sweet_spot']
+                return {
+                    'min_score': zone.get('min_score', defaults['min_score']),
+                    'max_price': zone.get('max_price', defaults['max_price']),
+                }
+        except Exception as e:
+            print(f"[WARNING] Failed to load config: {e}. Using defaults.")
+
+    return defaults
+
+value_zone_config = load_value_zone_config()
+value_zone_min_score = value_zone_config['min_score']
+value_zone_max_price = value_zone_config['max_price']
 
 # Read CSV
 df = pd.read_csv(csv_path)
@@ -43,10 +72,7 @@ df['value_ratio'] = df.apply(
 median_score = df['total_score'].median()
 median_price = df['price'].median()
 
-# Define value zone boundaries (bottom-right quadrant)
-value_zone_min_score = 365
-value_zone_max_price = 550000
-
+# Note: Value zone boundaries loaded from config above
 # Identify properties in value zone (PASS only)
 df['in_value_zone'] = (
     (df['total_score'] > value_zone_min_score) &
