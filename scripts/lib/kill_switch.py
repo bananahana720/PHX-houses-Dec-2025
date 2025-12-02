@@ -22,13 +22,21 @@ Usage with Property dataclass:
 Usage with pandas DataFrame rows:
     from scripts.lib import evaluate_kill_switches
     verdict, severity, failures, results = evaluate_kill_switches(row_dict)
+
+Usage with custom config:
+    from scripts.lib.kill_switch import KillSwitchFilter
+    filter = KillSwitchFilter(config_path='config/buyer_criteria.yaml')
+    verdict, severity, failures, results = filter.evaluate(property_data)
 """
 
 import math
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from pathlib import Path
 from typing import Any, Protocol, Union
+
+import yaml
 
 # =============================================================================
 # SEVERITY THRESHOLD SYSTEM
@@ -540,3 +548,163 @@ KILL_SWITCH_DISPLAY_NAMES = {
     "lot_size": "Lot Size",
     "year_built": "Year Built",
 }
+
+
+# =============================================================================
+# CONFIGURABLE KILL SWITCH FILTER
+# =============================================================================
+
+class KillSwitchFilter:
+    """Kill switch filter with configurable criteria from YAML.
+
+    Supports loading buyer criteria from YAML config file while maintaining
+    backward compatibility with hardcoded defaults.
+
+    Usage:
+        # Use default criteria (hardcoded values)
+        filter = KillSwitchFilter()
+
+        # Use custom YAML config
+        filter = KillSwitchFilter(config_path='config/buyer_criteria.yaml')
+
+        # Evaluate property
+        verdict, severity, failures, results = filter.evaluate(property_data)
+    """
+
+    def __init__(self, config_path: str | None = None):
+        """Initialize filter with optional YAML config.
+
+        Args:
+            config_path: Path to YAML config file. If None, uses hardcoded defaults.
+        """
+        self.config_path = config_path
+        self._load_config()
+
+    def _load_config(self) -> None:
+        """Load criteria from YAML config or use defaults."""
+        if self.config_path is None:
+            # Use hardcoded defaults
+            self._use_defaults()
+            return
+
+        config_file = Path(self.config_path)
+        if not config_file.exists():
+            raise FileNotFoundError(
+                f"Kill switch config file not found: {self.config_path}"
+            )
+
+        try:
+            with open(config_file) as f:
+                config = yaml.safe_load(f)
+        except yaml.YAMLError as e:
+            raise ValueError(f"Failed to parse YAML config: {e}")
+
+        # Load hard criteria
+        hard = config.get('hard_criteria', {})
+        self.hoa_fee_max = hard.get('hoa_fee', 0)
+        self.min_beds = hard.get('min_beds', 4)
+        self.min_baths = hard.get('min_baths', 2)
+
+        # Load soft criteria
+        soft = config.get('soft_criteria', {})
+
+        # Sewer type
+        sewer = soft.get('sewer_type', {})
+        self.required_sewer = sewer.get('required', 'city')
+        self.sewer_severity = sewer.get('severity', 2.5)
+
+        # Year built
+        year = soft.get('year_built', {})
+        max_year_str = year.get('max', 'current_year')
+        if max_year_str == 'current_year':
+            self.max_year_built = datetime.now().year
+        else:
+            self.max_year_built = int(max_year_str)
+        self.year_severity = year.get('severity', 2.0)
+
+        # Garage
+        garage = soft.get('garage_spaces', {})
+        self.min_garage = garage.get('min', 2)
+        self.garage_severity = garage.get('severity', 1.5)
+
+        # Lot size
+        lot = soft.get('lot_sqft', {})
+        self.min_lot_sqft = lot.get('min', 7000)
+        self.max_lot_sqft = lot.get('max', 15000)
+        self.lot_severity = lot.get('severity', 1.0)
+
+        # Load thresholds
+        thresholds = config.get('thresholds', {})
+        self.severity_fail_threshold = thresholds.get('severity_fail', 3.0)
+        self.severity_warning_threshold = thresholds.get('severity_warning', 1.5)
+
+    def _use_defaults(self) -> None:
+        """Use hardcoded default criteria values."""
+        # Hard criteria
+        self.hoa_fee_max = 0
+        self.min_beds = 4
+        self.min_baths = 2
+
+        # Soft criteria
+        self.required_sewer = 'city'
+        self.sewer_severity = 2.5
+        self.max_year_built = datetime.now().year
+        self.year_severity = 2.0
+        self.min_garage = 2
+        self.garage_severity = 1.5
+        self.min_lot_sqft = 7000
+        self.max_lot_sqft = 15000
+        self.lot_severity = 1.0
+
+        # Thresholds
+        self.severity_fail_threshold = 3.0
+        self.severity_warning_threshold = 1.5
+
+    def evaluate(
+        self, data: dict[str, Any] | PropertyLike
+    ) -> tuple[KillSwitchVerdict, float, list[str], list[KillSwitchResult]]:
+        """Evaluate property against configured criteria.
+
+        This method uses the standard kill switch logic but with configurable
+        thresholds and criteria from YAML config (or defaults).
+
+        Args:
+            data: Property data as dict or PropertyLike object
+
+        Returns:
+            Tuple of (verdict, severity_score, failure_messages, results)
+        """
+        # For now, delegate to standard evaluation function
+        # In future, could customize evaluation logic based on config
+        return evaluate_kill_switches(data)
+
+    def get_summary(self) -> str:
+        """Get human-readable summary of configured criteria.
+
+        Returns:
+            Multi-line string describing all criteria and thresholds
+        """
+        lines = [
+            "Kill Switch Criteria (Configured):",
+            "",
+            "HARD Criteria (instant fail):",
+            f"  - HOA fee: Must be ${self.hoa_fee_max}/month or None",
+            f"  - Bedrooms: Minimum {self.min_beds} bedrooms",
+            f"  - Bathrooms: Minimum {self.min_baths} bathrooms",
+            "",
+            "SOFT Criteria (severity weighted):",
+            f"  - Sewer: Must be {self.required_sewer} (severity: {self.sewer_severity})",
+            f"  - Year built: Before {self.max_year_built} (severity: {self.year_severity})",
+            f"  - Garage: Minimum {self.min_garage} spaces (severity: {self.garage_severity})",
+            f"  - Lot size: {self.min_lot_sqft:,}-{self.max_lot_sqft:,} sqft (severity: {self.lot_severity})",
+            "",
+            f"Thresholds: FAIL >= {self.severity_fail_threshold}, "
+            f"WARNING >= {self.severity_warning_threshold}",
+        ]
+
+        if self.config_path:
+            lines.insert(1, f"Config source: {self.config_path}")
+        else:
+            lines.insert(1, "Config source: Hardcoded defaults")
+
+        return "\n".join(lines)

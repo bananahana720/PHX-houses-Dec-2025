@@ -1,0 +1,73 @@
+# Buyer Criteria Configuration
+# Kill-switch thresholds for property filtering
+#
+# This file defines the buyer's hard requirements and soft preferences
+# for filtering properties in the PHX Home Analysis pipeline.
+#
+# HARD criteria: Must all pass or property is immediately rejected (FAIL)
+# SOFT criteria: Each failure adds severity weight; total severity >= threshold triggers FAIL
+
+# =============================================================================
+# HARD CRITERIA (Instant Fail)
+# =============================================================================
+# Any failure in hard criteria immediately rejects the property
+
+hard_criteria:
+  hoa_fee: 0        # Must be zero (no HOA allowed)
+  min_beds: 4       # Minimum 4 bedrooms required
+  min_baths: 2      # Minimum 2 bathrooms required
+
+# =============================================================================
+# SOFT CRITERIA (Severity Weighted)
+# =============================================================================
+# Each failed criterion contributes its severity weight to total severity score
+# Property FAILS if total severity >= severity_fail threshold
+# Property gets WARNING if total severity >= severity_warning threshold
+
+soft_criteria:
+  # City sewer requirement (no septic systems)
+  sewer_type:
+    required: "city"              # Accepted values: "city", "city_sewer", "municipal", "public"
+    severity: 2.5                 # Infrastructure concern - high weight
+
+  # No new builds (must be built before current year)
+  year_built:
+    max: "current_year"           # Special token - evaluated as datetime.now().year
+    severity: 2.0                 # New build avoidance - moderate-high weight
+
+  # Minimum garage spaces
+  garage_spaces:
+    min: 2                        # At least 2-car garage
+    severity: 1.5                 # Convenience factor - moderate weight
+
+  # Lot size range
+  lot_sqft:
+    min: 7000                     # Minimum 7,000 square feet
+    max: 15000                    # Maximum 15,000 square feet
+    severity: 1.0                 # Minor preference - low weight
+
+# =============================================================================
+# SEVERITY THRESHOLDS
+# =============================================================================
+# Thresholds determine final verdict based on accumulated severity score
+
+thresholds:
+  severity_fail: 3.0              # Total severity >= 3.0 -> FAIL
+  severity_warning: 1.5           # Total severity >= 1.5 -> WARNING
+                                  # Total severity < 1.5 -> PASS
+
+# =============================================================================
+# EXAMPLES
+# =============================================================================
+#
+# Example 1: Only garage failure (severity 1.5)
+#   Result: WARNING (1.5 >= warning threshold but < fail threshold)
+#
+# Example 2: Sewer + garage failure (severity 2.5 + 1.5 = 4.0)
+#   Result: FAIL (4.0 >= fail threshold)
+#
+# Example 3: Year built + lot size failure (severity 2.0 + 1.0 = 3.0)
+#   Result: FAIL (3.0 >= fail threshold)
+#
+# Example 4: HOA fee = $100
+#   Result: FAIL (hard criterion failed - instant rejection)

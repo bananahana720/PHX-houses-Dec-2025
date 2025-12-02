@@ -168,7 +168,6 @@ def run_pipeline(
                 paths=paths,
                 buyer=config.buyer,
                 arizona=config.arizona,
-                maps=config.maps,
             )
         else:
             config = AppConfig.default(base_dir=base_dir)
