@@ -41,6 +41,8 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 from phx_home_analysis.repositories.csv_repository import CsvPropertyRepository
 from phx_home_analysis.services.county_data import MaricopaAssessorClient, ParcelData
+from phx_home_analysis.services.quality import DataSource, LineageTracker
+from phx_home_analysis.validation.deduplication import compute_property_hash
 
 
 def parse_args() -> argparse.Namespace:
@@ -117,18 +119,36 @@ def configure_logging(verbose: bool) -> None:
 
 
 def load_enrichment(path: Path) -> dict:
-    """Load existing enrichment data."""
+    """Load existing enrichment data.
+
+    Handles both list and dict formats. Converts list format to dict keyed by full_address.
+    """
     if not path.exists():
         return {}
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+
+    # Convert list format to dict format
+    if isinstance(data, list):
+        return {item.get("full_address"): item for item in data if item.get("full_address")}
+    return data
 
 
 def save_enrichment(path: Path, data: dict) -> None:
-    """Save enrichment data to JSON."""
+    """Save enrichment data to JSON.
+
+    Converts dict format back to list format for storage.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Convert dict back to list format
+    data_list = [
+        {"full_address": addr, **props}
+        for addr, props in data.items()
+    ]
+
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        json.dump(data_list, f, indent=2, ensure_ascii=False)
 
 
 def should_update_field(
@@ -182,7 +202,8 @@ def merge_parcel_into_enrichment(
     full_address: str,
     parcel: ParcelData,
     update_only: bool = False,
-    logger: logging.Logger = None,
+    logger: logging.Logger | None = None,
+    lineage_tracker: LineageTracker | None = None,
 ) -> tuple[dict, dict]:
     """Merge parcel data into existing enrichment entry.
 
@@ -192,6 +213,7 @@ def merge_parcel_into_enrichment(
         parcel: Extracted parcel data
         update_only: If True, only fill None/missing fields
         logger: Logger for conflict reporting
+        lineage_tracker: Optional LineageTracker to record field updates
 
     Returns:
         Tuple of (updated enrichment dict, conflict report dict)
@@ -206,6 +228,9 @@ def merge_parcel_into_enrichment(
         "skipped_no_change": [],
         "new_fields": [],
     }
+
+    # Compute property hash for lineage tracking
+    prop_hash = compute_property_hash(full_address) if lineage_tracker else None
 
     # Fields to merge from parcel
     merge_fields = {
@@ -226,6 +251,17 @@ def merge_parcel_into_enrichment(
                 if existing_value is None:
                     entry[field] = value
                     conflicts["new_fields"].append(field)
+
+                    # Track lineage for new field
+                    if lineage_tracker and prop_hash:
+                        lineage_tracker.record_field(
+                            property_hash=prop_hash,
+                            field_name=field,
+                            source=DataSource.ASSESSOR_API,
+                            confidence=DataSource.ASSESSOR_API.default_confidence,
+                            original_value=value,
+                            notes=f"County API source: {parcel.source}"
+                        )
             else:
                 # Check if we should update
                 should_update, reason = should_update_field(entry, field, value, logger)
@@ -241,6 +277,17 @@ def merge_parcel_into_enrichment(
                             "new": value,
                             "reason": reason,
                         })
+
+                    # Track lineage for updated field
+                    if lineage_tracker and prop_hash:
+                        lineage_tracker.record_field(
+                            property_hash=prop_hash,
+                            field_name=field,
+                            source=DataSource.ASSESSOR_API,
+                            confidence=DataSource.ASSESSOR_API.default_confidence,
+                            original_value=value,
+                            notes=f"County API source: {parcel.source}, updated from {existing_value}"
+                        )
                 else:
                     if "manual" in reason.lower():
                         conflicts["preserved_manual"].append({
@@ -256,11 +303,23 @@ def merge_parcel_into_enrichment(
     if parcel.latitude and parcel.longitude:
         for coord_field, coord_value in [("latitude", parcel.latitude), ("longitude", parcel.longitude)]:
             if not update_only or entry.get(coord_field) is None:
+                existing_coord = entry.get(coord_field)
                 should_update, reason = should_update_field(entry, coord_field, coord_value, logger)
                 if should_update:
                     entry[coord_field] = coord_value
-                    if entry.get(coord_field) is None:
+                    if existing_coord is None:
                         conflicts["new_fields"].append(coord_field)
+
+                    # Track lineage for coordinates
+                    if lineage_tracker and prop_hash:
+                        lineage_tracker.record_field(
+                            property_hash=prop_hash,
+                            field_name=coord_field,
+                            source=DataSource.ASSESSOR_API,
+                            confidence=0.90,  # Slightly lower confidence for ArcGIS coordinates
+                            original_value=coord_value,
+                            notes="ArcGIS API coordinates"
+                        )
 
     return entry, conflicts
 
@@ -391,6 +450,11 @@ async def main() -> int:
     enrichment = load_enrichment(args.enrichment)
     logger.info(f"Loaded {len(enrichment)} existing enrichment records")
 
+    # Initialize lineage tracker
+    lineage_file = Path("data/field_lineage.json")
+    tracker = LineageTracker(lineage_file)
+    logger.info(f"Loaded lineage tracker with {tracker.property_count()} properties")
+
     # Extract data
     results = []
     failed = []
@@ -411,7 +475,7 @@ async def main() -> int:
                 print_parcel_summary(parcel)
                 results.append((prop.full_address, parcel))
 
-                # Merge into enrichment with conflict tracking
+                # Merge into enrichment with conflict tracking and lineage
                 if not args.dry_run:
                     updated_entry, conflicts = merge_parcel_into_enrichment(
                         enrichment,
@@ -419,6 +483,7 @@ async def main() -> int:
                         parcel,
                         args.update_only,
                         logger,
+                        tracker,
                     )
                     enrichment[prop.full_address] = updated_entry
                     all_conflicts[prop.full_address] = conflicts
@@ -432,7 +497,16 @@ async def main() -> int:
         save_enrichment(args.enrichment, enrichment)
         logger.info(f"Saved {len(enrichment)} records to {args.enrichment}")
 
+        # Save lineage tracker
+        tracker.save()
+        logger.info(f"Saved lineage data to {lineage_file}")
+
     print_summary(results, failed, all_conflicts)
+
+    # Print lineage report
+    if not args.dry_run and results:
+        print()
+        print(tracker.generate_report())
 
     return 0 if len(failed) < len(properties) else 1
 

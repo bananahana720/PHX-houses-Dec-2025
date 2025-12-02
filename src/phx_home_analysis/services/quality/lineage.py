@@ -8,7 +8,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from .models import DataSource, FieldLineage
 
@@ -38,7 +38,7 @@ class LineageTracker:
         lineage = tracker.get_field_lineage("ef7cd95f", "lot_sqft")
     """
 
-    def __init__(self, lineage_file: Optional[Path] = None) -> None:
+    def __init__(self, lineage_file: Path | None = None) -> None:
         """Initialize the lineage tracker.
 
         Args:
@@ -108,7 +108,7 @@ class LineageTracker:
         source: DataSource,
         confidence: float,
         original_value: Any = None,
-        notes: Optional[str] = None,
+        notes: str | None = None,
     ) -> FieldLineage:
         """Record lineage for a field update.
 
@@ -149,8 +149,8 @@ class LineageTracker:
         property_hash: str,
         source: DataSource,
         fields: dict[str, Any],
-        confidence: Optional[float] = None,
-        notes: Optional[str] = None,
+        confidence: float | None = None,
+        notes: str | None = None,
     ) -> list[FieldLineage]:
         """Record lineage for multiple fields from the same source.
 
@@ -185,7 +185,7 @@ class LineageTracker:
 
     def get_field_lineage(
         self, property_hash: str, field_name: str
-    ) -> Optional[FieldLineage]:
+    ) -> FieldLineage | None:
         """Get lineage for a specific field.
 
         Args:
@@ -210,7 +210,7 @@ class LineageTracker:
 
     def get_field_confidence(
         self, property_hash: str, field_name: str
-    ) -> Optional[float]:
+    ) -> float | None:
         """Get confidence score for a specific field.
 
         Args:
@@ -283,3 +283,58 @@ class LineageTracker:
             Count of tracked fields.
         """
         return len(self._lineage.get(property_hash, {}))
+
+    def generate_report(self) -> str:
+        """Generate a human-readable summary report of lineage data.
+
+        Returns:
+            Formatted string report with lineage statistics.
+        """
+        if not self._lineage:
+            return "No lineage data tracked."
+
+        # Overall statistics
+        total_properties = len(self._lineage)
+        total_fields = sum(len(fields) for fields in self._lineage.values())
+
+        # Source breakdown
+        source_counts = {}
+        for fields in self._lineage.values():
+            for lineage in fields.values():
+                source = lineage.source.value
+                source_counts[source] = source_counts.get(source, 0) + 1
+
+        # Confidence statistics
+        all_confidences = []
+        for fields in self._lineage.values():
+            all_confidences.extend(lineage.confidence for lineage in fields.values())
+
+        avg_confidence = sum(all_confidences) / len(all_confidences) if all_confidences else 0
+        high_conf_count = sum(1 for c in all_confidences if c >= 0.8)
+        high_conf_pct = (high_conf_count / len(all_confidences) * 100) if all_confidences else 0
+
+        # Build report
+        lines = [
+            "=" * 60,
+            "LINEAGE TRACKING REPORT",
+            "=" * 60,
+            f"Properties tracked: {total_properties}",
+            f"Total fields tracked: {total_fields}",
+            f"Average fields per property: {total_fields / total_properties:.1f}",
+            "",
+            "Data Sources:",
+        ]
+
+        for source, count in sorted(source_counts.items(), key=lambda x: x[1], reverse=True):
+            pct = (count / total_fields * 100) if total_fields else 0
+            lines.append(f"  {source:20s}: {count:4d} fields ({pct:5.1f}%)")
+
+        lines.extend([
+            "",
+            "Confidence Metrics:",
+            f"  Average confidence: {avg_confidence:.2f}",
+            f"  High confidence (>=0.8): {high_conf_count} fields ({high_conf_pct:.1f}%)",
+            "=" * 60,
+        ])
+
+        return "\n".join(lines)
