@@ -9,8 +9,6 @@ import asyncio
 import logging
 import os
 import re
-from typing import Optional
-from urllib.parse import quote
 
 import httpx
 
@@ -23,6 +21,51 @@ OFFICIAL_API_BASE = "https://mcassessor.maricopa.gov"
 ARCGIS_API_BASE = "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/MaricopaDynamicQueryService/MapServer"
 
 
+def escape_like_pattern(value: str) -> str:
+    r"""Escape SQL LIKE pattern metacharacters to prevent injection attacks.
+
+    Escapes LIKE wildcards and SQL string delimiters:
+    - Backslash (\) must be escaped first to avoid double-escaping
+    - Percent (%) and underscore (_) are LIKE wildcards
+    - Single quote (') is SQL string delimiter
+
+    Args:
+        value: Raw user input to be used in LIKE clause
+
+    Returns:
+        Escaped string safe for use in SQL LIKE patterns
+
+    Security Note:
+        This function prevents SQL injection and LIKE pattern injection
+        in ArcGIS WHERE clauses. Always use this when building LIKE
+        queries from user-controlled input.
+    """
+    # Order matters: escape backslash first to avoid double-escaping
+    value = value.replace("\\", "\\\\")  # \ → \\
+    value = value.replace("%", "\\%")    # % → \%
+    value = value.replace("_", "\\_")    # _ → \_
+    value = value.replace("'", "''")     # ' → '' (SQL standard)
+    return value
+
+
+def escape_sql_string(value: str) -> str:
+    """Escape SQL string literal to prevent injection attacks.
+
+    Escapes single quotes for use in SQL string literals (e.g., APN='value').
+
+    Args:
+        value: Raw user input to be used in SQL string literal
+
+    Returns:
+        Escaped string safe for use in SQL queries
+
+    Security Note:
+        This function prevents SQL injection in equality comparisons.
+        For LIKE clauses, use escape_like_pattern() instead.
+    """
+    return value.replace("'", "''")
+
+
 class MaricopaAssessorClient:
     """HTTP client for Maricopa County Assessor property data API.
 
@@ -31,7 +74,7 @@ class MaricopaAssessorClient:
 
     def __init__(
         self,
-        token: Optional[str] = None,
+        token: str | None = None,
         timeout: float = 30.0,
         rate_limit_seconds: float = 1.5,
     ):
@@ -46,7 +89,7 @@ class MaricopaAssessorClient:
         self._timeout = timeout
         self._rate_limit_seconds = rate_limit_seconds
         self._last_call = 0.0
-        self._http: Optional[httpx.AsyncClient] = None
+        self._http: httpx.AsyncClient | None = None
 
         if not self._token:
             logger.warning(
@@ -72,7 +115,7 @@ class MaricopaAssessorClient:
             await asyncio.sleep(self._rate_limit_seconds - elapsed)
         self._last_call = time.time()
 
-    async def search_apn(self, street: str) -> Optional[str]:
+    async def search_apn(self, street: str) -> str | None:
         """Search for APN by street address.
 
         Args:
@@ -92,7 +135,7 @@ class MaricopaAssessorClient:
         # Fallback to ArcGIS
         return await self._search_arcgis(street)
 
-    async def _search_official_api(self, street: str) -> Optional[str]:
+    async def _search_official_api(self, street: str) -> str | None:
         """Search via Official API."""
         url = f"{OFFICIAL_API_BASE}/search/property/"
         params = {"q": street}
@@ -121,12 +164,15 @@ class MaricopaAssessorClient:
 
         return None
 
-    async def _search_arcgis(self, street: str) -> Optional[str]:
-        """Search via ArcGIS public API."""
-        # Build LIKE query for address
-        # Escape special characters and build pattern
-        street_clean = street.replace("'", "''")
-        where_clause = f"PHYSICAL_ADDRESS LIKE '%{street_clean}%'"
+    async def _search_arcgis(self, street: str) -> str | None:
+        """Search via ArcGIS public API.
+
+        Security: Uses escape_like_pattern() to prevent SQL and LIKE injection
+        attacks from user-controlled street address input.
+        """
+        # Escape SQL LIKE metacharacters to prevent injection
+        street_escaped = escape_like_pattern(street)
+        where_clause = f"PHYSICAL_ADDRESS LIKE '%{street_escaped}%'"
 
         url = f"{ARCGIS_API_BASE}/3/query"
         params = {
@@ -151,7 +197,7 @@ class MaricopaAssessorClient:
 
         return None
 
-    async def get_parcel_data(self, apn: str) -> Optional[ParcelData]:
+    async def get_parcel_data(self, apn: str) -> ParcelData | None:
         """Get complete parcel data by APN.
 
         Args:
@@ -171,7 +217,7 @@ class MaricopaAssessorClient:
         # Fallback to ArcGIS for basic data
         return await self._get_arcgis_parcel(apn)
 
-    async def _get_official_parcel(self, apn: str) -> Optional[ParcelData]:
+    async def _get_official_parcel(self, apn: str) -> ParcelData | None:
         """Get parcel data from Official API."""
         headers = {"AUTHORIZATION": self._token}
 
@@ -200,11 +246,18 @@ class MaricopaAssessorClient:
             logger.debug(f"Official API parcel fetch failed: {e}")
             return None
 
-    async def _get_arcgis_parcel(self, apn: str) -> Optional[ParcelData]:
-        """Get parcel data from ArcGIS public API (limited fields)."""
+    async def _get_arcgis_parcel(self, apn: str) -> ParcelData | None:
+        """Get parcel data from ArcGIS public API (limited fields).
+
+        Security: Uses escape_sql_string() to prevent SQL injection
+        from APN parameter (though APNs are typically system-generated,
+        defense-in-depth principle applies).
+        """
         url = f"{ARCGIS_API_BASE}/3/query"
+        # Escape APN for SQL string literal (defense-in-depth)
+        apn_escaped = escape_sql_string(apn)
         params = {
-            "where": f"APN='{apn}'",
+            "where": f"APN='{apn_escaped}'",
             "outFields": "APN,PHYSICAL_ADDRESS,LAND_SIZE,CONST_YEAR,FCV_CUR,LPV_CUR,LATITUDE,LONGITUDE,LIVING_SPACE",
             "returnGeometry": "false",
             "f": "json",
@@ -338,7 +391,7 @@ class MaricopaAssessorClient:
             tax_annual=None,
         )
 
-    async def extract_for_address(self, street: str) -> Optional[ParcelData]:
+    async def extract_for_address(self, street: str) -> ParcelData | None:
         """Extract parcel data for a street address.
 
         Combines search and data extraction.
@@ -357,7 +410,7 @@ class MaricopaAssessorClient:
         logger.info(f"Found APN {apn} for {street}")
         return await self.get_parcel_data(apn)
 
-    def _normalize_sewer(self, raw: str) -> Optional[str]:
+    def _normalize_sewer(self, raw: str) -> str | None:
         """Normalize sewer type to 'city' or 'septic'."""
         if not raw:
             return None
@@ -368,7 +421,7 @@ class MaricopaAssessorClient:
             return "septic"
         return None
 
-    def _parse_currency(self, value: str) -> Optional[int]:
+    def _parse_currency(self, value: str) -> int | None:
         """Parse currency string like '     89,900' to int."""
         if not value:
             return None
@@ -377,7 +430,7 @@ class MaricopaAssessorClient:
         return int(cleaned) if cleaned else None
 
     @staticmethod
-    def _safe_int(value) -> Optional[int]:
+    def _safe_int(value) -> int | None:
         """Safely convert to int."""
         if value is None:
             return None
@@ -392,7 +445,7 @@ class MaricopaAssessorClient:
             return None
 
     @staticmethod
-    def _safe_float(value) -> Optional[float]:
+    def _safe_float(value) -> float | None:
         """Safely convert to float."""
         if value is None:
             return None
@@ -406,7 +459,7 @@ class MaricopaAssessorClient:
             return None
 
     @staticmethod
-    def _safe_bool(value) -> Optional[bool]:
+    def _safe_bool(value) -> bool | None:
         """Safely convert to bool."""
         if value is None:
             return None

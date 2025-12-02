@@ -1,0 +1,174 @@
+================================================================================
+CONSTANTS QUICK REFERENCE
+================================================================================
+Location: src/phx_home_analysis/config/constants.py
+
+SCORING THRESHOLDS (600-point system)
+================================================================================
+MAX_POSSIBLE_SCORE                          = 600
+TIER_UNICORN_MIN                           = 480      (>80%, exceptional)
+TIER_CONTENDER_MIN                         = 360      (60-80%, strong)
+TIER_PASS_MAX                              = 359      (<60%, baseline)
+
+KILL-SWITCH SEVERITY (Weighted threshold)
+================================================================================
+SEVERITY_FAIL_THRESHOLD                    = 3.0      (severity >= 3.0 → FAIL)
+SEVERITY_WARNING_THRESHOLD                 = 1.5      (1.5-3.0 → WARNING)
+SEVERITY_WEIGHT_SEWER                      = 2.5      (septic infrastructure)
+SEVERITY_WEIGHT_YEAR_BUILT                 = 2.0      (new build avoidance)
+SEVERITY_WEIGHT_GARAGE                     = 1.5      (2-car garage minimum)
+SEVERITY_WEIGHT_LOT_SIZE                   = 1.0      (lot size preference)
+
+CONFIDENCE & QUALITY METRICS
+================================================================================
+CONFIDENCE_HIGH_THRESHOLD                  = 0.80     (HIGH confidence level)
+QUALITY_GATE_THRESHOLD                     = 0.95     (CI/CD quality gate)
+
+DATA SOURCE CONFIDENCE WEIGHTS
+================================================================================
+DATA_CONFIDENCE_ASSESSOR_API                = 0.95     (government records)
+DATA_CONFIDENCE_WEB_SCRAPE                  = 0.85     (listing data)
+DATA_CONFIDENCE_MANUAL                      = 0.85     (human inspection)
+
+FIELD-LEVEL CONFIDENCE WEIGHTS
+================================================================================
+FIELD_CONFIDENCE_LOT_SQFT                  = 0.95     (very accurate from assessor)
+FIELD_CONFIDENCE_YEAR_BUILT                = 0.95     (very accurate from assessor)
+FIELD_CONFIDENCE_SQFT                      = 0.85     (varies between sources)
+FIELD_CONFIDENCE_HAS_POOL                  = 0.80     (visible in photos/listings)
+FIELD_CONFIDENCE_ORIENTATION               = 0.85     (satellite + manual)
+
+COST ESTIMATION - MORTGAGE & FINANCING
+================================================================================
+MORTGAGE_RATE_30YR                         = 0.0699   (30-year fixed, 6.99%)
+MORTGAGE_TERM_MONTHS                       = 360      (30-year in months)
+PMI_THRESHOLD_LTV                          = 0.80     (loan-to-value ratio)
+PMI_ANNUAL_RATE                            = 0.005    (0.5% of loan)
+DOWN_PAYMENT_DEFAULT                       = $50,000.00
+
+COST ESTIMATION - INSURANCE & TAX
+================================================================================
+INSURANCE_RATE_PER_1K                      = 6.50     ($/year per $1k value)
+INSURANCE_MINIMUM_ANNUAL                   = $800.00
+PROPERTY_TAX_RATE                          = 0.0066   (~0.66% effective rate)
+
+COST ESTIMATION - UTILITIES & WATER
+================================================================================
+UTILITY_RATE_PER_SQFT                      = 0.08     ($/sqft/month, electric/gas)
+UTILITY_MINIMUM_MONTHLY                    = $120.00
+UTILITY_MAXIMUM_MONTHLY                    = $500.00
+WATER_MONTHLY_BASE                         = $30.00   (base service charge)
+WATER_RATE_PER_KGAL                        = $5.00    (per 1,000 gallons)
+WATER_AVG_USAGE_KGAL                       = 12.0     (AZ household average)
+WATER_MONTHLY_ESTIMATE                     = $90.00   (calculated)
+
+COST ESTIMATION - TRASH & POOL
+================================================================================
+TRASH_MONTHLY                              = $40.00
+POOL_SERVICE_MONTHLY                       = $125.00
+POOL_ENERGY_MONTHLY                        = $75.00
+POOL_TOTAL_MONTHLY                         = $200.00
+
+COST ESTIMATION - MAINTENANCE & SOLAR
+================================================================================
+MAINTENANCE_RESERVE_ANNUAL_RATE            = 0.01     (1% annually)
+MAINTENANCE_RESERVE_MONTHLY_RATE           = 0.00833  (annual / 12 months)
+MAINTENANCE_MINIMUM_MONTHLY                = $200.00
+SOLAR_LEASE_TYPICAL_MIN                    = $100.00
+SOLAR_LEASE_TYPICAL_MAX                    = $200.00
+SOLAR_LEASE_DEFAULT                        = $150.00
+
+ARIZONA-SPECIFIC - HVAC & ROOF
+================================================================================
+HVAC_LIFESPAN_YEARS                        = 12       (Arizona heat reduces lifespan)
+HVAC_REPLACEMENT_COST                      = $8,000.00
+ROOF_LIFESPAN_YEARS_NEW                    = 5        (0-5 years = new)
+ROOF_LIFESPAN_YEARS_GOOD                   = 10       (6-10 years = good)
+ROOF_LIFESPAN_YEARS_FAIR                   = 15       (11-15 years = fair)
+ROOF_LIFESPAN_YEARS_AGING                  = 20       (16-20 years = aging)
+
+ARIZONA-SPECIFIC - POOL & ORIENTATION
+================================================================================
+POOL_EQUIPMENT_LIFESPAN_YEARS              = 8        (shorter in AZ heat)
+POOL_EQUIPMENT_REPLACEMENT_COST            = $5,500.00
+ORIENTATION_WEST_PENALTY                  = -15      (high cooling costs)
+ORIENTATION_NORTH_BONUS                   = 15       (minimal sun exposure)
+
+IMAGE PROCESSING & EXTRACTION
+================================================================================
+IMAGE_MAX_DIMENSION                        = 1024     (max width/height in pixels)
+IMAGE_HASH_SIMILARITY_THRESHOLD            = 8        (Hamming distance for dedup)
+IMAGE_DOWNLOAD_DELAY_MS                    = 500      (milliseconds between downloads)
+IMAGE_MAX_CONCURRENT_DOWNLOADS             = 5
+IMAGE_MAX_CONCURRENT_PROPERTIES            = 3
+IMAGE_MAX_RETRIES                          = 3
+IMAGE_RETRY_BASE_DELAY                     = 1.0      (seconds for exponential backoff)
+IMAGE_DOWNLOAD_TIMEOUT                     = 30       (seconds)
+IMAGE_BROWSER_TIMEOUT                      = 30       (seconds)
+
+STEALTH BROWSER EXTRACTION
+================================================================================
+BROWSER_VIEWPORT_WIDTH                     = 1280     (pixels)
+BROWSER_VIEWPORT_HEIGHT                    = 720      (pixels)
+HUMAN_DELAY_MIN                            = 1.0      (seconds)
+HUMAN_DELAY_MAX                            = 3.0      (seconds)
+CAPTCHA_HOLD_MIN                           = 4.0      (seconds)
+CAPTCHA_HOLD_MAX                           = 7.0      (seconds)
+REQUEST_TIMEOUT                            = 30.0     (seconds)
+
+SCORING WEIGHTS - SECTION A: LOCATION & ENVIRONMENT (230 pts max)
+================================================================================
+SCORE_SECTION_A_SCHOOL_DISTRICT            = 50       (GreatSchools rating)
+SCORE_SECTION_A_QUIETNESS                  = 40       (distance to highways)
+SCORE_SECTION_A_SAFETY                     = 50       (crime, lighting, upkeep)
+SCORE_SECTION_A_SUPERMARKET_PROXIMITY      = 30       (distance to grocery stores)
+SCORE_SECTION_A_PARKS_WALKABILITY          = 30       (parks, sidewalks, trails)
+SCORE_SECTION_A_SUN_ORIENTATION            = 30       (cooling cost impact)
+SCORE_SECTION_A_TOTAL                      = 230
+
+SCORING WEIGHTS - SECTION B: LOT & SYSTEMS (180 pts max)
+================================================================================
+SCORE_SECTION_B_ROOF_CONDITION             = 50       (age and condition)
+SCORE_SECTION_B_BACKYARD_UTILITY           = 40       (usable space)
+SCORE_SECTION_B_PLUMBING_ELECTRICAL        = 40       (year built, upgrades)
+SCORE_SECTION_B_POOL_CONDITION             = 20       (equipment age)
+SCORE_SECTION_B_COST_EFFICIENCY            = 30       (monthly cost estimate)
+SCORE_SECTION_B_TOTAL                      = 180
+
+SCORING WEIGHTS - SECTION C: INTERIOR & FEATURES (190 pts max)
+================================================================================
+SCORE_SECTION_C_KITCHEN_LAYOUT             = 40       (design, appliances)
+SCORE_SECTION_C_MASTER_SUITE               = 40       (size, closets, bathroom)
+SCORE_SECTION_C_NATURAL_LIGHT              = 30       (windows, skylights)
+SCORE_SECTION_C_HIGH_CEILINGS              = 30       (ceiling height)
+SCORE_SECTION_C_FIREPLACE                  = 20       (presence and quality)
+SCORE_SECTION_C_LAUNDRY_AREA               = 20       (location and quality)
+SCORE_SECTION_C_AESTHETICS                 = 10       (curb appeal, finishes)
+SCORE_SECTION_C_TOTAL                      = 190
+
+TOTAL SCORING SYSTEM                       = 600      (A+B+C, validated)
+
+================================================================================
+HOW TO USE
+================================================================================
+
+1. IMPORT IN YOUR CODE:
+   from phx_home_analysis.config.constants import TIER_UNICORN_MIN, INSURANCE_RATE_PER_1K
+
+2. USE IN LOGIC:
+   if property.score > TIER_UNICORN_MIN:
+       return "Unicorn"
+
+3. UPDATE VALUES:
+   Edit src/phx_home_analysis/config/constants.py
+   All modules using the constant automatically get the new value
+
+4. FIND DOCUMENTATION:
+   Open src/phx_home_analysis/config/constants.py and search for constant name
+
+================================================================================
+For detailed information, see:
+- src/phx_home_analysis/config/README.md
+- docs/CONSTANTS_MIGRATION.md
+- CONSTANTS_CLEANUP_SUMMARY.md
+================================================================================

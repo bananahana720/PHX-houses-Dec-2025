@@ -31,17 +31,18 @@ Usage:
 import logging
 import time
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import List, Optional
 
 from ..config import AppConfig
-from ..domain import EnrichmentData, Orientation, Property, SewerType, SolarStatus, Tier
+from ..domain import Property
 from ..repositories import (
     CsvPropertyRepository,
     EnrichmentRepository,
     JsonEnrichmentRepository,
     PropertyRepository,
 )
+from ..services.analysis import PropertyAnalyzer
+from ..services.classification import TierClassifier
+from ..services.enrichment import EnrichmentMerger
 from ..services.kill_switch import KillSwitchFilter
 from ..services.scoring import PropertyScorer
 
@@ -66,10 +67,10 @@ class PipelineResult:
     total_properties: int
     passed_count: int
     failed_count: int
-    unicorns: List[Property] = field(default_factory=list)
-    contenders: List[Property] = field(default_factory=list)
-    passed: List[Property] = field(default_factory=list)
-    failed: List[Property] = field(default_factory=list)
+    unicorns: list[Property] = field(default_factory=list)
+    contenders: list[Property] = field(default_factory=list)
+    passed: list[Property] = field(default_factory=list)
+    failed: list[Property] = field(default_factory=list)
     execution_time_seconds: float = 0.0
 
     def summary_text(self) -> str:
@@ -133,11 +134,14 @@ class AnalysisPipeline:
 
     def __init__(
         self,
-        config: Optional[AppConfig] = None,
-        property_repo: Optional[PropertyRepository] = None,
-        enrichment_repo: Optional[EnrichmentRepository] = None,
-        kill_switch_filter: Optional[KillSwitchFilter] = None,
-        scorer: Optional[PropertyScorer] = None,
+        config: AppConfig | None = None,
+        property_repo: PropertyRepository | None = None,
+        enrichment_repo: EnrichmentRepository | None = None,
+        enrichment_merger: EnrichmentMerger | None = None,
+        kill_switch_filter: KillSwitchFilter | None = None,
+        scorer: PropertyScorer | None = None,
+        tier_classifier: TierClassifier | None = None,
+        property_analyzer: PropertyAnalyzer | None = None,
     ) -> None:
         """Initialize pipeline with configuration and services.
 
@@ -148,8 +152,11 @@ class AnalysisPipeline:
             config: Application configuration. If None, loads default config.
             property_repo: Property data repository. If None, creates CsvPropertyRepository.
             enrichment_repo: Enrichment data repository. If None, creates JsonEnrichmentRepository.
+            enrichment_merger: Enrichment merger service. If None, creates default merger.
             kill_switch_filter: Kill switch filter service. If None, creates default filter.
             scorer: Property scoring service. If None, creates default scorer.
+            tier_classifier: Tier classification service. If None, creates default classifier.
+            property_analyzer: Single property analyzer. If None, creates default analyzer.
         """
         # Load or use provided config
         self._config = config or AppConfig.default()
@@ -164,9 +171,19 @@ class AnalysisPipeline:
             json_file_path=self._config.paths.enrichment_json
         )
 
-        # Initialize services
+        # Initialize core services
+        self._enrichment_merger = enrichment_merger or EnrichmentMerger()
         self._kill_switch_filter = kill_switch_filter or KillSwitchFilter()
         self._scorer = scorer or PropertyScorer()
+        self._tier_classifier = tier_classifier or TierClassifier(self._scorer.thresholds)
+
+        # Initialize property analyzer (orchestrates single-property workflow)
+        self._property_analyzer = property_analyzer or PropertyAnalyzer(
+            enrichment_merger=self._enrichment_merger,
+            kill_switch_filter=self._kill_switch_filter,
+            scorer=self._scorer,
+            tier_classifier=self._tier_classifier,
+        )
 
         logger.info("AnalysisPipeline initialized")
         logger.info(f"Input CSV: {self._config.paths.input_csv}")
@@ -218,7 +235,7 @@ class AnalysisPipeline:
 
         # Stage 3: Merge enrichment into properties
         logger.info("Stage 3/8: Merging enrichment data into properties...")
-        properties = self._merge_enrichment(properties, enrichment_data)
+        properties = self._enrichment_merger.merge_batch(properties, enrichment_data)
         logger.info(f"Merged enrichment for {len(properties)} properties")
 
         # Stage 4: Apply kill-switch filters
@@ -233,7 +250,8 @@ class AnalysisPipeline:
 
         # Stage 6: Classify tiers
         logger.info("Stage 6/8: Classifying properties into tiers...")
-        unicorns, contenders, passed = self._classify_by_tier(scored_properties)
+        self._tier_classifier.classify_batch(scored_properties)
+        unicorns, contenders, passed = self._tier_classifier.group_by_tier(scored_properties)
         logger.info(f"Tiers: {len(unicorns)} unicorns, {len(contenders)} contenders, {len(passed)} passed")
 
         # Stage 7: Sort by score (descending)
@@ -264,7 +282,7 @@ class AnalysisPipeline:
 
         return result
 
-    def analyze_single(self, full_address: str) -> Optional[Property]:
+    def analyze_single(self, full_address: str) -> Property | None:
         """Analyze a specific property by address.
 
         Loads all properties, finds the matching address, enriches it,
@@ -278,171 +296,18 @@ class AnalysisPipeline:
         """
         logger.info(f"Analyzing single property: {full_address}")
 
-        # Load all properties
+        # Load all properties and enrichment data
         properties = self._property_repo.load_all()
-
-        # Find matching property
-        matching_property = None
-        for prop in properties:
-            if prop.full_address.lower() == full_address.lower():
-                matching_property = prop
-                break
-
-        if not matching_property:
-            logger.warning(f"Property not found: {full_address}")
-            return None
-
-        # Enrich property
         enrichment_data = self._enrichment_repo.load_all()
-        enriched = self._merge_enrichment([matching_property], enrichment_data)
 
-        if not enriched:
-            logger.warning(f"Could not enrich property: {full_address}")
-            return None
+        # Delegate to property analyzer
+        return self._property_analyzer.find_and_analyze(
+            full_address=full_address,
+            all_properties=properties,
+            enrichment_lookup=enrichment_data,
+        )
 
-        property_obj = enriched[0]
-
-        # Apply kill switches
-        passed, failures = self._kill_switch_filter.evaluate(property_obj)
-        property_obj.kill_switch_passed = passed
-        property_obj.kill_switch_failures = failures
-
-        # Score if passed
-        if passed:
-            score_breakdown = self._scorer.score(property_obj)
-            property_obj.score_breakdown = score_breakdown
-            property_obj.tier = self._classify_tier(score_breakdown.total_score)
-            logger.info(f"Property scored: {score_breakdown.total_score:.1f} pts ({property_obj.tier.value})")
-        else:
-            logger.info(f"Property failed kill switches: {', '.join(failures)}")
-
-        return property_obj
-
-    def _merge_enrichment(
-        self,
-        properties: List[Property],
-        enrichment_data: dict[str, "EnrichmentData"],
-    ) -> List[Property]:
-        """Merge enrichment data into property objects.
-
-        Matches properties to enrichment data by full_address and updates
-        property attributes with enrichment values.
-
-        Args:
-            properties: List of Property objects from CSV
-            enrichment_data: Dictionary mapping full_address to EnrichmentData objects
-
-        Returns:
-            List of properties with enrichment data merged
-        """
-        for property_obj in properties:
-            # Look up enrichment by full address
-            enrichment = enrichment_data.get(property_obj.full_address)
-
-            if not enrichment:
-                logger.debug(f"No enrichment data for: {property_obj.full_address}")
-                continue
-
-            # Merge enrichment fields into property (use direct attribute access)
-            # County assessor data
-            if enrichment.lot_sqft is not None:
-                property_obj.lot_sqft = enrichment.lot_sqft
-            if enrichment.year_built is not None:
-                property_obj.year_built = enrichment.year_built
-            if enrichment.garage_spaces is not None:
-                property_obj.garage_spaces = enrichment.garage_spaces
-            if enrichment.sewer_type is not None:
-                # Convert string to enum if needed
-                if isinstance(enrichment.sewer_type, str):
-                    try:
-                        property_obj.sewer_type = SewerType(enrichment.sewer_type.lower())
-                    except ValueError:
-                        property_obj.sewer_type = SewerType.UNKNOWN
-                else:
-                    property_obj.sewer_type = enrichment.sewer_type
-            if enrichment.tax_annual is not None:
-                property_obj.tax_annual = enrichment.tax_annual
-
-            # HOA and location data
-            if enrichment.hoa_fee is not None:
-                property_obj.hoa_fee = enrichment.hoa_fee
-            if enrichment.commute_minutes is not None:
-                property_obj.commute_minutes = enrichment.commute_minutes
-            if enrichment.school_district is not None:
-                property_obj.school_district = enrichment.school_district
-            if enrichment.school_rating is not None:
-                property_obj.school_rating = enrichment.school_rating
-            if enrichment.orientation is not None:
-                # Convert string to enum if needed
-                if isinstance(enrichment.orientation, str):
-                    try:
-                        property_obj.orientation = Orientation(enrichment.orientation.lower())
-                    except ValueError:
-                        property_obj.orientation = None
-                else:
-                    property_obj.orientation = enrichment.orientation
-            if enrichment.distance_to_grocery_miles is not None:
-                property_obj.distance_to_grocery_miles = enrichment.distance_to_grocery_miles
-            if enrichment.distance_to_highway_miles is not None:
-                property_obj.distance_to_highway_miles = enrichment.distance_to_highway_miles
-
-            # Arizona-specific features
-            if enrichment.solar_status is not None:
-                # Convert string to enum if needed
-                if isinstance(enrichment.solar_status, str):
-                    try:
-                        property_obj.solar_status = SolarStatus(enrichment.solar_status.lower())
-                    except ValueError:
-                        property_obj.solar_status = None
-                else:
-                    property_obj.solar_status = enrichment.solar_status
-            if enrichment.solar_lease_monthly is not None:
-                property_obj.solar_lease_monthly = enrichment.solar_lease_monthly
-            if enrichment.has_pool is not None:
-                property_obj.has_pool = enrichment.has_pool
-            if enrichment.pool_equipment_age is not None:
-                property_obj.pool_equipment_age = enrichment.pool_equipment_age
-            if enrichment.roof_age is not None:
-                property_obj.roof_age = enrichment.roof_age
-            if enrichment.hvac_age is not None:
-                property_obj.hvac_age = enrichment.hvac_age
-
-        return properties
-
-    def _classify_by_tier(
-        self, properties: List[Property]
-    ) -> tuple[List[Property], List[Property], List[Property]]:
-        """Classify properties into tier categories.
-
-        Args:
-            properties: List of scored properties
-
-        Returns:
-            Tuple of (unicorns, contenders, passed) lists
-        """
-        unicorns = [p for p in properties if p.tier == Tier.UNICORN]
-        contenders = [p for p in properties if p.tier == Tier.CONTENDER]
-        passed = [p for p in properties if p.tier == Tier.PASS]
-
-        return unicorns, contenders, passed
-
-    def _classify_tier(self, score: float) -> Tier:
-        """Classify a score into a tier.
-
-        Args:
-            score: Total score value
-
-        Returns:
-            Tier classification
-        """
-        if score > self._scorer.thresholds.unicorn_min:
-            return Tier.UNICORN
-        elif score >= self._scorer.thresholds.contender_min:
-            return Tier.CONTENDER
-        else:
-            return Tier.PASS
-
-    def _sort_by_score(self, properties: List[Property]) -> List[Property]:
+    def _sort_by_score(self, properties: list[Property]) -> list[Property]:
         """Sort properties by score in descending order.
 
         Args:
@@ -459,8 +324,8 @@ class AnalysisPipeline:
 
     def _save_results(
         self,
-        ranked_properties: List[Property],
-        failed_properties: List[Property],
+        ranked_properties: list[Property],
+        failed_properties: list[Property],
     ) -> None:
         """Save ranked results to CSV file.
 

@@ -25,62 +25,49 @@ The cost estimation service calculates total monthly housing costs including:
 
 **Target Buyer Constraint:** Max $4,000/month total housing cost
 
-## 2025 Arizona Rate Data
+## Centralized Constants
 
-### Mortgage Rates
+**Location:** `src/phx_home_analysis/config/constants.py`
 
-```python
-MORTGAGE_RATE_30YR = 0.0699   # 6.99% (Dec 2024 Freddie Mac PMMS)
-MORTGAGE_RATE_15YR = 0.0625   # 6.25%
-LOAN_TERM_30YR_MONTHS = 360
-DOWN_PAYMENT_DEFAULT = 50000  # $50k first-time buyer assumption
-```
-
-### Property Tax
+All cost estimation rates and thresholds are centralized:
 
 ```python
-PROPERTY_TAX_RATE = 0.0066    # 0.66% effective rate (Maricopa County)
-# Note: Uses Limited Property Value (LPV), not Full Cash Value (FCV)
+from src.phx_home_analysis.config.constants import (
+    # Mortgage & Financing
+    MORTGAGE_RATE_30YR,            # 0.0699 (6.99%)
+    MORTGAGE_TERM_MONTHS,          # 360 (30 years)
+    DOWN_PAYMENT_DEFAULT,          # 50,000.0
+    PMI_THRESHOLD_LTV,             # 0.80
+
+    # Insurance
+    INSURANCE_RATE_PER_1K,         # 6.50 (per $1k value)
+    INSURANCE_MINIMUM_ANNUAL,      # 800.0
+
+    # Property Tax
+    PROPERTY_TAX_RATE,             # 0.0066 (0.66%)
+
+    # Utilities
+    UTILITY_RATE_PER_SQFT,         # 0.08 ($/sqft/month)
+    UTILITY_MINIMUM_MONTHLY,       # 120.0
+    UTILITY_MAXIMUM_MONTHLY,       # 500.0
+
+    # Pool Costs
+    POOL_SERVICE_MONTHLY,          # 125.0
+    POOL_ENERGY_MONTHLY,           # 75.0
+    POOL_TOTAL_MONTHLY,            # 200.0
+
+    # Maintenance Reserve
+    MAINTENANCE_RESERVE_ANNUAL_RATE,  # 0.01 (1%)
+    MAINTENANCE_MINIMUM_MONTHLY,      # 200.0
+
+    # Solar Leases
+    SOLAR_LEASE_TYPICAL_MIN,       # 100.0
+    SOLAR_LEASE_TYPICAL_MAX,       # 200.0
+    SOLAR_LEASE_DEFAULT,           # 150.0
+)
 ```
 
-### Insurance
-
-```python
-INSURANCE_ANNUAL_PER_1K = 6.50  # $6.50 per $1k home value (AZ avg)
-INSURANCE_MINIMUM_ANNUAL = 800  # Base coverage floor
-```
-
-### Utilities (Arizona-Specific)
-
-```python
-UTILITY_RATE_PER_SQFT = 0.10  # $0.10/sqft/month average
-UTILITY_MINIMUM_MONTHLY = 150  # Small home baseline
-UTILITY_MAXIMUM_MONTHLY = 600  # Large home cap
-# AZ summer electric can be 2-3x higher (June-Sept A/C usage)
-```
-
-### Pool Costs
-
-```python
-POOL_BASE_MAINTENANCE = 125   # Monthly service (cleaning, chemicals)
-POOL_ENERGY_MONTHLY = 75      # Monthly pump/heater energy
-POOL_TOTAL_MONTHLY = 200      # Combined pool burden
-```
-
-### Maintenance Reserve
-
-```python
-MAINTENANCE_RESERVE_ANNUAL_RATE = 0.01  # 1% of home value annually
-MAINTENANCE_MINIMUM_MONTHLY = 200       # Floor for lower-value homes
-```
-
-### Solar Lease
-
-```python
-SOLAR_LEASE_TYPICAL_MIN = 100   # Low end monthly
-SOLAR_LEASE_TYPICAL_MAX = 200   # High end monthly
-SOLAR_LEASE_DEFAULT = 150       # When amount unknown
-```
+**Note:** These constants are the **single source of truth** - both CLI and service layers import from here. Update all rates in `src/phx_home_analysis/config/constants.py` only.
 
 ## Using the Cost Estimator
 

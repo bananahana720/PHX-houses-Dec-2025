@@ -32,11 +32,8 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
-
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Requires: uv pip install -e . (though this script has no package imports currently)
 
 
 @dataclass
@@ -45,11 +42,11 @@ class EstimationResult:
 
     full_address: str
     year_built: int
-    roof_age: Optional[int]
+    roof_age: int | None
     roof_confidence: str
-    hvac_age: Optional[int]
+    hvac_age: int | None
     hvac_confidence: str
-    pool_equipment_age: Optional[int]
+    pool_equipment_age: int | None
     pool_confidence: str
     has_pool: bool
 
@@ -103,7 +100,7 @@ def estimate_hvac_age(year_built: int) -> tuple[int, str]:
         return (property_age % 12, "estimated_replacement_cycle")
 
 
-def estimate_pool_equipment_age(year_built: int, has_pool: bool) -> tuple[Optional[int], str]:
+def estimate_pool_equipment_age(year_built: int, has_pool: bool) -> tuple[int | None, str]:
     """Estimate pool equipment age based on property year built.
 
     Pool equipment in Arizona lasts approximately 8-12 years due to intense
@@ -143,7 +140,7 @@ def load_enrichment_data(path: Path) -> list[dict]:
     if not path.exists():
         raise FileNotFoundError(f"Enrichment data file not found: {path}")
 
-    with open(path, "r") as f:
+    with open(path) as f:
         return json.load(f)
 
 
@@ -169,7 +166,7 @@ def load_research_tasks(path: Path) -> dict:
             "last_updated": datetime.now(timezone.utc).isoformat(),
         }
 
-    with open(path, "r") as f:
+    with open(path) as f:
         return json.load(f)
 
 
@@ -190,7 +187,7 @@ def save_enrichment_data(data: list[dict], path: Path) -> None:
             json.dump(data, f, indent=2)
         # Atomic rename
         temp_path.replace(path)
-    except Exception as e:
+    except Exception:
         # Cleanup temp file on error
         if temp_path.exists():
             temp_path.unlink()
@@ -213,7 +210,7 @@ def save_research_tasks(data: dict, path: Path) -> None:
         with open(temp_path, "w") as f:
             json.dump(data, f, indent=2)
         temp_path.replace(path)
-    except Exception as e:
+    except Exception:
         if temp_path.exists():
             temp_path.unlink()
         raise
@@ -243,7 +240,7 @@ def find_properties_needing_estimates(
     return needs_estimate
 
 
-def estimate_property_ages(enrichment_data: list[dict], property_address: Optional[str] = None) -> list[EstimationResult]:
+def estimate_property_ages(enrichment_data: list[dict], property_address: str | None = None) -> list[EstimationResult]:
     """Estimate ages for properties.
 
     Args:
@@ -404,7 +401,7 @@ def print_estimations(results: list[EstimationResult]) -> None:
         if result.has_pool:
             print(f"   Pool Equipment: {result.pool_equipment_age} years ({result.pool_confidence})")
         else:
-            print(f"   Pool Equipment: N/A (no pool)")
+            print("   Pool Equipment: N/A (no pool)")
 
         print()
 

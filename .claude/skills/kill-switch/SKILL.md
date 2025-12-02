@@ -131,6 +131,50 @@ def determine_verdict(has_hard_failure: bool, severity_score: float) -> str:
 - SOFT: Lot size fails (6,500 < 7,000), severity = **1.0**
 - **Verdict: PASS** (1.0 < 1.5 warning threshold)
 
+## Centralized Constants
+
+**Primary Location:** `src/phx_home_analysis/config/constants.py`
+**Secondary Location:** `src/phx_home_analysis/services/kill_switch/constants.py`
+
+All severity thresholds and weights are centralized in the config module and re-exported via the service layer:
+
+```python
+from src.phx_home_analysis.config.constants import (
+    SEVERITY_FAIL_THRESHOLD,        # 3.0
+    SEVERITY_WARNING_THRESHOLD,     # 1.5
+    SEVERITY_WEIGHT_SEWER,          # 2.5
+    SEVERITY_WEIGHT_YEAR_BUILT,     # 2.0
+    SEVERITY_WEIGHT_GARAGE,         # 1.5
+    SEVERITY_WEIGHT_LOT_SIZE,       # 1.0
+)
+
+from src.phx_home_analysis.services.kill_switch.constants import (
+    KillSwitchVerdict,              # PASS, WARNING, FAIL
+    SOFT_SEVERITY_WEIGHTS,          # dict: {"sewer": 2.5, "garage": 1.5, ...}
+    HARD_CRITERIA,                  # set: {"hoa", "beds", "baths"}
+)
+```
+
+**Note:** These constants are the **single source of truth** - both CLI (`scripts/lib/kill_switch.py`) and service layers import from here.
+
+## Architecture (Consolidated)
+
+**Canonical Source:** `src/phx_home_analysis/config/constants.py`
+- Contains: Severity thresholds and weights (imported by all layers)
+
+**Service Wrapper:** `src/phx_home_analysis/services/kill_switch/constants.py`
+- Re-exports config constants + `KillSwitchVerdict`, `SOFT_SEVERITY_WEIGHTS`, `HARD_CRITERIA`
+- Provides both scripts/lib and service layer naming conventions
+
+**Service Layer:** `src/phx_home_analysis/services/kill_switch/filter.py`
+- `KillSwitchFilter` class for programmatic use
+
+**CLI Layer:** `scripts/lib/kill_switch.py`
+- Thin facade importing from service constants
+- `evaluate_kill_switches()` for script usage
+
+**Note:** Both layers now import from shared constants (DRY consolidated)
+
 ## Canonical Implementation
 
 Use the project's canonical kill-switch module:

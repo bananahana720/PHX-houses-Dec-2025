@@ -157,10 +157,21 @@ hashlib.md5(address.lower().encode()).hexdigest()[:8]
 
 ## File Organization
 
-- Artifacts → `docs/artifacts/`
-- Scripts → `scripts/`
-- Documentation → `docs/`
-- Images → `data/property_images/processed/{hash}/`
+**Root Directory Policy:** Keep root CLEAN - only standard config files allowed.
+
+| File Type | Destination | Example |
+|-----------|-------------|---------|
+| Python scripts | `scripts/` | `extract_*.py`, `*_analyzer.py` |
+| Test files | `tests/` | `test_*.py` |
+| Benchmarks | `tests/benchmarks/` | `test_*_performance.py` |
+| Implementation notes | `docs/artifacts/implementation-notes/` | `*_SUMMARY.md` |
+| Reference docs | `docs/` | `*_REFERENCE.md`, `CHANGELOG` |
+| Data files | `data/` | `*.csv`, `*.json` |
+| Temp/log files | Delete or `TRASH/` | `*.log`, `tmp_*` |
+
+**Never in root:** `*.py`, `*_SUMMARY.md`, `*.log`, `tmp_*`, data files
+
+**See:** `.claude/skills/file-organization/SKILL.md` for full rules
 
 ---
 

@@ -151,6 +151,24 @@ aging roof and unknown HVAC status.
 - Request HVAC service records
 ```
 
+## Enrichment Merger Service
+
+**Location:** `src/phx_home_analysis/services/enrichment/merger.py`
+
+```python
+from phx_home_analysis.services.enrichment import EnrichmentMerger
+
+merger = EnrichmentMerger()
+property = merger.merge(property, enrichment_data)
+```
+
+**Handles:**
+- County assessor data (lot size, year built, garage)
+- HOA and tax information
+- Location data (schools, distances, commute)
+- Arizona-specific features (solar, pool, HVAC, roof)
+- Type-safe enum conversions
+
 ## Data Sources for Deal Sheet
 
 ```python

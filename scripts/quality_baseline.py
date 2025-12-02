@@ -25,15 +25,12 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
+# Requires: uv pip install -e .
 from phx_home_analysis.services.quality import (
-    QualityMetricsCalculator,
     LineageTracker,
-    QualityScore,
+    QualityMetricsCalculator,
 )
 
 # Default paths
@@ -150,7 +147,7 @@ def load_confidences(data_dir: Path) -> dict[str, dict[str, float]]:
 
 def measure_baseline(
     data_dir: Path,
-    logger: Optional[logging.Logger] = None,
+    logger: logging.Logger | None = None,
 ) -> dict[str, Any]:
     """Measure current quality metrics across all properties.
 
@@ -217,7 +214,7 @@ def measure_baseline(
 def save_baseline(
     metrics: dict[str, Any],
     output_path: Path,
-    logger: Optional[logging.Logger] = None,
+    logger: logging.Logger | None = None,
 ) -> None:
     """Save baseline metrics to JSON file.
 
@@ -265,7 +262,7 @@ def load_baseline(baseline_path: Path) -> dict[str, Any]:
 def compare_to_baseline(
     current: dict[str, Any],
     baseline_path: Path,
-    logger: Optional[logging.Logger] = None,
+    logger: logging.Logger | None = None,
 ) -> dict[str, Any]:
     """Compare current metrics to saved baseline.
 
@@ -375,7 +372,7 @@ def compare_to_baseline(
 def display_metrics(
     metrics: dict[str, Any],
     verbose: bool = False,
-    logger: Optional[logging.Logger] = None,
+    logger: logging.Logger | None = None,
 ) -> None:
     """Display current quality metrics in a formatted report.
 

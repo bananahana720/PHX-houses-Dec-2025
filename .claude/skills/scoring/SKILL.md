@@ -115,6 +115,74 @@ cost_efficiency_points = base_score * 4  # Multiplier of 4x
 | Laundry | 20 | 2x | `laundry_area_score` (1-10) |
 | Aesthetics | 10 | 1x | `aesthetics_score` (1-10) |
 
+## Tier Classification Service
+
+**Location:** `src/phx_home_analysis/services/classification/tier_classifier.py`
+
+```python
+from phx_home_analysis.services.classification import TierClassifier
+
+classifier = TierClassifier()
+tier = classifier.classify(property)  # Returns Tier enum
+properties = classifier.classify_batch(properties)  # Batch classification
+```
+
+**Thresholds:** (from `config/constants.py`)
+- UNICORN: >480 pts
+- CONTENDER: 360-480 pts
+- PASS: <360 pts
+
+## Centralized Constants
+
+**Location:** `src/phx_home_analysis/config/constants.py`
+
+All scoring thresholds and weights are centralized:
+
+```python
+from src.phx_home_analysis.config.constants import (
+    TIER_UNICORN_MIN,      # 480
+    TIER_CONTENDER_MIN,    # 360
+    MAX_POSSIBLE_SCORE,    # 600
+
+    # Section totals
+    SCORE_SECTION_A_TOTAL,         # 230 (Location)
+    SCORE_SECTION_B_TOTAL,         # 180 (Lot/Systems)
+    SCORE_SECTION_C_TOTAL,         # 190 (Interior)
+)
+```
+
+Individual criterion maximums are also defined:
+
+```python
+from src.phx_home_analysis.config.constants import (
+    # Section A: Location (230 pts)
+    SCORE_SECTION_A_SCHOOL_DISTRICT,        # 50
+    SCORE_SECTION_A_QUIETNESS,              # 40
+    SCORE_SECTION_A_SAFETY,                 # 50
+    SCORE_SECTION_A_SUPERMARKET_PROXIMITY,  # 30
+    SCORE_SECTION_A_PARKS_WALKABILITY,      # 30
+    SCORE_SECTION_A_SUN_ORIENTATION,        # 30
+
+    # Section B: Lot/Systems (180 pts)
+    SCORE_SECTION_B_ROOF_CONDITION,         # 50
+    SCORE_SECTION_B_BACKYARD_UTILITY,       # 40
+    SCORE_SECTION_B_PLUMBING_ELECTRICAL,    # 40
+    SCORE_SECTION_B_POOL_CONDITION,         # 20
+    SCORE_SECTION_B_COST_EFFICIENCY,        # 30
+
+    # Section C: Interior (190 pts)
+    SCORE_SECTION_C_KITCHEN_LAYOUT,         # 40
+    SCORE_SECTION_C_MASTER_SUITE,           # 40
+    SCORE_SECTION_C_NATURAL_LIGHT,          # 30
+    SCORE_SECTION_C_HIGH_CEILINGS,          # 30
+    SCORE_SECTION_C_FIREPLACE,              # 20
+    SCORE_SECTION_C_LAUNDRY_AREA,           # 20
+    SCORE_SECTION_C_AESTHETICS,             # 10
+)
+```
+
+**Note:** These constants are the **single source of truth** - both CLI and service layers import from here.
+
 ## Using the Canonical Scorer
 
 ```python

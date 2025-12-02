@@ -11,24 +11,42 @@ Data sources:
 - Pool costs: Local pool service industry averages
 
 Last updated: December 2024
+
+Note: Core rate constants are defined in config/constants.py
+This module primarily provides the RateConfig dataclass for rate management.
 """
 
 from dataclasses import dataclass
 from typing import Final
 
+from ...config.constants import (
+    INSURANCE_RATE_PER_1K,
+    MAINTENANCE_MINIMUM_MONTHLY,
+    MAINTENANCE_RESERVE_ANNUAL_RATE,
+    MAINTENANCE_RESERVE_MONTHLY_RATE,
+    MORTGAGE_RATE_30YR,
+    MORTGAGE_TERM_MONTHS,
+    POOL_ENERGY_MONTHLY,
+    POOL_SERVICE_MONTHLY,
+    PROPERTY_TAX_RATE,
+    SOLAR_LEASE_DEFAULT,
+    TRASH_MONTHLY,
+    UTILITY_MAXIMUM_MONTHLY,
+    UTILITY_MINIMUM_MONTHLY,
+    UTILITY_RATE_PER_SQFT,
+    WATER_MONTHLY_ESTIMATE,
+)
 
 # =============================================================================
 # MORTGAGE RATES AND TERMS
 # =============================================================================
-
-# 30-year fixed mortgage rate (6.99% as of Dec 2024)
-MORTGAGE_RATE_30YR: Final[float] = 0.0699
+# All mortgage constants are imported from config.constants
+# See constants.py for documentation and data sources
 
 # 15-year fixed mortgage rate (for reference)
 MORTGAGE_RATE_15YR: Final[float] = 0.0625
 
-# Standard loan terms in months
-LOAN_TERM_30YR_MONTHS: Final[int] = 360
+# 15-year mortgage term in months
 LOAN_TERM_15YR_MONTHS: Final[int] = 180
 
 # Default down payment for first-time homebuyer analysis
@@ -40,50 +58,49 @@ PMI_THRESHOLD_LTV: Final[float] = 0.80
 # Annual PMI rate (percentage of loan amount)
 PMI_ANNUAL_RATE: Final[float] = 0.005  # 0.5% of loan
 
+# Re-export from constants for backward compatibility
+MORTGAGE_RATE_30YR = MORTGAGE_RATE_30YR  # noqa: F811
+LOAN_TERM_30YR_MONTHS = MORTGAGE_TERM_MONTHS  # noqa: F811
+
 
 # =============================================================================
 # INSURANCE RATES
 # =============================================================================
-
-# Annual homeowner's insurance per $1,000 of home value
-# Arizona average: ~$6.50 per $1k (varies by coverage and location)
-INSURANCE_ANNUAL_PER_1K: Final[float] = 6.50
+# Insurance constants are imported from config.constants
+# See constants.py for documentation
 
 # Minimum annual insurance (base coverage)
 INSURANCE_MINIMUM_ANNUAL: Final[float] = 800.0
+
+# Re-export from constants for backward compatibility
+INSURANCE_ANNUAL_PER_1K = INSURANCE_RATE_PER_1K  # noqa: F811
 
 
 # =============================================================================
 # PROPERTY TAX RATES
 # =============================================================================
-
-# Effective property tax rate in Maricopa County
-# Based on Limited Property Value (LPV), not Full Cash Value (FCV)
-# Actual rate varies by municipality and special districts
-PROPERTY_TAX_RATE: Final[float] = 0.0066  # ~0.66% effective rate
-
+# Property tax rate is imported from config.constants
+# See constants.py for documentation
 # Alternative: Use actual tax_annual from county assessor when available
 
 
 # =============================================================================
 # UTILITY RATES (Arizona-specific)
 # =============================================================================
-
-# Monthly utility cost per square foot (AZ average)
-# Electric and gas only (water and trash are separate line items)
-# AZ has higher electric costs due to A/C usage (June-Sept)
-UTILITY_RATE_PER_SQFT: Final[float] = 0.08  # ~$0.08/sqft/month (electric/gas only)
-
-# Minimum monthly utilities (small home baseline)
-UTILITY_MINIMUM_MONTHLY: Final[float] = 120.0  # Electric/gas only
+# Utility rates are imported from config.constants
+# See constants.py for documentation
 
 # Maximum monthly utilities cap (very large homes)
-UTILITY_MAXIMUM_MONTHLY: Final[float] = 500.0  # Electric/gas only
+UTILITY_MAXIMUM_MONTHLY: Final[float] = 500.0
+
+# Re-export from constants for backward compatibility
+UTILITY_RATE_PER_SQFT = UTILITY_RATE_PER_SQFT  # noqa: F811
 
 
 # =============================================================================
 # WATER COSTS (Arizona-specific)
 # =============================================================================
+# Water constants defined inline (not in config.constants)
 
 # City water rates (Maricopa County average)
 # Base service charge + usage-based
@@ -91,61 +108,55 @@ WATER_MONTHLY_BASE: Final[float] = 30.0  # Base service charge
 WATER_RATE_PER_KGAL: Final[float] = 5.0  # Per 1,000 gallons
 WATER_AVG_USAGE_KGAL: Final[float] = 12.0  # Average AZ household (12k gal/mo)
 
-# Calculated monthly water estimate: ~$90/mo
-WATER_MONTHLY_ESTIMATE: Final[float] = (
-    WATER_MONTHLY_BASE + (WATER_RATE_PER_KGAL * WATER_AVG_USAGE_KGAL)
-)
+# Re-export from constants for backward compatibility
+WATER_MONTHLY_ESTIMATE = WATER_MONTHLY_ESTIMATE  # noqa: F811
 
 
 # =============================================================================
 # TRASH COSTS (Arizona-specific)
 # =============================================================================
-
-# City trash/recycling pickup (Maricopa County cities average)
-TRASH_MONTHLY: Final[float] = 40.0  # Average for Phoenix metro cities
+# Trash cost is imported from config.constants
+# See constants.py for documentation
 
 
 # =============================================================================
 # POOL COSTS (Arizona-specific)
 # =============================================================================
-
-# Monthly pool service (cleaning, chemical balance)
-POOL_BASE_MAINTENANCE: Final[float] = 125.0  # $125/mo average
-
-# Monthly pool energy cost (pump, heater, cleaning system)
-POOL_ENERGY_MONTHLY: Final[float] = 75.0  # $75/mo average
+# Pool costs are imported from config.constants
+# See constants.py for documentation
 
 # Combined monthly pool cost
-POOL_TOTAL_MONTHLY: Final[float] = POOL_BASE_MAINTENANCE + POOL_ENERGY_MONTHLY
+POOL_TOTAL_MONTHLY: Final[float] = POOL_SERVICE_MONTHLY + POOL_ENERGY_MONTHLY
 
-# Seasonal variation note: Summer pool costs can be 20-30% higher
+# Re-export from constants for backward compatibility
+POOL_BASE_MAINTENANCE = POOL_SERVICE_MONTHLY  # noqa: F811
 
 
 # =============================================================================
 # MAINTENANCE RESERVES
 # =============================================================================
+# Maintenance constants are imported from config.constants
+# See constants.py for documentation
 
-# Annual maintenance as percentage of home value
-# Rule of thumb: 1% annually for maintenance/repairs
-MAINTENANCE_RESERVE_ANNUAL_RATE: Final[float] = 0.01  # 1% annually
+# Monthly maintenance reserve rate (derived from annual rate)
+MAINTENANCE_RESERVE_RATE: Final[float] = MAINTENANCE_RESERVE_MONTHLY_RATE  # noqa: F811
 
-# Monthly maintenance reserve rate (1% / 12 months)
-MAINTENANCE_RESERVE_RATE: Final[float] = MAINTENANCE_RESERVE_ANNUAL_RATE / 12
-
-# Minimum monthly maintenance reserve
-MAINTENANCE_MINIMUM_MONTHLY: Final[float] = 200.0
+# Re-export from constants for backward compatibility
+MAINTENANCE_RESERVE_ANNUAL_RATE = MAINTENANCE_RESERVE_ANNUAL_RATE  # noqa: F811
 
 
 # =============================================================================
 # SOLAR LEASE DEFAULTS
 # =============================================================================
+# Default solar lease payment is imported from config.constants
+# See constants.py for documentation
 
 # Typical solar lease monthly payment range in AZ
 SOLAR_LEASE_TYPICAL_MIN: Final[float] = 100.0
 SOLAR_LEASE_TYPICAL_MAX: Final[float] = 200.0
 
-# Default solar lease payment when not specified
-SOLAR_LEASE_DEFAULT: Final[float] = 150.0
+# Re-export from constants for backward compatibility
+SOLAR_LEASE_DEFAULT = SOLAR_LEASE_DEFAULT  # noqa: F811
 
 
 # =============================================================================

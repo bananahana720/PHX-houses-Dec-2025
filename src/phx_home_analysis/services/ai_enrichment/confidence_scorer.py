@@ -14,8 +14,18 @@ Source Reliability:
 - AI Inference: Variable based on context available
 """
 
-from typing import Dict, List
 
+from ...config.constants import (
+    CONFIDENCE_HIGH_THRESHOLD,
+    DATA_CONFIDENCE_ASSESSOR_API,
+    DATA_CONFIDENCE_MANUAL,
+    DATA_CONFIDENCE_WEB_SCRAPE,
+    FIELD_CONFIDENCE_HAS_POOL,
+    FIELD_CONFIDENCE_LOT_SQFT,
+    FIELD_CONFIDENCE_ORIENTATION,
+    FIELD_CONFIDENCE_SQFT,
+    FIELD_CONFIDENCE_YEAR_BUILT,
+)
 from .models import ConfidenceLevel, FieldInference
 
 
@@ -46,23 +56,27 @@ class ConfidenceScorer:
 
     # Base confidence weights for each field type
     # Reflects how accurately each field can typically be inferred
-    FIELD_CONFIDENCE_WEIGHTS: Dict[str, float] = {
-        "beds": 0.9,           # Usually accurate from listings
-        "baths": 0.9,          # Usually accurate from listings
-        "sqft": 0.85,          # Sometimes varies between sources
-        "lot_sqft": 0.95,      # Very accurate from assessor
-        "year_built": 0.95,    # Very accurate from assessor
-        "garage_spaces": 0.7,  # Can be ambiguous (carport vs garage)
-        "sewer_type": 0.6,     # Often needs manual verification
-        "has_pool": 0.8,       # Usually visible in photos/listings
+    # See config.constants for documentation on field weights
+    FIELD_CONFIDENCE_WEIGHTS: dict[str, float] = {
+        "beds": 0.9,                                          # Usually accurate from listings
+        "baths": 0.9,                                         # Usually accurate from listings
+        "sqft": FIELD_CONFIDENCE_SQFT,                        # Sometimes varies between sources
+        "lot_sqft": FIELD_CONFIDENCE_LOT_SQFT,                # Very accurate from assessor
+        "year_built": FIELD_CONFIDENCE_YEAR_BUILT,            # Very accurate from assessor
+        "garage_spaces": 0.7,                                 # Can be ambiguous (carport vs garage)
+        "sewer_type": 0.6,                                    # Often needs manual verification
+        "has_pool": FIELD_CONFIDENCE_HAS_POOL,                # Usually visible in photos/listings
+        "orientation": FIELD_CONFIDENCE_ORIENTATION,          # Satellite imagery + manual
     }
 
     # Reliability multipliers for different data sources
-    SOURCE_RELIABILITY: Dict[str, float] = {
-        "assessor_api": 1.0,    # Government records, highest trust
-        "web_scrape": 0.85,     # Listing data, generally reliable
-        "ai_inference": 0.6,    # AI guesses, lower trust
-        "ai_pending": 0.0,      # Not yet processed
+    # See config.constants for documentation on data source confidence
+    SOURCE_RELIABILITY: dict[str, float] = {
+        "assessor_api": DATA_CONFIDENCE_ASSESSOR_API,         # Government records, highest trust
+        "web_scrape": DATA_CONFIDENCE_WEB_SCRAPE,             # Listing data, generally reliable
+        "ai_inference": 0.6,                                  # AI guesses, lower trust
+        "ai_pending": 0.0,                                    # Not yet processed
+        "manual": DATA_CONFIDENCE_MANUAL,                     # Human inspection
     }
 
     def score_inference(
@@ -145,8 +159,8 @@ class ConfidenceScorer:
 
     def score_multiple_inferences(
         self,
-        inferences: List[FieldInference],
-    ) -> List[FieldInference]:
+        inferences: list[FieldInference],
+    ) -> list[FieldInference]:
         """Score multiple inferences and return updated versions.
 
         Args:
@@ -159,7 +173,7 @@ class ConfidenceScorer:
 
     def calculate_aggregate_confidence(
         self,
-        inferences: List[FieldInference],
+        inferences: list[FieldInference],
     ) -> float:
         """Calculate aggregate confidence across multiple inferences.
 
@@ -206,14 +220,14 @@ class ConfidenceScorer:
 
     def get_high_confidence_inferences(
         self,
-        inferences: List[FieldInference],
-        threshold: float = 0.8,
-    ) -> List[FieldInference]:
+        inferences: list[FieldInference],
+        threshold: float = CONFIDENCE_HIGH_THRESHOLD,
+    ) -> list[FieldInference]:
         """Filter inferences to only those with high confidence.
 
         Args:
             inferences: List of FieldInference objects
-            threshold: Minimum confidence threshold (default 0.8 for HIGH)
+            threshold: Minimum confidence threshold (default CONFIDENCE_HIGH_THRESHOLD)
 
         Returns:
             List of FieldInference objects meeting the threshold

@@ -241,6 +241,22 @@
             color: #1e40af;
         }
 
+        .metric-note {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .assessment-notes {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8fafc;
+            border-left: 3px solid #3b82f6;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #475569;
+        }
+
         .features {
             display: flex;
             gap: 20px;
@@ -439,6 +455,15 @@
     <a href="index.html" class="back-link no-print">← Back to All Properties</a>
 
     
+    <div class="failure-notice">
+        <h3>⚠️ KILL SWITCH FAILURES</h3>
+        <ul>
+        
+            <li>N/A</li>
+        
+        </ul>
+    </div>
+    
 
     
 
@@ -446,8 +471,8 @@
         <h1>4732 W Davis Rd, Glendale, AZ 85306</h1>
         <div class="header-meta">
             <span class="price">$475,000</span>
-            <span class="score">417.5/600 pts</span>
-            <span class="tier-badge tier-contender">Contender</span>
+            <span class="score">377.0/600 pts</span>
+            <span class="tier-badge tier-contender">contender</span>
             <span style="color: #6b7280;">Rank #3</span>
         </div>
     </div>
@@ -611,41 +636,87 @@
         <div class="scorecard">
             <div class="score-row">
                 <div class="score-label">Location:</div>
-                <div class="score-value">159.5/230</div>
+                <div class="score-value">156.5/230</div>
                 <div class="score-bar-container">
-                    <div class="score-bar" style="width: 69.3%">
-                        <span class="score-bar-percentage">69%</span>
-                    </div>
-                </div>
-            </div>
-            <div class="score-row">
-                <div class="score-label">Systems:</div>
-                <div class="score-value">128.0/180</div>
-                <div class="score-bar-container">
-                    <div class="score-bar" style="width: 71.1%">
-                        <span class="score-bar-percentage">71%</span>
-                    </div>
-                </div>
-            </div>
-            <div class="score-row">
-                <div class="score-label">Interior:</div>
-                <div class="score-value">130.0/190</div>
-                <div class="score-bar-container">
-                    <div class="score-bar" style="width: 68.4%">
+                    <div class="score-bar" style="width: 68.0%">
                         <span class="score-bar-percentage">68%</span>
                     </div>
                 </div>
             </div>
             <div class="score-row">
-                <div class="score-label">TOTAL:</div>
-                <div class="score-value">417.5/600</div>
+                <div class="score-label">Systems:</div>
+                <div class="score-value">126.4/180</div>
                 <div class="score-bar-container">
-                    <div class="score-bar" style="width: 69.6%">
+                    <div class="score-bar" style="width: 70.2%">
                         <span class="score-bar-percentage">70%</span>
                     </div>
                 </div>
             </div>
+            <div class="score-row">
+                <div class="score-label">Interior:</div>
+                <div class="score-value">95.0/190</div>
+                <div class="score-bar-container">
+                    <div class="score-bar" style="width: 50.0%">
+                        <span class="score-bar-percentage">50%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="score-row">
+                <div class="score-label">TOTAL:</div>
+                <div class="score-value">377.0/600</div>
+                <div class="score-bar-container">
+                    <div class="score-bar" style="width: 62.8%">
+                        <span class="score-bar-percentage">63%</span>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <div class="section">
+        <h2>Interior Assessment (Section C)</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Kitchen</div>
+                <div class="metric-value">7.0/10</div>
+                <div class="metric-note">(40 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Master Suite</div>
+                <div class="metric-value">5.0/10</div>
+                <div class="metric-note">(40 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Natural Light</div>
+                <div class="metric-value">6.0/10</div>
+                <div class="metric-note">(30 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Ceilings</div>
+                <div class="metric-value">7.0/10</div>
+                <div class="metric-note">(30 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Fireplace</div>
+                <div class="metric-value">Yes</div>
+                <div class="metric-note">(20 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Laundry</div>
+                <div class="metric-value">5.0/10</div>
+                <div class="metric-note">(20 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Aesthetics</div>
+                <div class="metric-value">7.0/10</div>
+                <div class="metric-note">(10 pts max)</div>
+            </div>
+        </div>
+        
+        <div class="assessment-notes">
+            <strong>Assessment Notes:</strong> N/A
+        </div>
+        
     </div>
 
     <div class="section">

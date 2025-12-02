@@ -18,20 +18,22 @@ Sources:
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
+
+from ...config.constants import CONFIDENCE_HIGH_THRESHOLD
 
 
 class ConfidenceLevel(Enum):
     """Confidence level categorization for inferred values.
 
-    Thresholds:
-    - HIGH: score >= 0.8
-    - MEDIUM: 0.5 <= score < 0.8
+    Thresholds (defined in config.constants):
+    - HIGH: score >= CONFIDENCE_HIGH_THRESHOLD (0.8)
+    - MEDIUM: 0.5 <= score < CONFIDENCE_HIGH_THRESHOLD
     - LOW: score < 0.5
     """
-    HIGH = "high"      # >0.8 confidence
-    MEDIUM = "medium"  # 0.5-0.8
-    LOW = "low"        # <0.5
+    HIGH = "high"      # >= CONFIDENCE_HIGH_THRESHOLD confidence
+    MEDIUM = "medium"  # 0.5 - CONFIDENCE_HIGH_THRESHOLD
+    LOW = "low"        # < 0.5
 
     @classmethod
     def from_score(cls, score: float) -> "ConfidenceLevel":
@@ -51,7 +53,7 @@ class ConfidenceLevel(Enum):
             >>> ConfidenceLevel.from_score(0.3)
             <ConfidenceLevel.LOW: 'low'>
         """
-        if score >= 0.8:
+        if score >= CONFIDENCE_HIGH_THRESHOLD:
             return cls.HIGH
         elif score >= 0.5:
             return cls.MEDIUM
@@ -79,7 +81,7 @@ class FieldInference:
     confidence: float
     confidence_level: ConfidenceLevel
     source: str  # "web_scrape", "assessor_api", "ai_inference", "ai_pending"
-    reasoning: Optional[str] = None
+    reasoning: str | None = None
 
     def __post_init__(self) -> None:
         """Validate field inference data after initialization."""

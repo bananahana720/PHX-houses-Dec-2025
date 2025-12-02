@@ -5,25 +5,22 @@ Shows how to use HtmlReportGenerator, CsvReporter, and ConsoleReporter
 with sample property data.
 """
 
-import sys
 from pathlib import Path
 
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
+# Requires: uv pip install -e .
 from phx_home_analysis.domain.entities import Property
-from phx_home_analysis.domain.enums import Tier, RiskLevel, SewerType, SolarStatus, Orientation
+from phx_home_analysis.domain.enums import Orientation, RiskLevel, SewerType, SolarStatus, Tier
 from phx_home_analysis.domain.value_objects import (
-    ScoreBreakdown,
-    Score,
-    RiskAssessment,
     RenovationEstimate,
+    RiskAssessment,
+    Score,
+    ScoreBreakdown,
 )
 from phx_home_analysis.reporters import (
-    HtmlReportGenerator,
-    CsvReporter,
-    RiskCsvReporter,
     ConsoleReporter,
+    CsvReporter,
+    HtmlReportGenerator,
+    RiskCsvReporter,
 )
 
 

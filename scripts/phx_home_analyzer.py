@@ -10,7 +10,6 @@ Usage:
 
 import csv
 import json
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -18,14 +17,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     pass
 
-# Add project root to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-sys.path.insert(0, str(Path(__file__).parent))
+# Requires: uv pip install -e .
+from lib.kill_switch import apply_kill_switch
 
-from lib.kill_switch import apply_kill_switch  # noqa: E402
-
-from src.phx_home_analysis.domain.value_objects import ScoreBreakdown  # noqa: E402
-from src.phx_home_analysis.services.scoring import PropertyScorer  # noqa: E402
+from phx_home_analysis.domain.value_objects import ScoreBreakdown
+from phx_home_analysis.services.scoring import PropertyScorer
 
 # =============================================================================
 # DATA MODELS
@@ -133,8 +129,8 @@ def _convert_to_domain_property(prop: Property):
     attribute names. This adapter creates a minimal object with the
     required attributes.
     """
-    from src.phx_home_analysis.domain.entities import Property as DomainProperty
-    from src.phx_home_analysis.domain.enums import Orientation
+    from phx_home_analysis.domain.entities import Property as DomainProperty
+    from phx_home_analysis.domain.enums import Orientation
 
     # Parse orientation string to enum
     orientation_enum = None
@@ -230,25 +226,27 @@ def calculate_weighted_score(prop: Property) -> Property:
 # =============================================================================
 
 def load_listings(csv_path: str) -> list[Property]:
-    """Load listings from CSV file."""
-    properties = []
+    """Load listings from CSV file using cache."""
+    from phx_home_analysis.services.data_cache import PropertyDataCache
 
-    with open(csv_path, encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            prop = Property(
-                street=row.get('street', ''),
-                city=row.get('city', ''),
-                state=row.get('state', 'AZ'),
-                zip_code=row.get('zip', ''),
-                price=int(row.get('price_num', 0)),
-                beds=int(row.get('beds', 0)),
-                baths=float(row.get('baths', 0)),
-                sqft=int(row.get('sqft', 0)),
-                price_per_sqft=float(row.get('price_per_sqft', 0)),
-                full_address=row.get('full_address', ''),
-            )
-            properties.append(prop)
+    cache = PropertyDataCache()
+    csv_data = cache.get_csv_data(Path(csv_path))
+
+    properties = []
+    for row in csv_data:
+        prop = Property(
+            street=row.get('street', ''),
+            city=row.get('city', ''),
+            state=row.get('state', 'AZ'),
+            zip_code=row.get('zip', ''),
+            price=int(row.get('price_num', 0)),
+            beds=int(row.get('beds', 0)),
+            baths=float(row.get('baths', 0)),
+            sqft=int(row.get('sqft', 0)),
+            price_per_sqft=float(row.get('price_per_sqft', 0)),
+            full_address=row.get('full_address', ''),
+        )
+        properties.append(prop)
 
     return properties
 
@@ -256,8 +254,8 @@ def load_listings(csv_path: str) -> list[Property]:
 def enrich_from_manual_data(properties: list[Property], enrichment_path: str) -> list[Property]:
     """Merge manual enrichment data with Pydantic validation.
 
-    Loads enrichment_data.json, validates each entry using EnrichmentDataSchema,
-    and merges validated data into Property objects.
+    Loads enrichment_data.json using cache, validates each entry using
+    EnrichmentDataSchema, and merges validated data into Property objects.
 
     Args:
         properties: List of Property objects to enrich
@@ -268,14 +266,16 @@ def enrich_from_manual_data(properties: list[Property], enrichment_path: str) ->
     """
     from pydantic import ValidationError
 
-    from src.phx_home_analysis.validation.schemas import EnrichmentDataSchema
+    from phx_home_analysis.services.data_cache import PropertyDataCache
+    from phx_home_analysis.validation.schemas import EnrichmentDataSchema
 
     enrichment_file = Path(enrichment_path)
     if not enrichment_file.exists():
         return properties
 
-    with open(enrichment_file, encoding='utf-8') as f:
-        enrichment_data = json.load(f)
+    # Load from cache
+    cache = PropertyDataCache()
+    enrichment_data = cache.get_enrichment_data(enrichment_file)
 
     # Validate and create lookup by address
     enrichment_lookup: dict[str, dict] = {}

@@ -1,2 +1,38 @@
 .env
 nul
+
+# Security
+.pip-audit-cache/
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+secrets.json
+credentials.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Test coverage
+.coverage
+htmlcov/
+coverage.xml
+
+# Virtual environments
+.venv/
+venv/
+env/

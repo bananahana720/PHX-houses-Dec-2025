@@ -33,9 +33,7 @@ import logging
 import sys
 from pathlib import Path
 
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
+# Requires: uv pip install -e .
 from phx_home_analysis import AnalysisPipeline, AppConfig, ProjectPaths
 from phx_home_analysis.repositories import DataLoadError, DataSaveError
 

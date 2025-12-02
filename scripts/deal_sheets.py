@@ -1,54 +1,48 @@
 #!/usr/bin/env python3
 """
+DEPRECATED: This module is deprecated and will be removed in a future version.
+==============================================================================
+
 Deal Sheet Generator for Phoenix Home Buying Analysis
 Generates one-page HTML reports for each property with traffic light kill-switch indicators.
+
+MIGRATION NOTICE:
+================
+Please use the modular package instead:
+
+    python -m scripts.deal_sheets
+
+This legacy monolithic file (1,057 lines) has been refactored into a modular package:
+
+    scripts/deal_sheets/
+    ├── __init__.py          # Package exports
+    ├── __main__.py          # CLI entry point
+    ├── generator.py         # Main orchestration
+    ├── renderer.py          # HTML generation
+    ├── templates.py         # Jinja2 templates
+    ├── data_loader.py       # CSV/JSON loading
+    └── utils.py             # Helpers
+
+See scripts/deal_sheets/README.md for details on the refactoring.
 """
 
 import json
 import re
+import warnings
 from pathlib import Path
 
 import pandas as pd
 from jinja2 import Template
 
-# Define kill switch criteria
-KILL_SWITCH_CRITERIA = {
-    'HOA': {
-        'field': 'hoa_fee',
-        'check': lambda val: val == 0 or pd.isna(val),
-        'description': lambda val: f"${int(val)}/mo" if val and val > 0 else "$0"
-    },
-    'Sewer': {
-        'field': 'sewer_type',
-        'check': lambda val: val == 'city',
-        'description': lambda val: val.title() if val else "Unknown"
-    },
-    'Garage': {
-        'field': 'garage_spaces',
-        'check': lambda val: val >= 2,
-        'description': lambda val: f"{int(val)} spaces" if val else "Unknown"
-    },
-    'Beds': {
-        'field': 'beds',
-        'check': lambda val: val >= 4,
-        'description': lambda val: f"{int(val)} beds" if val else "Unknown"
-    },
-    'Baths': {
-        'field': 'baths',
-        'check': lambda val: val >= 2,
-        'description': lambda val: f"{val} baths" if val else "Unknown"
-    },
-    'Lot Size': {
-        'field': 'lot_sqft',
-        'check': lambda val: 7000 <= val <= 15000,
-        'description': lambda val: f"{int(val):,} sqft" if val else "Unknown"
-    },
-    'Year Built': {
-        'field': 'year_built',
-        'check': lambda val: val < datetime.now().year,
-        'description': lambda val: str(int(val)) if val else "Unknown"
-    }
-}
+# Issue deprecation warning on module import
+warnings.warn(
+    "deal_sheets.py is deprecated. Use 'python -m scripts.deal_sheets' instead. "
+    "See scripts/deal_sheets/README.md for migration details.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+# Import canonical kill switch evaluation function
 
 # HTML Template for individual deal sheet
 DEAL_SHEET_TEMPLATE = """<!DOCTYPE html>
@@ -803,34 +797,6 @@ def slugify(text):
     return slug
 
 
-def evaluate_kill_switches(row):
-    """Evaluate all kill switch criteria for a property."""
-    results = {}
-
-    for name, criteria in KILL_SWITCH_CRITERIA.items():
-        field = criteria['field']
-        value = row[field] if field in row and not pd.isna(row[field]) else None
-
-        if value is None:
-            # Unknown/missing data - mark as yellow warning
-            passed = False
-            color = 'yellow'
-            label = 'UNKNOWN'
-        else:
-            passed = criteria['check'](value)
-            color = 'green' if passed else 'red'
-            label = 'PASS' if passed else 'FAIL'
-
-        results[name] = {
-            'passed': passed,
-            'color': color,
-            'label': label,
-            'description': criteria['description'](value)
-        }
-
-    return results
-
-
 def extract_features(row):
     """Extract present and missing features from property data."""
     present = []
@@ -932,8 +898,12 @@ def generate_deal_sheet(row, output_dir):
     # Convert back to Series for consistent access
     row_clean = pd.Series(row_dict)
 
-    # Evaluate kill switches
-    kill_switches = evaluate_kill_switches(row_clean)
+    # Evaluate kill switches using canonical function
+    # Returns dict with kill switch results and '_summary' key
+    kill_switches = evaluate_kill_switches_for_display(row_clean)
+
+    # Remove the summary key since template doesn't use it
+    kill_switches.pop('_summary', None)
 
     # Extract features
     features = extract_features(row_clean)
@@ -986,6 +956,18 @@ def generate_index(df, output_dir):
 
 def main():
     """Main execution function."""
+    # Issue deprecation warning at runtime
+    print("=" * 70)
+    print("WARNING: This script is deprecated!")
+    print("=" * 70)
+    print("Please use instead:")
+    print("    python -m scripts.deal_sheets")
+    print("")
+    print("The legacy deal_sheets.py file will be removed in a future version.")
+    print("See scripts/deal_sheets/README.md for migration details.")
+    print("=" * 70)
+    print("Continuing with legacy implementation...\n")
+
     # Get the directory of this script
     base_dir = Path(__file__).parent
 

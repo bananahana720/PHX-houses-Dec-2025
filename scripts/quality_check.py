@@ -14,17 +14,14 @@ Exit Codes:
 """
 
 import argparse
-import json
 import logging
 import sys
 from pathlib import Path
 
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
+# Requires: uv pip install -e .
 from phx_home_analysis.services.quality import (
-    QualityMetricsCalculator,
     LineageTracker,
+    QualityMetricsCalculator,
 )
 
 
@@ -47,7 +44,7 @@ def setup_logging(verbose: bool = False) -> logging.Logger:
 
 
 def load_property_data(data_dir: Path) -> list[dict]:
-    """Load property data from enrichment JSON and CSV.
+    """Load property data from enrichment JSON and CSV using cache.
 
     Args:
         data_dir: Path to data directory.
@@ -55,13 +52,15 @@ def load_property_data(data_dir: Path) -> list[dict]:
     Returns:
         List of property data dictionaries.
     """
+    from phx_home_analysis.services.data_cache import PropertyDataCache
+
+    cache = PropertyDataCache()
     properties = []
 
     # Try to load from enrichment_data.json
     enrichment_file = data_dir / "enrichment_data.json"
     if enrichment_file.exists():
-        with open(enrichment_file, encoding="utf-8") as f:
-            enrichment = json.load(f)
+        enrichment = cache.get_enrichment_data(enrichment_file)
 
         # Handle both list and dict formats
         if isinstance(enrichment, list):
@@ -81,20 +80,17 @@ def load_property_data(data_dir: Path) -> list[dict]:
     if not properties:
         csv_file = data_dir / "phx_homes.csv"
         if csv_file.exists():
-            import csv
-
-            with open(csv_file, encoding="utf-8") as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    # Normalize field names
-                    prop_data = {
-                        "address": row.get("full_address", row.get("address", "")),
-                        "beds": int(row.get("beds", 0)) if row.get("beds") else None,
-                        "baths": float(row.get("baths", 0)) if row.get("baths") else None,
-                        "sqft": int(row.get("sqft", 0)) if row.get("sqft") else None,
-                        "price": row.get("price_num", row.get("price")),
-                    }
-                    properties.append(prop_data)
+            csv_data = cache.get_csv_data(csv_file)
+            for row in csv_data:
+                # Normalize field names
+                prop_data = {
+                    "address": row.get("full_address", row.get("address", "")),
+                    "beds": int(row.get("beds", 0)) if row.get("beds") else None,
+                    "baths": float(row.get("baths", 0)) if row.get("baths") else None,
+                    "sqft": int(row.get("sqft", 0)) if row.get("sqft") else None,
+                    "price": row.get("price_num", row.get("price")),
+                }
+                properties.append(prop_data)
 
     return properties
 

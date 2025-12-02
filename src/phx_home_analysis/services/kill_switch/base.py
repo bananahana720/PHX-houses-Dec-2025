@@ -16,34 +16,31 @@ Verdict Logic:
 """
 
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import TYPE_CHECKING
+
+# Import shared constants from centralized location
+from .constants import (
+    HARD_CRITERIA_NAMES,
+    SEVERITY_FAIL_THRESHOLD,
+    SEVERITY_WARNING_THRESHOLD,
+    KillSwitchVerdict,
+)
+from .constants import (
+    SOFT_SEVERITY_WEIGHTS_SERVICE as SOFT_SEVERITY_WEIGHTS,
+)
 
 if TYPE_CHECKING:
     from ...domain.entities import Property
 
-
-class KillSwitchVerdict(Enum):
-    """Kill switch verdict outcome."""
-    PASS = "PASS"
-    WARNING = "WARNING"
-    FAIL = "FAIL"
-
-
-# Severity weights for SOFT criteria
-SOFT_SEVERITY_WEIGHTS: dict[str, float] = {
-    "city_sewer": 2.5,      # Septic risk - infrastructure concern
-    "min_garage": 1.5,      # Convenience factor
-    "lot_size": 1.0,        # Minor preference
-    "no_new_build": 2.0,    # New build avoidance
-}
-
-# HARD criteria names - instant fail, no severity calculation
-HARD_CRITERIA_NAMES: set[str] = {"no_hoa", "min_bedrooms", "min_bathrooms"}
-
-# Threshold constants
-SEVERITY_FAIL_THRESHOLD: float = 3.0
-SEVERITY_WARNING_THRESHOLD: float = 1.5
+# Re-export for backward compatibility
+__all__ = [
+    "KillSwitch",
+    "KillSwitchVerdict",
+    "SEVERITY_FAIL_THRESHOLD",
+    "SEVERITY_WARNING_THRESHOLD",
+    "SOFT_SEVERITY_WEIGHTS",
+    "HARD_CRITERIA_NAMES",
+]
 
 
 class KillSwitch(ABC):

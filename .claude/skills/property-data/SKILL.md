@@ -353,6 +353,29 @@ normalize_boolean("0")                   # Returns: False
 
 ---
 
+## Data Caching Service
+
+**Location:** `src/phx_home_analysis/services/data_cache.py`
+
+```python
+from phx_home_analysis.services.data_cache import PropertyDataCache
+
+cache = PropertyDataCache()  # Singleton
+csv_data = cache.get_csv_data(Path("data/phx_homes.csv"))
+enrichment = cache.get_enrichment_data(Path("data/enrichment_data.json"))
+
+# Cache auto-invalidates on file modification (mtime check)
+cache.invalidate()  # Force refresh
+stats = cache.get_cache_stats()  # Monitor cache status
+```
+
+**Benefits:**
+- Eliminates redundant file I/O (3-5x → 1x per run)
+- Thread-safe singleton pattern
+- Automatic mtime-based invalidation
+
+---
+
 ## Data Operations
 
 ### Load All Properties

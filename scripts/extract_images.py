@@ -37,13 +37,12 @@ import logging
 import sys
 from pathlib import Path
 
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
 # Load environment variables from .env file
 from dotenv import load_dotenv
+
 load_dotenv(Path(__file__).parent.parent / ".env")
 
+# Requires: uv pip install -e .
 from phx_home_analysis.domain.enums import ImageSource
 from phx_home_analysis.repositories.csv_repository import CsvPropertyRepository
 from phx_home_analysis.services.image_extraction import ImageExtractionOrchestrator

@@ -582,6 +582,666 @@
       "dhash": "8fb62646566ee225",
       "property_address": "4342 W Claremont St, Glendale, AZ 85301",
       "source": "zillow"
+    },
+    "7400a280-e0ff-4065-98d8-588b8272be1d": {
+      "phash": "9fa3a61f5108f705",
+      "dhash": "7f7f5fd1d8777f67",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "6bb26291-9236-4b36-81e5-350af16f12b6": {
+      "phash": "adb0c3279bc31fc0",
+      "dhash": "8cb636323626c7d3",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "3aa485bc-0408-4e07-9c65-676142f48564": {
+      "phash": "b11ded875071ec15",
+      "dhash": "365bba983c67c69b",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "0a50d4af-eaa7-4c32-84dd-470bf46361ec": {
+      "phash": "b3e86899957af882",
+      "dhash": "9887091cdc3add2c",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "8b079722-cb99-4d8b-a401-37839902e539": {
+      "phash": "c4683113cafc7c2f",
+      "dhash": "1c9b37e5c1988683",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "9eec97e0-e6d5-4a8b-bcec-e64d4bd49fa0": {
+      "phash": "934668b1475bba6c",
+      "dhash": "f0cf8bc8ce9c9b1b",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "b5d4139d-5b7a-478e-9732-bb3c7149ffd2": {
+      "phash": "c0f22b276bc8932f",
+      "dhash": "4a88c080c6fce2d4",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "a27a65ee-2e8b-4648-989c-378747ece65a": {
+      "phash": "b2735713cfcc2622",
+      "dhash": "491d0fa3cb7d7cfe",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "d5b8e4ed-61cd-47f9-9f95-76a4f13eb45e": {
+      "phash": "8c2da74a4a696d6d",
+      "dhash": "77feb6b1f1e0e2a9",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "c5d331ea-514e-4baa-b963-c46d5cfe8d28": {
+      "phash": "b2f2d2626274d995",
+      "dhash": "9df93a4e4f1b0089",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "f51fee9c-7d58-492e-94b7-fb140add895f": {
+      "phash": "b328af116e979352",
+      "dhash": "fbb39c2fb9587c47",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "f1761db9-4e02-4191-acca-6536fe5d83da": {
+      "phash": "97fdee127008876c",
+      "dhash": "010073de5cecf12d",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "0737c34a-6baf-430c-8045-7aad5681b3ae": {
+      "phash": "eab3312d46ebd430",
+      "dhash": "571ab8e1a0223b1f",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "2eeca3d8-e00c-43eb-9c16-7d77201f9c3c": {
+      "phash": "8589eb8a4bf43758",
+      "dhash": "fbf33eeae3eeac17",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "3bfe211a-7d19-4ef0-881b-1e38042ffe42": {
+      "phash": "d52f22515d6cc2d9",
+      "dhash": "40ce245252a09088",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "5f8df8a4-d93a-4204-a966-c38ff75bab4b": {
+      "phash": "f4346cac3e7acc50",
+      "dhash": "24b6940ba8070004",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "58ce99cc-7402-4330-96b3-1f7dc88965e0": {
+      "phash": "e32e9c69433e1dd0",
+      "dhash": "038f3ecdcb125cf2",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "d245a7fc-1eb3-416f-84bc-db53f59310d9": {
+      "phash": "838163f03cc996f7",
+      "dhash": "c7c3e4f36ccc800d",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "7141f10f-bb83-467e-946d-ad85bf4d0303": {
+      "phash": "b7b30149998c3773",
+      "dhash": "581a0c3d18c4e040",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "fc6d18ab-621e-41a9-a7ed-d8e74e39e273": {
+      "phash": "ec17d3d3686b0d09",
+      "dhash": "10b6232733b3a3a3",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "447fdc76-aa5b-4732-8d9e-e10cdb0b0071": {
+      "phash": "d0c4cc227baf8d53",
+      "dhash": "8284f41798b82e40",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "984062b0-3c99-49eb-8845-8ed560ab88b3": {
+      "phash": "cbb4abc6bcc8a291",
+      "dhash": "4526cbb568c1d31b",
+      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "source": "zillow"
+    },
+    "64537498-79ed-4582-bb98-f15037b05d4e": {
+      "phash": "b1fc0ce3c526c987",
+      "dhash": "1f1f3f9ddf1e1feb",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "5b9abdab-c671-4f10-afbe-0b3aad66007b": {
+      "phash": "968df428fdb64911",
+      "dhash": "66e4f86d73f1ccdc",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "87f662e4-0a86-4114-9dfd-64f3c8881538": {
+      "phash": "dba6b00f7049c6e9",
+      "dhash": "992c8cce1171d199",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "b65c7f4b-f1b9-4855-8351-34811d555965": {
+      "phash": "92f945d6cd90cb94",
+      "dhash": "f09e3d1b256dfce3",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "0e06de9e-7e36-423f-abf5-a62771629d76": {
+      "phash": "c2f5e602734ee38c",
+      "dhash": "cc9f8090abcde1cc",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "21167cc4-eb21-4906-8a38-cc1d4d5b6588": {
+      "phash": "922bc72c34e3e35a",
+      "dhash": "56f9c9d436eb60b0",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "d8157a90-3341-47e0-b7c6-d8348421aaac": {
+      "phash": "c01fe3e9b5805c6e",
+      "dhash": "915964f687938982",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "20f983d6-ccb7-4cee-8359-05266c19d888": {
+      "phash": "c1c07e6f795bb600",
+      "dhash": "c1c6ac8a92b68182",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "65acb66e-8d2a-424c-877e-c2c9f088957b": {
+      "phash": "c57de08795c27a23",
+      "dhash": "0216d1f46ac1cc8e",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "4025436d-7811-4eb0-9a9f-b7f028431b1e": {
+      "phash": "ca8e753c8a259cec",
+      "dhash": "6c60e1d1a9f0c290",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "7f2af47d-212f-4623-a063-fe8d31c87a6f": {
+      "phash": "c9e607b4d649709b",
+      "dhash": "e6ee1b213496d341",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "1aed2489-318e-4ed0-8e18-4aebcf4c4372": {
+      "phash": "e8b05cb396c9c7c8",
+      "dhash": "8e96a79b8dcfb321",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "abccdb2c-8baf-4a0d-92f0-17ba742e2e94": {
+      "phash": "bd30c22fb2c35399",
+      "dhash": "8db6322b33336332",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "ed686769-2b17-4696-af1a-b92024af6d19": {
+      "phash": "a385ada50ba9dc59",
+      "dhash": "c6ce8acbc9460703",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "85d62378-0d12-40ad-84ce-e35170ce1fb9": {
+      "phash": "d2ac88a5ba0fd5ca",
+      "dhash": "b6aea01c88ccc8d9",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "f677229d-0a7a-4ff1-afbe-b013f3cb94e9": {
+      "phash": "ad6f5b9004e9af06",
+      "dhash": "4f434766e6e73161",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "873c6d3d-05aa-40d9-b46b-957bc8dabaa0": {
+      "phash": "ca97e5ca3334db04",
+      "dhash": "08e270d9d9b187c7",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "a6a54eb2-4c7d-4286-8f73-fe0890c7b83e": {
+      "phash": "b4db25c1c22c38bf",
+      "dhash": "fc4c35a1a816062e",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "342905f5-6b80-42a6-9194-b5ed1fbcc876": {
+      "phash": "d9f4a48770bf180b",
+      "dhash": "9c883918d9d0ebf1",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "de0250a2-0624-45f5-9234-6a8554dbc0bb": {
+      "phash": "81c6be1149ce197f",
+      "dhash": "7a0ccec2d29a2d39",
+      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "b31132ec-b783-424e-89f8-57ccb80b703d": {
+      "phash": "e2e2acbdb5d55202",
+      "dhash": "baabc9cc5f60e48c",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "40b71fe3-93b5-4d3d-a878-5c2f027c2811": {
+      "phash": "9ed8226b47246fa5",
+      "dhash": "313174747078ac6e",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "c1c6ca26-fc01-4801-9ef4-5f500ad3f979": {
+      "phash": "b8ee15f62a9cc213",
+      "dhash": "0f57933755951a9b",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "e3052a0e-472e-4b36-948d-3a39ff9c2e88": {
+      "phash": "9d338270c3e76587",
+      "dhash": "9cb23a3b323272b2",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "zillow"
+    },
+    "b80ac058-5e5f-4be8-9d40-b55616f1d305": {
+      "phash": "a1bf783d84d19e28",
+      "dhash": "1ecbc9cde72f9b87",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "0459185b-a7d6-4ddc-b573-4d7002330d21": {
+      "phash": "8d7992621ddca7a2",
+      "dhash": "7d9f7e724bcfb47c",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "baf9f6e6-f011-4c4f-8f74-42dd4ad92427": {
+      "phash": "bf0fc1a262c41dec",
+      "dhash": "63777264153f3700",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "017d350f-597a-41eb-8b5b-4092b8246162": {
+      "phash": "95ab36480f3fca19",
+      "dhash": "7f1fdc5ed0913c66",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "0af95d6c-3e4f-4172-910b-29c4ae0c0b87": {
+      "phash": "b0a94c98c9fd115f",
+      "dhash": "321e1c9c1cdc1c6d",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "4ba14df5-0a4c-4e4f-9c2f-cf1636adaa34": {
+      "phash": "bebbb1340cadcc48",
+      "dhash": "1f0d23332534afac",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "9ee3aeef-ba57-4aeb-87c2-91f80c8a1666": {
+      "phash": "e3a2b86063feca26",
+      "dhash": "8bcc6143c7812c0b",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "eedb099e-85d8-4eb6-b72f-8a372f7951fd": {
+      "phash": "efd0d05bd1c7d480",
+      "dhash": "001f666763636b9b",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "448d2116-8116-49a3-ab52-6931cbd4286c": {
+      "phash": "e0344f92707eadc3",
+      "dhash": "09d4569cdcf8c9d3",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "1532fce3-f5a5-4e4a-bdd4-06f98b7824ef": {
+      "phash": "89fdcb3d328994c1",
+      "dhash": "f2f3f21f0fb6f3c9",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "baeb64f9-f744-477b-a262-6b213702836c": {
+      "phash": "d416c29de3a9c4f2",
+      "dhash": "6024240a14363281",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "130a1b8a-058c-4554-b1e8-959e167d684a": {
+      "phash": "ff4bc0812df4d14a",
+      "dhash": "c309492623c82526",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "6388f445-50e3-4bff-be8d-e5ab973dfdd5": {
+      "phash": "c92b9426361d6eda",
+      "dhash": "0d03435343c39004",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "56b0d9bc-f267-4c26-9db2-416c6fee3ba7": {
+      "phash": "b373c31018cccf67",
+      "dhash": "998f4b3d9c38e432",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "edf28196-048e-467b-958f-15b4f028966b": {
+      "phash": "d595ab2c282ac6ee",
+      "dhash": "fe5cdc3822c2c743",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "2013b9ce-578c-45c9-bd9e-e1e54806fc3e": {
+      "phash": "b1e61b98161fd1c5",
+      "dhash": "18178686969a5b5b",
+      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "source": "redfin"
+    },
+    "c30f5e22-3fa8-42b5-9998-be0374203a47": {
+      "phash": "8ad5d56f3e4a8116",
+      "dhash": "c080ba392df769fc",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "ce67e3eb-487b-4ba8-b1e2-652649c71729": {
+      "phash": "e7c9d8c166629f09",
+      "dhash": "c3926a6cea4b973d",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "b7a72cf1-4eaf-4c50-a565-bf1f895484b5": {
+      "phash": "b5f0ca2b14d3eb14",
+      "dhash": "04a30e8eb64b59e8",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "6ad6325c-a02b-45ac-a57f-4fef0b7f9f60": {
+      "phash": "bc834326bd78e20f",
+      "dhash": "9e52373637272683",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "cbb2c08e-7211-4187-9a90-151835d1a611": {
+      "phash": "a6d53ba2e41353ac",
+      "dhash": "4d60a8e4e7a96f1f",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "1ffe189a-e5fc-45ee-9b0e-6f9619c8fb5b": {
+      "phash": "e5a5aaa6321a17f1",
+      "dhash": "478282c0c6c49913",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "dbd5a1c7-f10e-4bea-a5c3-a55d1fbaabd5": {
+      "phash": "d41d8baa6ed39129",
+      "dhash": "790fbc24265cc1c8",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "18f1a4b3-ff58-4c2a-bc72-245463f1faf7": {
+      "phash": "bef6800831cf3ee2",
+      "dhash": "310c6c220e3161fe",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "3872de03-d140-49b9-a5d5-ce00a225f9b4": {
+      "phash": "8695c9aef6d01d0e",
+      "dhash": "a4e1f4ec6c6beb21",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "a35b175d-7486-4772-94c7-96eedcb03cda": {
+      "phash": "fd5818d2d1b1d272",
+      "dhash": "91260d12320c3b23",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "cc1ef90f-62d6-415e-aece-5fcad760ebaa": {
+      "phash": "dbe718ee0108f4cb",
+      "dhash": "484a98d8c8203998",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "a4f43af0-8ca0-4d63-a76b-b8bfb55f28b9": {
+      "phash": "917a8e3139cec693",
+      "dhash": "fffec1819adee276",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "85d0df5c-cebb-4a1c-9bd6-effd42583128": {
+      "phash": "c662cde52af311ca",
+      "dhash": "c3749cccebce6871",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "f4b18752-0060-4210-afec-c38c89ca3b47": {
+      "phash": "93836cf81393ad87",
+      "dhash": "4987ee49d9932907",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "5007ab02-f61a-4e0e-a8bd-2f990b9813f0": {
+      "phash": "9ede21c1121aed9e",
+      "dhash": "0e2c39787c72fcbf",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "118e7b52-6459-418f-bfd6-b2860f18cd8c": {
+      "phash": "e455bf6e28ba30d0",
+      "dhash": "27409cb494854d53",
+      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "source": "zillow"
+    },
+    "60ca42f7-c6b4-4a1f-9a5e-2089f74c4df4": {
+      "phash": "9768d4252ad2ab6d",
+      "dhash": "0f1e09ed47dc5c74",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "c149e2b6-43a8-4d07-8307-cae74774c947": {
+      "phash": "817e936f7618e1c4",
+      "dhash": "082e92b3a692b9d8",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "31ae4aff-933d-4b1f-b8fa-c099e786e7b1": {
+      "phash": "ac3f886e879b4394",
+      "dhash": "2f37baff664b33f3",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "d647279e-a8fa-49cf-9b38-df119eec9057": {
+      "phash": "ea8195fe890876b5",
+      "dhash": "9a9e8f8b0b055528",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "4c2ff19d-5a59-42af-9f20-f040982ea226": {
+      "phash": "bfa4ce4b4a680fa4",
+      "dhash": "63fc7e5bd87b3b6d",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "dd91c9c9-f1d6-41a0-b6ce-995be71a6dc5": {
+      "phash": "98872f595826d3b9",
+      "dhash": "fff3ece4b8f83e93",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "b81a1378-a092-46c7-97e9-e010f18c5ab5": {
+      "phash": "d1a9ecec325246b9",
+      "dhash": "83e2d8dc38e08880",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "bf5ee2d5-ee5e-4dab-9bf8-ded999b4d027": {
+      "phash": "861f892974df07d8",
+      "dhash": "73e3604c8cc74794",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "48ff618b-c5ad-43fe-912b-8c1cbdab664a": {
+      "phash": "8279bc976a0db718",
+      "dhash": "b89488c9c9cca8ad",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "3970fca2-3e6d-4475-8604-3c346e3cfca7": {
+      "phash": "897db460f2936b92",
+      "dhash": "9eb23323b3b39e8d",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "c23a7a10-606f-45a2-beea-9fa69e9a5a53": {
+      "phash": "e3ba1b069f36a384",
+      "dhash": "681b1b0ec6c2d050",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "9acebc1d-347c-4723-8f70-db8010e5fc17": {
+      "phash": "f4a896d18b57d889",
+      "dhash": "8c86860616944c4c",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "78e5ddb7-5735-4cd6-bedc-e017730b4ac7": {
+      "phash": "bc4df2ca476529b0",
+      "dhash": "033dbe663d3f0f0d",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "fd7b5a14-f54e-4e45-bd3d-439ea594a47a": {
+      "phash": "aef28e58e36c06e1",
+      "dhash": "593d0e5595e426e7",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "zillow"
+    },
+    "16395b53-91c5-4d86-a401-a3b61455dcc6": {
+      "phash": "f70b88647118eed3",
+      "dhash": "8f42686e4e273c1c",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "3fe5cfc6-7e16-46f7-a21f-8bdaeedd04ba": {
+      "phash": "9a75c742788486bf",
+      "dhash": "a61eed3939f9e421",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "5656d481-4222-40ef-95ee-939c2c94321e": {
+      "phash": "98e50ad455f2e3f0",
+      "dhash": "e4e3d1f2f4f5b171",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "615851c7-e009-4783-a6e2-895c45a5d33d": {
+      "phash": "a51b3bc23cbc474c",
+      "dhash": "4f4de6e6e6c6a616",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "4579621e-ea13-418d-a928-889476b4c0f0": {
+      "phash": "94e9e11fbec17901",
+      "dhash": "f4f090e46c7cdcbc",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "e8eaf48d-f99f-4bbb-8b8b-5197e2c7d014": {
+      "phash": "a6a6969cc958f8b1",
+      "dhash": "ddcecfc3e706e9c3",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "781a967c-b25f-46f1-9024-00145d874ab1": {
+      "phash": "b4794fecd0233a8c",
+      "dhash": "9efebb8ea5adeefc",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "ab0004dc-106d-4622-9956-ebbf0f8fdf43": {
+      "phash": "92f2cbcd2a5b8c49",
+      "dhash": "9c9c9c9cd4d4d9e3",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "4fed1107-8179-48b1-80a6-ff5ac282f3dd": {
+      "phash": "9d8890f7c823d769",
+      "dhash": "f3f373f3734c5fb9",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "fe693094-0c8f-4171-8446-8d0937c18fa1": {
+      "phash": "a4a6d85d19e27a95",
+      "dhash": "38a6cfcfb617c7fa",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "cea1bef6-f426-43e3-9541-e6efffb6ea6a": {
+      "phash": "cfc5f8b03e700a8e",
+      "dhash": "19c2e1646c98c313",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "854206f1-9303-4351-ba81-6720705afd15": {
+      "phash": "a590fa363d67c05a",
+      "dhash": "3f3ff0d6fece4f3b",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "f103be3e-d829-4fe9-9c87-bb850026f237": {
+      "phash": "e2b156369845db9a",
+      "dhash": "8c8cc3b33507c6e0",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "74abb16a-f165-4b20-9045-391bf8165855": {
+      "phash": "c08b9b833df89a9c",
+      "dhash": "f0e0a09286889c2e",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "89ad51fb-08e8-4ccf-b438-10e43b8715ab": {
+      "phash": "f893c738992636c6",
+      "dhash": "99d28c1b931f0140",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "28e61eae-a17b-42f1-95fb-db5645a9abb9": {
+      "phash": "a3759922f08cfaca",
+      "dhash": "df575787cdcfe3d3",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "b765c73b-322c-4dcf-bb46-f25f60d10adf": {
+      "phash": "f5ea2a559a2ad5c0",
+      "dhash": "220088089c8c8209",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
+    },
+    "12c8e367-e95b-4a2d-b264-661091494d9c": {
+      "phash": "ba09f57646c199ca",
+      "dhash": "133731416d3c8d3d",
+      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "source": "redfin"
     }
   }
 }
