@@ -1,0 +1,72 @@
+{
+  "run_id": "ac3a08fc",
+  "started_at": "2025-12-03T09:46:02.667915-05:00",
+  "ended_at": "2025-12-03T09:46:27.339398-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 44,
+    "total_new_images": 6,
+    "total_unchanged": 17,
+    "total_duplicates": 21,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 44,
+      "new_images": 6,
+      "unchanged": 17,
+      "duplicates": 21,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 0,
+      "new_image_ids": [
+        "461795e2-1096-40e8-a6c1-d1d141315557",
+        "d1a096ad-651b-4597-a578-aded67527a59",
+        "42afbcc6-1e67-4e26-a8d7-4e0a074f0771",
+        "3ef3e3c8-6029-4256-b66d-274aaeb00955",
+        "819c670c-c82e-42ac-affb-8b1ce4142b36",
+        "32c0d512-18c0-4d9c-af49-20900fc1e8cb"
+      ],
+      "removed_urls": [],
+      "error_messages": [],
+      "listing_metadata": {
+        "beds": 4,
+        "baths": null,
+        "sqft": 1860,
+        "lot_sqft": null,
+        "year_built": 1983,
+        "property_type": "Single Family",
+        "garage_spaces": null,
+        "parking_spaces": null,
+        "pool": true,
+        "stories": 1,
+        "list_price": 650000,
+        "cooling_type": "Central",
+        "heating_type": null,
+        "flooring_types": [
+          "Tile"
+        ],
+        "appliances_included": [
+          "Stove/Oven"
+        ],
+        "sewer_type": "City",
+        "water_source": "City",
+        "days_on_market": 13,
+        "original_list_price": null,
+        "price_reduced": null,
+        "price_reduced_pct": null,
+        "hoa_fee": 0
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 24.671483
+}

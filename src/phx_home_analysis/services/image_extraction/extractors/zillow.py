@@ -1233,6 +1233,9 @@ class ZillowExtractor(StealthBrowserExtractor):
         1. Check for property detail indicators (photos carousel, listing data)
         2. Check for search results indicators (multiple property cards)
         3. Validate URL structure (should contain zpid or specific property path)
+        4. NEW: Count zpid occurrences - detail pages have 1-5, search results have 10+
+        5. NEW: Count property card patterns - more than 3 suggests search results
+        6. NEW: Strict URL validation - must have /homedetails/ AND _zpid, reject _rb
 
         Args:
             tab: Browser tab to check
@@ -1247,12 +1250,30 @@ class ZillowExtractor(StealthBrowserExtractor):
             content_lower = content.lower()
             current_url = tab.url or ""
 
+            # FIX #1C: Strict URL validation - must have /homedetails/ AND _zpid, reject _rb
+            url_lower = current_url.lower()
+            if "_rb/" in url_lower or "_rb?" in url_lower:
+                logger.warning(
+                    "%s URL contains _rb suffix (search results URL): %s",
+                    self.name,
+                    current_url[:120],
+                )
+                return False
+
             # Fast path: URL or canonical link already points to a property detail page
             detail_url = "homedetails" in current_url or re.search(r"/\d+_zpid", current_url)
             canonical_detail = bool(
                 re.search(r'rel=["\']canonical["\'][^>]+homedetails', content_lower)
             )
             if detail_url or canonical_detail:
+                # Additional validation: must contain /homedetails/ path
+                if "/homedetails/" not in url_lower:
+                    logger.warning(
+                        "%s URL missing /homedetails/ path despite other signals: %s",
+                        self.name,
+                        current_url[:120],
+                    )
+                    return False
                 logger.info(
                     "%s Property detail page confirmed by URL (url=%s)",
                     self.name,
@@ -1289,6 +1310,27 @@ class ZillowExtractor(StealthBrowserExtractor):
                 )
                 return False
 
+            # FIX #1A: zpid counting - detail pages have 1-5 zpid refs, search results have 10+
+            zpid_count = content_lower.count("zpid")
+            if zpid_count > 15:
+                logger.warning(
+                    "%s High zpid count (%d) suggests search results page",
+                    self.name,
+                    zpid_count,
+                )
+                return False
+
+            # FIX #1B: Property card counting - more than 3 property cards = search results
+            card_patterns = ["property-card", "list-card", "search-card", "styledpropertycard"]
+            card_count = sum(content_lower.count(p) for p in card_patterns)
+            if card_count > 3:
+                logger.warning(
+                    "%s Multiple property cards (%d) suggests search results page",
+                    self.name,
+                    card_count,
+                )
+                return False
+
             # Check for detail page indicators
             detail_count = sum(1 for ind in detail_indicators if ind in content_lower)
             if detail_count >= 2:  # At least 2 positive indicators
@@ -1300,7 +1342,6 @@ class ZillowExtractor(StealthBrowserExtractor):
                 return True
 
             # Check for very high zpid density as a fallback search-results signal
-            zpid_count = content_lower.count("zpid")
             if detail_count == 0 and zpid_count > 40:
                 logger.warning(
                     "%s High zpid density without detail indicators (%d) - likely search results",
@@ -1311,9 +1352,11 @@ class ZillowExtractor(StealthBrowserExtractor):
 
             # If we got here, couldn't confirm it's a detail page
             logger.warning(
-                "%s Could not confirm property detail page (indicators: %d, URL: %s)",
+                "%s Could not confirm property detail page (indicators: %d, zpid_count: %d, card_count: %d, URL: %s)",
                 self.name,
                 detail_count,
+                zpid_count,
+                card_count,
                 current_url[:80],
             )
             return False
@@ -1321,6 +1364,54 @@ class ZillowExtractor(StealthBrowserExtractor):
         except Exception as e:
             logger.error("%s Error validating page type: %s", self.name, e)
             return False
+
+    def _score_address_match(self, target: str, result_text: str) -> float:
+        """FIX #5: Score how well autocomplete result matches target address (0.0-1.0).
+
+        Evaluates address components:
+        - Street number MUST match (0.5 points)
+        - Street name words weighted by relevance (0.3 points)
+        - City matching (0.2 points)
+
+        Args:
+            target: Target address string (e.g., "4732 W Davis Rd, Glendale, AZ 85306")
+            result_text: Autocomplete result text from DOM
+
+        Returns:
+            Score from 0.0 to 1.0, where >= 0.5 indicates a strong match
+        """
+        target_lower = target.lower().replace(",", " ")
+        result_lower = result_text.lower()
+
+        # Extract components
+        parts = target_lower.split()
+        street_num = parts[0] if parts and parts[0].isdigit() else None
+
+        score = 0.0
+
+        # Street number MUST match
+        if street_num and street_num in result_lower:
+            score += 0.5
+        else:
+            return 0.0
+
+        # Street name words (skip direction abbreviations and street types)
+        street_words = [
+            w
+            for w in parts[1:4]
+            if len(w) > 2 and w not in ("dr", "rd", "st", "ave", "ln", "ct", "blvd", "w", "e", "n", "s")
+        ]
+        if street_words:
+            matched = sum(1 for w in street_words if w in result_lower)
+            score += 0.3 * (matched / len(street_words))
+
+        # City matching
+        if len(parts) > 4:
+            city = parts[-4] if parts[-4] not in ("az", "arizona") else parts[-5] if len(parts) > 5 else None
+            if city and len(city) > 2 and city in result_lower:
+                score += 0.2
+
+        return score
 
     async def _navigate_to_property_via_search(
         self, property: Property, tab: uc.Tab
@@ -1395,12 +1486,23 @@ class ZillowExtractor(StealthBrowserExtractor):
                 await self._human_delay()
 
             # Step 2: Find search input field
-            # Zillow uses various selectors for search input
+            # FIX #2: Enhanced search input selectors (2025-compatible list)
             search_selectors = [
-                'input[placeholder*="address"]',
+                # Primary: data-testid (most stable)
+                'input[data-testid="search-bar-input"]',
+                'input[id="search-box-input"]',
+                # Secondary: ARIA attributes
+                'input[aria-label*="search"]',
+                'input[aria-label*="Search"]',
+                # Tertiary: placeholder text
                 'input[placeholder*="Enter an address"]',
-                'input[id*="search-box"]',
-                'input[type="text"][class*="search"]',
+                'input[placeholder*="Address"]',
+                'input[placeholder*="Search"]',
+                # Fallback: class-based
+                'input[class*="SearchBox"]',
+                'input[class*="search-input"]',
+                'header input[type="text"]',
+                'nav input[type="text"]',
             ]
 
             search_input = None
@@ -1501,16 +1603,22 @@ class ZillowExtractor(StealthBrowserExtractor):
             await asyncio.sleep(1.5)  # Wait for autocomplete
 
             # Step 4: Wait for and click autocomplete suggestion
-            # Zillow shows autocomplete dropdown with suggestions
+            # FIX #3: Enhanced autocomplete selectors (address-specific patterns)
             autocomplete_selectors = [
+                # Primary: data-testid (most stable)
+                '[data-testid="search-result-list"] [data-testid="search-result"]',
+                '[data-testid="address-suggestion"]',
+                # Secondary: role-based
+                '[role="listbox"] [role="option"]',
+                '[role="option"][data-address]',
                 'li[role="option"]',
-                'ul[role="listbox"] li',
-                'div[class*="suggestion"]',
-                'button[class*="suggestion"]',
-                'div[data-test="suggestion"]',
-                'div[class*="search-result"]',
-                'div[class*="autocomplete"]',
-                'button[role="option"]',
+                # Tertiary: class-based
+                '.search-suggestions-list li',
+                'ul[data-testid="search-results"] li',
+                'li[data-type="address"]',
+                # Fallback
+                '.autocomplete-item',
+                '.suggestion-item a',
             ]
 
             suggestion = None
@@ -1518,13 +1626,39 @@ class ZillowExtractor(StealthBrowserExtractor):
                 try:
                     elements = await tab.query_selector_all(selector)
                     if elements:
-                        # Click first suggestion (usually exact match)
-                        suggestion = elements[0]
-                        logger.info(
-                            "%s Found %d autocomplete suggestions",
-                            self.name,
-                            len(elements),
-                        )
+                        # FIX #5: Score address matches and click best match with score >= 0.5
+                        best_suggestion = None
+                        best_score = 0.0
+
+                        for element in elements:
+                            try:
+                                result_text = await element.text_content()
+                                if result_text:
+                                    score = self._score_address_match(full_address, result_text)
+                                    if score > best_score:
+                                        best_score = score
+                                        best_suggestion = element
+                                        if score >= 0.8:  # Excellent match, can stop early
+                                            break
+                            except Exception:
+                                continue
+
+                        if best_suggestion and best_score >= 0.5:
+                            suggestion = best_suggestion
+                            logger.info(
+                                "%s Found %d autocomplete suggestions, best match score: %.2f",
+                                self.name,
+                                len(elements),
+                                best_score,
+                            )
+                        elif elements:
+                            # Fallback: use first element if no good scoring match
+                            suggestion = elements[0]
+                            logger.info(
+                                "%s Found %d autocomplete suggestions (no strong match, using first)",
+                                self.name,
+                                len(elements),
+                            )
                         break
                 except Exception:
                     continue
@@ -1679,10 +1813,24 @@ class ZillowExtractor(StealthBrowserExtractor):
             if not expected_zpid:
                 expected_zpid = await self._extract_zpid_from_url(tab)
                 if expected_zpid:
-                    setattr(property, "zpid", expected_zpid)
+                    property.zpid = expected_zpid
 
             # Extract URLs from page
             urls = await self._extract_urls_from_page(tab, expected_zpid=expected_zpid)
+
+            # FIX #4: Safety check - too many URLs suggests we're on search results
+            if len(urls) > 25:
+                logger.warning(
+                    "%s Extracted %d URLs (threshold 25), re-validating page type",
+                    self.name,
+                    len(urls),
+                )
+                if not await self._is_property_detail_page(tab):
+                    logger.error(
+                        "%s Page validation failed after high URL count - aborting extraction",
+                        self.name,
+                    )
+                    return []
 
             # If we have far fewer than expected, scroll the gallery to force load and retry
             if len(urls) < 20:

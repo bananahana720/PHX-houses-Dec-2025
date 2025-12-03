@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "last_updated": "2025-12-03T00:58:48.097447-05:00",
+  "last_updated": "2025-12-03T09:59:32.299059-05:00",
   "properties": {
     "4560 E Sunrise Dr, Phoenix, AZ 85044": [
       {
@@ -1318,6 +1318,90 @@
         "status": "processed",
         "downloaded_at": "2025-12-03T00:41:37.939173-05:00",
         "processed_at": "2025-12-03T00:41:37.939173-05:00"
+      },
+      {
+        "image_id": "461795e2-1096-40e8-a6c1-d1d141315557",
+        "source": "zillow",
+        "source_url": "https://photos.zillowstatic.com/fp/d467537ef3bb0f7ec8ac4221b6ae8b95-p_e.jpg",
+        "local_path": "processed\\f4e29e2c\\461795e2-1096-40e8-a6c1-d1d141315557.png",
+        "phash": "ae2ec82173fc4d07",
+        "dhash": "a7e7672e4c37c759",
+        "width": 596,
+        "height": 446,
+        "file_size_bytes": 539294,
+        "status": "processed",
+        "downloaded_at": "2025-12-03T09:46:18.943627-05:00",
+        "processed_at": "2025-12-03T09:46:18.943627-05:00"
+      },
+      {
+        "image_id": "d1a096ad-651b-4597-a578-aded67527a59",
+        "source": "zillow",
+        "source_url": "https://photos.zillowstatic.com/fp/3f55f024900e098bb798d840501435a3-p_e.jpg",
+        "local_path": "processed\\f4e29e2c\\d1a096ad-651b-4597-a578-aded67527a59.png",
+        "phash": "98987d5e1e94960f",
+        "dhash": "399bb3befbecb6f6",
+        "width": 596,
+        "height": 446,
+        "file_size_bytes": 502448,
+        "status": "processed",
+        "downloaded_at": "2025-12-03T09:46:20.798043-05:00",
+        "processed_at": "2025-12-03T09:46:20.798043-05:00"
+      },
+      {
+        "image_id": "42afbcc6-1e67-4e26-a8d7-4e0a074f0771",
+        "source": "zillow",
+        "source_url": "https://photos.zillowstatic.com/fp/817730bd8e9907362980a8f92d369d97-p_e.jpg",
+        "local_path": "processed\\f4e29e2c\\42afbcc6-1e67-4e26-a8d7-4e0a074f0771.png",
+        "phash": "be1b1926e1786ed0",
+        "dhash": "5c383b4bce6d3933",
+        "width": 596,
+        "height": 446,
+        "file_size_bytes": 551649,
+        "status": "processed",
+        "downloaded_at": "2025-12-03T09:46:23.728018-05:00",
+        "processed_at": "2025-12-03T09:46:23.728018-05:00"
+      },
+      {
+        "image_id": "3ef3e3c8-6029-4256-b66d-274aaeb00955",
+        "source": "zillow",
+        "source_url": "https://photos.zillowstatic.com/fp/d204c6bfc39b217e8065958e78541a5a-p_e.jpg",
+        "local_path": "processed\\f4e29e2c\\3ef3e3c8-6029-4256-b66d-274aaeb00955.png",
+        "phash": "c1ae78294f31ccce",
+        "dhash": "070bc5ca6ad798c0",
+        "width": 596,
+        "height": 446,
+        "file_size_bytes": 330743,
+        "status": "processed",
+        "downloaded_at": "2025-12-03T09:46:24.647802-05:00",
+        "processed_at": "2025-12-03T09:46:24.647802-05:00"
+      },
+      {
+        "image_id": "819c670c-c82e-42ac-affb-8b1ce4142b36",
+        "source": "zillow",
+        "source_url": "https://photos.zillowstatic.com/fp/a2e2aba7f004f8af90ae9ca52891cb4e-p_e.jpg",
+        "local_path": "processed\\f4e29e2c\\819c670c-c82e-42ac-affb-8b1ce4142b36.png",
+        "phash": "ae25e26868d89b5e",
+        "dhash": "a7cffcb7b7fdfd79",
+        "width": 596,
+        "height": 446,
+        "file_size_bytes": 461303,
+        "status": "processed",
+        "downloaded_at": "2025-12-03T09:46:26.008931-05:00",
+        "processed_at": "2025-12-03T09:46:26.008931-05:00"
+      },
+      {
+        "image_id": "32c0d512-18c0-4d9c-af49-20900fc1e8cb",
+        "source": "zillow",
+        "source_url": "https://photos.zillowstatic.com/fp/5df1ae92c2825ef8823093f959286a04-p_e.jpg",
+        "local_path": "processed\\f4e29e2c\\32c0d512-18c0-4d9c-af49-20900fc1e8cb.png",
+        "phash": "a036f6277561aa2e",
+        "dhash": "cffcff9e76ffffff",
+        "width": 596,
+        "height": 446,
+        "file_size_bytes": 476375,
+        "status": "processed",
+        "downloaded_at": "2025-12-03T09:46:26.812860-05:00",
+        "processed_at": "2025-12-03T09:46:26.812860-05:00"
       }
     ]
   }

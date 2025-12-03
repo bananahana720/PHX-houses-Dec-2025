@@ -1,0 +1,122 @@
+# Workflow Status Template
+
+# This tracks progress through BMM methodology Analysis, Planning, and Solutioning phases.
+# Implementation phase is tracked separately in sprint-status.yaml
+
+# STATUS DEFINITIONS:
+# ==================
+# Initial Status (before completion):
+#   - required: Must be completed to progress
+#   - optional: Can be completed but not required
+#   - recommended: Strongly suggested but not required
+#   - conditional: Required only if certain conditions met (e.g., if_has_ui)
+#
+# Completion Status:
+#   - {file-path}: File created/found (e.g., "docs/product-brief.md")
+#   - skipped: Optional/conditional workflow that was skipped
+
+generated: "2025-12-03"
+project: "PHX-houses-Dec-2025"
+project_type: "software"
+selected_track: "method"
+field_type: "brownfield"
+workflow_path: "method-brownfield.yaml"
+
+# User selections from workflow-init
+discovery_selections:
+  brainstorm: true
+  research: true
+  product_brief: false
+
+workflow_status:
+  # Prerequisite - Document existing codebase
+  prerequisite:
+    - id: document-project
+      status: "docs/index.md"
+      agent: analyst
+      command: /bmad:bmm:workflows:document-project
+      output: "docs/index.md"
+      completed: "2025-12-03"
+      scan_level: exhaustive
+      note: "Understand existing codebase before planning"
+
+  # Phase 0 - Discovery (Optional)
+  phase_0_discovery:
+    - id: brainstorm-project
+      status: optional
+      selected: true
+      agent: analyst
+      command: /bmad:bmm:workflows:brainstorm-project
+      output: null
+
+    - id: research
+      status: optional
+      selected: true
+      agent: analyst
+      command: /bmad:bmm:workflows:research
+      output: null
+
+  # Phase 1 - Planning
+  phase_1_planning:
+    - id: prd
+      status: required
+      agent: pm
+      command: /bmad:bmm:workflows:prd
+      output: null
+      note: "PRD focused on new features/changes"
+
+    - id: validate-prd
+      status: optional
+      agent: pm
+      command: /bmad:bmm:workflows:validate-prd
+      output: null
+
+    - id: create-ux-design
+      status: conditional
+      condition: if_has_ui
+      agent: ux-designer
+      command: /bmad:bmm:workflows:create-ux-design
+      output: null
+
+  # Phase 2 - Solutioning
+  phase_2_solutioning:
+    - id: create-architecture
+      status: recommended
+      agent: architect
+      command: /bmad:bmm:workflows:create-architecture
+      output: null
+      note: "Integration architecture - solution design for THIS project"
+
+    - id: create-epics-and-stories
+      status: required
+      agent: pm
+      command: /bmad:bmm:workflows:create-epics-and-stories
+      output: null
+
+    - id: test-design
+      status: recommended
+      agent: tea
+      command: /bmad:bmm:workflows:test-design
+      output: null
+
+    - id: validate-architecture
+      status: optional
+      agent: architect
+      command: /bmad:bmm:workflows:validate-architecture
+      output: null
+
+    - id: implementation-readiness
+      status: required
+      agent: architect
+      command: /bmad:bmm:workflows:implementation-readiness
+      output: null
+      note: "Gate check before implementation"
+
+  # Phase 3 - Implementation
+  phase_3_implementation:
+    - id: sprint-planning
+      status: required
+      agent: sm
+      command: /bmad:bmm:workflows:sprint-planning
+      output: null
+      note: "Creates sprint plan with stories"

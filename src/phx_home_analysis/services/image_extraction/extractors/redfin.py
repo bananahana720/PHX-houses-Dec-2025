@@ -113,15 +113,24 @@ class RedfinExtractor(StealthBrowserExtractor):
 
         logger.info("Redfin: Starting interactive search for: %s", address)
 
-        # Find search input - try multiple selectors
+        # Find search input - try multiple selectors (updated for 2025 Redfin DOM)
         search_input = None
         search_selectors = [
-            'input[name="searchInputBox"]',
-            'input[type="search"]',
+            # Primary: data-testid and data-rf-test-id (most stable)
+            'input[data-rf-test-id="search-box-input"]',
+            'input[data-testid="search-input"]',
+            # Secondary: placeholder patterns
+            'input[placeholder*="City, Address"]',
+            'input[placeholder*="Address, City"]',
+            'input[placeholder*="Search"]',
+            # Tertiary: ARIA and role
+            'input[role="combobox"]',
+            'input[aria-label*="Search"]',
+            # Fallback: class-based
+            'input[class*="SearchBox"]',
+            'input[class*="search-input"]',
             '#search-box-input',
-            '.search-input-box',
-            'input[placeholder*="Address"]',
-            'input[placeholder*="address"]',
+            'input[name="searchInputBox"]',
         ]
 
         for selector in search_selectors:
@@ -163,17 +172,32 @@ class RedfinExtractor(StealthBrowserExtractor):
         result_clicked = False
         max_attempts = 3
 
+        # Define property-specific and generic selectors
+        property_result_selectors = [
+            'a[href*="/home/"]',
+            '[data-rf-test-id="search-result-home"] a',
+            '[data-rf-test-id="home-search-result"]',
+            'li[role="option"] a[href*="/home/"]',
+        ]
+
+        generic_result_selectors = [
+            '[role="listbox"] [role="option"]',
+            '[class*="SearchDropDown"] a',
+            '[class*="suggestion"] a',
+            '.autosuggest-result a',
+            '.SearchDropDown a',
+            '[data-rf-test-id="search-result"]',
+            '.autosuggest-result',
+            '.search-result-item',
+            '[role="option"]',
+            '.HomeCardContainer a',
+        ]
+
         for attempt in range(max_attempts):
             logger.debug("Redfin: Autocomplete detection attempt %d/%d", attempt + 1, max_attempts)
 
-            result_selectors = [
-                '.SearchDropDown a',  # Autocomplete dropdown links
-                '[data-rf-test-id="search-result"]',  # Test ID selector
-                '.autosuggest-result',
-                '.search-result-item',
-                '[role="option"]',  # ARIA role
-                '.HomeCardContainer a',  # Home card links
-            ]
+            # Combine selectors with property-specific ones first
+            result_selectors = property_result_selectors + generic_result_selectors
 
             for selector in result_selectors:
                 try:
@@ -190,31 +214,34 @@ class RedfinExtractor(StealthBrowserExtractor):
                             except Exception:
                                 pass
 
-                        # Extract street portion from address for matching
-                        street_match = address.split(',')[0].lower().strip()
-
-                        # Find result containing property address
-                        matched_result = None
+                        # Score all results and click best match
+                        best_match = None
+                        best_score = 0.0
                         for result in results:
                             try:
                                 result_text = result.text_all if hasattr(result, 'text_all') else str(result)
-                                if street_match in result_text.lower():
-                                    matched_result = result
-                                    logger.info("Redfin: Found matching result containing: %s", street_match)
-                                    break
-                            except Exception:
+                                score = self._score_address_match(address, result_text)
+                                if score > best_score:
+                                    best_score = score
+                                    best_match = result
+                                    logger.debug("Redfin: Result scored %.2f: %s", score, result_text[:60])
+                            except Exception as e:
+                                logger.debug("Redfin: Error scoring result: %s", e)
                                 continue
 
-                        # Click matched result or fall back to first with warning
-                        if matched_result:
-                            await matched_result.click()
-                            logger.info("Redfin: Clicked matching autocomplete result")
+                        if best_match and best_score >= 0.5:
+                            logger.info("Redfin: Clicking result with score %.2f", best_score)
+                            await best_match.click()
                             result_clicked = True
                             break
                         else:
-                            logger.warning("Redfin: No exact match found, clicking first result")
-                            await results[0].click()
-                            logger.info("Redfin: Clicked first autocomplete result (fallback)")
+                            logger.warning("Redfin: No good match found (best score: %.2f), trying Enter key", best_score)
+                            # Fallback to Enter key instead of clicking wrong result
+                            try:
+                                await search_input.send_keys("\n")
+                                logger.info("Redfin: Pressed Enter key as fallback")
+                            except Exception as e:
+                                logger.error("Redfin: Failed to press Enter: %s", e)
                             result_clicked = True
                             break
                 except Exception as e:
@@ -244,22 +271,129 @@ class RedfinExtractor(StealthBrowserExtractor):
         await asyncio.sleep(4)
         logger.info("Redfin: Property page should be loaded")
 
-        # Validate we landed on a property page, not city/county page
-        try:
-            current_url = tab.target.url if hasattr(tab, 'target') else ""
-            logger.info("Redfin: Final URL: %s", current_url)
-
-            street_match = address.split(',')[0].lower().strip()
-            if '/home/' not in current_url:
-                logger.warning("Redfin: Navigation may have failed - URL doesn't contain /home/: %s", current_url)
-            elif street_match.replace(' ', '-') not in current_url.lower():
-                logger.warning("Redfin: URL may not match property address: %s", current_url)
-            else:
-                logger.info("Redfin: Successfully navigated to property page")
-        except Exception as e:
-            logger.error("Redfin: Error validating final URL: %s", e)
+        # Validate navigation success (FAIL-FAST)
+        if not await self._validate_navigation_success(tab, address):
+            logger.error("Redfin: Aborting extraction - navigation validation failed for %s", address)
+            # Mark the tab with navigation failure so _extract_urls_from_page returns empty
+            tab._redfin_nav_failed = True
+        else:
+            logger.info("Redfin: Navigation validation passed - ready for image extraction")
+            tab._redfin_nav_failed = False
 
         return tab
+
+    async def _validate_navigation_success(self, tab, expected_address: str) -> bool:
+        """Validate that navigation reached a property page for the expected address.
+
+        Performs three-point validation:
+        1. URL must be a property page (/home/)
+        2. Page content must have property indicators
+        3. Street number should appear in page content
+
+        Args:
+            tab: Browser tab to validate
+            expected_address: Address that was searched for
+
+        Returns:
+            True if on correct property page, False otherwise (extraction should abort)
+        """
+        try:
+            current_url = tab.target.url if hasattr(tab, 'target') else ""
+
+            # Check 1: Must be on property page URL
+            if not self._is_property_url(current_url):
+                logger.error("Redfin: Navigation failed - not on property page (URL: %s)", current_url[:100])
+                return False
+
+            # Check 2: Page content must have property indicators
+            content = await tab.get_content()
+            content_lower = content.lower() if content else ""
+
+            property_indicators = ['propertydetails', 'home-details', 'listing-details', 'property-header', 'homeinfo']
+            indicator_count = sum(1 for ind in property_indicators if ind in content_lower)
+
+            if indicator_count < 1:
+                logger.error("Redfin: Navigation failed - no property indicators in page")
+                return False
+
+            # Check 3: Street number should appear in page
+            parts = expected_address.split()
+            street_num = parts[0] if parts and parts[0].isdigit() else None
+            if street_num and street_num not in content:
+                logger.warning("Redfin: Street number %s not found in page - may be wrong property", street_num)
+                # This is a warning, not a failure - content may be lazy-loaded
+
+            logger.info("Redfin: Navigation validation passed for %s", expected_address)
+            return True
+
+        except Exception as e:
+            logger.error("Redfin: Error validating navigation: %s", e)
+            return False
+
+    def _is_property_url(self, url: str) -> bool:
+        """Check if URL points to a specific property, not a city/region page.
+
+        Args:
+            url: URL to check
+
+        Returns:
+            True if URL is a property page URL
+        """
+        url_lower = url.lower()
+
+        # Must contain /home/ path
+        if '/home/' not in url_lower:
+            return False
+
+        # Must NOT be city/county/region pages
+        invalid_patterns = ['/city/', '/county/', '/zipcode/', '/neighborhood/', '/real-estate/']
+        for pattern in invalid_patterns:
+            if pattern in url_lower:
+                return False
+
+        return True
+
+    def _score_address_match(self, target: str, result_text: str) -> float:
+        """Score how well autocomplete result matches target address (0.0-1.0).
+
+        Scoring algorithm:
+        - Street number match (critical, 0.5 weight): MUST match or score is 0
+        - Street name match (0.3 weight): Partial credit for matching street words
+        - City match (0.2 weight): Match last city/state portion
+
+        Args:
+            target: Target address being searched for
+            result_text: Autocomplete result text to score
+
+        Returns:
+            Score from 0.0 (no match) to 1.0 (perfect match)
+        """
+        target_lower = target.lower().replace(',', ' ')
+        result_lower = result_text.lower()
+
+        parts = target_lower.split()
+        street_num = parts[0] if parts and parts[0].isdigit() else None
+
+        score = 0.0
+
+        # Street number MUST match (critical)
+        if street_num and street_num in result_lower:
+            score += 0.5
+        else:
+            return 0.0  # No match without street number
+
+        # Street name matching
+        street_words = [w for w in parts[1:4] if len(w) > 2]
+        if street_words:
+            matched = sum(1 for w in street_words if w in result_lower)
+            score += 0.3 * (matched / len(street_words))
+
+        # City matching (last 1-2 parts)
+        city = parts[-4] if len(parts) >= 4 else ''
+        if city and len(city) > 2 and city.lower() in result_lower:
+            score += 0.2
+
+        return score
 
     def _build_search_url(self, property: Property) -> str:
         """Build Redfin search URL from address.
@@ -313,6 +447,11 @@ class RedfinExtractor(StealthBrowserExtractor):
         image_urls: set[str] = set()
 
         try:
+            # Check if navigation validation failed (fail-fast)
+            if getattr(tab, '_redfin_nav_failed', False):
+                logger.error("Redfin: Skipping extraction - navigation validation had failed")
+                return []
+
             # Wait for content to load (critical for nodriver)
             await asyncio.sleep(3)
 
