@@ -1,419 +1,1175 @@
 {
   "version": "1.0.0",
-  "last_updated": "2025-12-02T15:43:23.648566-05:00",
-  "total_urls": 46,
+  "last_updated": "2025-12-03T00:58:48.106419-05:00",
+  "total_urls": 130,
   "urls": {
-    "https://photos.zillowstatic.com/fp/dac6648c4b7d202fc8704bcf3411fd2d-p_e.jpg": {
-      "image_id": "4d952a99-fe17-42c5-86d9-474b50e4c6fc",
+    "https://photos.zillowstatic.com/fp/92b1b4ee03159631b7a347d92ab4a49c-p_d.jpg": {
+      "image_id": "c67708ba-2c34-46ea-ae23-efb7ded97bcf",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:14.157345-05:00",
-      "last_seen": "2025-12-02T15:42:14.157345-05:00",
-      "content_hash": "fbc171699318a54d1a208219bd782db0",
+      "first_seen": "2025-12-02T23:53:17.421777-05:00",
+      "last_seen": "2025-12-02T23:56:54.265326-05:00",
+      "content_hash": "ddf3c96b78b32062de5774a4a5429231",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/e1202510aafad012d2448cb732082f5e-p_e.jpg": {
-      "image_id": "593ed85c-51e0-44a9-afe8-f7f09b261927",
+    "https://photos.zillowstatic.com/fp/51cf075ffc4782e424a2e3f0d462c96f-p_d.webp": {
+      "image_id": "d05c19d0-fcf8-4a5f-abb8-b3c9e2c5bdb1",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:15.545781-05:00",
-      "last_seen": "2025-12-02T15:42:15.545781-05:00",
-      "content_hash": "9cb8d29a9af5c9af8bec50c860ec5ca4",
+      "first_seen": "2025-12-02T23:53:18.185173-05:00",
+      "last_seen": "2025-12-02T23:56:54.265391-05:00",
+      "content_hash": "de8c25a3347c4f9458d13a02db8601f8",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/99e031cef06ca5587b9ccdf068a84222-p_e.jpg": {
-      "image_id": "6f94ed19-8829-40d7-b8db-48b006450ba2",
+    "https://photos.zillowstatic.com/fp/51cf075ffc4782e424a2e3f0d462c96f-p_d.jpg": {
+      "image_id": "d05c19d0-fcf8-4a5f-abb8-b3c9e2c5bdb1",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:16.885726-05:00",
-      "last_seen": "2025-12-02T15:42:16.885726-05:00",
-      "content_hash": "49211c67dffdce16174601dbfea15ae8",
+      "first_seen": "2025-12-02T23:53:18.817231-05:00",
+      "last_seen": "2025-12-02T23:56:54.265432-05:00",
+      "content_hash": "15e33333940d1722ebd46418ebf656a8",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/0e02f62bf148b17709fb29d649832a78-cc_ft_576.jpg": {
-      "image_id": "88fd16e2-4188-4bde-8287-36a42997c665",
+    "https://photos.zillowstatic.com/fp/701a50709d2468256aae6a4657a0c126-p_d.jpg": {
+      "image_id": "5c266e0a-3592-4f5b-a4c2-9b249c2846bb",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:18.144354-05:00",
-      "last_seen": "2025-12-02T15:42:18.144354-05:00",
-      "content_hash": "e87cf8b83b61ac1b7861ad3e7d9bbc96",
+      "first_seen": "2025-12-02T23:53:18.983629-05:00",
+      "last_seen": "2025-12-02T23:56:54.265480-05:00",
+      "content_hash": "160bba47b619658b96fc43170fcae1eb",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/e08d178d590acb614f40001a8ce4521f-p_c.jpg": {
-      "image_id": "587da5a8-ced2-474e-a1a9-e8735bad088e",
+    "https://photos.zillowstatic.com/fp/3e6e5f219132a586e03eceabd242214d-p_d.jpg": {
+      "image_id": "bb73b472-270f-4b4b-b270-130789718d82",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:18.991566-05:00",
-      "last_seen": "2025-12-02T15:42:18.991566-05:00",
-      "content_hash": "0a49ad0ea48c716c92b20347dd523a06",
+      "first_seen": "2025-12-02T23:53:19.678280-05:00",
+      "last_seen": "2025-12-02T23:56:54.265518-05:00",
+      "content_hash": "faffa5ce06cb41a966485adc663aa3d4",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/636d7cf26403c143ef86e09680f13ffa-p_e.jpg": {
-      "image_id": "d4697eb1-0d69-435f-87cd-bb4a3ffff332",
+    "https://photos.zillowstatic.com/fp/92b1b4ee03159631b7a347d92ab4a49c-p_d.webp": {
+      "image_id": "c67708ba-2c34-46ea-ae23-efb7ded97bcf",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:20.016994-05:00",
-      "last_seen": "2025-12-02T15:42:20.016994-05:00",
-      "content_hash": "988ff3d1aed4f587adf511f150e0627f",
+      "first_seen": "2025-12-02T23:53:20.328658-05:00",
+      "last_seen": "2025-12-02T23:56:54.265545-05:00",
+      "content_hash": "0e231d04f705fa230a4d35959fbb854c",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/02e7722b2f0eeadd4d85e5ad9dfaa417-p_e.jpg": {
-      "image_id": "550726df-75bf-4df6-b2a6-89c44d8c3286",
+    "https://photos.zillowstatic.com/fp/701a50709d2468256aae6a4657a0c126-p_d.webp": {
+      "image_id": "5c266e0a-3592-4f5b-a4c2-9b249c2846bb",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:21.041170-05:00",
-      "last_seen": "2025-12-02T15:42:21.041170-05:00",
-      "content_hash": "9937f6c1ed4ca880e4655bdb8542b279",
+      "first_seen": "2025-12-02T23:53:20.451388-05:00",
+      "last_seen": "2025-12-02T23:56:54.265589-05:00",
+      "content_hash": "ba4638d274ac1be245e34fdd4e3f3c6e",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/446f72727f730d74573dcb007dbc8217-p_c.jpg": {
-      "image_id": "00df3f61-88f9-402b-b411-289b0ee1e73c",
+    "https://photos.zillowstatic.com/fp/327bb02b3bef3b27bd11d0f2c145ac61-p_d.webp": {
+      "image_id": "4485e3aa-8a24-4e25-80a2-a9061dc6a10f",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:21.874454-05:00",
-      "last_seen": "2025-12-02T15:42:21.874454-05:00",
-      "content_hash": "384c69d46244efc293109914038d12e5",
+      "first_seen": "2025-12-02T23:53:20.649562-05:00",
+      "last_seen": "2025-12-02T23:56:54.265626-05:00",
+      "content_hash": "c10e37a33479e7a2291b506c74c221eb",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/cbfa3fe6263121d9f3f38d93f4826489-p_c.jpg": {
-      "image_id": "730a0dda-26ab-4d39-9a77-7847462cd9a5",
+    "https://photos.zillowstatic.com/fp/5bf0a493c71e7254cf1b8add4798807d-zillow_web_48_23.jpg": {
+      "image_id": "220c4162-8405-49bf-99cf-ce7ab8420b11",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:22.650542-05:00",
-      "last_seen": "2025-12-02T15:42:22.650542-05:00",
-      "content_hash": "64ff69214e6f2b580371bd118bfe20cd",
+      "first_seen": "2025-12-02T23:53:21.291841-05:00",
+      "last_seen": "2025-12-02T23:56:54.265671-05:00",
+      "content_hash": "315ab0485e5627c13c5f8cc2c4aecf0b",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/bed2923d7d5bc00ba72835f774c6af9e-p_e.jpg": {
-      "image_id": "d33d6d1b-f4ab-4a49-8937-8206a95c8bce",
+    "https://photos.zillowstatic.com/fp/96cdcd1d33db902d4588e79b7ccb6c9d-p_d.webp": {
+      "image_id": "f52e7395-b0c5-4ce4-b1b3-ec6604be31c7",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:23.691441-05:00",
-      "last_seen": "2025-12-02T15:42:23.691441-05:00",
-      "content_hash": "d406f68ef958e7cb3b4b688caafaeac5",
+      "first_seen": "2025-12-02T23:53:22.011730-05:00",
+      "last_seen": "2025-12-02T23:56:54.265731-05:00",
+      "content_hash": "0757e1444034ac6db8d759625c4fcfbc",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/23803d4312c62ff9bc8c76a92d021c78-p_e.jpg": {
-      "image_id": "e60ddd78-976c-4b9c-8e47-d7e7dde2b720",
+    "https://photos.zillowstatic.com/fp/882e6bd9e3b1ec3fe0e9ebe6bbb206f9-p_d.webp": {
+      "image_id": "016db10a-553e-4466-a8f8-73a64799b233",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:25.033892-05:00",
-      "last_seen": "2025-12-02T15:42:25.033892-05:00",
-      "content_hash": "152fb86cb811911c7af8a615fc2ccb3a",
+      "first_seen": "2025-12-02T23:53:22.725435-05:00",
+      "last_seen": "2025-12-02T23:56:54.265781-05:00",
+      "content_hash": "8b70bb279cccfd9b2c8498afe55c070b",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/5b8a4010285dd365932a0f60ad7c4366-p_e.jpg": {
-      "image_id": "bfd8a858-daec-4745-b073-0e1b3a0c8ac4",
+    "https://photos.zillowstatic.com/fp/882e6bd9e3b1ec3fe0e9ebe6bbb206f9-p_d.jpg": {
+      "image_id": "016db10a-553e-4466-a8f8-73a64799b233",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:26.158397-05:00",
-      "last_seen": "2025-12-02T15:42:26.158397-05:00",
-      "content_hash": "a14f447e8958bcf58d0b371430b2f938",
+      "first_seen": "2025-12-02T23:53:23.356095-05:00",
+      "last_seen": "2025-12-02T23:56:54.265819-05:00",
+      "content_hash": "f070720f4aa6655ac64f8783d9db03ea",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/a3a022d32b0617399617ec42566a2693-zillow_web_95_35.jpg": {
-      "image_id": "ca67e5a8-77fc-4a0e-95a5-f6eab969e538",
+    "https://photos.zillowstatic.com/fp/3e6e5f219132a586e03eceabd242214d-p_d.webp": {
+      "image_id": "bb73b472-270f-4b4b-b270-130789718d82",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:26.970880-05:00",
-      "last_seen": "2025-12-02T15:42:26.970880-05:00",
-      "content_hash": "192301954b09122635299ab76088ab5e",
+      "first_seen": "2025-12-02T23:53:23.504014-05:00",
+      "last_seen": "2025-12-02T23:56:54.265865-05:00",
+      "content_hash": "1423343cea1c9bb54e3f417321ba9c54",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/98fae754d4cffbbe623c8a9e434d4768-p_e.jpg": {
-      "image_id": "83da50c7-c61f-48c8-8533-e33424360ba9",
+    "https://photos.zillowstatic.com/fp/e2130d4d6a594bf241aaa54dbb899843-p_d.webp": {
+      "image_id": "4611b3fb-af4b-47ce-89e5-7e9cded39b4f",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:27.498412-05:00",
-      "last_seen": "2025-12-02T15:42:27.498412-05:00",
-      "content_hash": "f9b7a10fc1e28f2f8621e87f2f4ddf52",
+      "first_seen": "2025-12-02T23:53:23.700148-05:00",
+      "last_seen": "2025-12-02T23:56:54.265901-05:00",
+      "content_hash": "456750416e38fc601afddd720636c088",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/73eda098f4fdb20afae14c40d979e8d8-cc_ft_576.jpg": {
-      "image_id": "c0917b16-6ef6-4d33-9fcb-2e1a7bc7dbaf",
+    "https://photos.zillowstatic.com/fp/e2130d4d6a594bf241aaa54dbb899843-p_d.jpg": {
+      "image_id": "4611b3fb-af4b-47ce-89e5-7e9cded39b4f",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:28.679372-05:00",
-      "last_seen": "2025-12-02T15:42:28.679372-05:00",
-      "content_hash": "f58219f218baed13e0f2cdf48fce5ec9",
+      "first_seen": "2025-12-02T23:53:24.359604-05:00",
+      "last_seen": "2025-12-02T23:56:54.265945-05:00",
+      "content_hash": "5eb17e4b3200e172614c1d65a57bdcd7",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/5c7a3460cbc7c571bf11954102a5459d-p_c.jpg": {
-      "image_id": "57710e40-2102-4703-938a-ace9ec0ae10c",
+    "https://photos.zillowstatic.com/fp/96cdcd1d33db902d4588e79b7ccb6c9d-p_d.jpg": {
+      "image_id": "f52e7395-b0c5-4ce4-b1b3-ec6604be31c7",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:29.476412-05:00",
-      "last_seen": "2025-12-02T15:42:29.476412-05:00",
-      "content_hash": "7ad67b0086bdb5d2f439d48eec4b174e",
+      "first_seen": "2025-12-02T23:53:24.485377-05:00",
+      "last_seen": "2025-12-02T23:56:54.265981-05:00",
+      "content_hash": "addf8910252ac947f15dbe33d9540b7b",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/2d19c95f0942fb20f607c5be410f37d8-p_e.jpg": {
-      "image_id": "74068c4f-8f16-49e4-877b-3d7b868b4814",
+    "https://photos.zillowstatic.com/fp/327bb02b3bef3b27bd11d0f2c145ac61-p_d.jpg": {
+      "image_id": "4485e3aa-8a24-4e25-80a2-a9061dc6a10f",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:30.586366-05:00",
-      "last_seen": "2025-12-02T15:42:30.586366-05:00",
-      "content_hash": "d23ac739b839106faa3c981bd6340a80",
+      "first_seen": "2025-12-02T23:53:24.610467-05:00",
+      "last_seen": "2025-12-02T23:56:54.266025-05:00",
+      "content_hash": "81d37750df5ab494963a1d9f01f18f91",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/73eda098f4fdb20afae14c40d979e8d8-p_e.jpg": {
-      "image_id": "c0917b16-6ef6-4d33-9fcb-2e1a7bc7dbaf",
+    "https://photos.zillowstatic.com/fp/1a75aa628d677244ad43e4dd342dd270-p_d.webp": {
+      "image_id": "9752b623-a789-484c-8f21-2d773d065d04",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:31.566650-05:00",
-      "last_seen": "2025-12-02T15:42:31.566650-05:00",
-      "content_hash": "4140902b0d331291092b357c5ce21b10",
+      "first_seen": "2025-12-02T23:56:45.199857-05:00",
+      "last_seen": "2025-12-02T23:57:24.210907-05:00",
+      "content_hash": "b0772a8c85423da52463a05f56fbd318",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://www.zillowstatic.com/bedrock/app/uploads/sites/55/2025/08/HomeDollar.webp": {
-      "image_id": "0054f3ff-1a45-4e24-8adf-a9412a182638",
+    "https://photos.zillowstatic.com/fp/ee911e73b9c119eef2505fc5250ae04a-p_d.webp": {
+      "image_id": "dbd21983-d963-4742-83f6-4c128e4a3e40",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:32.541256-05:00",
-      "last_seen": "2025-12-02T15:42:32.541256-05:00",
-      "content_hash": "31009bd2e683b726108cf5f846fe69a4",
+      "first_seen": "2025-12-02T23:56:45.951988-05:00",
+      "last_seen": "2025-12-02T23:57:24.210980-05:00",
+      "content_hash": "1f6e3b92f53e23c33616b7faf77e7be7",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://www.zillowstatic.com/s3/partner-showcase/static/images/agents/agent7.jpg": {
-      "image_id": "c6875918-607a-45b8-8aa1-266e9ef5d7e7",
+    "https://photos.zillowstatic.com/fp/f78d860bef612c23e66ac05b3fcc3860-p_d.jpg": {
+      "image_id": "4669042f-b745-4db0-925b-0ab849dda9b5",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:32.706829-05:00",
-      "last_seen": "2025-12-02T15:42:32.706829-05:00",
-      "content_hash": "cc0f9cb4ecea11741abe093dd0bc90f4",
+      "first_seen": "2025-12-02T23:56:46.689642-05:00",
+      "last_seen": "2025-12-02T23:57:24.211042-05:00",
+      "content_hash": "9cd1552b1d559e1991afaa21c781b297",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/ad76f118a3778f82b93a38366b59df4d-p_e.jpg": {
-      "image_id": "ea213bfd-1935-44a2-ac50-52a09132633d",
+    "https://photos.zillowstatic.com/fp/f78d860bef612c23e66ac05b3fcc3860-p_d.webp": {
+      "image_id": "4669042f-b745-4db0-925b-0ab849dda9b5",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:33.342765-05:00",
-      "last_seen": "2025-12-02T15:42:33.342765-05:00",
-      "content_hash": "5695243775c35451f4de9d535e822992",
+      "first_seen": "2025-12-02T23:56:47.355474-05:00",
+      "last_seen": "2025-12-02T23:57:24.211103-05:00",
+      "content_hash": "04172df81025c2f7a9a7efb7d9fc7887",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/dbb1e160f4caee4d3abdf2c57c6fa63b-p_c.jpg": {
-      "image_id": "678ca71a-40d2-4137-99da-639ec3184cfb",
+    "https://photos.zillowstatic.com/fp/77ffe5713e5f5d46ce8e7f1a5ca4ca35-p_d.webp": {
+      "image_id": "223fe26c-c4bd-497f-9d0c-c6e1d4aea98e",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:34.190590-05:00",
-      "last_seen": "2025-12-02T15:42:34.190590-05:00",
-      "content_hash": "f9481fafc0cf8dda4823f0ae242494a8",
+      "first_seen": "2025-12-02T23:56:47.612841-05:00",
+      "last_seen": "2025-12-02T23:57:24.211175-05:00",
+      "content_hash": "466ac193a5490888e5799984d78e2894",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/ca17738a61f4991e1de720eaf2d71ae7-p_e.jpg": {
-      "image_id": "4971a9a8-c058-40d3-a488-a439b8684741",
+    "https://photos.zillowstatic.com/fp/c1de09c0920b6e986625d0de0a7716c1-p_d.webp": {
+      "image_id": "24332d71-7943-4f99-b249-5b87e25f5b96",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:35.329857-05:00",
-      "last_seen": "2025-12-02T15:42:35.329857-05:00",
-      "content_hash": "7015fe3fbd579f9cd153d187dbcadc12",
+      "first_seen": "2025-12-02T23:56:48.393849-05:00",
+      "last_seen": "2025-12-02T23:57:24.211236-05:00",
+      "content_hash": "4efa9598f21a4650e14f737626ade865",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/e375302b3d66870c519c785246b05504-p_e.jpg": {
-      "image_id": "81dfda0e-b2db-4024-a25c-b6d728ca33fe",
+    "https://photos.zillowstatic.com/fp/faf8d54421eade3f22a939071a45afc8-p_d.jpg": {
+      "image_id": "5cd72c7b-a2c7-43b6-ac3d-92bcd711c90c",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:36.448627-05:00",
-      "last_seen": "2025-12-02T15:42:36.448627-05:00",
-      "content_hash": "db09706470a1f3f0c048e8270474aa74",
+      "first_seen": "2025-12-02T23:56:49.160137-05:00",
+      "last_seen": "2025-12-02T23:57:24.211296-05:00",
+      "content_hash": "1b6e7823d695d92397151c164bbbb15d",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/a5e25771af515cbd822138cc2268bec0-p_e.jpg": {
-      "image_id": "f7b06b2c-d6b1-4f23-bbd1-105e0ccf7671",
+    "https://photos.zillowstatic.com/fp/ee911e73b9c119eef2505fc5250ae04a-p_d.jpg": {
+      "image_id": "dbd21983-d963-4742-83f6-4c128e4a3e40",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:37.662768-05:00",
-      "last_seen": "2025-12-02T15:42:37.662768-05:00",
-      "content_hash": "e691d58d82a96bd3c2e38cf5d97ccf33",
+      "first_seen": "2025-12-02T23:56:49.818825-05:00",
+      "last_seen": "2025-12-02T23:57:24.211336-05:00",
+      "content_hash": "fd7dc3f55053a10a12f4f52fea422bd4",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/3eef01a9bd530d0a22b4e176493060d3-p_e.jpg": {
-      "image_id": "fa069a41-2263-4acc-ab28-bc0bb5e308b2",
+    "https://photos.zillowstatic.com/fp/1a75aa628d677244ad43e4dd342dd270-p_d.jpg": {
+      "image_id": "9752b623-a789-484c-8f21-2d773d065d04",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:38.706147-05:00",
-      "last_seen": "2025-12-02T15:42:38.706147-05:00",
-      "content_hash": "c6441e64635c6972eaafc1eddcdcac52",
+      "first_seen": "2025-12-02T23:56:49.979192-05:00",
+      "last_seen": "2025-12-02T23:57:24.211386-05:00",
+      "content_hash": "e3c6788e6091bf9ffef3050b82d597c4",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/5721ec295ff75af80aa6e1fae0df7b1f-p_c.jpg": {
-      "image_id": "2a473d50-1754-4048-bd95-9046eda894d7",
+    "https://photos.zillowstatic.com/fp/cea3356e24819e237efbfa66e1362da1-p_d.jpg": {
+      "image_id": "5006bcc6-1be8-44e2-9a89-e3a8cd59c43e",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:39.463688-05:00",
-      "last_seen": "2025-12-02T15:42:39.463688-05:00",
-      "content_hash": "5cf51a10aede45516072a8443b84fed8",
+      "first_seen": "2025-12-02T23:56:50.231456-05:00",
+      "last_seen": "2025-12-02T23:57:24.211447-05:00",
+      "content_hash": "1826c588279b1113792b7ef1d9167cc3",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://www.zillowstatic.com/s3/partner-showcase/static/images/agents/agent27.jpg": {
-      "image_id": "d871c749-8ad7-4c22-aa3e-ce57f79910ba",
+    "https://photos.zillowstatic.com/fp/faf8d54421eade3f22a939071a45afc8-p_d.webp": {
+      "image_id": "5cd72c7b-a2c7-43b6-ac3d-92bcd711c90c",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:40.238994-05:00",
-      "last_seen": "2025-12-02T15:42:40.238994-05:00",
-      "content_hash": "a3d3814b9c1b89cd4aee8e0b94706651",
+      "first_seen": "2025-12-02T23:56:50.881174-05:00",
+      "last_seen": "2025-12-02T23:57:24.211507-05:00",
+      "content_hash": "eec091abe6388b1d794d3cf9de30d494",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/b5948f16d772821d9ab834a331e5153d-p_e.jpg": {
-      "image_id": "a13d69b4-dee4-46ba-8170-1a6e9e42007c",
+    "https://www.zillowstatic.com/s3/web-platform/sub-apps/hops-homepage/hops-homepage.prod.master.11916179.07899243/web/c45ff4889526375d32314844d0b67d8a.png": {
+      "image_id": "ee13172d-d130-4934-b0a1-42d83669abde",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:41.266397-05:00",
-      "last_seen": "2025-12-02T15:42:41.266397-05:00",
-      "content_hash": "90b023ea652b84ecbf191880e2f07a00",
+      "first_seen": "2025-12-02T23:56:51.853785-05:00",
+      "last_seen": "2025-12-03T00:23:36.124813-05:00",
+      "content_hash": "3303fc7314f2aad484e403f8ba544df4",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/83ebad7077af02db47c3f20fde091ab0-cc_ft_576.jpg": {
-      "image_id": "b8607432-eb04-4a74-a411-d2267b36f120",
+    "https://photos.zillowstatic.com/fp/f853da0ac790c93c43e61c2255f20f6a-p_d.jpg": {
+      "image_id": "a066e7eb-d208-4270-95ab-2eba31d83e50",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:42.219073-05:00",
-      "last_seen": "2025-12-02T15:42:42.219073-05:00",
-      "content_hash": "ea68c01d73e67d93d864bbb0f3b61b0d",
+      "first_seen": "2025-12-02T23:56:51.618910-05:00",
+      "last_seen": "2025-12-02T23:57:24.211571-05:00",
+      "content_hash": "3bd2e6e52c06ca6b4dc19faeb706be27",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/3801f191109e38b668315ad0205dd6ba-p_c.jpg": {
-      "image_id": "d67a7539-a4ae-4a45-80ef-8013aecf6aeb",
+    "https://www.zillowstatic.com/s3/web-platform/sub-apps/hops-homepage/hops-homepage.prod.master.11916179.07899243/web/e9737a930518048728251f1671effc95.png": {
+      "image_id": "7c311fd4-1a6e-4c8a-9c1d-90223f690cd2",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:43.102887-05:00",
-      "last_seen": "2025-12-02T15:42:43.102887-05:00",
-      "content_hash": "6590bd59240997d698ad777f83472519",
+      "first_seen": "2025-12-02T23:56:52.375318-05:00",
+      "last_seen": "2025-12-03T00:23:36.124900-05:00",
+      "content_hash": "f3000be1642e54f290e0bc7f7abf4d73",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://photos.zillowstatic.com/fp/f5e7e289851880be4dc6998e056c933a-p_e.jpg": {
-      "image_id": "c990b35a-d6c1-4d65-831a-7088a069df7e",
+    "https://photos.zillowstatic.com/fp/c1de09c0920b6e986625d0de0a7716c1-p_d.jpg": {
+      "image_id": "24332d71-7943-4f99-b249-5b87e25f5b96",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:44.259031-05:00",
-      "last_seen": "2025-12-02T15:42:44.259031-05:00",
-      "content_hash": "680cdac8377139d47ebc20f426feee7d",
+      "first_seen": "2025-12-02T23:56:53.041729-05:00",
+      "last_seen": "2025-12-02T23:57:24.211620-05:00",
+      "content_hash": "e409f00c3d0a9686d9a0d9436da1a641",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
+    },
+    "https://www.zillowstatic.com/s3/web-platform/sub-apps/hops-homepage/hops-homepage.prod.master.11916179.07899243/web/5d69598eba004b778f74b62a86a30695.png": {
+      "image_id": "b38564f5-83ee-4662-a3d4-541a95b888b5",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-02T23:56:53.287604-05:00",
+      "last_seen": "2025-12-03T00:23:36.124946-05:00",
+      "content_hash": "ada8fdb2f0ab6fff5d9f8b2381e40760",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/77ffe5713e5f5d46ce8e7f1a5ca4ca35-p_d.jpg": {
+      "image_id": "223fe26c-c4bd-497f-9d0c-c6e1d4aea98e",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-02T23:56:53.947451-05:00",
+      "last_seen": "2025-12-02T23:57:24.211677-05:00",
+      "content_hash": "56667e3399706a2222457c533b246c5b",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/f853da0ac790c93c43e61c2255f20f6a-p_d.webp": {
+      "image_id": "a066e7eb-d208-4270-95ab-2eba31d83e50",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-02T23:56:54.117086-05:00",
+      "last_seen": "2025-12-02T23:57:24.211725-05:00",
+      "content_hash": "e737a675cb36912a3860b19d90667d67",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/cea3356e24819e237efbfa66e1362da1-p_d.webp": {
+      "image_id": "5006bcc6-1be8-44e2-9a89-e3a8cd59c43e",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-02T23:56:54.261592-05:00",
+      "last_seen": "2025-12-02T23:57:24.211779-05:00",
+      "content_hash": "4a9e4fcf26ce804fa829c9467971021b",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://www.zillowstatic.com/s3/web-platform/sub-apps/hops-homepage/hops-homepage.prod.master.11916179.07899243/web/a03d28d86d858234534306b63a6de3b2.jpg": {
+      "image_id": "bce673ee-8eba-46d1-a2cc-083b27624bf8",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-02T23:57:23.702541-05:00",
+      "last_seen": "2025-12-03T00:23:36.125000-05:00",
+      "content_hash": "483eb41949f7052c194f8675e16cf081",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/0155e739d0356cbae0ef03f731bbad76-p_d.webp": {
+      "image_id": "adfd417d-a031-46b4-92c2-33c236f9e098",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:04.899640-05:00",
+      "last_seen": "2025-12-03T00:09:29.577922-05:00",
+      "content_hash": "32e219bdc6f1d68707872241fdca871b",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/448050d16c85dc064c50b43fcabb850d-p_d.jpg": {
+      "image_id": "0eed3833-608d-4efd-8ec0-43b3334ff9d9",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:06.440105-05:00",
+      "last_seen": "2025-12-03T00:09:29.577981-05:00",
+      "content_hash": "30ee423803001789ca4e11f8e22531c1",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/08b0db276869db8a6c4de190a4e47e15-zillow_web_48_23.jpg": {
+      "image_id": "91bedb04-1457-473c-ab54-14ac8892ff43",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:07.046483-05:00",
+      "last_seen": "2025-12-03T00:09:29.578042-05:00",
+      "content_hash": "c49a30ba0c28aa3488628fcf1be73606",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/9efd94d12e8712515ac88f41239efddb-p_d.jpg": {
+      "image_id": "e819482f-581e-463d-86eb-43349a4fc8a6",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:07.731469-05:00",
+      "last_seen": "2025-12-03T00:09:29.578102-05:00",
+      "content_hash": "b1cf9a253f769a1d705312efa6f6e3b7",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/3fc97c6eba55729adf5aa39ee184b6ee-p_d.webp": {
+      "image_id": "7b57a00e-e3f9-42a1-8d37-619ed5e97a07",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:08.403256-05:00",
+      "last_seen": "2025-12-03T00:09:29.578161-05:00",
+      "content_hash": "b814defd024eebe8c7f1d4dd641c67b8",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/d2c28114f36af4dea165c93003b4cd2e-zillow_web_48_23.jpg": {
+      "image_id": "4a8942b3-9ed8-4523-ab86-5a1e93e4e593",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:09.008873-05:00",
+      "last_seen": "2025-12-03T00:09:29.578221-05:00",
+      "content_hash": "d92aa58e612d810847d76673152a1516",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/0229f4543a4cc4b7b5a960f24d3179f4-p_d.webp": {
+      "image_id": "56c71954-e403-40a5-822f-69e902e793d7",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:09.674305-05:00",
+      "last_seen": "2025-12-03T00:09:29.578280-05:00",
+      "content_hash": "425a8f245563a4442ac7465670ec7dd0",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/0155e739d0356cbae0ef03f731bbad76-p_d.jpg": {
+      "image_id": "adfd417d-a031-46b4-92c2-33c236f9e098",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:10.279721-05:00",
+      "last_seen": "2025-12-03T00:09:29.578320-05:00",
+      "content_hash": "095f4276333536357255e1fdda365bd7",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/d45d95b8bfbbba70c6cedf45f6ce9deb-p_d.jpg": {
+      "image_id": "76711e8d-0b79-4a12-9cf4-a154a5a984b7",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:10.438842-05:00",
+      "last_seen": "2025-12-03T00:09:29.578369-05:00",
+      "content_hash": "b9efc5e8362efc00fc472446a719571a",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/bff0a0e344ad4bbb07855c4042da6cf6-p_d.webp": {
+      "image_id": "485c385a-0920-4c78-9d63-52eb0ca97bcc",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:11.124791-05:00",
+      "last_seen": "2025-12-03T00:09:29.578410-05:00",
+      "content_hash": "f856e9cb883f9dde488f958e1c20fde3",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/c78aff5b73898eaba563000628180e1a-p_d.jpg": {
+      "image_id": "369d0145-05c6-4e19-bff7-d54c55d4a9d0",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:11.800110-05:00",
+      "last_seen": "2025-12-03T00:09:29.578456-05:00",
+      "content_hash": "75554477a9a3f7005e7c4dbd264a28c7",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/448050d16c85dc064c50b43fcabb850d-p_d.webp": {
+      "image_id": "0eed3833-608d-4efd-8ec0-43b3334ff9d9",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:12.405075-05:00",
+      "last_seen": "2025-12-03T00:09:29.578515-05:00",
+      "content_hash": "3052eaa13b1aba32a3ea6e55cd719e41",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/9efd94d12e8712515ac88f41239efddb-p_d.webp": {
+      "image_id": "e819482f-581e-463d-86eb-43349a4fc8a6",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:12.500240-05:00",
+      "last_seen": "2025-12-03T00:09:29.578553-05:00",
+      "content_hash": "26761b34cdf86fc5ee8fc5663290089d",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/d45d95b8bfbbba70c6cedf45f6ce9deb-p_d.webp": {
+      "image_id": "76711e8d-0b79-4a12-9cf4-a154a5a984b7",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:12.594328-05:00",
+      "last_seen": "2025-12-03T00:09:29.578598-05:00",
+      "content_hash": "e047966dfc6954a43c6f367441c89938",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/bff0a0e344ad4bbb07855c4042da6cf6-p_d.jpg": {
+      "image_id": "485c385a-0920-4c78-9d63-52eb0ca97bcc",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:12.846321-05:00",
+      "last_seen": "2025-12-03T00:09:29.578635-05:00",
+      "content_hash": "0633e901b5782cb032527d08898960c5",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/c78aff5b73898eaba563000628180e1a-p_d.webp": {
+      "image_id": "369d0145-05c6-4e19-bff7-d54c55d4a9d0",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:12.941452-05:00",
+      "last_seen": "2025-12-03T00:09:29.578659-05:00",
+      "content_hash": "3901f9eaab5ba8ec8ee5cc498fefc6a0",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/0229f4543a4cc4b7b5a960f24d3179f4-p_d.jpg": {
+      "image_id": "56c71954-e403-40a5-822f-69e902e793d7",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:13.035661-05:00",
+      "last_seen": "2025-12-03T00:09:29.578703-05:00",
+      "content_hash": "e25bee4b3977befe982bcec31633549b",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/3fc97c6eba55729adf5aa39ee184b6ee-p_d.jpg": {
+      "image_id": "7b57a00e-e3f9-42a1-8d37-619ed5e97a07",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:04:13.324256-05:00",
+      "last_seen": "2025-12-03T00:09:29.578741-05:00",
+      "content_hash": "46ba76c389b70df9eceb3b899ecaa3a4",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/0e4f1bbabf605e464c7f5b082c5122b5-p_d.jpg": {
+      "image_id": "a864e106-df72-47f9-9aaf-7ee1e69ffdf3",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:22.187646-05:00",
+      "last_seen": "2025-12-03T00:19:21.793473-05:00",
+      "content_hash": "36f6017c0b170cf4c2b0b56e90ca575f",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/328c6298c5fddc111645df0a99b7b18f-p_d.jpg": {
+      "image_id": "c6022fb0-786c-4e81-996b-54564bc049c7",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:22.941518-05:00",
+      "last_seen": "2025-12-03T00:19:21.793531-05:00",
+      "content_hash": "1370f8c9aa6e1c9bea4731777ef1b908",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/0e4f1bbabf605e464c7f5b082c5122b5-p_d.webp": {
+      "image_id": "a864e106-df72-47f9-9aaf-7ee1e69ffdf3",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:23.608930-05:00",
+      "last_seen": "2025-12-03T00:19:21.793593-05:00",
+      "content_hash": "e4ce196a22b278a9d52731628ae908dd",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/9c2b28dc5fb99dc239255abdc22b89fd-p_d.jpg": {
+      "image_id": "0004a649-2003-4b52-922e-2a041023398a",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:23.825203-05:00",
+      "last_seen": "2025-12-03T00:19:21.793653-05:00",
+      "content_hash": "9d50e0c234ff745ef1cb815877c4daee",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/e790ef4aa31deebf080cf9083ad1ed00-p_d.webp": {
+      "image_id": "9021e6de-9926-42ca-922c-0c492ed38267",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:24.562705-05:00",
+      "last_seen": "2025-12-03T00:19:21.793713-05:00",
+      "content_hash": "f1c20db95e287e84e84bfb840d525cfe",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/4bbdeac6ca2f6045baf11338d503d03d-p_d.webp": {
+      "image_id": "fce9b9b6-cf2a-4733-8c7e-58fa94dda198",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:25.280940-05:00",
+      "last_seen": "2025-12-03T00:19:21.793773-05:00",
+      "content_hash": "770bc97815bd7e43f27e0d08cca08c0a",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/4bbdeac6ca2f6045baf11338d503d03d-p_d.jpg": {
+      "image_id": "fce9b9b6-cf2a-4733-8c7e-58fa94dda198",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:25.921980-05:00",
+      "last_seen": "2025-12-03T00:19:21.793832-05:00",
+      "content_hash": "05989ebb4c6085263b58b537c33d634f",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/f3ecd71b1dc1807f7d615d773ddf2b3f-p_d.jpg": {
+      "image_id": "8b16c3f1-c56e-455a-aea1-c1b5764161c4",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:26.141318-05:00",
+      "last_seen": "2025-12-03T00:19:21.793890-05:00",
+      "content_hash": "63a49298bbf2d825a3d54c112a4fb95c",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/00b557d77f3ab269a3d0fa07e4e0814e-p_d.jpg": {
+      "image_id": "e1091170-188c-4173-b4d6-30961565d9bb",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:26.860285-05:00",
+      "last_seen": "2025-12-03T00:19:21.793929-05:00",
+      "content_hash": "018c7f2d1a455530d095d8a4355c74a6",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/f3ecd71b1dc1807f7d615d773ddf2b3f-p_d.webp": {
+      "image_id": "8b16c3f1-c56e-455a-aea1-c1b5764161c4",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:27.539872-05:00",
+      "last_seen": "2025-12-03T00:19:21.793976-05:00",
+      "content_hash": "5186d2c4fb886dea8231ac57f07b9e3d",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/bd82bd7d429c0ad98fd352b7fb838851-p_d.jpg": {
+      "image_id": "c418f1d8-4e9e-4ec9-93d6-6c4c8da4ecf0",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:27.750653-05:00",
+      "last_seen": "2025-12-03T00:19:21.794035-05:00",
+      "content_hash": "83dffaed5c19ba9d202f08b47bfa1865",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/00b557d77f3ab269a3d0fa07e4e0814e-p_d.webp": {
+      "image_id": "e1091170-188c-4173-b4d6-30961565d9bb",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:28.397619-05:00",
+      "last_seen": "2025-12-03T00:19:21.794094-05:00",
+      "content_hash": "6391e4e375d5bd062de7c1980a519a09",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/bd82bd7d429c0ad98fd352b7fb838851-p_d.webp": {
+      "image_id": "c418f1d8-4e9e-4ec9-93d6-6c4c8da4ecf0",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:28.534383-05:00",
+      "last_seen": "2025-12-03T00:19:21.794153-05:00",
+      "content_hash": "627bd3aef3fcf511eee1f635d4750a53",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/464ad42e5f4f4a61544ab7d3b6721129-zillow_web_48_23.jpg": {
+      "image_id": "4f218e20-6802-4cd2-8eb8-233b2217aa85",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:28.660725-05:00",
+      "last_seen": "2025-12-03T00:19:21.794212-05:00",
+      "content_hash": "fe42a7bbb0fe0acea81a51cb93f6c882",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/e790ef4aa31deebf080cf9083ad1ed00-p_d.jpg": {
+      "image_id": "9021e6de-9926-42ca-922c-0c492ed38267",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:29.301137-05:00",
+      "last_seen": "2025-12-03T00:19:21.794250-05:00",
+      "content_hash": "05212cbce5f8a827815e3820fc96bcb5",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/9c2b28dc5fb99dc239255abdc22b89fd-p_d.webp": {
+      "image_id": "0004a649-2003-4b52-922e-2a041023398a",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:29.446537-05:00",
+      "last_seen": "2025-12-03T00:19:21.794275-05:00",
+      "content_hash": "697fab810b40e9da03d87b1dd441177b",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/328c6298c5fddc111645df0a99b7b18f-p_d.webp": {
+      "image_id": "c6022fb0-786c-4e81-996b-54564bc049c7",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:09:29.575298-05:00",
+      "last_seen": "2025-12-03T00:19:21.794297-05:00",
+      "content_hash": "c5bae7e7068dd8a0a3d63386e9b2da54",
+      "source": "zillow",
+      "status": "removed"
     },
     "https://photos.zillowstatic.com/fp/31730885faee690f02483a4b2935b8d1-cc_ft_576.jpg": {
-      "image_id": "ea033963-feba-4028-8471-174de9d50029",
+      "image_id": "fb307c2c-cb85-4303-b305-5ef9eb1c6e0c",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:45.195297-05:00",
-      "last_seen": "2025-12-02T15:42:45.195297-05:00",
+      "first_seen": "2025-12-03T00:13:31.955186-05:00",
+      "last_seen": "2025-12-03T00:58:48.086047-05:00",
       "content_hash": "01d684b707ca93887260b9deb83cb40f",
       "source": "zillow",
       "status": "active"
     },
-    "https://photos.zillowstatic.com/fp/72c5069096cba0f16bddea826b9bcf75-p_c.jpg": {
-      "image_id": "ae9b6919-86f1-4007-92c8-53fd27f9f59c",
+    "https://photos.zillowstatic.com/fp/73eda098f4fdb20afae14c40d979e8d8-cc_ft_576.jpg": {
+      "image_id": "e779ef29-3beb-42ed-84f4-e342445f8fbe",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:46.069121-05:00",
-      "last_seen": "2025-12-02T15:42:46.069121-05:00",
-      "content_hash": "a7d59ae382c58b09534def975d081317",
-      "source": "zillow",
-      "status": "active"
-    },
-    "https://photos.zillowstatic.com/fp/abbf03acd6c1765455b5ddd08e8ad0a3-p_e.jpg": {
-      "image_id": "7038204b-bd89-4c2c-ad28-dbbbfcd589ca",
-      "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:47.132301-05:00",
-      "last_seen": "2025-12-02T15:42:47.132301-05:00",
-      "content_hash": "3d9314efe5db1fd98a0a61695018d5ea",
-      "source": "zillow",
-      "status": "active"
-    },
-    "https://photos.zillowstatic.com/fp/5a892c6c8d703352facc25cbcf470d14-p_e.jpg": {
-      "image_id": "d187e5a4-3b35-48fd-83e1-4cdf768e4ecd",
-      "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:48.121274-05:00",
-      "last_seen": "2025-12-02T15:42:48.121274-05:00",
-      "content_hash": "0c1c9a1af9a2868f78dc845e05f499f8",
-      "source": "zillow",
-      "status": "active"
-    },
-    "https://photos.zillowstatic.com/fp/fca0dab7ee76daa81957bcc5a53de5ac-p_e.jpg": {
-      "image_id": "2efa1d6a-787e-4657-9531-78adfe83d1ef",
-      "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:49.131491-05:00",
-      "last_seen": "2025-12-02T15:42:49.131491-05:00",
-      "content_hash": "1839ad591d4e1497079830c729d6fd0f",
+      "first_seen": "2025-12-03T00:13:32.834092-05:00",
+      "last_seen": "2025-12-03T00:58:43.580349-05:00",
+      "content_hash": "f58219f218baed13e0f2cdf48fce5ec9",
       "source": "zillow",
       "status": "active"
     },
     "https://photos.zillowstatic.com/fp/ca17738a61f4991e1de720eaf2d71ae7-cc_ft_960.jpg": {
-      "image_id": "4971a9a8-c058-40d3-a488-a439b8684741",
+      "image_id": "37be6985-371b-4bf5-8085-72cf033498ed",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:50.859098-05:00",
-      "last_seen": "2025-12-02T15:42:50.859098-05:00",
+      "first_seen": "2025-12-03T00:13:34.026567-05:00",
+      "last_seen": "2025-12-03T00:58:48.086304-05:00",
       "content_hash": "afff6407241c859d066a015742e3935a",
       "source": "zillow",
       "status": "active"
     },
-    "https://photos.zillowstatic.com/fp/acc8f5a5f7a5b53f6f500cd5fbffd78b-p_e.jpg": {
-      "image_id": "b154e3cb-060f-4aa4-be0a-5b681121dc07",
+    "https://photos.zillowstatic.com/fp/83ebad7077af02db47c3f20fde091ab0-cc_ft_576.jpg": {
+      "image_id": "7263773a-860b-470d-92ec-683875959b4f",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:51.457225-05:00",
-      "last_seen": "2025-12-02T15:42:51.457225-05:00",
-      "content_hash": "4b2e563ae5fa8db78c31ccbce768258a",
+      "first_seen": "2025-12-03T00:13:34.949307-05:00",
+      "last_seen": "2025-12-03T00:58:48.179677-05:00",
+      "content_hash": "ea68c01d73e67d93d864bbb0f3b61b0d",
       "source": "zillow",
       "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/0e02f62bf148b17709fb29d649832a78-cc_ft_576.jpg": {
+      "image_id": "516305f6-9d9a-4d33-9788-8e639ea4eaae",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:13:35.829951-05:00",
+      "last_seen": "2025-12-03T00:58:48.179615-05:00",
+      "content_hash": "e87cf8b83b61ac1b7861ad3e7d9bbc96",
+      "source": "zillow",
+      "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/446f72727f730d74573dcb007dbc8217-p_c.jpg": {
+      "image_id": "fc69a002-a623-49ea-88f0-d5f24e745f29",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:26.973462-05:00",
+      "last_seen": "2025-12-03T00:58:48.085980-05:00",
+      "content_hash": "384c69d46244efc293109914038d12e5",
+      "source": "zillow",
+      "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/72c5069096cba0f16bddea826b9bcf75-p_c.jpg": {
+      "image_id": "1530e164-98fc-434c-b16b-b3bac6bfabcd",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:27.920441-05:00",
+      "last_seen": "2025-12-03T00:58:48.086148-05:00",
+      "content_hash": "a7d59ae382c58b09534def975d081317",
+      "source": "zillow",
+      "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/b559c0d27a49667d16f556e66b8a0df0-p_e.jpg": {
+      "image_id": "710ba15b-7a71-41d1-a811-814bba8caef9",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:29.175779-05:00",
+      "last_seen": "2025-12-03T00:58:48.089023-05:00",
+      "content_hash": "615761095b6d4c57e257b358f05edb3b",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/faee40736bc0465c3e409f0b3e6bcd4c-p_e.jpg": {
+      "image_id": "da6842ba-2f60-4b66-9595-73ba72ac885b",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:30.783649-05:00",
+      "last_seen": "2025-12-03T00:58:48.089075-05:00",
+      "content_hash": "116d1dcf3d1ff91f528b9d3f20589641",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/99e031cef06ca5587b9ccdf068a84222-p_e.jpg": {
+      "image_id": "1749af6c-8064-4240-8db1-a615321d83f8",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:32.017198-05:00",
+      "last_seen": "2025-12-03T00:58:48.089109-05:00",
+      "content_hash": "49211c67dffdce16174601dbfea15ae8",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/280d5e2a98c4eb64a58e8ce4d16cce85-p_e.jpg": {
+      "image_id": "85f926b7-028e-40a7-b70f-4b0ccc9b61b5",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:33.510289-05:00",
+      "last_seen": "2025-12-03T00:58:48.089154-05:00",
+      "content_hash": "26477ae70382c67cfda6d081d3dd5251",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/e375302b3d66870c519c785246b05504-p_e.jpg": {
+      "image_id": "27384186-2ea1-4510-87aa-9cde5c27e9be",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:36.975966-05:00",
+      "last_seen": "2025-12-03T00:58:48.089180-05:00",
+      "content_hash": "db09706470a1f3f0c048e8270474aa74",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/508dba0a3742800c2171f4d2c790080f-p_e.jpg": {
+      "image_id": "ecd9d8d7-b40a-4d44-9d48-3cf5f9f18029",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:38.421731-05:00",
+      "last_seen": "2025-12-03T00:58:48.089201-05:00",
+      "content_hash": "43bb1819c350af7723c6aeaa00bd6585",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/e08d178d590acb614f40001a8ce4521f-p_c.jpg": {
+      "image_id": "9258b55a-3881-4a41-ab0b-246998e58d9e",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:39.294604-05:00",
+      "last_seen": "2025-12-03T00:58:48.086359-05:00",
+      "content_hash": "0a49ad0ea48c716c92b20347dd523a06",
+      "source": "zillow",
+      "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/71764e1d036f015267bb65a7d11911a2-p_e.jpg": {
+      "image_id": "28242b69-cb91-4ed3-9279-9351e33ef262",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:40.582158-05:00",
+      "last_seen": "2025-12-03T00:58:48.089250-05:00",
+      "content_hash": "17ea5cd2354987bdff45d8752f365e69",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/a616a86ccf4f18b56c387696ddb4ef61-p_e.jpg": {
+      "image_id": "4ca10e92-44f3-4770-9dda-974bb527419d",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:41.744195-05:00",
+      "last_seen": "2025-12-03T00:58:48.089292-05:00",
+      "content_hash": "df517b2476b6068c6f5d0f04d761ff45",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/5721ec295ff75af80aa6e1fae0df7b1f-p_c.jpg": {
+      "image_id": "aec30dc8-dee1-4924-a924-304d490945fc",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:43.132948-05:00",
+      "last_seen": "2025-12-03T00:58:48.086191-05:00",
+      "content_hash": "5cf51a10aede45516072a8443b84fed8",
+      "source": "zillow",
+      "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/b5948f16d772821d9ab834a331e5153d-p_e.jpg": {
+      "image_id": "b5ea834e-ee27-4f73-8ee8-65036c915dfa",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:44.885895-05:00",
+      "last_seen": "2025-12-03T00:58:48.089318-05:00",
+      "content_hash": "90b023ea652b84ecbf191880e2f07a00",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/3eef01a9bd530d0a22b4e176493060d3-p_e.jpg": {
+      "image_id": "0b8081cd-ad9e-4b55-b64f-845492bb777b",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:44.897214-05:00",
+      "last_seen": "2025-12-03T00:58:48.089364-05:00",
+      "content_hash": "c6441e64635c6972eaafc1eddcdcac52",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/d9dc32fea54ee2a2d31cee1b4c4b47d4-p_e.jpg": {
+      "image_id": "c8a3a954-f2cc-4450-a1f4-ee2534cf1930",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:46.124417-05:00",
+      "last_seen": "2025-12-03T00:58:48.089404-05:00",
+      "content_hash": "a7ff6742dcca7e3188fdafad2a060972",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/3801f191109e38b668315ad0205dd6ba-p_c.jpg": {
+      "image_id": "5f1b33ca-bc50-4ce7-83d2-ef9abfdc3aeb",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:47.008002-05:00",
+      "last_seen": "2025-12-03T00:58:48.085842-05:00",
+      "content_hash": "6590bd59240997d698ad777f83472519",
+      "source": "zillow",
+      "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/5dc3b773cee23cf149b7be76df00dc82-p_e.jpg": {
+      "image_id": "7da27f1f-5b7d-43c5-bae3-b5067241c823",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:48.498588-05:00",
+      "last_seen": "2025-12-03T00:58:48.089458-05:00",
+      "content_hash": "f2a6f2cba941cc72e834fddeb10d481d",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/e3b0ddce44cc82aba2e2b8290ae0d773-p_e.jpg": {
+      "image_id": "ffe29521-b622-4a82-856d-0a3ec0daa3ca",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:49.355744-05:00",
+      "last_seen": "2025-12-03T00:58:48.089500-05:00",
+      "content_hash": "b5429d7d2b7b7bd8fb98e343699eec8b",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/02e7722b2f0eeadd4d85e5ad9dfaa417-p_e.jpg": {
+      "image_id": "0254ca22-ceed-4071-9d11-113bf3aa845d",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:50.772297-05:00",
+      "last_seen": "2025-12-03T00:58:48.089547-05:00",
+      "content_hash": "9937f6c1ed4ca880e4655bdb8542b279",
+      "source": "zillow",
+      "status": "removed"
     },
     "https://photos.zillowstatic.com/fp/b59dfdbc7ea8907ab5bc120ac0ccb808-p_e.jpg": {
-      "image_id": "b7af0dfe-f44f-458b-b4cb-9bd21743614e",
+      "image_id": "90e2b360-1d56-4187-9912-b2f112bce073",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:52.675850-05:00",
-      "last_seen": "2025-12-02T15:42:52.675850-05:00",
+      "first_seen": "2025-12-03T00:27:52.172283-05:00",
+      "last_seen": "2025-12-03T00:58:48.089585-05:00",
       "content_hash": "ad1160edc2a9edbc5b5b41ade890a973",
       "source": "zillow",
-      "status": "active"
-    },
-    "https://photos.zillowstatic.com/fp/a61b55bf6697484ecc0384ead5864b91-p_e.jpg": {
-      "image_id": "e84b46dd-ecaf-4589-86e5-54f8a074e199",
-      "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:53.870137-05:00",
-      "last_seen": "2025-12-02T15:42:53.870137-05:00",
-      "content_hash": "70a74199d9076b79c2c7f63323253543",
-      "source": "zillow",
-      "status": "active"
-    },
-    "https://www.zillowstatic.com/bedrock/app/uploads/sites/55/2025/08/Zillow-Home-Loans_Horizontal_NMLS_Large_Blue_RGB-300x33-1.webp": {
-      "image_id": "694d2dac-0c1e-4d50-8dc2-fb1123e4a3c3",
-      "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:54.531674-05:00",
-      "last_seen": "2025-12-02T15:42:54.531674-05:00",
-      "content_hash": "8b8c436a32d85cdfbba1893835ab51b8",
-      "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
     "https://photos.zillowstatic.com/fp/9c51622dcedf7f0dd872c6f927f293f0-p_e.jpg": {
-      "image_id": "c2177c0b-ee7b-4404-aae0-72d5c2cdbca0",
+      "image_id": "8f1173f8-5e6e-45e2-be34-3458485852af",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:55.698992-05:00",
-      "last_seen": "2025-12-02T15:42:55.698992-05:00",
+      "first_seen": "2025-12-03T00:27:53.401894-05:00",
+      "last_seen": "2025-12-03T00:58:48.089631-05:00",
       "content_hash": "96a4016b8299ae37da4faac2f1b2e354",
       "source": "zillow",
-      "status": "active"
+      "status": "removed"
     },
-    "https://www.zillowstatic.com/s3/partner-showcase/static/images/agents/agent25.jpg": {
-      "image_id": "c69e57d8-8900-4508-b829-941d3994c80a",
+    "https://photos.zillowstatic.com/fp/557aa6064618cf19cbc3a1ef59adddf5-p_e.jpg": {
+      "image_id": "1c6393a2-b1ef-4a6c-9e6d-b8a73999ca87",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:56.358841-05:00",
-      "last_seen": "2025-12-02T15:42:56.358841-05:00",
-      "content_hash": "e4fec811721eb8fdcb964d4adab9cc0e",
+      "first_seen": "2025-12-03T00:27:55.256732-05:00",
+      "last_seen": "2025-12-03T00:58:48.089669-05:00",
+      "content_hash": "916a5e2c63346152ef240f321e392179",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/5b8a4010285dd365932a0f60ad7c4366-p_e.jpg": {
+      "image_id": "70eb386c-768d-4d6c-85e5-3a9567c73f2e",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:56.364348-05:00",
+      "last_seen": "2025-12-03T00:58:48.089715-05:00",
+      "content_hash": "a14f447e8958bcf58d0b371430b2f938",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/ae953c1fac0af5d315e21e327ba26d18-p_e.jpg": {
+      "image_id": "077d0e3a-9ee1-4f15-8f3c-33bd5cf49183",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:57.672864-05:00",
+      "last_seen": "2025-12-03T00:58:48.089752-05:00",
+      "content_hash": "251b8a14a01e2dbf9eecca2304f36d5d",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/a61b55bf6697484ecc0384ead5864b91-p_e.jpg": {
+      "image_id": "148c6fe1-dd97-4a82-a861-cd4d7d911125",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:27:59.082199-05:00",
+      "last_seen": "2025-12-03T00:58:48.089776-05:00",
+      "content_hash": "70a74199d9076b79c2c7f63323253543",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/dac6648c4b7d202fc8704bcf3411fd2d-p_e.jpg": {
+      "image_id": "b3759fe6-0812-48a8-8305-a5060aaac377",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:28:00.228256-05:00",
+      "last_seen": "2025-12-03T00:58:48.089819-05:00",
+      "content_hash": "fbc171699318a54d1a208219bd782db0",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/5c7a3460cbc7c571bf11954102a5459d-p_c.jpg": {
+      "image_id": "cf6665c7-a986-4598-a7e1-aab7f6955335",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:28:01.045760-05:00",
+      "last_seen": "2025-12-03T00:58:48.086263-05:00",
+      "content_hash": "7ad67b0086bdb5d2f439d48eec4b174e",
       "source": "zillow",
       "status": "active"
     },
-    "https://photos.zillowstatic.com/fp/a6b78040c34ab287c1ff3e1de8df3b34-p_e.jpg": {
-      "image_id": "fe053429-9245-4a2b-88d5-e7eb429b9aca",
+    "https://photos.zillowstatic.com/fp/a3a022d32b0617399617ec42566a2693-zillow_web_95_35.jpg": {
+      "image_id": "b21d487b-2805-4c3e-b205-a79b22c2f9d4",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:57.208808-05:00",
-      "last_seen": "2025-12-02T15:42:57.208808-05:00",
-      "content_hash": "6dfd7ee0357448876a05ac9d4aee3463",
+      "first_seen": "2025-12-03T00:28:01.815955-05:00",
+      "last_seen": "2025-12-03T00:58:48.179519-05:00",
+      "content_hash": "192301954b09122635299ab76088ab5e",
       "source": "zillow",
       "status": "active"
     },
-    "https://photos.zillowstatic.com/fp/a0f896931d6eb6f72eee0b048eca2d25-p_e.jpg": {
-      "image_id": "fdf5249b-4316-4ce1-a604-ded7dc06c7a4",
+    "https://photos.zillowstatic.com/fp/e1202510aafad012d2448cb732082f5e-p_e.jpg": {
+      "image_id": "7c194c59-c0b9-4558-8ae8-6b7c0065dfd5",
       "property_hash": "f4e29e2c",
-      "first_seen": "2025-12-02T15:42:58.386912-05:00",
-      "last_seen": "2025-12-02T15:42:58.386912-05:00",
-      "content_hash": "20ac67817f32e92836f4dc18b6324c90",
+      "first_seen": "2025-12-03T00:28:03.017278-05:00",
+      "last_seen": "2025-12-03T00:58:48.089858-05:00",
+      "content_hash": "9cb8d29a9af5c9af8bec50c860ec5ca4",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/bed2923d7d5bc00ba72835f774c6af9e-p_e.jpg": {
+      "image_id": "d9e9b8e9-386a-4a9e-a5df-b7e91af9f07d",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:28:04.172869-05:00",
+      "last_seen": "2025-12-03T00:58:48.089904-05:00",
+      "content_hash": "d406f68ef958e7cb3b4b688caafaeac5",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/636d7cf26403c143ef86e09680f13ffa-p_e.jpg": {
+      "image_id": "a73d8b36-7c5a-451c-b05f-756e57a6f2f7",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:28:05.244017-05:00",
+      "last_seen": "2025-12-03T00:58:48.089942-05:00",
+      "content_hash": "988ff3d1aed4f587adf511f150e0627f",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/fca0dab7ee76daa81957bcc5a53de5ac-p_e.jpg": {
+      "image_id": "d4cc776a-9059-4f7a-934d-79ec9b9cb39a",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:28:06.979101-05:00",
+      "last_seen": "2025-12-03T00:58:48.089988-05:00",
+      "content_hash": "1839ad591d4e1497079830c729d6fd0f",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/01c3a77f542126e28af0884d105757a3-p_c.jpg": {
+      "image_id": "973c448f-73d9-4d30-a501-15852611796d",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:28:07.820945-05:00",
+      "last_seen": "2025-12-03T00:58:48.085911-05:00",
+      "content_hash": "f3f5a45e7fd0ea14ec36a15ffc745c81",
+      "source": "zillow",
+      "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/dbb1e160f4caee4d3abdf2c57c6fa63b-p_c.jpg": {
+      "image_id": "87073b4f-29a8-4499-8c24-54a0983b9ab7",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:28:08.703774-05:00",
+      "last_seen": "2025-12-03T00:58:48.086089-05:00",
+      "content_hash": "f9481fafc0cf8dda4823f0ae242494a8",
+      "source": "zillow",
+      "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/ad76f118a3778f82b93a38366b59df4d-p_e.jpg": {
+      "image_id": "0a1b8c92-3714-4d63-aeb8-a3d955d5d922",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:28:10.436690-05:00",
+      "last_seen": "2025-12-03T00:58:48.090026-05:00",
+      "content_hash": "5695243775c35451f4de9d535e822992",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/f920880e6b1c3c8322f4b0ce1ea5bd7d-p_e.jpg": {
+      "image_id": "9577743a-fd1f-443a-8237-90d78e74327a",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:28:11.447719-05:00",
+      "last_seen": "2025-12-03T00:58:48.090071-05:00",
+      "content_hash": "38a5e46302eaf3de3b3629f51271ad57",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/a5e25771af515cbd822138cc2268bec0-p_e.jpg": {
+      "image_id": "1b1e3cc2-149e-476c-85a1-8e01845fe430",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:23.423619-05:00",
+      "last_seen": "2025-12-03T00:56:05.941240-05:00",
+      "content_hash": "e691d58d82a96bd3c2e38cf5d97ccf33",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/2d19c95f0942fb20f607c5be410f37d8-p_e.jpg": {
+      "image_id": "6341725f-5302-45a4-a205-5172d5526dae",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:24.503674-05:00",
+      "last_seen": "2025-12-03T00:56:05.941305-05:00",
+      "content_hash": "d23ac739b839106faa3c981bd6340a80",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/ca17738a61f4991e1de720eaf2d71ae7-p_e.jpg": {
+      "image_id": "37be6985-371b-4bf5-8085-72cf033498ed",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:25.496441-05:00",
+      "last_seen": "2025-12-03T00:56:05.941367-05:00",
+      "content_hash": "7015fe3fbd579f9cd153d187dbcadc12",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/f1376666c584fafa43473eedc266db42-cc_ft_576.jpg": {
+      "image_id": "adcebc4d-2b8a-44c4-b88b-a6d68c0b3a30",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:26.211869-05:00",
+      "last_seen": "2025-12-03T00:42:29.321022-05:00",
+      "content_hash": "f4aeef9603931abccdfcb2267b2323b8",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/f5e7e289851880be4dc6998e056c933a-p_e.jpg": {
+      "image_id": "7fa82b9d-1d65-45c9-8c11-4d90e4152ac6",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:27.117243-05:00",
+      "last_seen": "2025-12-03T00:56:05.941427-05:00",
+      "content_hash": "680cdac8377139d47ebc20f426feee7d",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/5a892c6c8d703352facc25cbcf470d14-p_e.jpg": {
+      "image_id": "e0ea075d-49ff-4752-af56-5dc14dee6946",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:28.153431-05:00",
+      "last_seen": "2025-12-03T00:56:05.941487-05:00",
+      "content_hash": "0c1c9a1af9a2868f78dc845e05f499f8",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/abbf03acd6c1765455b5ddd08e8ad0a3-p_e.jpg": {
+      "image_id": "56b33e55-aa9d-4747-9ee0-8fa96b48d739",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:27.887818-05:00",
+      "last_seen": "2025-12-03T00:56:05.941547-05:00",
+      "content_hash": "3d9314efe5db1fd98a0a61695018d5ea",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/98fae754d4cffbbe623c8a9e434d4768-p_e.jpg": {
+      "image_id": "289cd20a-a81d-4004-bd71-b5ef4ceddd4a",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:28.835107-05:00",
+      "last_seen": "2025-12-03T00:56:05.941607-05:00",
+      "content_hash": "f9b7a10fc1e28f2f8621e87f2f4ddf52",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/3880b9ef1f963939b4fa0d273eef4114-p_e.jpg": {
+      "image_id": "baf03835-0d95-457f-adf5-4750e59b8178",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:29.903135-05:00",
+      "last_seen": "2025-12-03T00:56:05.941666-05:00",
+      "content_hash": "754f85792dfb2f30e13c23d41263f048",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/acaa38e58e051cedf1f6d297ddc41201-cc_ft_576.jpg": {
+      "image_id": "d6f69082-1861-4415-9bb0-a07ceacb25d0",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:30.797071-05:00",
+      "last_seen": "2025-12-03T00:42:29.321290-05:00",
+      "content_hash": "dea4d17470e6dbc2cbf351d3b8d67c99",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/acc8f5a5f7a5b53f6f500cd5fbffd78b-p_e.jpg": {
+      "image_id": "86b7c313-3328-4f02-a8bb-ece0e0079ae4",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:32.184268-05:00",
+      "last_seen": "2025-12-03T00:56:05.941707-05:00",
+      "content_hash": "4b2e563ae5fa8db78c31ccbce768258a",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/57abc3760834df70d97a31fe798b6cf8-p_e.jpg": {
+      "image_id": "804f3b53-6604-4d72-a636-c829b6b538c3",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:33.756204-05:00",
+      "last_seen": "2025-12-03T00:56:05.941755-05:00",
+      "content_hash": "19ac1cc5597abdec65a13b1c8b39f346",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/6270e1e31daffb0225e5df6e81edd50d-p_e.jpg": {
+      "image_id": "baf03835-0d95-457f-adf5-4750e59b8178",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:34.623869-05:00",
+      "last_seen": "2025-12-03T00:56:05.941792-05:00",
+      "content_hash": "10dd108142ffa6b413951430cc2e3780",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/83ebad7077af02db47c3f20fde091ab0-cc_ft_960.jpg": {
+      "image_id": "7263773a-860b-470d-92ec-683875959b4f",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:35.082734-05:00",
+      "last_seen": "2025-12-03T00:58:47.325945-05:00",
+      "content_hash": "5da65927b497322587eed6c722d73e5e",
+      "source": "zillow",
+      "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/2db36920be5b83ffaebd4bca1052a670-cc_ft_576.jpg": {
+      "image_id": "ee520ed0-febd-4bfb-9334-f57c584eb791",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:35.891860-05:00",
+      "last_seen": "2025-12-03T00:58:48.179405-05:00",
+      "content_hash": "cb6401ce396f64dd5dbd097484cad6e9",
+      "source": "zillow",
+      "status": "active"
+    },
+    "https://photos.zillowstatic.com/fp/73eda098f4fdb20afae14c40d979e8d8-p_e.jpg": {
+      "image_id": "e779ef29-3beb-42ed-84f4-e342445f8fbe",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:36.983100-05:00",
+      "last_seen": "2025-12-03T00:56:05.941838-05:00",
+      "content_hash": "4140902b0d331291092b357c5ce21b10",
+      "source": "zillow",
+      "status": "removed"
+    },
+    "https://photos.zillowstatic.com/fp/297e9f8b88531fc8b36b6c9b4329f419-cc_ft_960.jpg": {
+      "image_id": "84ea660e-0f93-495c-bac1-a9f88484d204",
+      "property_hash": "f4e29e2c",
+      "first_seen": "2025-12-03T00:41:37.949815-05:00",
+      "last_seen": "2025-12-03T00:58:48.085759-05:00",
+      "content_hash": "a2f69fd6d99f189b9a68335b0b4e861e",
       "source": "zillow",
       "status": "active"
     }

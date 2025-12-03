@@ -369,6 +369,11 @@ body {
 .metric-value.crime-safe { color: #059669; }
 .metric-value.crime-average { color: #3b82f6; }
 .metric-value.crime-dangerous { color: #dc2626; }
+
+/* Noise Level Styling */
+.metric-value.noise-quiet { color: #059669; }
+.metric-value.noise-moderate { color: #f59e0b; }
+.metric-value.noise-loud { color: #dc2626; }
 """
 
 # =============================================================================
@@ -731,6 +736,55 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
     </div>
 
     <div class="section">
+        <h2>Exterior Assessment</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Roof Condition</div>
+                <div class="metric-value">{{{{ property.roof_visual_condition or 'N/A' }}}}</div>
+                <div class="metric-note">Est. Age: {{{{ property.roof_age_visual_estimate or property.roof_age or 'Unknown' }}}} yrs</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">HVAC</div>
+                <div class="metric-value">{{{{ property.hvac_brand or 'Unknown' }}}}</div>
+                <div class="metric-note">Est. Age: {{{{ property.hvac_age_visual_estimate or property.hvac_age or 'Unknown' }}}} yrs | {{{{ property.hvac_refrigerant or 'N/A' }}}}</div>
+            </div>
+            {{% if property.has_pool %}}
+            <div class="metric">
+                <div class="metric-label">Pool Equipment</div>
+                <div class="metric-value">{{{{ property.pool_system_type or 'Unknown' }}}}</div>
+                <div class="metric-note">Est. Age: {{{{ property.pool_equipment_age_visual or property.pool_equipment_age or 'Unknown' }}}} yrs</div>
+            </div>
+            {{% endif %}}
+            <div class="metric">
+                <div class="metric-label">Covered Patio</div>
+                <div class="metric-value">{{{{ 'Yes' if property.backyard_covered_patio else 'No' }}}}</div>
+                <div class="metric-note">Score: {{{{ property.backyard_patio_score or 'N/A' }}}}/10</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Market Position</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Days on Market</div>
+                <div class="metric-value">{{{{ property.days_on_market or 'N/A' }}}}</div>
+                <div class="metric-note">{{% if property.days_on_market %}}{{% if property.days_on_market < 30 %}}Hot market{{% elif property.days_on_market > 90 %}}Buyer leverage{{% else %}}Normal{{% endif %}}{{% endif %}}</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Price Reduced</div>
+                <div class="metric-value">{{{{ 'Yes' if property.price_reduced else 'No' }}}}</div>
+                <div class="metric-note">{{% if property.price_reduced_pct %}}{{{{ property.price_reduced_pct }}}}% off{{% endif %}}</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Air Quality</div>
+                <div class="metric-value">{{{{ property.air_quality_aqi or 'N/A' }}}}</div>
+                <div class="metric-note">{{{{ property.air_quality_category or 'Unknown' }}}}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
         <h2>Location Risk Assessment</h2>
         <div class="metrics-grid">
             <div class="metric">
@@ -756,6 +810,11 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
                 <div class="metric-label">Zoning</div>
                 <div class="metric-value">{{{{ property.zoning_code or 'Unknown' }}}}</div>
                 <div class="metric-note">{{{{ property.zoning_description or '' }}}}</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Noise Level</div>
+                <div class="metric-value">{{{{ property.noise_score or 'N/A' }}}}/100</div>
+                <div class="metric-note">{{{{ property.noise_label or 'Unknown' }}}} (100=Quietest)</div>
             </div>
         </div>
     </div>

@@ -1,0 +1,15 @@
+{
+  "session": {
+    "started_at": null,
+    "last_updated": null,
+    "mode": "idle"
+  },
+  "properties": {},
+  "summary": {
+    "total_properties": 0,
+    "completed": 0,
+    "in_progress": 0,
+    "pending": 0,
+    "failed": 0
+  }
+}

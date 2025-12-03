@@ -1,1485 +1,566 @@
 {
-  "version": "1.0.0",
   "images": {
-    "1b8742cd-6710-4033-a929-1c35fbb34ca5": {
-      "phash": "e968e32694dc50f3",
-      "dhash": "660391b22f4ec3ca",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "da52c331-9f4a-454e-aaa0-697a3d5917c8": {
-      "phash": "ca62bdbd024ac4bd",
-      "dhash": "030781e9d9410307",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "ca67e5a8-77fc-4a0e-95a5-f6eab969e538": {
-      "phash": "fed0810f952b6ad4",
-      "dhash": "0035352d256d5300",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "20c9fa07-2692-43ea-b303-0afb21444022": {
-      "phash": "b8f2e695112a7cd4",
-      "dhash": "1600059bbabac706",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "a9e26c64-13e0-439e-85ce-d2886ead858f": {
-      "phash": "eb5478d40b97a32a",
-      "dhash": "94954b4b4d5e1d0b",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "d61615a1-846f-4f86-9876-f1ca96a20bf1": {
-      "phash": "81a07efe87517a8c",
-      "dhash": "0fa5fedae0005828",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "0054f3ff-1a45-4e24-8adf-a9412a182638": {
-      "phash": "c02f4b2f76389879",
-      "dhash": "60c0b0a4a4a4a494",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "a9adf7f2-92ca-47c4-8185-20ef7b10681b": {
-      "phash": "aac79144afd157a8",
-      "dhash": "f8f0d84fa78c997f",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "3a58efc6-3aa5-41db-a633-25b2d69c9f9c": {
-      "phash": "be3ab16165d38aa8",
-      "dhash": "5f3f3d6467832e1f",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "61a8fe85-7bd1-4a61-9d83-166ecb757b9f": {
-      "phash": "d42a9d21379fc06b",
-      "dhash": "3f1501288a809868",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "865d6ab8-5f5c-4dee-8ba3-e5907fc96b4b": {
-      "phash": "c3c12c9a4e329fe5",
-      "dhash": "e1c0c8c0e179c960",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "b1564156-dd39-45c0-83e0-be3c126fd5aa": {
-      "phash": "b12a1f6417ec0b76",
-      "dhash": "3a9bbb9a8e933418",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "d93dc14f-2c4a-4a8a-b4cd-0a4ed06c1403": {
-      "phash": "bd35a56046d7a899",
-      "dhash": "1e3b3b3a3317707a",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "92d8a65b-05ab-49b9-a56b-e738a1e3e2d8": {
-      "phash": "e3bb4c0e51b82f46",
-      "dhash": "03214a99c8c3a5c0",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "762cac31-5aef-492a-91e5-cfa460a0773a": {
-      "phash": "e50db316b3038ed3",
-      "dhash": "8ea6c6c6c6e4ce8e",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "694f94de-409d-4592-9aab-b68d423fd68a": {
-      "phash": "a0f61fbe73080e72",
-      "dhash": "8d8d8d8f8d333353",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "1afd16f0-7aba-460d-9b9e-a1c3b4f0771e": {
-      "phash": "d2cd610ef316892f",
-      "dhash": "c0c0e04c41e92988",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "e03fcc3d-9de9-4711-bdc0-6d417fb9e957": {
-      "phash": "c1395cb69379ac13",
-      "dhash": "d8d8b3d8dce3f0f0",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "483d347d-d3ab-4370-bf9c-b24652d6be94": {
-      "phash": "ca89777766e2c484",
-      "dhash": "0339f3f3e1e0e0e1",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "5b1a9e9b-41d4-4251-99f9-3c5787c586fe": {
-      "phash": "cfa2347f83d33c20",
-      "dhash": "61c3d1c962627070",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "0cd21d43-511d-4173-b7e9-6dfc308746b1": {
-      "phash": "efc8c25a5a52e4b4",
-      "dhash": "4163367673732533",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "b55fe4ef-b83e-4a13-a8ca-1b0448265f23": {
-      "phash": "bcc3e73058a5ac4b",
-      "dhash": "7468633438ae2e2f",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "b068fc78-81ac-48e4-b2bf-4eb26af1e571": {
-      "phash": "b8679d786e13640d",
-      "dhash": "279c9f8d87ad18b5",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "a03373c6-3b4b-4eb4-9d55-a6da246350b5": {
-      "phash": "c44fb2328374e9f8",
-      "dhash": "ad683060c1a596cb",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "7083036a-cad5-4f7c-b622-85593a801c05": {
-      "phash": "c95bb22637e0893d",
-      "dhash": "e9c1706062e28a70",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "cad6ad04-338e-47bf-afc2-e75e6d600510": {
-      "phash": "a5e39e2061634cdf",
-      "dhash": "8f9ce4ded6b67c2e",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "ddb96102-0ecb-40a1-adde-d52740e43619": {
-      "phash": "fce010e89cbe684f",
-      "dhash": "388e8784d3871c7c",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "1b173aff-5895-4938-956e-37f795b79574": {
-      "phash": "8991573ade89c1d9",
-      "dhash": "d8d8d2f239eb7262",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "2b984942-5538-4a1d-8e82-6998187992f7": {
-      "phash": "ce1eff6c90c41259",
-      "dhash": "2f6b69ec93c7a27a",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "deff9c5e-c485-4f7d-bbaf-43e13384652c": {
-      "phash": "c5193b165658a9ed",
-      "dhash": "024c93e0e6e4e4cc",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "c6875918-607a-45b8-8aa1-266e9ef5d7e7": {
-      "phash": "b9843fa746b3829c",
-      "dhash": "ccb6b3d9d40b0b1f",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "f593a8f0-5141-48ff-a456-25485602f2be": {
-      "phash": "d7e0f0d07e6c8c86",
-      "dhash": "0048ca516de86878",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "2596eb09-d0ea-4fc3-862a-6f4ee935cf32": {
-      "phash": "b3e72bb006a9e48d",
-      "dhash": "0f49d244d494bb39",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "4289aec3-7508-4808-a298-23ab102e2940": {
-      "phash": "a1ac5e9225fdda42",
-      "dhash": "02c00316d4f80a51",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "a97a17c4-1c0b-4ca8-a0c6-ed8d55539021": {
-      "phash": "93ee2c4332fd8d06",
-      "dhash": "0499661ac852da78",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "1783ca4f-1933-404b-8381-621a9e6d132e": {
-      "phash": "b1d5ce31275cf04a",
-      "dhash": "181010dedd9b3565",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "de5ddda7-9122-4ab4-af1e-15a67a83a74a": {
-      "phash": "991cf4e36b3c1c19",
-      "dhash": "07d973dbdb798c87",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "f06f202f-08c7-4298-8e98-60aeed46e29f": {
-      "phash": "b873c30cec937364",
-      "dhash": "cfdf1d3d373efcc8",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "d01039ec-8687-47d2-9ad5-838e23b993a3": {
-      "phash": "da2471fb94691ce2",
-      "dhash": "9bcdf57169798918",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "8d845d1c-3430-4637-9d25-3809b3373ea8": {
-      "phash": "d08eb393ece00e3e",
-      "dhash": "94d8b397b5b99a9c",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "f58a4dfe-c082-4e7f-bf53-03309d9a98a6": {
-      "phash": "b8d48b73064fdc98",
-      "dhash": "e2963047961e1337",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "fa8ceac5-3764-4ff6-9129-63cb532ca137": {
-      "phash": "9cb7a160bfdc6025",
-      "dhash": "9edeec383485a633",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "1043179c-f58b-4d2d-ba18-37d208855f38": {
-      "phash": "cd3a72651e8ce163",
-      "dhash": "4d0ca67a66c62664",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "693a2402-c3a8-48ad-b4d8-cc0c3687000c": {
-      "phash": "9f9a8a1e35a496a6",
-      "dhash": "79d1ed1e2e66e330",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "a9147b09-8b87-4663-8924-8b56508a5051": {
-      "phash": "8981d4e3b9cf3692",
-      "dhash": "f6e27753dbc366a4",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "94d512ec-b00c-4c3f-9b89-2d7d5e9d6100": {
-      "phash": "bfe2840d1d52d8ab",
-      "dhash": "f24f195a7b345766",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "da6484cb-6b1c-4d7d-8274-e27d9733fe38": {
-      "phash": "818a4f3734cae9b5",
-      "dhash": "f1eed3b19ecfc142",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "342e7a98-49f2-419e-b6fb-9efbd198c4b3": {
-      "phash": "e82db56921948fa7",
-      "dhash": "361667b883818c27",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "9d11532d-81e7-4930-a379-4da9407b9de8": {
-      "phash": "ef8230c5fa20db59",
-      "dhash": "eece400762600621",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "48b4572a-4d93-42fb-a5ec-3d89586ffdfa": {
-      "phash": "9dac40a3bf5e20d3",
-      "dhash": "e5f6b22a6a8bd8f8",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "346a71b5-560c-4d1e-8b49-226fcc16594e": {
-      "phash": "e87a15a5497a8799",
-      "dhash": "0f33332b938e2b33",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "a3edbc32-4541-40aa-aacf-df795a371ceb": {
-      "phash": "adcea8f0670cb01f",
-      "dhash": "0393de6e4c9eb29b",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "3d67e28b-c8d4-40b3-b718-c02c712e573f": {
-      "phash": "c989f1f56779880c",
-      "dhash": "90d07349c590080d",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "2b5e5821-4fc5-4b61-9c61-c69df675615e": {
-      "phash": "e2499db65a21a5e6",
-      "dhash": "e024c7898d4e4f29",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "c9755e7d-6355-4355-820f-74b8a1e1b74e": {
-      "phash": "c58c995b1f68ca96",
-      "dhash": "331ea4824cc30a58",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "58dc7789-c663-4096-bc09-b52854b08925": {
-      "phash": "e2edac38594e9453",
-      "dhash": "1707cf411bada59c",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "257080e0-eb1d-4520-9ef7-95c5c68da47e": {
-      "phash": "bea5c1983ecbd418",
-      "dhash": "2386242d3d7001b8",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "8ae58857-516b-4f87-8aca-36d162ff50cc": {
-      "phash": "f6c9fb122419c26e",
-      "dhash": "0204459684fc3c0c",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "0f2b7b04-c974-4e42-86a1-5a90040b418f": {
-      "phash": "c3a53e56311b26c7",
-      "dhash": "d8a6e2d2c0e86869",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "416e0edd-8a88-42f0-a1d2-2188c84555e7": {
-      "phash": "f9a01ec3a317d28b",
-      "dhash": "8c96969ecb193252",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "f41c8a24-ccb8-4ec0-92a0-2e68ca649ea1": {
-      "phash": "e2e2e917132accd6",
-      "dhash": "4387a5cbccf0a311",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "c880c1bd-29bd-44c5-bbe5-cf5e758080a0": {
-      "phash": "9998f267472ab899",
-      "dhash": "f0bc3b725209cf80",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "14232308-9145-445e-8e7d-df525f534dce": {
-      "phash": "9f617e414adad03a",
-      "dhash": "d3461c62625a6e61",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "9d6a8d47-0819-4431-aa48-9a7a0bb22464": {
-      "phash": "bcf18be21ca3221f",
-      "dhash": "964086b6148c7332",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "9be679a4-60f5-4071-9226-53bf6df3e863": {
-      "phash": "8183b7347ae9c12f",
-      "dhash": "defcf1932ef6b6c7",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "6d1b740d-e1d2-4ce0-9959-6178c4503d37": {
-      "phash": "a0b6feca04f5a23a",
-      "dhash": "8c48cfc6d5c728cf",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "01e07d1a-6322-494e-9d5a-dfc8f2dc22d5": {
-      "phash": "f9a506fb2d06d30c",
-      "dhash": "40c0a297931969e3",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "15648001-af64-408a-9785-b4f0eb4823ba": {
-      "phash": "f2372db28458c9cd",
-      "dhash": "8ccc490d0d0d39e0",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "33ec693b-dd25-449b-85fa-90e2c0e514db": {
-      "phash": "eb9c79e192896968",
-      "dhash": "1b145767efcbc39b",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "0d680a64-ca24-40e6-b139-80a1ef557fa5": {
-      "phash": "eac38599f28c336c",
-      "dhash": "f0e9a5ad2539b78d",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "2b838ee4-8ac8-44a9-ad8c-51dab13216f6": {
-      "phash": "8482832f437fdcd9",
-      "dhash": "edcfb0eae326d6e1",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "924fadf8-1c67-46fc-9066-0e806a9b55bf": {
-      "phash": "ea5a976d2980ce5a",
-      "dhash": "8361699713675f8f",
-      "property_address": "4417 W Sandra Cir, Glendale, AZ 85308",
-      "source": "zillow"
-    },
-    "9ebbb135-367d-4609-99c7-e67c1d7df64c": {
-      "phash": "e5163969e286bd4a",
-      "dhash": "0e1cecccce12861e",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "dfb5d301-bb41-4e33-84db-65ea0be0cffa": {
-      "phash": "c9e0929ee98e9636",
-      "dhash": "b0d0c6d3537070ba",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "425ddc36-2ad9-4d4f-b597-31b140d632e1": {
-      "phash": "cc49bbc419936ec6",
-      "dhash": "11852530e5a4e43b",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "c69e57d8-8900-4508-b829-941d3994c80a": {
-      "phash": "ecf10432f383cbcc",
-      "dhash": "8e3633333333b3f3",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "5ad0a866-782b-4034-8d4e-2e4a9f0a03e2": {
-      "phash": "d1758ccc41339eb3",
-      "dhash": "e2c45c8aca2558f0",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "37156903-61f4-4b15-aa12-dd5e7c42fce1": {
-      "phash": "f93286f97804b19b",
-      "dhash": "9828ac999b9be2c0",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "ce597c1d-a57e-47e8-8536-213ccf6cf40a": {
-      "phash": "bc930216064fdede",
-      "dhash": "cc16323236373337",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "60ec60f9-8176-4d2c-9b45-7e963671270c": {
-      "phash": "c436bbc9e045b7a4",
-      "dhash": "8b31e4848360e2cc",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "6a45fd16-7300-4bf9-afaa-9a5c8dea956d": {
-      "phash": "b0f44b95c6439cda",
-      "dhash": "0c9e1e9e1c56d3c1",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "9ecce287-767d-4085-9d63-952c1b87b152": {
-      "phash": "8d25b19c1d6be5c4",
-      "dhash": "72ec4b6320a290e6",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "593da1b8-173e-4867-9228-0663034905f9": {
-      "phash": "954e68b117ce1cd5",
-      "dhash": "191f747e5e9a91c4",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "11473704-ceb1-4509-96bf-34adbbf8226c": {
-      "phash": "9571ac21769f1b58",
-      "dhash": "8e8230448efef3b0",
-      "property_address": "14353 N 76th Dr, Peoria, AZ 85381",
-      "source": "zillow"
-    },
-    "e65b8ac3-348e-4d6b-801a-4afbc0804367": {
-      "phash": "a44d1f3061eedf03",
-      "dhash": "96a562839abc2de0",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "c84ef395-bee1-43e8-a8c3-b7cb0fa5bb3d": {
-      "phash": "e8c1be1e91b76c60",
-      "dhash": "b3a7868aab330e3f",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "5fbfcdff-facc-4fa8-ab49-0e838194b83e": {
-      "phash": "a690d8a31fcdd338",
-      "dhash": "9dad14440d8d2727",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "aefff9b9-e06d-40f0-8f21-8a070d693b96": {
-      "phash": "e4154da91b5f32a3",
-      "dhash": "d226444ccf862363",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "b965d0ee-acd8-4602-8004-4d2a23609fb0": {
-      "phash": "87477830d62f955a",
-      "dhash": "d7cf72e7dcde33f8",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "d46c04ce-0f1a-406c-89ea-cc5d348186d5": {
-      "phash": "8bb5705f9462ad16",
-      "dhash": "36d7dfcc7073d9d9",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "aab4bf05-a8ba-438b-8c18-97bdfb04df28": {
-      "phash": "e5e09b6ec817611b",
-      "dhash": "238ec68623475cf2",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "a593dee2-4b5e-426f-8f4f-818c26a1b56b": {
-      "phash": "8a2abf572189cf34",
-      "dhash": "7f3de5d3ace03ee7",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "7c652595-cd70-491f-92a1-b70b6fce3a9e": {
-      "phash": "e68bc6342958d4f9",
-      "dhash": "e1efc5130e848486",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "21e640d3-c026-4453-a918-30309921ef1e": {
-      "phash": "9fe091bde1aa2e50",
-      "dhash": "f2b2651519767958",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "f254f186-88eb-4334-ada2-c8c9085003b3": {
-      "phash": "cafb8581630ed87a",
-      "dhash": "bb59494949b9b4f6",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "924061a8-06c3-4060-bb4a-2f596d945286": {
-      "phash": "d622a1be5fabc830",
-      "dhash": "ff3c95483c31cef0",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "ed81689a-692c-410e-9c0a-bc54a22dcd92": {
-      "phash": "ad30f23333c30fd8",
-      "dhash": "8fb62646566ee225",
-      "property_address": "4342 W Claremont St, Glendale, AZ 85301",
-      "source": "zillow"
-    },
-    "7400a280-e0ff-4065-98d8-588b8272be1d": {
-      "phash": "9fa3a61f5108f705",
-      "dhash": "7f7f5fd1d8777f67",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "6bb26291-9236-4b36-81e5-350af16f12b6": {
-      "phash": "adb0c3279bc31fc0",
-      "dhash": "8cb636323626c7d3",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "3aa485bc-0408-4e07-9c65-676142f48564": {
-      "phash": "b11ded875071ec15",
-      "dhash": "365bba983c67c69b",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "0a50d4af-eaa7-4c32-84dd-470bf46361ec": {
-      "phash": "b3e86899957af882",
-      "dhash": "9887091cdc3add2c",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "8b079722-cb99-4d8b-a401-37839902e539": {
-      "phash": "c4683113cafc7c2f",
-      "dhash": "1c9b37e5c1988683",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "9eec97e0-e6d5-4a8b-bcec-e64d4bd49fa0": {
-      "phash": "934668b1475bba6c",
-      "dhash": "f0cf8bc8ce9c9b1b",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "b5d4139d-5b7a-478e-9732-bb3c7149ffd2": {
-      "phash": "c0f22b276bc8932f",
-      "dhash": "4a88c080c6fce2d4",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "a27a65ee-2e8b-4648-989c-378747ece65a": {
-      "phash": "b2735713cfcc2622",
-      "dhash": "491d0fa3cb7d7cfe",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "d5b8e4ed-61cd-47f9-9f95-76a4f13eb45e": {
-      "phash": "8c2da74a4a696d6d",
-      "dhash": "77feb6b1f1e0e2a9",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "c5d331ea-514e-4baa-b963-c46d5cfe8d28": {
-      "phash": "b2f2d2626274d995",
-      "dhash": "9df93a4e4f1b0089",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "f51fee9c-7d58-492e-94b7-fb140add895f": {
-      "phash": "b328af116e979352",
-      "dhash": "fbb39c2fb9587c47",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "f1761db9-4e02-4191-acca-6536fe5d83da": {
-      "phash": "97fdee127008876c",
-      "dhash": "010073de5cecf12d",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "0737c34a-6baf-430c-8045-7aad5681b3ae": {
-      "phash": "eab3312d46ebd430",
-      "dhash": "571ab8e1a0223b1f",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "2eeca3d8-e00c-43eb-9c16-7d77201f9c3c": {
-      "phash": "8589eb8a4bf43758",
-      "dhash": "fbf33eeae3eeac17",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "3bfe211a-7d19-4ef0-881b-1e38042ffe42": {
-      "phash": "d52f22515d6cc2d9",
-      "dhash": "40ce245252a09088",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "5f8df8a4-d93a-4204-a966-c38ff75bab4b": {
-      "phash": "f4346cac3e7acc50",
-      "dhash": "24b6940ba8070004",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "58ce99cc-7402-4330-96b3-1f7dc88965e0": {
-      "phash": "e32e9c69433e1dd0",
-      "dhash": "038f3ecdcb125cf2",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "d245a7fc-1eb3-416f-84bc-db53f59310d9": {
-      "phash": "838163f03cc996f7",
-      "dhash": "c7c3e4f36ccc800d",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "7141f10f-bb83-467e-946d-ad85bf4d0303": {
-      "phash": "b7b30149998c3773",
-      "dhash": "581a0c3d18c4e040",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "fc6d18ab-621e-41a9-a7ed-d8e74e39e273": {
-      "phash": "ec17d3d3686b0d09",
-      "dhash": "10b6232733b3a3a3",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "447fdc76-aa5b-4732-8d9e-e10cdb0b0071": {
-      "phash": "d0c4cc227baf8d53",
-      "dhash": "8284f41798b82e40",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "984062b0-3c99-49eb-8845-8ed560ab88b3": {
-      "phash": "cbb4abc6bcc8a291",
-      "dhash": "4526cbb568c1d31b",
-      "property_address": "4732 W Davis Rd, Glendale, AZ 85306",
-      "source": "zillow"
-    },
-    "64537498-79ed-4582-bb98-f15037b05d4e": {
-      "phash": "b1fc0ce3c526c987",
-      "dhash": "1f1f3f9ddf1e1feb",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "5b9abdab-c671-4f10-afbe-0b3aad66007b": {
-      "phash": "968df428fdb64911",
-      "dhash": "66e4f86d73f1ccdc",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "87f662e4-0a86-4114-9dfd-64f3c8881538": {
-      "phash": "dba6b00f7049c6e9",
-      "dhash": "992c8cce1171d199",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "b65c7f4b-f1b9-4855-8351-34811d555965": {
-      "phash": "92f945d6cd90cb94",
-      "dhash": "f09e3d1b256dfce3",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "0e06de9e-7e36-423f-abf5-a62771629d76": {
-      "phash": "c2f5e602734ee38c",
-      "dhash": "cc9f8090abcde1cc",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "21167cc4-eb21-4906-8a38-cc1d4d5b6588": {
-      "phash": "922bc72c34e3e35a",
-      "dhash": "56f9c9d436eb60b0",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "d8157a90-3341-47e0-b7c6-d8348421aaac": {
-      "phash": "c01fe3e9b5805c6e",
-      "dhash": "915964f687938982",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "20f983d6-ccb7-4cee-8359-05266c19d888": {
-      "phash": "c1c07e6f795bb600",
-      "dhash": "c1c6ac8a92b68182",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "65acb66e-8d2a-424c-877e-c2c9f088957b": {
-      "phash": "c57de08795c27a23",
-      "dhash": "0216d1f46ac1cc8e",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "4025436d-7811-4eb0-9a9f-b7f028431b1e": {
-      "phash": "ca8e753c8a259cec",
-      "dhash": "6c60e1d1a9f0c290",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "7f2af47d-212f-4623-a063-fe8d31c87a6f": {
-      "phash": "c9e607b4d649709b",
-      "dhash": "e6ee1b213496d341",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "1aed2489-318e-4ed0-8e18-4aebcf4c4372": {
-      "phash": "e8b05cb396c9c7c8",
-      "dhash": "8e96a79b8dcfb321",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "abccdb2c-8baf-4a0d-92f0-17ba742e2e94": {
-      "phash": "bd30c22fb2c35399",
-      "dhash": "8db6322b33336332",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "ed686769-2b17-4696-af1a-b92024af6d19": {
-      "phash": "a385ada50ba9dc59",
-      "dhash": "c6ce8acbc9460703",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "85d62378-0d12-40ad-84ce-e35170ce1fb9": {
-      "phash": "d2ac88a5ba0fd5ca",
-      "dhash": "b6aea01c88ccc8d9",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "f677229d-0a7a-4ff1-afbe-b013f3cb94e9": {
-      "phash": "ad6f5b9004e9af06",
-      "dhash": "4f434766e6e73161",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "873c6d3d-05aa-40d9-b46b-957bc8dabaa0": {
-      "phash": "ca97e5ca3334db04",
-      "dhash": "08e270d9d9b187c7",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "a6a54eb2-4c7d-4286-8f73-fe0890c7b83e": {
-      "phash": "b4db25c1c22c38bf",
-      "dhash": "fc4c35a1a816062e",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "342905f5-6b80-42a6-9194-b5ed1fbcc876": {
-      "phash": "d9f4a48770bf180b",
-      "dhash": "9c883918d9d0ebf1",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "de0250a2-0624-45f5-9234-6a8554dbc0bb": {
-      "phash": "81c6be1149ce197f",
-      "dhash": "7a0ccec2d29a2d39",
-      "property_address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "b31132ec-b783-424e-89f8-57ccb80b703d": {
-      "phash": "e2e2acbdb5d55202",
-      "dhash": "baabc9cc5f60e48c",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "40b71fe3-93b5-4d3d-a878-5c2f027c2811": {
-      "phash": "9ed8226b47246fa5",
-      "dhash": "313174747078ac6e",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "c1c6ca26-fc01-4801-9ef4-5f500ad3f979": {
-      "phash": "b8ee15f62a9cc213",
-      "dhash": "0f57933755951a9b",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "e3052a0e-472e-4b36-948d-3a39ff9c2e88": {
-      "phash": "9d338270c3e76587",
-      "dhash": "9cb23a3b323272b2",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "zillow"
-    },
-    "b80ac058-5e5f-4be8-9d40-b55616f1d305": {
-      "phash": "a1bf783d84d19e28",
-      "dhash": "1ecbc9cde72f9b87",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "0459185b-a7d6-4ddc-b573-4d7002330d21": {
-      "phash": "8d7992621ddca7a2",
-      "dhash": "7d9f7e724bcfb47c",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "baf9f6e6-f011-4c4f-8f74-42dd4ad92427": {
-      "phash": "bf0fc1a262c41dec",
-      "dhash": "63777264153f3700",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "017d350f-597a-41eb-8b5b-4092b8246162": {
-      "phash": "95ab36480f3fca19",
-      "dhash": "7f1fdc5ed0913c66",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "0af95d6c-3e4f-4172-910b-29c4ae0c0b87": {
-      "phash": "b0a94c98c9fd115f",
-      "dhash": "321e1c9c1cdc1c6d",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "4ba14df5-0a4c-4e4f-9c2f-cf1636adaa34": {
-      "phash": "bebbb1340cadcc48",
-      "dhash": "1f0d23332534afac",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "9ee3aeef-ba57-4aeb-87c2-91f80c8a1666": {
-      "phash": "e3a2b86063feca26",
-      "dhash": "8bcc6143c7812c0b",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "eedb099e-85d8-4eb6-b72f-8a372f7951fd": {
-      "phash": "efd0d05bd1c7d480",
-      "dhash": "001f666763636b9b",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "448d2116-8116-49a3-ab52-6931cbd4286c": {
-      "phash": "e0344f92707eadc3",
-      "dhash": "09d4569cdcf8c9d3",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "1532fce3-f5a5-4e4a-bdd4-06f98b7824ef": {
-      "phash": "89fdcb3d328994c1",
-      "dhash": "f2f3f21f0fb6f3c9",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "baeb64f9-f744-477b-a262-6b213702836c": {
-      "phash": "d416c29de3a9c4f2",
-      "dhash": "6024240a14363281",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "130a1b8a-058c-4554-b1e8-959e167d684a": {
-      "phash": "ff4bc0812df4d14a",
-      "dhash": "c309492623c82526",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "6388f445-50e3-4bff-be8d-e5ab973dfdd5": {
-      "phash": "c92b9426361d6eda",
-      "dhash": "0d03435343c39004",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "56b0d9bc-f267-4c26-9db2-416c6fee3ba7": {
-      "phash": "b373c31018cccf67",
-      "dhash": "998f4b3d9c38e432",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "edf28196-048e-467b-958f-15b4f028966b": {
-      "phash": "d595ab2c282ac6ee",
-      "dhash": "fe5cdc3822c2c743",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "2013b9ce-578c-45c9-bd9e-e1e54806fc3e": {
-      "phash": "b1e61b98161fd1c5",
-      "dhash": "18178686969a5b5b",
-      "property_address": "2344 W Marconi Ave, Phoenix, AZ 85023",
-      "source": "redfin"
-    },
-    "c30f5e22-3fa8-42b5-9998-be0374203a47": {
-      "phash": "8ad5d56f3e4a8116",
-      "dhash": "c080ba392df769fc",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "ce67e3eb-487b-4ba8-b1e2-652649c71729": {
-      "phash": "e7c9d8c166629f09",
-      "dhash": "c3926a6cea4b973d",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "b7a72cf1-4eaf-4c50-a565-bf1f895484b5": {
-      "phash": "b5f0ca2b14d3eb14",
-      "dhash": "04a30e8eb64b59e8",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "6ad6325c-a02b-45ac-a57f-4fef0b7f9f60": {
-      "phash": "bc834326bd78e20f",
-      "dhash": "9e52373637272683",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "cbb2c08e-7211-4187-9a90-151835d1a611": {
-      "phash": "a6d53ba2e41353ac",
-      "dhash": "4d60a8e4e7a96f1f",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "1ffe189a-e5fc-45ee-9b0e-6f9619c8fb5b": {
-      "phash": "e5a5aaa6321a17f1",
-      "dhash": "478282c0c6c49913",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "dbd5a1c7-f10e-4bea-a5c3-a55d1fbaabd5": {
-      "phash": "d41d8baa6ed39129",
-      "dhash": "790fbc24265cc1c8",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "18f1a4b3-ff58-4c2a-bc72-245463f1faf7": {
-      "phash": "bef6800831cf3ee2",
-      "dhash": "310c6c220e3161fe",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "3872de03-d140-49b9-a5d5-ce00a225f9b4": {
-      "phash": "8695c9aef6d01d0e",
-      "dhash": "a4e1f4ec6c6beb21",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "a35b175d-7486-4772-94c7-96eedcb03cda": {
-      "phash": "fd5818d2d1b1d272",
-      "dhash": "91260d12320c3b23",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "cc1ef90f-62d6-415e-aece-5fcad760ebaa": {
-      "phash": "dbe718ee0108f4cb",
-      "dhash": "484a98d8c8203998",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "a4f43af0-8ca0-4d63-a76b-b8bfb55f28b9": {
-      "phash": "917a8e3139cec693",
-      "dhash": "fffec1819adee276",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "85d0df5c-cebb-4a1c-9bd6-effd42583128": {
-      "phash": "c662cde52af311ca",
-      "dhash": "c3749cccebce6871",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "f4b18752-0060-4210-afec-c38c89ca3b47": {
-      "phash": "93836cf81393ad87",
-      "dhash": "4987ee49d9932907",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "5007ab02-f61a-4e0e-a8bd-2f990b9813f0": {
-      "phash": "9ede21c1121aed9e",
-      "dhash": "0e2c39787c72fcbf",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "118e7b52-6459-418f-bfd6-b2860f18cd8c": {
-      "phash": "e455bf6e28ba30d0",
-      "dhash": "27409cb494854d53",
-      "property_address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
-      "source": "zillow"
-    },
-    "60ca42f7-c6b4-4a1f-9a5e-2089f74c4df4": {
-      "phash": "9768d4252ad2ab6d",
-      "dhash": "0f1e09ed47dc5c74",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "c149e2b6-43a8-4d07-8307-cae74774c947": {
-      "phash": "817e936f7618e1c4",
-      "dhash": "082e92b3a692b9d8",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "31ae4aff-933d-4b1f-b8fa-c099e786e7b1": {
-      "phash": "ac3f886e879b4394",
-      "dhash": "2f37baff664b33f3",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "d647279e-a8fa-49cf-9b38-df119eec9057": {
-      "phash": "ea8195fe890876b5",
-      "dhash": "9a9e8f8b0b055528",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "4c2ff19d-5a59-42af-9f20-f040982ea226": {
-      "phash": "bfa4ce4b4a680fa4",
-      "dhash": "63fc7e5bd87b3b6d",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "dd91c9c9-f1d6-41a0-b6ce-995be71a6dc5": {
-      "phash": "98872f595826d3b9",
-      "dhash": "fff3ece4b8f83e93",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "b81a1378-a092-46c7-97e9-e010f18c5ab5": {
-      "phash": "d1a9ecec325246b9",
-      "dhash": "83e2d8dc38e08880",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "bf5ee2d5-ee5e-4dab-9bf8-ded999b4d027": {
-      "phash": "861f892974df07d8",
-      "dhash": "73e3604c8cc74794",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "48ff618b-c5ad-43fe-912b-8c1cbdab664a": {
-      "phash": "8279bc976a0db718",
-      "dhash": "b89488c9c9cca8ad",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "3970fca2-3e6d-4475-8604-3c346e3cfca7": {
-      "phash": "897db460f2936b92",
-      "dhash": "9eb23323b3b39e8d",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "c23a7a10-606f-45a2-beea-9fa69e9a5a53": {
-      "phash": "e3ba1b069f36a384",
-      "dhash": "681b1b0ec6c2d050",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "9acebc1d-347c-4723-8f70-db8010e5fc17": {
-      "phash": "f4a896d18b57d889",
-      "dhash": "8c86860616944c4c",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "78e5ddb7-5735-4cd6-bedc-e017730b4ac7": {
-      "phash": "bc4df2ca476529b0",
-      "dhash": "033dbe663d3f0f0d",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "fd7b5a14-f54e-4e45-bd3d-439ea594a47a": {
-      "phash": "aef28e58e36c06e1",
-      "dhash": "593d0e5595e426e7",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "zillow"
-    },
-    "16395b53-91c5-4d86-a401-a3b61455dcc6": {
-      "phash": "f70b88647118eed3",
-      "dhash": "8f42686e4e273c1c",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "3fe5cfc6-7e16-46f7-a21f-8bdaeedd04ba": {
-      "phash": "9a75c742788486bf",
-      "dhash": "a61eed3939f9e421",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "5656d481-4222-40ef-95ee-939c2c94321e": {
-      "phash": "98e50ad455f2e3f0",
-      "dhash": "e4e3d1f2f4f5b171",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "615851c7-e009-4783-a6e2-895c45a5d33d": {
-      "phash": "a51b3bc23cbc474c",
-      "dhash": "4f4de6e6e6c6a616",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "4579621e-ea13-418d-a928-889476b4c0f0": {
-      "phash": "94e9e11fbec17901",
-      "dhash": "f4f090e46c7cdcbc",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "e8eaf48d-f99f-4bbb-8b8b-5197e2c7d014": {
-      "phash": "a6a6969cc958f8b1",
-      "dhash": "ddcecfc3e706e9c3",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "781a967c-b25f-46f1-9024-00145d874ab1": {
-      "phash": "b4794fecd0233a8c",
-      "dhash": "9efebb8ea5adeefc",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "ab0004dc-106d-4622-9956-ebbf0f8fdf43": {
-      "phash": "92f2cbcd2a5b8c49",
-      "dhash": "9c9c9c9cd4d4d9e3",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "4fed1107-8179-48b1-80a6-ff5ac282f3dd": {
-      "phash": "9d8890f7c823d769",
-      "dhash": "f3f373f3734c5fb9",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "fe693094-0c8f-4171-8446-8d0937c18fa1": {
-      "phash": "a4a6d85d19e27a95",
-      "dhash": "38a6cfcfb617c7fa",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "cea1bef6-f426-43e3-9541-e6efffb6ea6a": {
-      "phash": "cfc5f8b03e700a8e",
-      "dhash": "19c2e1646c98c313",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "854206f1-9303-4351-ba81-6720705afd15": {
-      "phash": "a590fa363d67c05a",
-      "dhash": "3f3ff0d6fece4f3b",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "f103be3e-d829-4fe9-9c87-bb850026f237": {
-      "phash": "e2b156369845db9a",
-      "dhash": "8c8cc3b33507c6e0",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "74abb16a-f165-4b20-9045-391bf8165855": {
-      "phash": "c08b9b833df89a9c",
-      "dhash": "f0e0a09286889c2e",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "89ad51fb-08e8-4ccf-b438-10e43b8715ab": {
-      "phash": "f893c738992636c6",
-      "dhash": "99d28c1b931f0140",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "28e61eae-a17b-42f1-95fb-db5645a9abb9": {
-      "phash": "a3759922f08cfaca",
-      "dhash": "df575787cdcfe3d3",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "b765c73b-322c-4dcf-bb46-f25f60d10adf": {
-      "phash": "f5ea2a559a2ad5c0",
-      "dhash": "220088089c8c8209",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "12c8e367-e95b-4a2d-b264-661091494d9c": {
-      "phash": "ba09f57646c199ca",
-      "dhash": "133731416d3c8d3d",
-      "property_address": "15225 N 37th Way, Phoenix, AZ 85032",
-      "source": "redfin"
-    },
-    "4d952a99-fe17-42c5-86d9-474b50e4c6fc": {
-      "phash": "f3ccce315cea1145",
-      "dhash": "03030387dc9f0f04",
+    "c67708ba-2c34-46ea-ae23-efb7ded97bcf": {
+      "phash": "d8c965323267eb91",
+      "dhash": "99b0a1f919b95457",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "593ed85c-51e0-44a9-afe8-f7f09b261927": {
-      "phash": "ac701e5f6d86d328",
-      "dhash": "07078f8e1f7e6f6f",
+    "d05c19d0-fcf8-4a5f-abb8-b3c9e2c5bdb1": {
+      "phash": "ff8ac87ce5235284",
+      "dhash": "73612c4e26240602",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "6f94ed19-8829-40d7-b8db-48b006450ba2": {
-      "phash": "8e91e196f8a9c393",
-      "dhash": "d8f1d9312d6576c3",
+    "5c266e0a-3592-4f5b-a4c2-9b249c2846bb": {
+      "phash": "b9a9c2d21a2d752b",
+      "dhash": "981b223ad8ac6f8d",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "88fd16e2-4188-4bde-8287-36a42997c665": {
-      "phash": "e53f98fa23819836",
-      "dhash": "7342d4c60d2180e4",
+    "bb73b472-270f-4b4b-b270-130789718d82": {
+      "phash": "b1bbc628387033f3",
+      "dhash": "944e5b9db7928064",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "587da5a8-ced2-474e-a1a9-e8735bad088e": {
-      "phash": "f3a2dc4dc17e1cc0",
-      "dhash": "800c0d4fcb080180",
+    "4485e3aa-8a24-4e25-80a2-a9061dc6a10f": {
+      "phash": "979bea2735648983",
+      "dhash": "3f79f02e6a7ccd14",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "d4697eb1-0d69-435f-87cd-bb4a3ffff332": {
-      "phash": "b68c96681b6b5b1a",
-      "dhash": "64ec6cde7f074e1c",
+    "220c4162-8405-49bf-99cf-ce7ab8420b11": {
+      "phash": "b3989867ccc67332",
+      "dhash": "461e0f0e0e4e4d0e",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "550726df-75bf-4df6-b2a6-89c44d8c3286": {
-      "phash": "a096ee5916ee9827",
-      "dhash": "e4ce9eac9eb38787",
+    "f52e7395-b0c5-4ce4-b1b3-ec6604be31c7": {
+      "phash": "c9ebf415053c92c7",
+      "dhash": "90011133d0d0e290",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "00df3f61-88f9-402b-b411-289b0ee1e73c": {
-      "phash": "e6f5ca05346bc1c6",
-      "dhash": "6f2e025c24d3d1b1",
+    "016db10a-553e-4466-a8f8-73a64799b233": {
+      "phash": "e30b37f741c1c9a1",
+      "dhash": "4b6fe3c7860c0c8c",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "730a0dda-26ab-4d39-9a77-7847462cd9a5": {
-      "phash": "e69899c4927be923",
-      "dhash": "f9c6070d8d860e4d",
+    "4611b3fb-af4b-47ce-89e5-7e9cded39b4f": {
+      "phash": "c303a1e169f4173f",
+      "dhash": "cecd6ca351d5cdca",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "d33d6d1b-f4ab-4a49-8937-8206a95c8bce": {
-      "phash": "efb5acc7980a1b50",
-      "dhash": "ff4651775663c723",
+    "9752b623-a789-484c-8f21-2d773d065d04": {
+      "phash": "8d7852279c689e6b",
+      "dhash": "20e0b196525ac368",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "e60ddd78-976c-4b9c-8e47-d7e7dde2b720": {
-      "phash": "9393b37368e0e0e3",
-      "dhash": "ccfcece470b87832",
+    "dbd21983-d963-4742-83f6-4c128e4a3e40": {
+      "phash": "8cf3792cb0486f96",
+      "dhash": "1cd9c4a9bc77f362",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "bfd8a858-daec-4745-b073-0e1b3a0c8ac4": {
-      "phash": "d496db9905706ae3",
-      "dhash": "d82485ccce1180c0",
+    "4669042f-b745-4db0-925b-0ab849dda9b5": {
+      "phash": "e46fdb05349f1898",
+      "dhash": "720bb9a6a697d031",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "83da50c7-c61f-48c8-8533-e33424360ba9": {
-      "phash": "a41d73686ed0c739",
-      "dhash": "bcfcfcbca7c7964f",
+    "223fe26c-c4bd-497f-9d0c-c6e1d4aea98e": {
+      "phash": "d4735f1c2b093cb8",
+      "dhash": "744484c974f4d422",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "c0917b16-6ef6-4d33-9fcb-2e1a7bc7dbaf": {
-      "phash": "f0208fde7e8d6832",
-      "dhash": "a88c9a9088957031",
+    "24332d71-7943-4f99-b249-5b87e25f5b96": {
+      "phash": "afa8843515d93f92",
+      "dhash": "b247232a2a2b2363",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "57710e40-2102-4703-938a-ace9ec0ae10c": {
-      "phash": "b626885bd912e337",
-      "dhash": "bcb6ef2c1ccbfeba",
+    "5cd72c7b-a2c7-43b6-ac3d-92bcd711c90c": {
+      "phash": "80bf835a7e053f52",
+      "dhash": "d9cbfeae2dfadc87",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "74068c4f-8f16-49e4-877b-3d7b868b4814": {
-      "phash": "b7294a1653f60e65",
-      "dhash": "699bae181e7c2c00",
+    "5006bcc6-1be8-44e2-9a89-e3a8cd59c43e": {
+      "phash": "c1a4f64bd8783f41",
+      "dhash": "a9c64eaaf2e1d938",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "ea213bfd-1935-44a2-ac50-52a09132633d": {
-      "phash": "f2a51e6b60f14e0b",
-      "dhash": "3d2cc28ecb019939",
+    "ee13172d-d130-4934-b0a1-42d83669abde": {
+      "phash": "ea4b919cce36c4b2",
+      "dhash": "13534b2123361d1a",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "678ca71a-40d2-4137-99da-639ec3184cfb": {
-      "phash": "ae27d150739dad03",
-      "dhash": "4a43676fa9373105",
+    "a066e7eb-d208-4270-95ab-2eba31d83e50": {
+      "phash": "8696a6c9495f3b43",
+      "dhash": "66ec6de0c1b8e4cc",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "4971a9a8-c058-40d3-a488-a439b8684741": {
-      "phash": "8d2cd6d3635aae09",
-      "dhash": "ecf63755d77cf1e7",
+    "7c311fd4-1a6e-4c8a-9c1d-90223f690cd2": {
+      "phash": "bdd096c8c12fe236",
+      "dhash": "102607131717265c",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "81dfda0e-b2db-4024-a25c-b6d728ca33fe": {
-      "phash": "85e3ac81a6a5f3c5",
-      "dhash": "e7f759cddad9b6b6",
+    "b38564f5-83ee-4662-a3d4-541a95b888b5": {
+      "phash": "aeb0940fc34e974b",
+      "dhash": "00160e0b2b733333",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "f7b06b2c-d6b1-4f23-bbd1-105e0ccf7671": {
-      "phash": "99b68d384e8ccd63",
-      "dhash": "349aba7919b1f373",
+    "bce673ee-8eba-46d1-a2cc-083b27624bf8": {
+      "phash": "fa6a8795386d8594",
+      "dhash": "5b115103193c0711",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "fa069a41-2263-4acc-ab28-bc0bb5e308b2": {
-      "phash": "c58d8a56053d7aea",
-      "dhash": "fcfb8362c68897e3",
+    "adfd417d-a031-46b4-92c2-33c236f9e098": {
+      "phash": "a8c8b55b33a4bd4a",
+      "dhash": "b3b2b3ebc9d2e6cf",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "2a473d50-1754-4048-bd95-9046eda894d7": {
-      "phash": "f38ca51c82778d8d",
-      "dhash": "bcb6da89b9480eca",
+    "0eed3833-608d-4efd-8ec0-43b3334ff9d9": {
+      "phash": "c3d3d9a3471c3c46",
+      "dhash": "4a4b31a8cdcf30f0",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "d871c749-8ad7-4c22-aa3e-ce57f79910ba": {
-      "phash": "eda07ea1971a0b56",
-      "dhash": "0c9613d7c693132c",
+    "91bedb04-1457-473c-ab54-14ac8892ff43": {
+      "phash": "b3f1c33f884e8cc8",
+      "dhash": "491c955515756d01",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "a13d69b4-dee4-46ba-8170-1a6e9e42007c": {
-      "phash": "f1637aea1c3da064",
-      "dhash": "0d098e1aa6c89c18",
+    "e819482f-581e-463d-86eb-43349a4fc8a6": {
+      "phash": "967e2ac54bad5605",
+      "dhash": "85152cdcccecee7b",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "b8607432-eb04-4a74-a411-d2267b36f120": {
-      "phash": "e75b0bc643f07074",
-      "dhash": "416b968e8e863373",
+    "7b57a00e-e3f9-42a1-8d37-619ed5e97a07": {
+      "phash": "f5b1886a2fde90a2",
+      "dhash": "979a9c5c4d106082",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "d67a7539-a4ae-4a45-80ef-8013aecf6aeb": {
-      "phash": "b348ac4f4c337f44",
-      "dhash": "f0991f59785b1d3d",
+    "4a8942b3-9ed8-4523-ab86-5a1e93e4e593": {
+      "phash": "ad5ec6a198e4d21b",
+      "dhash": "95737d975a8fc6d6",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "c990b35a-d6c1-4d65-831a-7088a069df7e": {
-      "phash": "b993c78595d58552",
-      "dhash": "5a1b1d159ac38332",
+    "56c71954-e403-40a5-822f-69e902e793d7": {
+      "phash": "9d5949b85189b796",
+      "dhash": "92b078fabe3f33e8",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "ea033963-feba-4028-8471-174de9d50029": {
+    "76711e8d-0b79-4a12-9cf4-a154a5a984b7": {
+      "phash": "830e7cf20bf8354d",
+      "dhash": "f565e3fbcbc88f30",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "485c385a-0920-4c78-9d63-52eb0ca97bcc": {
+      "phash": "a45c8f9e19a1e897",
+      "dhash": "74648d9d3c25ced3",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "369d0145-05c6-4e19-bff7-d54c55d4a9d0": {
+      "phash": "de3fe04099c93e94",
+      "dhash": "b4e5756868e9c0f8",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "a864e106-df72-47f9-9aaf-7ee1e69ffdf3": {
+      "phash": "f1ac5a1a27d0f61c",
+      "dhash": "0b12165f4fa8d858",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "c6022fb0-786c-4e81-996b-54564bc049c7": {
+      "phash": "80cd7f3dcad40de0",
+      "dhash": "72f4f29092bedc65",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "0004a649-2003-4b52-922e-2a041023398a": {
+      "phash": "d1788a04e79f4c76",
+      "dhash": "3a95320ad4d4f8cc",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "9021e6de-9926-42ca-922c-0c492ed38267": {
+      "phash": "fa836f58c0f47065",
+      "dhash": "91694e80b1392e23",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "fce9b9b6-cf2a-4733-8c7e-58fa94dda198": {
+      "phash": "85f24f3c114fb709",
+      "dhash": "69b0c9d4f52673fa",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "8b16c3f1-c56e-455a-aea1-c1b5764161c4": {
+      "phash": "d1d8ad1f87d34a06",
+      "dhash": "b2928989e8709a26",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "e1091170-188c-4173-b4d6-30961565d9bb": {
+      "phash": "d3d4f01c37a193c5",
+      "dhash": "3c30d0496869c308",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "c418f1d8-4e9e-4ec9-93d6-6c4c8da4ecf0": {
+      "phash": "a6c90222ff80ffe2",
+      "dhash": "cc95aa4c6caccc6d",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "4f218e20-6802-4cd2-8eb8-233b2217aa85": {
+      "phash": "aa04d3f938da3745",
+      "dhash": "09467535371b0b13",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "fb307c2c-cb85-4303-b305-5ef9eb1c6e0c": {
       "phash": "ae2b4a72524d74d3",
       "dhash": "793b13270f0773f9",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "ae9b6919-86f1-4007-92c8-53fd27f9f59c": {
+    "e779ef29-3beb-42ed-84f4-e342445f8fbe": {
+      "phash": "f0208fde7e8d6832",
+      "dhash": "a88c9a9088957031",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "37be6985-371b-4bf5-8085-72cf033498ed": {
+      "phash": "8d2cd6d3635aae09",
+      "dhash": "ecf67755d77cf1e7",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "7263773a-860b-470d-92ec-683875959b4f": {
+      "phash": "e75b0bc643f07074",
+      "dhash": "416b968e8e863373",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "516305f6-9d9a-4d33-9788-8e639ea4eaae": {
+      "phash": "e53f98fa23819836",
+      "dhash": "7342d4c60d2180e4",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "fc69a002-a623-49ea-88f0-d5f24e745f29": {
+      "phash": "e6f5ca05346bc1c6",
+      "dhash": "6f2e025c24d3d1b1",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "1530e164-98fc-434c-b16b-b3bac6bfabcd": {
       "phash": "bb11bae94ec44da8",
       "dhash": "1b1b56605303a76d",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "7038204b-bd89-4c2c-ad28-dbbbfcd589ca": {
-      "phash": "bf4c8c0f74e283d1",
-      "dhash": "a723db0f5849698f",
+    "710ba15b-7a71-41d1-a811-814bba8caef9": {
+      "phash": "ea853e5a21cab539",
+      "dhash": "1f1f2fd59b09791f",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "d187e5a4-3b35-48fd-83e1-4cdf768e4ecd": {
-      "phash": "d2bd85c6b0b03a3d",
-      "dhash": "7c56199989e9cacc",
+    "da6842ba-2f60-4b66-9595-73ba72ac885b": {
+      "phash": "adcc4d3193ad216b",
+      "dhash": "426123e61d1f1373",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "2efa1d6a-787e-4657-9531-78adfe83d1ef": {
-      "phash": "eb6ec0285fb5c838",
-      "dhash": "030307461bd9fee0",
+    "1749af6c-8064-4240-8db1-a615321d83f8": {
+      "phash": "8e91e196f8a9c393",
+      "dhash": "d8f1d9312d6576c3",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "b154e3cb-060f-4aa4-be0a-5b681121dc07": {
-      "phash": "d98136766a498f35",
-      "dhash": "70f8b2b308000323",
+    "85f926b7-028e-40a7-b70f-4b0ccc9b61b5": {
+      "phash": "ccafb1c487b169c1",
+      "dhash": "c6f55372e1e180e0",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "b7af0dfe-f44f-458b-b4cb-9bd21743614e": {
+    "27384186-2ea1-4510-87aa-9cde5c27e9be": {
+      "phash": "85e3ac81a6a5f3c5",
+      "dhash": "e7f759cddad9b6b6",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "ecd9d8d7-b40a-4d44-9d48-3cf5f9f18029": {
+      "phash": "9534ad856af4958e",
+      "dhash": "fefe3c28f8fe1653",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "9258b55a-3881-4a41-ab0b-246998e58d9e": {
+      "phash": "f3a2dc4dc17e1cc0",
+      "dhash": "800c0d4fcb080180",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "28242b69-cb91-4ed3-9279-9351e33ef262": {
+      "phash": "a1db3ccc491e92b9",
+      "dhash": "271f5fc3c7cf1f87",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "4ca10e92-44f3-4770-9dda-974bb527419d": {
+      "phash": "fba486536d88c23d",
+      "dhash": "3f1fef9b1ac93947",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "aec30dc8-dee1-4924-a924-304d490945fc": {
+      "phash": "f38ca51c82778d8d",
+      "dhash": "bcb6da89b9480eca",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "b5ea834e-ee27-4f73-8ee8-65036c915dfa": {
+      "phash": "f1637aea1c3da064",
+      "dhash": "0d098e1aa6c89c18",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "0b8081cd-ad9e-4b55-b64f-845492bb777b": {
+      "phash": "c58d8a56053d7aea",
+      "dhash": "fcfb8362c68897e3",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "c8a3a954-f2cc-4450-a1f4-ee2534cf1930": {
+      "phash": "a9c0f63cc1c7d932",
+      "dhash": "c2e71bd39b330f4e",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "5f1b33ca-bc50-4ce7-83d2-ef9abfdc3aeb": {
+      "phash": "b348ac4f4c337f44",
+      "dhash": "f0991f59785b1d3d",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "7da27f1f-5b7d-43c5-bae3-b5067241c823": {
+      "phash": "ed74da286d4b18d4",
+      "dhash": "03070647863bc909",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "ffe29521-b622-4a82-856d-0a3ec0daa3ca": {
+      "phash": "b9646626676c466d",
+      "dhash": "8692929292921292",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "0254ca22-ceed-4071-9d11-113bf3aa845d": {
+      "phash": "a096ee5916ee9827",
+      "dhash": "e4ce9eac9eb38787",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "90e2b360-1d56-4187-9912-b2f112bce073": {
       "phash": "d7ad322b84c3d946",
       "dhash": "795c82e665694dec",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "e84b46dd-ecaf-4589-86e5-54f8a074e199": {
-      "phash": "f6363e0e2705e147",
-      "dhash": "2c2c0e1645017114",
-      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
-      "source": "zillow"
-    },
-    "694d2dac-0c1e-4d50-8dc2-fb1123e4a3c3": {
-      "phash": "f07c70742c938f93",
-      "dhash": "9494004820595a5b",
-      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
-      "source": "zillow"
-    },
-    "c2177c0b-ee7b-4404-aae0-72d5c2cdbca0": {
+    "8f1173f8-5e6e-45e2-be34-3458485852af": {
       "phash": "81a56ecabad8d85c",
       "dhash": "cbced6d6f6d0c030",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "fe053429-9245-4a2b-88d5-e7eb429b9aca": {
-      "phash": "99bbe616f678b001",
-      "dhash": "7952d213d8f0f0e0",
+    "1c6393a2-b1ef-4a6c-9e6d-b8a73999ca87": {
+      "phash": "c4f13f4e1d330ac5",
+      "dhash": "00008a1074a1a164",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     },
-    "fdf5249b-4316-4ce1-a604-ded7dc06c7a4": {
-      "phash": "a5bd4e06c1c9e86e",
-      "dhash": "773e1f9aeeefafb3",
+    "70eb386c-768d-4d6c-85e5-3a9567c73f2e": {
+      "phash": "d496db9905706ae3",
+      "dhash": "d82485ccce1180c0",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "077d0e3a-9ee1-4f15-8f3c-33bd5cf49183": {
+      "phash": "8301eed274bc1eda",
+      "dhash": "66d9ff8ed9c8122d",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "148c6fe1-dd97-4a82-a861-cd4d7d911125": {
+      "phash": "f6363e0e2705e147",
+      "dhash": "2c2c0e1645017114",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "b3759fe6-0812-48a8-8305-a5060aaac377": {
+      "phash": "f3ccce315cea1145",
+      "dhash": "03030387dc9f0f04",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "cf6665c7-a986-4598-a7e1-aab7f6955335": {
+      "phash": "b626885bd912e337",
+      "dhash": "bcb6ef2c1ccbfeba",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "b21d487b-2805-4c3e-b205-a79b22c2f9d4": {
+      "phash": "fed0810f952b6ad4",
+      "dhash": "0035352d256d5300",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "7c194c59-c0b9-4558-8ae8-6b7c0065dfd5": {
+      "phash": "ac701e5f6d86d328",
+      "dhash": "07078f8e1f7e6f6f",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "d9e9b8e9-386a-4a9e-a5df-b7e91af9f07d": {
+      "phash": "efb5acc7980a1b50",
+      "dhash": "ff4651775663c723",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "a73d8b36-7c5a-451c-b05f-756e57a6f2f7": {
+      "phash": "b68c96681b6b5b1a",
+      "dhash": "64ec6cde7f074e1c",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "d4cc776a-9059-4f7a-934d-79ec9b9cb39a": {
+      "phash": "eb6ec0285fb5c838",
+      "dhash": "030307461bd9fee0",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "973c448f-73d9-4d30-a501-15852611796d": {
+      "phash": "a793da4c8713bc54",
+      "dhash": "78199fcfe6274496",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "87073b4f-29a8-4499-8c24-54a0983b9ab7": {
+      "phash": "ae27d150739dad03",
+      "dhash": "4a43676fa9373105",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "0a1b8c92-3714-4d63-aeb8-a3d955d5d922": {
+      "phash": "f2a51e6b60f14e0b",
+      "dhash": "3d2cc28ecb019939",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "9577743a-fd1f-443a-8237-90d78e74327a": {
+      "phash": "fa3c9c6a0b0f263a",
+      "dhash": "393c2ce91929019c",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "1b1e3cc2-149e-476c-85a1-8e01845fe430": {
+      "phash": "99b68d384e8ccd63",
+      "dhash": "349aba7919b1f373",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "6341725f-5302-45a4-a205-5172d5526dae": {
+      "phash": "b7294a1653f60e65",
+      "dhash": "699bae181e7c2c00",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "adcebc4d-2b8a-44c4-b88b-a6d68c0b3a30": {
+      "phash": "acd1e2b4f934523c",
+      "dhash": "1ee2f47e3e6e262f",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "7fa82b9d-1d65-45c9-8c11-4d90e4152ac6": {
+      "phash": "b993c78595d58552",
+      "dhash": "5a1b1d159ac38332",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "e0ea075d-49ff-4752-af56-5dc14dee6946": {
+      "phash": "d2bd85c6b0b03a3d",
+      "dhash": "7c56199989e9cacc",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "56b33e55-aa9d-4747-9ee0-8fa96b48d739": {
+      "phash": "bf4c8c0f74e283d1",
+      "dhash": "a723db0f5849698f",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "289cd20a-a81d-4004-bd71-b5ef4ceddd4a": {
+      "phash": "a41d73686ed0c739",
+      "dhash": "bcfcfcbca7c7964f",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "baf03835-0d95-457f-adf5-4750e59b8178": {
+      "phash": "9537a252d0c369bd",
+      "dhash": "cc6e665858586d87",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "d6f69082-1861-4415-9bb0-a07ceacb25d0": {
+      "phash": "9fe0c0bff32f4048",
+      "dhash": "8ccce16e286e73f8",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "86b7c313-3328-4f02-a8bb-ece0e0079ae4": {
+      "phash": "d98136766a498f35",
+      "dhash": "70f8b2b308000323",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "804f3b53-6604-4d72-a636-c829b6b538c3": {
+      "phash": "95ca253ee356f242",
+      "dhash": "4372c8c8283c76ce",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "ee520ed0-febd-4bfb-9334-f57c584eb791": {
+      "phash": "ee831573b38c24c7",
+      "dhash": "8881c14343073716",
+      "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "source": "zillow"
+    },
+    "84ea660e-0f93-495c-bac1-a9f88484d204": {
+      "phash": "ac9347cef1240ab7",
+      "dhash": "d8f8fc941427e602",
       "property_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
       "source": "zillow"
     }

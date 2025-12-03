@@ -9,55 +9,74 @@ skills: property-data, state-management, listing-extraction, kill-switch
 
 Extract property images and listing data from Zillow, Redfin, and Realtor.com.
 
+## INHERITED RULES (DO NOT OVERRIDE)
+
+These rules from CLAUDE.md apply regardless of examples below:
+- Use `Read` tool for files (NOT `bash cat`)
+- Use `Glob` tool for listing (NOT `bash ls`)
+- Use `Grep` tool for searching (NOT `bash grep`)
+
 ## STEP 0: GET YOUR BEARINGS (MANDATORY)
 
-Before extracting ANY listing data, orient yourself:
+Before extracting ANY listing data, orient yourself using the proper tools:
 
-```bash
-# 1. Confirm working directory
-pwd
+### TOOL USAGE REMINDER
+- **Use Read tool** for file reading (NOT bash cat)
+- **Use Glob tool** for file listing (NOT bash ls)
+- **Use Grep tool** for searching (NOT bash grep)
 
-# 2. Get target property address
-echo "Target: $TARGET_ADDRESS"
+### 1. Load Extraction State
 
-# 3. Check if already processed
-cat data/property_images/metadata/extraction_state.json | python -c "
-import json,sys
-state = json.load(sys.stdin)
-addr = '$TARGET_ADDRESS'
-if addr in state.get('completed_properties', []):
-    print('SKIP: Already completed')
-elif addr in state.get('failed_properties', []):
-    print('WARNING: Previously failed - check retry count')
+Use the **Read** tool:
+```
+Read: data/property_images/metadata/extraction_state.json
+```
+
+Then check in your response:
+```python
+# Parse the JSON content you received
+if TARGET_ADDRESS in state.get('completed_properties', []):
+    # SKIP: Already completed
+elif TARGET_ADDRESS in state.get('failed_properties', []):
+    # WARNING: Previously failed - check retry count
 else:
-    print('PROCEED: Not yet processed')
-"
+    # PROCEED: Not yet processed
+```
 
-# 4. Check existing enrichment data
-cat data/enrichment_data.json | python -c "
-import json,sys
-data = json.load(sys.stdin)
-addr = '$TARGET_ADDRESS'
-if addr in data:
-    existing = data[addr]
-    print(f'Existing fields: {list(existing.keys())}')
-    print(f'HOA: {existing.get(\"hoa_fee\", \"MISSING\")}')
+### 2. Check Enrichment Data
+
+Use the **Read** tool:
+```
+Read: data/enrichment_data.json
+```
+
+**CRITICAL:** enrichment_data.json is a **LIST** of property dicts, NOT a dict keyed by address.
+
+Find property using list iteration:
+```python
+# CORRECT - list iteration
+prop = next((p for p in data if p["full_address"] == TARGET_ADDRESS), None)
+if prop:
+    print(f'Existing fields: {list(prop.keys())}')
+    print(f'HOA: {prop.get("hoa_fee", "MISSING")}')
 else:
     print('No existing data - fresh extraction')
-"
+```
 
-# 5. Check session blocking status
-cat data/session_cache.json 2>/dev/null | python -c "
-import json,sys
-try:
-    cache = json.load(sys.stdin)
-    for source, data in cache.get('blocked_sources', {}).items():
-        print(f'{source}: {data.get(\"status\", \"unknown\")}')
-except: print('Fresh session - no blocks')
-"
+### 3. Check Session Blocking (if file exists)
 
-# 6. Verify extraction script exists
-ls -la scripts/extract_images.py
+Use the **Read** tool:
+```
+Read: data/session_cache.json
+```
+
+Check blocked sources in your response.
+
+### 4. Verify Extraction Script
+
+Use the **Glob** tool:
+```
+Glob: pattern="extract_images.py", path="scripts/"
 ```
 
 **DO NOT PROCEED** if:

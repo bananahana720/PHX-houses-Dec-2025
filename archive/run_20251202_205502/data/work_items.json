@@ -1,0 +1,1675 @@
+{
+  "schema_version": "1.0.0",
+  "session": {
+    "session_id": "session_20251202_174046",
+    "started_at": "2025-12-02T17:40:46.613377Z",
+    "mode": "batch",
+    "total_items": 36,
+    "current_index": 0,
+    "current_phase": "phase1_listing"
+  },
+  "work_items": [
+    {
+      "index": 0,
+      "address": "4732 W Davis Rd, Glendale, AZ 85306",
+      "hash": "6948a957",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 1,
+      "address": "2353 W Tierra Buena Ln, Phoenix, AZ 85023",
+      "hash": "ec304213",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 2,
+      "address": "2344 W Marconi Ave, Phoenix, AZ 85023",
+      "hash": "9036ec03",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 3,
+      "address": "2846 W Villa Rita Dr, Phoenix, AZ 85053",
+      "hash": "05dfc085",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 4,
+      "address": "15225 N 37th Way, Phoenix, AZ 85032",
+      "hash": "33974152",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 5,
+      "address": "18820 N 35th Way, Phoenix, AZ 85050",
+      "hash": "8e2dd92b",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 6,
+      "address": "4209 W Wahalla Ln, Glendale, AZ 85308",
+      "hash": "de1b79b9",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 7,
+      "address": "4137 W Cielo Grande, Glendale, AZ 85310",
+      "hash": "c8597449",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 8,
+      "address": "13307 N 84th Ave, Peoria, AZ 85381",
+      "hash": "20440e23",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 9,
+      "address": "14014 N 39th Ave, Phoenix, AZ 85053",
+      "hash": "65cf9460",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 10,
+      "address": "25841 N 66th Dr, Phoenix, AZ 85083",
+      "hash": "09a8547e",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 11,
+      "address": "4001 W Libby St, Glendale, AZ 85308",
+      "hash": "0687e1a0",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 12,
+      "address": "5522 W Carol Ave, Glendale, AZ 85302",
+      "hash": "b5cde406",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 13,
+      "address": "5004 W Kaler Dr, Glendale, AZ 85301",
+      "hash": "306d01d0",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 14,
+      "address": "4342 W Claremont St, Glendale, AZ 85301",
+      "hash": "407e47bf",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 15,
+      "address": "20021 N 38th Ln, Glendale, AZ 85308",
+      "hash": "07f5362f",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 16,
+      "address": "18825 N 34th St, Phoenix, AZ 85050",
+      "hash": "e740d533",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792178"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 17,
+      "address": "4136 W Hearn Rd, Phoenix, AZ 85053",
+      "hash": "88ff6c8c",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 18,
+      "address": "4020 W Anderson Dr, Glendale, AZ 85308",
+      "hash": "9b8d98cc",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 19,
+      "address": "8714 E Plaza Ave, Scottsdale, AZ 85250",
+      "hash": "4790882e",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 20,
+      "address": "8426 E Lincoln Dr, Scottsdale, AZ 85250",
+      "hash": "c7740c0d",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 21,
+      "address": "11035 E Clinton St, Scottsdale, AZ 85259",
+      "hash": "6677984f",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 22,
+      "address": "14622 N 37th St, Phoenix, AZ 85032",
+      "hash": "164bbeb9",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 23,
+      "address": "12808 N 27th St, Phoenix, AZ 85032",
+      "hash": "ec969845",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 24,
+      "address": "16814 N 31st Ave, Phoenix, AZ 85053",
+      "hash": "76538417",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 25,
+      "address": "4417 W Sandra Cir, Glendale, AZ 85308",
+      "hash": "fb8fe74f",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 26,
+      "address": "17244 N 36th Ln, Glendale, AZ 85308",
+      "hash": "4c990484",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 27,
+      "address": "7126 W Columbine Dr, Peoria, AZ 85381",
+      "hash": "5025613f",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 28,
+      "address": "14353 N 76th Dr, Peoria, AZ 85381",
+      "hash": "1b741c47",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 29,
+      "address": "7233 W Corrine Dr, Peoria, AZ 85381",
+      "hash": "bd97c2f2",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 30,
+      "address": "8803 N 105th Dr, Peoria, AZ 85345",
+      "hash": "43972041",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 31,
+      "address": "8931 W Villa Rita Dr, Peoria, AZ 85382",
+      "hash": "ae7c9f8e",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 32,
+      "address": "9150 W Villa Rita Dr, Peoria, AZ 85382",
+      "hash": "b811f42b",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 33,
+      "address": "5038 W Echo Ln, Glendale, AZ 85302",
+      "hash": "0955c8c4",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 34,
+      "address": "9832 N 29th St, Phoenix, AZ 85028",
+      "hash": "a0853e37",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    },
+    {
+      "index": 35,
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "hash": "04ddcc96",
+      "status": "pending",
+      "locked_by": null,
+      "locked_at": null,
+      "phases": {
+        "phase0_county": {
+          "status": "complete",
+          "completed": "2025-12-02T17:42:45.855497"
+        },
+        "phase05_cost": {
+          "status": "complete",
+          "completed": "2025-12-02T17:58:27.792678"
+        },
+        "phase1_listing": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_map": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2a_exterior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase2b_interior": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "retry_count": 0,
+      "last_updated": "2025-12-02T17:47:35.747483",
+      "commit_sha": null,
+      "errors": []
+    }
+  ],
+  "summary": {
+    "pending": 36,
+    "in_progress": 0,
+    "completed": 0,
+    "failed": 0
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "run_id": "fe197a33",
+  "started_at": "2025-12-02T23:57:08.961645-05:00",
+  "ended_at": "2025-12-02T23:57:24.243680-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 4,
+    "total_new_images": 1,
+    "total_unchanged": 3,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 16,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 4,
+      "new_images": 1,
+      "unchanged": 3,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 16,
+      "errors": 0,
+      "new_image_ids": [
+        "bce673ee-8eba-46d1-a2cc-083b27624bf8"
+      ],
+      "removed_urls": [
+        "https://photos.zillowstatic.com/fp/1a75aa628d677244ad43e4dd342dd270-p_d.webp",
+        "https://photos.zillowstatic.com/fp/ee911e73b9c119eef2505fc5250ae04a-p_d.webp",
+        "https://photos.zillowstatic.com/fp/f78d860bef612c23e66ac05b3fcc3860-p_d.jpg",
+        "https://photos.zillowstatic.com/fp/f78d860bef612c23e66ac05b3fcc3860-p_d.webp",
+        "https://photos.zillowstatic.com/fp/77ffe5713e5f5d46ce8e7f1a5ca4ca35-p_d.webp",
+        "https://photos.zillowstatic.com/fp/c1de09c0920b6e986625d0de0a7716c1-p_d.webp",
+        "https://photos.zillowstatic.com/fp/faf8d54421eade3f22a939071a45afc8-p_d.jpg",
+        "https://photos.zillowstatic.com/fp/ee911e73b9c119eef2505fc5250ae04a-p_d.jpg",
+        "https://photos.zillowstatic.com/fp/1a75aa628d677244ad43e4dd342dd270-p_d.jpg",
+        "https://photos.zillowstatic.com/fp/cea3356e24819e237efbfa66e1362da1-p_d.jpg",
+        "https://photos.zillowstatic.com/fp/faf8d54421eade3f22a939071a45afc8-p_d.webp",
+        "https://photos.zillowstatic.com/fp/f853da0ac790c93c43e61c2255f20f6a-p_d.jpg",
+        "https://photos.zillowstatic.com/fp/c1de09c0920b6e986625d0de0a7716c1-p_d.jpg",
+        "https://photos.zillowstatic.com/fp/77ffe5713e5f5d46ce8e7f1a5ca4ca35-p_d.jpg",
+        "https://photos.zillowstatic.com/fp/f853da0ac790c93c43e61c2255f20f6a-p_d.webp",
+        "https://photos.zillowstatic.com/fp/cea3356e24819e237efbfa66e1362da1-p_d.webp"
+      ],
+      "error_messages": [],
+      "listing_metadata": {
+        "beds": null,
+        "baths": null,
+        "sqft": null,
+        "lot_sqft": null,
+        "year_built": null,
+        "property_type": "Condo",
+        "garage_spaces": null,
+        "parking_spaces": null,
+        "pool": null,
+        "stories": null,
+        "list_price": null,
+        "cooling_type": "None",
+        "heating_type": null,
+        "flooring_types": [
+          "Tile"
+        ],
+        "appliances_included": [
+          "Stove/Oven"
+        ],
+        "sewer_type": null,
+        "water_source": null,
+        "days_on_market": null,
+        "original_list_price": null,
+        "price_reduced": null,
+        "price_reduced_pct": null
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 15.282035
+}

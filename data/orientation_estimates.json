@@ -163,5 +163,10 @@
     "full_address": "9150 W Villa Rita Dr, Peoria, AZ 85382",
     "estimated_orientation": "S",
     "cooling_cost_impact": 300
+  },
+  {
+    "full_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+    "estimated_orientation": "E",
+    "cooling_cost_impact": 200
   }
 ]

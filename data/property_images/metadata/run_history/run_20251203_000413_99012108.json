@@ -1,0 +1,76 @@
+{
+  "run_id": "99012108",
+  "started_at": "2025-12-03T00:03:50.919318-05:00",
+  "ended_at": "2025-12-03T00:04:13.359588-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 21,
+    "total_new_images": 10,
+    "total_unchanged": 0,
+    "total_duplicates": 11,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 21,
+      "new_images": 10,
+      "unchanged": 0,
+      "duplicates": 11,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 0,
+      "new_image_ids": [
+        "adfd417d-a031-46b4-92c2-33c236f9e098",
+        "0eed3833-608d-4efd-8ec0-43b3334ff9d9",
+        "91bedb04-1457-473c-ab54-14ac8892ff43",
+        "e819482f-581e-463d-86eb-43349a4fc8a6",
+        "7b57a00e-e3f9-42a1-8d37-619ed5e97a07",
+        "4a8942b3-9ed8-4523-ab86-5a1e93e4e593",
+        "56c71954-e403-40a5-822f-69e902e793d7",
+        "76711e8d-0b79-4a12-9cf4-a154a5a984b7",
+        "485c385a-0920-4c78-9d63-52eb0ca97bcc",
+        "369d0145-05c6-4e19-bff7-d54c55d4a9d0"
+      ],
+      "removed_urls": [],
+      "error_messages": [],
+      "listing_metadata": {
+        "beds": null,
+        "baths": null,
+        "sqft": null,
+        "lot_sqft": null,
+        "year_built": null,
+        "property_type": "Condo",
+        "garage_spaces": null,
+        "parking_spaces": null,
+        "pool": null,
+        "stories": null,
+        "list_price": 319000,
+        "cooling_type": "None",
+        "heating_type": null,
+        "flooring_types": [
+          "Tile"
+        ],
+        "appliances_included": [
+          "Stove/Oven"
+        ],
+        "sewer_type": null,
+        "water_source": null,
+        "days_on_market": null,
+        "original_list_price": null,
+        "price_reduced": true,
+        "price_reduced_pct": null,
+        "price_reduced_amount": 6000
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 22.44027
+}

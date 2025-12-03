@@ -1,0 +1,73 @@
+{
+  "run_id": "9f9aad1e",
+  "started_at": "2025-12-02T21:18:35.574916-05:00",
+  "ended_at": "2025-12-02T21:19:15.653647-05:00",
+  "mode": "incremental",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 48,
+    "total_new_images": 27,
+    "total_unchanged": 19,
+    "total_duplicates": 2,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 1
+  },
+  "property_changes": {
+    "8803 N 105th Dr, Peoria, AZ 85345": {
+      "address": "8803 N 105th Dr, Peoria, AZ 85345",
+      "property_hash": "ed34c433",
+      "urls_discovered": 48,
+      "new_images": 27,
+      "unchanged": 19,
+      "duplicates": 2,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 0,
+      "new_image_ids": [
+        "c2f8151a-728d-4702-805f-9b58ae467cee",
+        "e95a8577-a9fe-409e-87e0-547aa988ff84",
+        "9bccbd1b-c259-438c-8910-dc7a3919e7b7",
+        "83d67512-881d-4cb8-90ff-57b51c146ef7",
+        "cef4a06d-897f-44c6-9f10-311e31c9ab64",
+        "071b6245-7e58-478e-970f-0df159f0d81f",
+        "e113953e-592e-4619-a8f7-43e08cf029d0",
+        "4146f38d-c944-4844-82a2-6ede9e7efa6a",
+        "1a871bf4-cec8-42f9-a6a9-6d98c2651e6f",
+        "fd625101-6368-4202-b59f-0a7666f95b34",
+        "9bb1d47b-8420-4ae6-8c11-adae8a59e78a",
+        "5b5c4127-9999-4a55-873c-342c9818a658",
+        "9cb2710c-c9ac-438d-9da2-fd790d9d4c8a",
+        "655adb27-0709-46cc-8759-124022f7c210",
+        "5c5f8265-cd00-4e3e-bd48-0722fea0cc1a",
+        "2e5fae76-814e-45f8-b664-16533bfd907c",
+        "0a553a1a-6cd8-47cc-a99d-ee6ff4537f80",
+        "9669c3ad-fba3-48b5-9408-b3fa213ead42",
+        "365c5c97-231f-444f-b624-e6d7b459c43d",
+        "a7fb4631-1f39-480d-b727-7914bdcc9157",
+        "91661da3-a3b3-4522-bb45-9f3e8f9ecd7b",
+        "412ac442-f8b6-4486-a689-f7dd8d7ad621",
+        "0375a7af-2425-4386-b45c-4aff4b45331c",
+        "fc84eec7-914f-46fe-828e-05a1617fa1e3",
+        "1e346ea6-23d9-4003-a373-78f298f083fe",
+        "7ecfdfc7-8c04-4d8c-bc4e-ba9a22892fc8",
+        "9f57964e-d88c-47e4-b59e-5a8d0b1a26aa"
+      ],
+      "removed_urls": [],
+      "error_messages": [],
+      "listing_metadata": {
+        "days_on_market": 5,
+        "original_list_price": null,
+        "price_reduced": true,
+        "price_reduced_pct": null,
+        "price_reduced_amount": 6000,
+        "hoa_fee": 0
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 40.078731
+}

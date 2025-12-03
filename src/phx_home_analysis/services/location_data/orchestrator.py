@@ -11,6 +11,8 @@ Supported sources:
 - flood: FEMA flood zones (per property, coordinate-based)
 - census: Demographics (ZIP-level, Census API)
 - zoning: Zoning codes (per property, Maricopa County)
+- air_quality: EPA AirNow air quality data (per property)
+- permits: Maricopa County building permit history (per property)
 """
 
 import logging
@@ -50,6 +52,8 @@ class LocationData:
     flood: "FloodZoneData | None" = None
     census: "DemographicData | None" = None
     zoning: "ZoningData | None" = None
+    air_quality: "AirQualityData | None" = None
+    permits: "PermitHistory | None" = None
 
     def to_enrichment_dict(self) -> dict[str, Any]:
         """Convert to enrichment data format.
@@ -74,6 +78,10 @@ class LocationData:
             result["zoning_code"] = self.zoning.zoning_code
             result["zoning_description"] = self.zoning.zoning_description
             result["zoning_category"] = self.zoning.zoning_category
+        if self.air_quality:
+            result.update(self.air_quality.to_enrichment_dict())
+        if self.permits:
+            result.update(self.permits.to_enrichment_dict())
         return result
 
 
@@ -89,7 +97,7 @@ class LocationDataOrchestrator:
         await orchestrator.close()
     """
 
-    SOURCES = ["crime", "walkscore", "schools", "noise", "flood", "census", "zoning"]
+    SOURCES = ["crime", "walkscore", "schools", "noise", "flood", "census", "zoning", "air_quality", "permits"]
     ZIP_LEVEL_SOURCES = ["crime", "census"]  # These batch by ZIP
 
     def __init__(
@@ -119,6 +127,8 @@ class LocationDataOrchestrator:
         self._flood_client: Any = None
         self._census_client: Any = None
         self._assessor_client: Any = None
+        self._air_quality_client: Any = None
+        self._permits_client: Any = None
 
     async def extract_for_property(
         self,
@@ -203,6 +213,24 @@ class LocationDataOrchestrator:
                     self.state.mark_source_completed(prop_hash, "zoning")
             else:
                 logger.debug("Skipping zoning (already completed)")
+
+        # Air Quality (per property)
+        if "air_quality" in self.enabled_sources:
+            if not skip_completed or not self.state.is_property_completed(prop_hash, "air_quality"):
+                result.air_quality = await self._extract_air_quality(property)
+                if result.air_quality:
+                    self.state.mark_source_completed(prop_hash, "air_quality")
+            else:
+                logger.debug("Skipping air quality (already completed)")
+
+        # Permits (per property)
+        if "permits" in self.enabled_sources:
+            if not skip_completed or not self.state.is_property_completed(prop_hash, "permits"):
+                result.permits = await self._extract_permits(property)
+                if result.permits:
+                    self.state.mark_source_completed(prop_hash, "permits")
+            else:
+                logger.debug("Skipping permits (already completed)")
 
         # Save state after each property
         self.state.save()
@@ -398,6 +426,52 @@ class LocationDataOrchestrator:
             logger.error("Zoning extraction failed: %s", e)
             return None
 
+    async def _extract_air_quality(self, property: Property) -> Any:
+        """Extract EPA AirNow air quality data.
+
+        Args:
+            property: Property to extract for
+
+        Returns:
+            AirQualityData if successful, None otherwise
+        """
+        if not property.latitude or not property.longitude:
+            logger.warning("No coordinates for air quality lookup: %s", property.full_address)
+            return None
+        if not self._air_quality_client:
+            from ..air_quality.client import EPAAirNowClient
+
+            self._air_quality_client = EPAAirNowClient()
+        try:
+            async with self._air_quality_client as client:
+                return await client.get_air_quality(property.latitude, property.longitude)
+        except Exception as e:
+            logger.error("Air quality extraction failed: %s", e)
+            return None
+
+    async def _extract_permits(self, property: Property) -> Any:
+        """Extract Maricopa County permit history.
+
+        Args:
+            property: Property to extract for
+
+        Returns:
+            PermitHistory if successful, None otherwise
+        """
+        if not property.latitude or not property.longitude:
+            logger.warning("No coordinates for permit lookup: %s", property.full_address)
+            return None
+        if not self._permits_client:
+            from ..permits.client import MaricopaPermitClient
+
+            self._permits_client = MaricopaPermitClient()
+        try:
+            async with self._permits_client as client:
+                return await client.get_permit_history(property.latitude, property.longitude)
+        except Exception as e:
+            logger.error("Permit extraction failed: %s", e)
+            return None
+
     async def close(self) -> None:
         """Close all extractors and save final state."""
         if self._crime_extractor:
@@ -414,6 +488,8 @@ class LocationDataOrchestrator:
             await self._census_client.close()
         if self._assessor_client:
             await self._assessor_client.close()
+        # Note: air_quality_client and permits_client are context managers
+        # that are closed automatically in their extraction methods
 
         # Save final state
         self.state.save()

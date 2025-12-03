@@ -270,6 +270,66 @@ class EnrichmentDataSchema(BaseModel):
     high_rating: float | None = Field(None, ge=1, le=10, description="High school rating 1-10")
     school_count_1mi: int | None = Field(None, ge=0, description="Schools within 1 mile")
 
+    # Market Data (Phase 1 listing extraction)
+    days_on_market: int | None = Field(None, ge=0, description="Days property has been listed")
+    original_list_price: int | None = Field(None, ge=0, description="Original listing price")
+    price_reduced: bool | None = Field(None, description="Whether price has been reduced")
+    price_reduced_pct: float | None = Field(
+        None, ge=-100, le=100, description="Price change percentage (negative = reduction)"
+    )
+
+    # Air Quality (Phase 2 - EPA AirNow)
+    air_quality_aqi: int | None = Field(
+        None, ge=0, le=500, description="Air Quality Index 0-500"
+    )
+    air_quality_category: str | None = Field(
+        None, description="AQI category: Good/Moderate/Unhealthy/etc."
+    )
+    air_quality_pollutant: str | None = Field(
+        None, description="Primary pollutant: PM2.5, O3, PM10, CO, NO2, SO2"
+    )
+
+    # Permit History (Phase 2 - Maricopa GIS)
+    permit_count: int | None = Field(None, ge=0, description="Total building permits on file")
+    permit_types: list[str] | None = Field(None, description="Types of permits found")
+    last_roof_permit_year: int | None = Field(
+        None, ge=1950, le=2030, description="Year of last roofing permit"
+    )
+    last_hvac_permit_year: int | None = Field(
+        None, ge=1950, le=2030, description="Year of last HVAC permit"
+    )
+    has_solar_permit: bool | None = Field(None, description="Has solar installation permit")
+
+    # Exterior Assessment (Phase 2B - Image Analysis)
+    roof_visual_condition: str | None = Field(
+        None, description="UAD condition rating: C1-C6"
+    )
+    roof_age_visual_estimate: int | None = Field(
+        None, ge=0, le=50, description="Visual estimate of roof age in years"
+    )
+    roof_condition_notes: str | None = Field(None, description="Roof condition assessment notes")
+    pool_equipment_age_visual: int | None = Field(
+        None, ge=0, le=30, description="Visual estimate of pool equipment age"
+    )
+    pool_equipment_condition: str | None = Field(None, description="Pool equipment condition notes")
+    pool_system_type: str | None = Field(None, description="Pool system: salt/chlorine")
+    hvac_age_visual_estimate: int | None = Field(
+        None, ge=0, le=30, description="Visual estimate of HVAC age"
+    )
+    hvac_brand: str | None = Field(None, description="HVAC brand if visible")
+    hvac_refrigerant: str | None = Field(None, description="Refrigerant type: R-22/R-410A")
+    hvac_condition_notes: str | None = Field(None, description="HVAC condition assessment notes")
+    foundation_concerns: list[str] | None = Field(None, description="Foundation concerns observed")
+    foundation_red_flags: list[str] | None = Field(None, description="Serious foundation issues")
+    backyard_covered_patio: bool | None = Field(None, description="Has covered patio")
+    backyard_patio_score: int | None = Field(None, ge=1, le=10, description="Patio quality 1-10")
+    backyard_pool_ratio: str | None = Field(
+        None, description="Pool-to-yard ratio: balanced/pool_dominant/minimal_pool"
+    )
+    backyard_sun_orientation: str | None = Field(
+        None, description="Backyard sun orientation: N/E/S/W"
+    )
+
     # Metadata fields (prefixed with _) for tracking data freshness
     # These are optional timestamps in ISO 8601 format
     # Note: Pydantic doesn't support fields starting with _ directly,

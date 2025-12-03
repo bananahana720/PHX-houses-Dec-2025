@@ -138,5 +138,10 @@
     "full_address": "9150 W Villa Rita Dr, Peoria, AZ 85382",
     "lat": 33.6479,
     "lng": -112.2562
+  },
+  {
+    "full_address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+    "lat": 33.3532,
+    "lng": -111.9858
   }
 ]

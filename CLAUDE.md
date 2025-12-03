@@ -68,6 +68,23 @@ python scripts/extract_images.py --all           # Images (stealth)
 python -m scripts.deal_sheets                    # Reports
 ```
 
+### Pre-Spawn Validation (REQUIRED for Phase 2)
+
+Before spawning Phase 2 image-assessor agents, ALWAYS validate prerequisites:
+
+```bash
+# Validate prerequisites (returns JSON)
+python scripts/validate_phase_prerequisites.py --address "ADDRESS" --phase phase2_images --json
+
+# Exit code 0 = can_spawn=true, proceed
+# Exit code 1 = can_spawn=false, BLOCKED - do NOT spawn agent
+
+# Data quality reconciliation (optional, with auto-repair)
+python scripts/validate_phase_prerequisites.py --reconcile --address "ADDRESS" --repair
+```
+
+**If blocked:** Check the `reason` field in JSON output for remediation steps.
+
 ## Key Principles
 
 ### Tool Usage (CRITICAL)
@@ -85,6 +102,7 @@ python -m scripts.deal_sheets                    # Reports
 2. **Directory entry**: Check for CLAUDE.md, create placeholder if missing
 3. **Work complete**: Update pending_tasks, add key_learnings
 4. **On errors**: Document in key_learnings with workaround
+5. **Before Phase 2 spawn**: MANDATORY - validate prerequisites with `validate_phase_prerequisites.py`
 
 ### File Organization
 - Scripts → `scripts/` | Tests → `tests/` | Docs → `docs/` | Data → `data/`

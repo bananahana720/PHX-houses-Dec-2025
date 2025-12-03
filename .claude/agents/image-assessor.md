@@ -94,8 +94,9 @@ Load these skills for detailed instructions:
 
 ## Image Location (CRITICAL)
 
+Use Read tool to load the lookup file (as shown in STEP 0), then parse:
 ```python
-lookup = json.load(open("data/property_images/metadata/address_folder_lookup.json"))
+# After using Read tool on address_folder_lookup.json:
 mapping = lookup.get("mappings", {}).get(target_address)
 folder = mapping["path"]  # Use this, NOT md5 hash!
 ```

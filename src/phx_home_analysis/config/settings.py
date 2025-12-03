@@ -131,6 +131,17 @@ class ArizonaContext:
     pass
 
 
+# Common viewport sizes for randomization (resolution, usage share)
+# Based on StatCounter Global Stats 2024-2025
+VIEWPORT_SIZES = [
+    (1280, 720),   # 720p - common laptop/monitor
+    (1366, 768),   # Most common laptop resolution
+    (1440, 900),   # 16:10 laptop/monitor
+    (1536, 864),   # 1.5x scaling on 1024x576
+    (1920, 1080),  # 1080p - very common desktop
+]
+
+
 @dataclass(frozen=True)
 class StealthExtractionConfig:
     """Configuration for stealth browser extraction (nodriver + curl_cffi).
@@ -187,8 +198,8 @@ class StealthExtractionConfig:
     human_delay_max: float = 3.0
 
     # CAPTCHA handling
-    captcha_hold_min: float = 4.0
-    captcha_hold_max: float = 7.0
+    captcha_hold_min: float = 4.5
+    captcha_hold_max: float = 8.5
 
     # Request settings
     request_timeout: float = 30.0
@@ -241,6 +252,25 @@ class StealthExtractionConfig:
     def is_configured(self) -> bool:
         """Check if proxy is configured."""
         return bool(self.proxy_server)
+
+    @staticmethod
+    def get_random_viewport() -> tuple[int, int]:
+        """Get randomized viewport size from common resolutions.
+
+        Randomization helps avoid fingerprinting by varying browser characteristics
+        across requests. Uses common desktop/laptop resolutions to appear natural.
+
+        Returns:
+            Tuple of (width, height) in pixels
+
+        Example:
+            >>> width, height = StealthExtractionConfig.get_random_viewport()
+            >>> width in [1280, 1366, 1440, 1536, 1920]
+            True
+            >>> height in [720, 768, 900, 864, 1080]
+            True
+        """
+        return random.choice(VIEWPORT_SIZES)
 
 
 @dataclass(frozen=True)

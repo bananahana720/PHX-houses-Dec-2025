@@ -17,8 +17,9 @@ import hashlib
 import json
 import logging
 import os
+import re
 import time
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
@@ -43,6 +44,7 @@ from .extractors.base import (
     RateLimitError,
     SourceUnavailableError,
 )
+from .metrics import CaptchaMetrics
 from .run_logger import PropertyChanges, RunLogger
 from .standardizer import ImageProcessingError, ImageStandardizer
 from .state_manager import ExtractionState
@@ -146,6 +148,95 @@ class SourceCircuitBreaker:
         return status
 
 
+class ErrorAggregator:
+    """Detect and skip systemic failures to comply with Axiom 9 (Fail Fast).
+
+    Prevents redundant error logging when the same error pattern occurs repeatedly
+    (e.g., 404s from the same base URL across all properties).
+
+    Attributes:
+        threshold: Number of identical errors before skipping similar ones
+        error_counts: Counter tracking frequency of normalized error patterns
+        skip_patterns: Set of error patterns to skip after threshold reached
+    """
+
+    def __init__(self, threshold: int = 3):
+        """Initialize error aggregator with threshold.
+
+        Args:
+            threshold: Number of occurrences before skipping similar errors (default: 3)
+        """
+        self.threshold = threshold
+        self.error_counts: Counter[str] = Counter()
+        self.skip_patterns: set[str] = set()
+
+    def record_error(self, error_msg: str) -> bool:
+        """Record error and return True if should skip similar errors.
+
+        Args:
+            error_msg: Full error message from exception
+
+        Returns:
+            True if this error pattern should be skipped (threshold reached)
+        """
+        # Normalize error message (extract URL pattern or error type)
+        normalized = self._normalize_error(error_msg)
+        self.error_counts[normalized] += 1
+
+        if self.error_counts[normalized] >= self.threshold:
+            if normalized not in self.skip_patterns:
+                self.skip_patterns.add(normalized)
+                logger.warning(
+                    "Systemic failure detected (%dx): %s... Skipping similar errors.",
+                    self.threshold,
+                    normalized[:100]
+                )
+            return True
+        return False
+
+    def _normalize_error(self, msg: str) -> str:
+        """Extract error pattern from message for deduplication.
+
+        For 404 errors, extracts the domain/path pattern.
+        For other errors, uses first 100 chars.
+
+        Args:
+            msg: Error message to normalize
+
+        Returns:
+            Normalized pattern string for comparison
+        """
+        # For 404 errors, extract the base URL pattern
+        if "404" in msg and "http" in msg:
+            # Extract domain/path pattern (e.g., https://ssl.cdn-redfin.com/photo/)
+            match = re.search(r'(https?://[^/]+(?:/[^/]+){0,2})', msg)
+            if match:
+                return f"404:{match.group(1)}"
+        return msg[:100]
+
+    def should_skip(self, url: str) -> bool:
+        """Check if URL matches a known failing pattern.
+
+        Args:
+            url: URL to check against skip patterns
+
+        Returns:
+            True if URL should be skipped based on known failures
+        """
+        for pattern in self.skip_patterns:
+            if pattern.startswith("404:") and pattern[4:] in url:
+                return True
+        return False
+
+    def get_summary(self) -> dict[str, int]:
+        """Get error frequency summary for logging.
+
+        Returns:
+            Dict of top 5 most common error patterns with counts
+        """
+        return dict(self.error_counts.most_common(5))
+
+
 class ImageExtractionOrchestrator:
     """Coordinates image extraction across all sources.
 
@@ -230,6 +321,12 @@ class ImageExtractionOrchestrator:
             failure_threshold=3,
             reset_timeout=300,  # 5 minutes
         )
+
+        # Error aggregation for Axiom 9 (Fail Fast) compliance
+        self._error_aggregator = ErrorAggregator(threshold=3)
+
+        # CAPTCHA metrics tracking
+        self.captcha_metrics = CaptchaMetrics()
 
         # Security: Lock for thread-safe state/manifest mutations
         self._state_lock = asyncio.Lock()
@@ -599,6 +696,27 @@ class ImageExtractionOrchestrator:
         if any(s != "closed" for s in circuit_status.values()):
             logger.info("Circuit breaker status: %s", circuit_status)
 
+        # Log error aggregation summary (Axiom 9: Fail Fast)
+        error_summary = self._error_aggregator.get_summary()
+        if error_summary:
+            logger.info("Error aggregation summary (top 5 patterns): %s", error_summary)
+
+        # Log CAPTCHA metrics summary
+        captcha_summary = self.captcha_metrics.get_summary()
+        if captcha_summary["captcha_encounters"] > 0:
+            logger.info("CAPTCHA metrics summary: %s", captcha_summary)
+
+            # Check for alerting conditions
+            should_alert, alert_reason = self.captcha_metrics.should_alert()
+            if should_alert:
+                # Log at appropriate level based on severity
+                if "CRITICAL" in alert_reason:
+                    logger.error(alert_reason)
+                elif "WARNING" in alert_reason:
+                    logger.warning(alert_reason)
+                else:
+                    logger.info(alert_reason)
+
         # Finalize run log
         run_log_path = self.run_logger.finish_run()
         if run_log_path:
@@ -652,6 +770,11 @@ class ImageExtractionOrchestrator:
 
                 # Extract URLs
                 logger.debug(f"Extracting from {extractor.name}")
+
+                # Track extraction attempt for CAPTCHA metrics (stealth sources only)
+                if source_name in ("zillow", "redfin"):
+                    self.captcha_metrics.record_extraction_attempt()
+
                 urls = await extractor.extract_image_urls(property)
                 source_stats.images_found += len(urls)
 
@@ -850,9 +973,21 @@ class ImageExtractionOrchestrator:
 
                 logger.info(f"{extractor.name}: found {len(urls)} images")
 
+                # Collect listing metadata if extractor provides it (Zillow)
+                if hasattr(extractor, 'last_metadata') and extractor.last_metadata:
+                    prop_changes.listing_metadata.update(extractor.last_metadata)
+                    logger.info(
+                        f"{extractor.name}: collected metadata: {list(extractor.last_metadata.keys())}"
+                    )
+
                 # Download and process each image
                 for url in urls:
                     try:
+                        # Skip URLs matching known systemic failures (Axiom 9: Fail Fast)
+                        if self._error_aggregator.should_skip(url):
+                            logger.debug(f"Skipping URL with known failure pattern: {url[:60]}...")
+                            continue
+
                         # Check URL against tracker if incremental
                         if incremental:
                             url_status, existing_id = self.url_tracker.check_url(url)
@@ -984,14 +1119,24 @@ class ImageExtractionOrchestrator:
                         await extractor._rate_limit()
 
                     except ImageDownloadError as e:
-                        logger.warning(f"Failed to download {url}: {e}")
+                        error_msg = f"Failed to download {url}: {e}"
+                        # Record error for systemic failure detection
+                        should_skip = self._error_aggregator.record_error(error_msg)
+                        if not should_skip:
+                            # Only log details if not a known pattern
+                            logger.warning(error_msg)
                         source_stats.images_failed += 1
                         result.failed_downloads += 1
                         prop_changes.errors += 1
                         prop_changes.error_messages.append(f"Download failed: {url}")
 
                     except Exception as e:
-                        logger.error(f"Unexpected error processing {url}: {e}", exc_info=True)
+                        error_msg = f"Unexpected error processing {url}: {e}"
+                        # Record error for systemic failure detection
+                        should_skip = self._error_aggregator.record_error(error_msg)
+                        if not should_skip:
+                            # Only log details if not a known pattern
+                            logger.error(error_msg, exc_info=True)
                         source_stats.images_failed += 1
                         result.failed_downloads += 1
                         prop_changes.errors += 1

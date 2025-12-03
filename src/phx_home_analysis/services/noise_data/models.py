@@ -84,3 +84,17 @@ class NoiseData:
             Primary noise source or None
         """
         return self.noise_sources[0] if self.noise_sources else None
+
+    def to_enrichment_dict(self) -> dict:
+        """Convert to enrichment data format for merging into enrichment_data.json.
+
+        Returns:
+            Dictionary with noise fields for enrichment
+        """
+        return {
+            "noise_score": self.noise_score,
+            "noise_label": self.noise_label,
+            "noise_sources": self.noise_sources,
+            "noise_primary_source": self.primary_noise_source,
+            "noise_data_source": self.source,
+        }

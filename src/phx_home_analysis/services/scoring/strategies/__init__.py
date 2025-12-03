@@ -17,12 +17,14 @@ from .interior import (
     NaturalLightScorer,
 )
 from .location import (
+    AirQualityScorer,
     CrimeIndexScorer,
     FloodRiskScorer,
+    NoiseLevelScorer,
     OrientationScorer,
     ParksWalkabilityScorer,
-    QuietnessScorer,
-    SafetyScorer,  # Deprecated, kept for backwards compatibility
+    QuietnessScorer,  # Deprecated, use NoiseLevelScorer
+    SafetyScorer,  # Deprecated, use CrimeIndexScorer
     SchoolDistrictScorer,
     SupermarketScorer,
     WalkTransitScorer,
@@ -37,13 +39,14 @@ from .systems import (
 # Location strategies (Section A: 250 pts max)
 LOCATION_STRATEGIES = [
     SchoolDistrictScorer,
-    QuietnessScorer,
+    NoiseLevelScorer,  # Replaces QuietnessScorer (uses HowLoud API with highway fallback)
     CrimeIndexScorer,  # Replaces SafetyScorer
     SupermarketScorer,
     ParksWalkabilityScorer,
     OrientationScorer,
-    FloodRiskScorer,  # NEW
-    WalkTransitScorer,  # NEW
+    FloodRiskScorer,
+    WalkTransitScorer,
+    AirQualityScorer,  # NEW - EPA AirNow AQI scoring
 ]
 
 # Systems strategies (Section B: 170 pts max)
@@ -72,14 +75,16 @@ ALL_STRATEGIES = LOCATION_STRATEGIES + SYSTEMS_STRATEGIES + INTERIOR_STRATEGIES
 __all__ = [
     # Location strategies
     "SchoolDistrictScorer",
-    "QuietnessScorer",
+    "NoiseLevelScorer",
+    "QuietnessScorer",  # Deprecated, use NoiseLevelScorer
     "CrimeIndexScorer",
-    "SafetyScorer",  # Deprecated
+    "SafetyScorer",  # Deprecated, use CrimeIndexScorer
     "SupermarketScorer",
     "ParksWalkabilityScorer",
     "OrientationScorer",
     "FloodRiskScorer",
     "WalkTransitScorer",
+    "AirQualityScorer",
     # Systems strategies
     "RoofConditionScorer",
     "BackyardUtilityScorer",

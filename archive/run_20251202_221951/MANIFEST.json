@@ -1,0 +1,18 @@
+{
+  "archive_timestamp": "20251202_221951",
+  "archive_date": "2025-12-02T22:19:51.711034",
+  "archived_files": {
+    "data_files": [
+      "data/phx_homes.csv",
+      "data/enrichment_data.json",
+      "data/field_lineage.json",
+      "data/work_items.json",
+      "data/phx_homes_ranked.csv"
+    ],
+    "property_image_folders": 9,
+    "total_images": 342,
+    "deal_sheets": 36,
+    "visualizations": 0
+  },
+  "reason": "Reset for new listing pool"
+}

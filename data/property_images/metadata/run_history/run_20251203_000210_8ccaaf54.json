@@ -1,0 +1,43 @@
+{
+  "run_id": "8ccaaf54",
+  "started_at": "2025-12-03T00:02:07.368506-05:00",
+  "ended_at": "2025-12-03T00:02:10.521123-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 0,
+    "total_new_images": 0,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 4,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 0,
+      "new_images": 0,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 4,
+      "errors": 0,
+      "new_image_ids": [],
+      "removed_urls": [
+        "https://www.zillowstatic.com/s3/web-platform/sub-apps/hops-homepage/hops-homepage.prod.master.11916179.07899243/web/c45ff4889526375d32314844d0b67d8a.png",
+        "https://www.zillowstatic.com/s3/web-platform/sub-apps/hops-homepage/hops-homepage.prod.master.11916179.07899243/web/e9737a930518048728251f1671effc95.png",
+        "https://www.zillowstatic.com/s3/web-platform/sub-apps/hops-homepage/hops-homepage.prod.master.11916179.07899243/web/5d69598eba004b778f74b62a86a30695.png",
+        "https://www.zillowstatic.com/s3/web-platform/sub-apps/hops-homepage/hops-homepage.prod.master.11916179.07899243/web/a03d28d86d858234534306b63a6de3b2.jpg"
+      ],
+      "error_messages": [],
+      "listing_metadata": {}
+    }
+  },
+  "errors": [],
+  "duration_seconds": 3.152617
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "5ed4da0c",
+  "started_at": "2025-12-02T21:12:13.704831-05:00",
+  "ended_at": "2025-12-02T21:12:14.003574-05:00",
+  "mode": "incremental",
+  "properties_requested": 1,
+  "properties_processed": 0,
+  "aggregate": {
+    "total_urls_discovered": 0,
+    "total_new_images": 0,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 0,
+    "properties_needing_review": 0
+  },
+  "property_changes": {},
+  "errors": [],
+  "duration_seconds": 0.298743
+}

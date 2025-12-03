@@ -1,0 +1,61 @@
+{
+  "run_id": "096fb640",
+  "started_at": "2025-12-02T21:17:17.112988-05:00",
+  "ended_at": "2025-12-02T21:17:39.900484-05:00",
+  "mode": "incremental",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 19,
+    "total_new_images": 16,
+    "total_unchanged": 3,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 1
+  },
+  "property_changes": {
+    "7126 W Columbine Dr, Peoria, AZ 85381": {
+      "address": "7126 W Columbine Dr, Peoria, AZ 85381",
+      "property_hash": "bab11e7d",
+      "urls_discovered": 19,
+      "new_images": 16,
+      "unchanged": 3,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 0,
+      "new_image_ids": [
+        "ffdfc3e4-3468-4359-a351-3b00d6cfb65e",
+        "6bd3868b-5906-4756-b0b4-e30a128e170d",
+        "137f5fdf-f51e-4941-9fca-47d1cfb87105",
+        "884e4b7e-13b3-4a4c-8ddd-205f33774a8e",
+        "9d4a776b-6de3-465b-8215-29f4b1fb806c",
+        "72f92c8a-d473-4ca1-9a58-364556bb12f4",
+        "24b33fbf-ee33-453d-b8fc-0b99cafba7c1",
+        "bf8e011a-e444-426f-b673-6743eb10ce1b",
+        "81f3f6e1-507b-45d0-b851-b89bfb14a339",
+        "e50068fc-7639-41e2-bc0f-ff8349b0f26a",
+        "bca6bd60-9eec-4bc2-b515-caa65ff8f613",
+        "d5c78c3f-19e7-432c-8268-a5b0fd738ceb",
+        "7d62af0d-b564-4db7-b7ba-6e97ce3ffdaa",
+        "535435f2-ca90-4910-a660-dbb3a3b50e18",
+        "d677adf7-340a-4234-a22c-24c1fbd5af6a",
+        "1e9a3905-c7f6-4574-afdb-29f87bb1c3e9"
+      ],
+      "removed_urls": [],
+      "error_messages": [],
+      "listing_metadata": {
+        "days_on_market": null,
+        "original_list_price": null,
+        "price_reduced": null,
+        "price_reduced_pct": null,
+        "hoa_fee": 0
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 22.787496
+}

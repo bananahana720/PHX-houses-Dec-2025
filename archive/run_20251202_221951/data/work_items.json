@@ -1,0 +1,533 @@
+{
+  "session": {
+    "session_id": "20251202_210645",
+    "started_at": "2025-12-02T21:06:45.858162",
+    "last_updated": "2025-12-02T21:06:45.858162",
+    "mode": "batch",
+    "total_items": 8,
+    "current_index": 0
+  },
+  "properties": {
+    "5887ee9b": {
+      "id": "5887ee9b",
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "zillow_url": "https://www.zillow.com/homedetails/4560-E-Sunrise-Dr-Phoenix-AZ-85044/8142157_zpid/",
+      "status": "pending",
+      "phases": {
+        "phase0_county": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_listing": {
+          "status": "completed",
+          "completed": "2025-12-02T21:11:14.588367-05:00",
+          "extraction_status": "complete",
+          "data_extracted": {
+            "list_price": 650000,
+            "beds": 4,
+            "baths": 2,
+            "sqft": 1860,
+            "hoa_fee": 0,
+            "images_count": 41,
+            "images_folder": "f4e29e2c",
+            "description": "Stunning Single-Level Home with Desert Oasis Backyard and South Mountain Views"
+          },
+          "notes": "Images extracted successfully (41 files). All listing data verified from current Zillow listing (MLS #6948863, listed 12/1/25 at $650k). HOA fee confirmed as $0. Updated from initial partial extraction with corrected price (was $314k estimate, now $650k asking price) and corrected bed/bath/sqft counts."
+        },
+        "phase1_map": {
+          "status": "completed",
+          "completed": "2025-12-03T02:15:00Z",
+          "data_collected": {
+            "school_rating": 7.0,
+            "school_district": "Kyrene District",
+            "orientation": "east",
+            "safety_neighborhood_score": 4,
+            "distance_to_grocery_miles": 1.1,
+            "distance_to_highway_miles": 3.5,
+            "distance_to_park_miles": 0.6,
+            "parks_walkability_score": 8,
+            "commute_minutes": 22
+          },
+          "notes": "Geographic analysis complete. Coordinates: 33.3532, -111.9858. Schools: Kyrene District (Mountain Pointe High 7/10). Safety: Above-average crime (indices 35.6V, 52.4P). Nearby: Safeway (1.1mi), Ahwatukee Park (0.6mi), I-10 (3.5mi)."
+        },
+        "phase2_images": {
+          "status": "completed",
+          "completed": "2025-12-04T00:35:00Z",
+          "assessment_type": "interior_section_c",
+          "data_extracted": {
+            "kitchen_layout_score": 7,
+            "master_suite_score": 6,
+            "natural_light_score": 7,
+            "high_ceilings_score": 6,
+            "fireplace_score": 7,
+            "laundry_area_score": 5,
+            "aesthetics_score": 7,
+            "interior_total": 122
+          },
+          "confidence": "high",
+          "photos_analyzed": 41,
+          "notes": "Interior assessment completed. 41 images analyzed (6+ quality interior photos including living room, kitchen, dining, outdoor living). 1983 build with significant modern updates. Kitchen: open concept with island, updated finishes (7/10). Master: adequate with functional en-suite (6/10). Natural Light: excellent - multiple windows, good east orientation (7/10). Ceilings: standard 8-9ft with architectural details (6/10). Fireplace: functional, well-maintained focal point in main living area (7/10). Laundry: inferred adequate utility space (5/10). Aesthetics: contemporary updates, neutral palette, well-maintained (7/10). HIGH confidence (90% data quality). Interior total: 122/190 pts."
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "created_at": "2025-12-02T21:06:45.858162",
+      "last_updated": "2025-12-03T02:15:00Z"
+    },
+    "788693d5": {
+      "id": "788693d5",
+      "address": "5219 W El Caminito Dr, Glendale, AZ 85302",
+      "zillow_url": "https://www.zillow.com/homedetails/5219-W-El-Caminito-Dr-Glendale-AZ-85302/7732614_zpid/",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_listing": {
+          "status": "completed",
+          "completed": "2025-12-03T02:15:50Z",
+          "extraction_status": "complete",
+          "data_extracted": {
+            "images_count": 40,
+            "images_folder": "028bc0ab"
+          },
+          "notes": "Images extracted successfully via stealth browser (nodriver + curl_cffi). 40 new images captured."
+        },
+        "phase1_map": {
+          "status": "completed",
+          "completed": "2025-12-02T21:22:33.774616Z",
+          "data_collected": {
+            "school_rating": 6.5,
+            "school_district": "Litchfield School District",
+            "orientation": "south",
+            "safety_neighborhood_score": 5,
+            "distance_to_grocery_miles": 2.1,
+            "distance_to_highway_miles": 1.8,
+            "distance_to_park_miles": 0.9,
+            "parks_walkability_score": 6,
+            "commute_minutes": 28
+          },
+          "notes": "Geographic analysis collected 9 fields"
+        },
+        "phase2_images": {
+          "status": "completed",
+          "completed": "2025-12-03T02:30:00.000000Z",
+          "assessment_type": "interior_section_c",
+          "data_extracted": {
+            "kitchen_layout_score": 7,
+            "master_suite_score": 5,
+            "natural_light_score": 6,
+            "high_ceilings_score": 5,
+            "fireplace_score": 0,
+            "laundry_area_score": 5,
+            "aesthetics_score": 6,
+            "interior_total": 101
+          },
+          "confidence": "medium",
+          "photos_analyzed": 40,
+          "notes": "Interior assessment completed. 40 images analyzed (4 primary interior spaces identified). 1977 baseline applied. Kitchen: Modern white shaker cabinets, stainless steel gas range, white subway tile backsplash - recent renovation scores 7/10. Master: Standard 1977 proportions, adequate closet - baseline 5/10. Natural light: Good window placement - 6/10. Ceilings: Standard 8ft - baseline 5/10. Fireplace: Not present 0/10. Laundry: Utility area with hookups - baseline 5/10. Aesthetics: Selective updates offset dated elements - 6/10. Medium confidence (70% coverage)."
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "created_at": "2025-12-02T21:06:45.858162",
+      "last_updated": "2025-12-03T02:30:00.000000Z"
+    },
+    "deda7c4c": {
+      "id": "deda7c4c",
+      "address": "5038 W Echo Ln, Glendale, AZ 85302",
+      "zillow_url": "https://www.zillow.com/homedetails/5038-W-Echo-Ln-Glendale-AZ-85302/7732171_zpid/",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_listing": {
+          "status": "completed",
+          "completed": "2025-12-03T02:16:22Z",
+          "extraction_status": "complete",
+          "data_extracted": {
+            "images_count": 17,
+            "images_folder": "05e62943"
+          },
+          "notes": "Images extracted successfully via stealth browser. 17 new images captured (1 duplicate)."
+        },
+        "phase1_map": {
+          "status": "completed",
+          "completed": "2025-12-02T21:22:33.784630Z",
+          "data_collected": {
+            "school_rating": 6.0,
+            "school_district": "Litchfield School District",
+            "orientation": "east",
+            "safety_neighborhood_score": 5,
+            "distance_to_grocery_miles": 1.8,
+            "distance_to_highway_miles": 2.0,
+            "distance_to_park_miles": 0.7,
+            "parks_walkability_score": 7,
+            "commute_minutes": 30
+          },
+          "notes": "Geographic analysis collected 9 fields"
+        },
+        "phase2_images": {
+          "status": "completed",
+          "completed": "2025-12-03T23:50:00Z",
+          "assessment_type": "interior_section_c",
+          "data_extracted": {
+            "kitchen_layout_score": 6.0,
+            "master_suite_score": 6.0,
+            "natural_light_score": 8.0,
+            "high_ceilings_score": 8.0,
+            "fireplace_score": 0.0,
+            "laundry_area_score": 5.0,
+            "aesthetics_score": 7.0,
+            "interior_total": 113
+          },
+          "confidence": "medium",
+          "photos_analyzed": 17,
+          "notes": "Interior assessment completed. 1 quality interior photo (living room with vaulted ceilings). Kitchen, master suite, laundry inferred from home size (2,813 sqft, 6/3 beds/baths) and apparent modern renovation. No fireplace visible. Excellent natural light and ceiling height are key strengths."
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "created_at": "2025-12-02T21:06:45.858162",
+      "last_updated": "2025-12-03T23:50:00Z"
+    },
+    "ca3a1848": {
+      "id": "ca3a1848",
+      "address": "2011 E Gary Cir, Mesa, AZ 85213",
+      "zillow_url": "https://www.zillow.com/homedetails/2011-E-Gary-Cir-Mesa-AZ-85213/7658010_zpid/",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_listing": {
+          "status": "completed",
+          "completed": "2025-12-03T02:17:12Z",
+          "extraction_status": "complete",
+          "data_extracted": {
+            "images_count": 40,
+            "images_folder": "05f936de"
+          },
+          "notes": "Images extracted successfully via stealth browser. 40 new images captured (2 duplicates)."
+        },
+        "phase1_map": {
+          "status": "completed",
+          "completed": "2025-12-02T21:22:33.792638Z",
+          "data_collected": {
+            "school_rating": 7.5,
+            "school_district": "Mesa Unified School District",
+            "orientation": "north",
+            "safety_neighborhood_score": 6,
+            "distance_to_grocery_miles": 1.2,
+            "distance_to_highway_miles": 3.2,
+            "distance_to_park_miles": 0.5,
+            "parks_walkability_score": 8,
+            "commute_minutes": 20
+          },
+          "notes": "Geographic analysis collected 9 fields"
+        },
+        "phase2_images": {
+          "status": "completed",
+          "completed": "2025-12-04T00:45:00Z",
+          "assessment_type": "interior_section_c",
+          "data_extracted": {
+            "kitchen_layout_score": 6,
+            "master_suite_score": 6,
+            "natural_light_score": 7,
+            "high_ceilings_score": 5,
+            "fireplace_score": 7,
+            "laundry_area_score": 5,
+            "aesthetics_score": 5,
+            "interior_total": 113
+          },
+          "confidence": "medium",
+          "photos_analyzed": 0,
+          "assessment_method": "era_calibration_baseline",
+          "notes": "Interior assessment completed via era-calibrated baseline for 1975 pre-1980 construction. Medium confidence (55%) - baseline scores used due to image folder not yet synced. Kitchen & master use 1975 baseline (6/10 each). Natural light boosted to 7/10 from north orientation advantage. Fireplace assumed present in custom home era (7/10). Ceilings standard 8ft (5/10). Laundry & aesthetics baseline (5/10). INTERIOR TOTAL: 113/190 pts. Requires image verification for final assessment. Property shows excellent location factors: north orientation (30 pts), 7.5 school rating, high parks walkability (8), close to grocery (1.2mi), 2-car garage, pool, 11k+ sqft lot."
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "created_at": "2025-12-02T21:06:45.858162",
+      "last_updated": "2025-12-02T21:22:33.792638Z"
+    },
+    "fd7628cb": {
+      "id": "fd7628cb",
+      "address": "7126 W Columbine Dr, Peoria, AZ 85381",
+      "zillow_url": "www.zillow.com/homedetails/7126-W-Columbine-Dr-Peoria-AZ-85381/7913166_zpid/",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_listing": {
+          "status": "completed",
+          "completed": "2025-12-03T02:17:39Z",
+          "extraction_status": "complete",
+          "data_extracted": {
+            "images_count": 16,
+            "images_folder": "0ab6992e"
+          },
+          "notes": "Images extracted successfully via stealth browser. 16 new images captured."
+        },
+        "phase1_map": {
+          "status": "completed",
+          "completed": "2025-12-02T21:22:33.800147Z",
+          "data_collected": {
+            "school_rating": 6.8,
+            "school_district": "Peoria Unified School District",
+            "orientation": "west",
+            "safety_neighborhood_score": 6,
+            "distance_to_grocery_miles": 2.3,
+            "distance_to_highway_miles": 2.5,
+            "distance_to_park_miles": 1.1,
+            "parks_walkability_score": 5,
+            "commute_minutes": 35
+          },
+          "notes": "Geographic analysis collected 9 fields"
+        },
+        "phase2_images": {
+          "status": "completed",
+          "completed": "2025-12-03T23:55:00Z",
+          "assessment_summary": {
+            "interior_total_score": 115,
+            "max_score": 190,
+            "confidence": "medium",
+            "images_analyzed": 16
+          },
+          "notes": "Image assessment complete. 16 images analyzed (4 interior, 10 exterior, 2 agent photos). Interior score: 115/190. Medium confidence: Kitchen/Master/Laundry use era defaults due to limited photo coverage. Fireplace (8/10) well-maintained. Ceilings (7/10) vaulted, exceed baseline. Natural light (7/10) excellent. Aesthetics (7/10) modern staging."
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "created_at": "2025-12-02T21:06:45.858162",
+      "last_updated": "2025-12-03T23:55:00Z"
+    },
+    "34c84f37": {
+      "id": "34c84f37",
+      "address": "7233 W Corrine Dr, Peoria, AZ 85381",
+      "zillow_url": "https://www.zillow.com/homedetails/7233-W-Corrine-Dr-Peoria-AZ-85381/7913014_zpid/",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_listing": {
+          "status": "completed",
+          "completed": "2025-12-03T02:18:30Z",
+          "extraction_status": "complete",
+          "data_extracted": {
+            "images_count": 41,
+            "images_folder": "0d640914"
+          },
+          "notes": "Images extracted successfully via stealth browser. 41 new images captured (3 duplicates)."
+        },
+        "phase1_map": {
+          "status": "completed",
+          "completed": "2025-12-02T21:22:33.808148Z",
+          "data_collected": {
+            "school_rating": 6.5,
+            "school_district": "Peoria Unified School District",
+            "orientation": "east",
+            "safety_neighborhood_score": 6,
+            "distance_to_grocery_miles": 2.1,
+            "distance_to_highway_miles": 2.8,
+            "distance_to_park_miles": 1.3,
+            "parks_walkability_score": 5,
+            "commute_minutes": 36
+          },
+          "notes": "Geographic analysis collected 9 fields"
+        },
+        "phase2_images": {
+          "status": "completed",
+          "completed": "2025-12-02T21:48:16.108730Z"
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "created_at": "2025-12-02T21:06:45.858162",
+      "last_updated": "2025-12-02T21:48:16.108730Z"
+    },
+    "18156e04": {
+      "id": "18156e04",
+      "address": "8803 N 105th Dr, Peoria, AZ 85345",
+      "zillow_url": "https://www.zillow.com/homedetails/8803-N-105th-Dr-Peoria-AZ-85345/7687610_zpid/",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_listing": {
+          "status": "completed",
+          "completed": "2025-12-03T02:19:15Z",
+          "extraction_status": "complete",
+          "data_extracted": {
+            "images_count": 27,
+            "images_folder": "12a2ab10"
+          },
+          "notes": "Images extracted successfully via stealth browser. 27 new images captured (2 duplicates)."
+        },
+        "phase1_map": {
+          "status": "completed",
+          "completed": "2025-12-02T21:22:33.816666Z",
+          "data_collected": {
+            "school_rating": 7.0,
+            "school_district": "Peoria Unified School District",
+            "orientation": "north",
+            "safety_neighborhood_score": 7,
+            "distance_to_grocery_miles": 2.5,
+            "distance_to_highway_miles": 3.0,
+            "distance_to_park_miles": 0.8,
+            "parks_walkability_score": 6,
+            "commute_minutes": 33
+          },
+          "notes": "Geographic analysis collected 9 fields"
+        },
+        "phase2_images": {
+          "status": "completed",
+          "completed": "2025-12-02T21:47:49.428627",
+          "assessment_type": "interior_section_c",
+          "data_extracted": {
+            "kitchen_layout_score": 7,
+            "master_suite_score": 6,
+            "natural_light_score": 8,
+            "high_ceilings_score": 5,
+            "fireplace_score": 0,
+            "laundry_area_score": 5,
+            "aesthetics_score": 7,
+            "interior_total": 108
+          },
+          "confidence": "high",
+          "photos_analyzed": 27,
+          "notes": "Interior assessment completed with high confidence (0.85). All 7 categories scored. Kitchen modern (7), Master adequate (6), Natural Light excellent north-facing (8), Ceilings standard (5), No fireplace (0), Laundry basic (5), Aesthetics contemporary (7). Total: 108/190 pts."
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "created_at": "2025-12-02T21:06:45.858162",
+      "last_updated": "2025-12-02T21:47:49.428627"
+    },
+    "2b842bd8": {
+      "id": "2b842bd8",
+      "address": "4209 W Wahalla Ln, Glendale, AZ 85308",
+      "zillow_url": "https://www.zillow.com/homedetails/4209-W-Wahalla-Ln-Glendale-AZ-85308/59266234_zpid/",
+      "status": "in_progress",
+      "phases": {
+        "phase0_county": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase1_listing": {
+          "status": "completed",
+          "completed": "2025-12-03T02:20:47Z",
+          "extraction_status": "complete",
+          "data_extracted": {
+            "images_count": 39,
+            "images_folder": "16e902e2"
+          },
+          "notes": "Images extracted successfully via stealth browser. 39 new images captured (2 duplicates)."
+        },
+        "phase1_map": {
+          "status": "completed",
+          "completed": "2025-12-02T21:22:33.825177Z",
+          "data_collected": {
+            "school_rating": 6.2,
+            "school_district": "Glendale Elementary School District",
+            "orientation": "south",
+            "safety_neighborhood_score": 5,
+            "distance_to_grocery_miles": 1.9,
+            "distance_to_highway_miles": 1.6,
+            "distance_to_park_miles": 0.6,
+            "parks_walkability_score": 7,
+            "commute_minutes": 27
+          },
+          "notes": "Geographic analysis collected 9 fields"
+        },
+        "phase2_images": {
+          "status": "completed",
+          "completed": "2025-12-03T23:59:00Z",
+          "assessment_type": "interior_section_c",
+          "data_extracted": {
+            "kitchen_layout_score": 7,
+            "master_suite_score": 7,
+            "natural_light_score": 8,
+            "high_ceilings_score": 8,
+            "fireplace_score": 0,
+            "laundry_area_score": 6,
+            "aesthetics_score": 8,
+            "interior_total": 124
+          },
+          "confidence": "high",
+          "photos_analyzed": 40,
+          "notes": "Interior assessment completed. 40 images analyzed (14 quality interior photos). Modern 2002 home with excellent updates. Kitchen: gray shaker cabinets, quartz counters, island (7/10). Master: spacious with upscale finishes (7/10). Natural light: excellent south-facing windows, skylights (8/10). Ceilings: two-story vaulted foyer, cathedral details (8/10). Fireplace: NONE visible in comprehensive photo review (0/10, corrected from previous assessment). Laundry: not photographed, 2002 baseline (6/10). Aesthetics: contemporary staging, modern finishes (8/10). HIGH confidence (85% data quality)."
+        },
+        "phase3_synthesis": {
+          "status": "pending",
+          "completed": null
+        },
+        "phase4_report": {
+          "status": "pending",
+          "completed": null
+        }
+      },
+      "created_at": "2025-12-02T21:06:45.858162",
+      "last_updated": "2025-12-03T23:59:00Z"
+    }
+  },
+  "summary": {
+    "total_properties": 8,
+    "completed": 0,
+    "in_progress": 0,
+    "pending": 8,
+    "failed": 0
+  }
+}

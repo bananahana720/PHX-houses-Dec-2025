@@ -105,6 +105,8 @@ class SchoolDistrictScorer(ScoringStrategy):
 class QuietnessScorer(ScoringStrategy):
     """Score based on distance to highways/freeways.
 
+    DEPRECATED: Use NoiseLevelScorer for HowLoud API data with highway fallback.
+
     Scoring logic based on distance_to_highway_miles:
     - >2 miles: 10 pts (very quiet)
     - 1-2 miles: 7 pts (quiet)
@@ -156,6 +158,77 @@ class QuietnessScorer(ScoringStrategy):
             return SCORE_QUIETNESS_ACCEPTABLE
         else:
             return SCORE_QUIETNESS_NOISY
+
+
+class NoiseLevelScorer(ScoringStrategy):
+    """Score based on HowLoud noise data with highway distance fallback.
+
+    Primary: Uses noise_score from HowLoud.com (0-100 scale, 100=quietest).
+    Fallback: Falls back to highway distance if noise_score unavailable.
+
+    HowLoud noise score conversion (0-100 to 0-10):
+    - 80-100: 8-10 pts (Very Quiet)
+    - 60-79: 6-7.9 pts (Quiet)
+    - 40-59: 4-5.9 pts (Moderate)
+    - 20-39: 2-3.9 pts (Loud)
+    - 0-19: 0-1.9 pts (Very Loud)
+
+    Data source: HowLoud.com API, Google Maps (fallback)
+    """
+
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
+        """Initialize with scoring weights.
+
+        Args:
+            weights: Scoring weights config, defaults to standard weights
+        """
+        self._weights = weights or ScoringWeights()
+
+    @property
+    def name(self) -> str:
+        return "Noise Level"
+
+    @property
+    def category(self) -> str:
+        return "location"
+
+    @property
+    def weight(self) -> int:
+        return self._weights.quietness  # Uses same weight as quietness (30 pts)
+
+    def calculate_base_score(self, property: Property) -> float:
+        """Calculate score from HowLoud noise data or highway distance fallback.
+
+        Priority:
+        1. noise_score from HowLoud (0-100 scale)
+        2. distance_to_highway_miles (fallback)
+        3. DEFAULT_NEUTRAL_SCORE if neither available
+
+        Args:
+            property: Property to score
+
+        Returns:
+            Base score (0-10)
+        """
+        # Priority 1: Use noise_score if available (from HowLoud)
+        if hasattr(property, "noise_score") and property.noise_score is not None:
+            # Convert 0-100 scale to 0-10
+            return property.noise_score / 10.0
+
+        # Priority 2: Fallback to highway distance
+        if property.distance_to_highway_miles is not None:
+            distance = property.distance_to_highway_miles
+            if distance >= DISTANCE_HIGHWAY_VERY_QUIET_MILES:
+                return SCORE_QUIETNESS_VERY_QUIET
+            elif distance >= DISTANCE_HIGHWAY_QUIET_MILES:
+                return SCORE_QUIETNESS_QUIET
+            elif distance >= DISTANCE_HIGHWAY_ACCEPTABLE_MILES:
+                return SCORE_QUIETNESS_ACCEPTABLE
+            else:
+                return SCORE_QUIETNESS_NOISY
+
+        # Priority 3: No data available
+        return DEFAULT_NEUTRAL_SCORE
 
 
 class SafetyScorer(ScoringStrategy):
@@ -585,3 +658,73 @@ class WalkTransitScorer(ScoringStrategy):
         weighted_score = sum(s * w for s, w in zip(scores, normalized_weights))
 
         return weighted_score
+
+
+class AirQualityScorer(ScoringStrategy):
+    """Score based on EPA AirNow air quality index.
+
+    Uses AQI (Air Quality Index) to score environmental health:
+    - 0-50 AQI = 10/10 (Good - optimal air quality)
+    - 51-100 AQI = 8/10 (Moderate - acceptable)
+    - 101-150 AQI = 5/10 (Unhealthy for Sensitive Groups)
+    - 151-200 AQI = 3/10 (Unhealthy)
+    - 201+ AQI = 1/10 (Very Unhealthy/Hazardous)
+
+    Arizona-specific considerations:
+    - Summer ozone spikes are common (AQI 80-120)
+    - Dust storms can spike PM10 readings temporarily
+    - Proximity to freeways affects local AQI
+
+    Note: This scorer uses a portion of the location environmental budget.
+    Currently weighted at 15 pts (taken from school_district, crime_index, supermarket).
+
+    Data source: EPA AirNow API
+    """
+
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
+        """Initialize with scoring weights."""
+        self._weights = weights or ScoringWeights()
+
+    @property
+    def name(self) -> str:
+        """Strategy name for reporting."""
+        return "Air Quality"
+
+    @property
+    def category(self) -> str:
+        """Scoring category."""
+        return "location"
+
+    @property
+    def weight(self) -> int:
+        """Point weight for this strategy.
+
+        Returns the official air_quality weight from ScoringWeights (15 pts).
+        """
+        return self._weights.air_quality
+
+    def calculate_base_score(self, property: Property) -> float:
+        """Calculate base score from AQI value.
+
+        Args:
+            property: Property entity with potential air_quality_aqi field
+
+        Returns:
+            Score from 1-10 based on AQI, or neutral if unavailable
+        """
+        aqi = getattr(property, "air_quality_aqi", None)
+
+        if aqi is None:
+            return DEFAULT_NEUTRAL_SCORE
+
+        # Map AQI to 1-10 scale (lower AQI = better)
+        if aqi <= 50:
+            return 10.0  # Good
+        elif aqi <= 100:
+            return 8.0  # Moderate
+        elif aqi <= 150:
+            return 5.0  # Unhealthy for Sensitive
+        elif aqi <= 200:
+            return 3.0  # Unhealthy
+        else:
+            return 1.0  # Very Unhealthy / Hazardous

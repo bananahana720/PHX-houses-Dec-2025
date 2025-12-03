@@ -22,9 +22,9 @@ class ScoringWeights:
     SECTION A: LOCATION & ENVIRONMENT (250 pts max)
     -----------------------------------------------
 
-    school_district (45 pts max):
-        GreatSchools rating (1-10 scale) × 4.5
-        Example: Rating 8 = 36 points
+    school_district (42 pts max):
+        GreatSchools rating (1-10 scale) × 4.2
+        Example: Rating 8 = 33.6 points
         Data source: GreatSchools.org
 
     quietness (30 pts max):
@@ -37,35 +37,35 @@ class ScoringWeights:
             - > 2.0 miles: 30 pts (very quiet)
         Data source: Google Maps
 
-    crime_index (50 pts max):
+    crime_index (47 pts max):
         Automated crime index data (0-100, 100=safest)
         Composite: 60% violent crime + 40% property crime
         Scoring logic:
-            - Index 90-100: 45-50 pts (safest)
-            - Index 70-89: 35-44 pts (safe)
-            - Index 50-69: 25-34 pts (moderate)
-            - Index 30-49: 15-24 pts (elevated)
-            - Index 0-29: 0-14 pts (high risk)
+            - Index 90-100: 42.3-47 pts (safest)
+            - Index 70-89: 32.9-41.8 pts (safe)
+            - Index 50-69: 23.5-32.0 pts (moderate)
+            - Index 30-49: 14.1-22.6 pts (elevated)
+            - Index 0-29: 0-13.2 pts (high risk)
         Data source: BestPlaces, AreaVibes, NeighborhoodScout
         Note: Replaces manual safety assessment
 
-    supermarket_proximity (25 pts max):
+    supermarket_proximity (23 pts max):
         Distance to nearest preferred grocery store
         Scoring logic:
-            - < 0.5 miles: 25 pts (walking distance)
-            - 0.5-1.0 miles: 20 pts (very close)
-            - 1.0-2.0 miles: 15 pts (close)
-            - 2.0-3.0 miles: 8 pts (moderate)
-            - > 3.0 miles: 3 pts (far)
+            - < 0.5 miles: 23 pts (walking distance)
+            - 0.5-1.0 miles: 18.4 pts (very close)
+            - 1.0-2.0 miles: 13.8 pts (close)
+            - 2.0-3.0 miles: 7.4 pts (moderate)
+            - > 3.0 miles: 2.8 pts (far)
         Data source: Google Maps
 
-    parks_walkability (25 pts max):
+    parks_walkability (23 pts max):
         Manual assessment of:
         - Parks within 1 mile
         - Sidewalk availability
         - Bike lanes
         - Trail access
-        Scoring: 0-25 scale, default 12.5 (neutral)
+        Scoring: 0-23 scale, default 11.5 (neutral)
 
     sun_orientation (25 pts max):
         Impact on cooling costs
@@ -76,27 +76,38 @@ class ScoringWeights:
             - West-facing: 0 pts (afternoon sun, high cooling costs)
         Data source: Google Maps satellite view
 
-    flood_risk (25 pts max):
+    flood_risk (23 pts max):
         FEMA flood zone classification
         Scoring logic:
-            - Zone X (minimal risk): 25 pts
-            - Zone X-Shaded (500-year): 20 pts
-            - Zone A/AE/AH/AO (100-year): 5-7.5 pts
+            - Zone X (minimal risk): 23 pts
+            - Zone X-Shaded (500-year): 18.4 pts
+            - Zone A/AE/AH/AO (100-year): 4.6-6.9 pts
             - Zone VE (coastal hazard): 0 pts
-            - Unknown: 12.5 pts (neutral)
+            - Unknown: 11.5 pts (neutral)
         Data source: FEMA National Flood Hazard Layer
         Note: High-risk zones require flood insurance
 
-    walk_transit (25 pts max):
+    walk_transit (22 pts max):
         Walk Score, Transit Score, Bike Score composite
         Weighting: 40% walk, 40% transit, 20% bike
         Scoring logic:
-            - Score 90-100: 22.5-25 pts (walker's paradise)
-            - Score 70-89: 17.5-22 pts (very walkable)
-            - Score 50-69: 12.5-17 pts (somewhat walkable)
-            - Score 25-49: 6-12 pts (car-dependent)
-            - Score 0-24: 0-6 pts (car-required)
+            - Score 90-100: 19.8-22 pts (walker's paradise)
+            - Score 70-89: 15.4-19.8 pts (very walkable)
+            - Score 50-69: 11-15.4 pts (somewhat walkable)
+            - Score 25-49: 5.3-11 pts (car-dependent)
+            - Score 0-24: 0-5.3 pts (car-required)
         Data source: WalkScore.com API
+
+    air_quality (15 pts max):
+        EPA AirNow air quality index (AQI)
+        Scoring logic:
+            - AQI 0-50: 15 pts (Good - optimal air quality)
+            - AQI 51-100: 12 pts (Moderate - acceptable)
+            - AQI 101-150: 7.5 pts (Unhealthy for Sensitive Groups)
+            - AQI 151-200: 4.5 pts (Unhealthy)
+            - AQI 201+: 1.5 pts (Very Unhealthy/Hazardous)
+        Data source: EPA AirNow API
+        Note: Arizona summer ozone spikes are common (AQI 80-120)
 
     SECTION B: LOT & SYSTEMS (170 pts max)
     ---------------------------------------
@@ -229,14 +240,15 @@ class ScoringWeights:
     """
 
     # SECTION A: LOCATION & ENVIRONMENT (250 pts)
-    school_district: int = 45
+    school_district: int = 42
     quietness: int = 30
-    crime_index: int = 50  # REPLACES safety
-    supermarket_proximity: int = 25
-    parks_walkability: int = 25
+    crime_index: int = 47  # REPLACES safety
+    supermarket_proximity: int = 23
+    parks_walkability: int = 23
     sun_orientation: int = 25
-    flood_risk: int = 25  # NEW
-    walk_transit: int = 25  # NEW
+    flood_risk: int = 23  # NEW
+    walk_transit: int = 22  # NEW
+    air_quality: int = 15  # NEW
 
     # SECTION B: LOT & SYSTEMS (170 pts)
     roof_condition: int = 45
@@ -271,6 +283,7 @@ class ScoringWeights:
             + self.sun_orientation
             + self.flood_risk
             + self.walk_transit
+            + self.air_quality
             # Section B: Lot & Systems
             + self.roof_condition
             + self.backyard_utility
@@ -299,6 +312,7 @@ class ScoringWeights:
             + self.sun_orientation
             + self.flood_risk
             + self.walk_transit
+            + self.air_quality
         )
 
     @property

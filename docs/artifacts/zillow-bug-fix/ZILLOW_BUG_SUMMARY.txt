@@ -1,0 +1,182 @@
+================================================================================
+ZILLOW IMAGE EXTRACTION BUG - EXECUTIVE SUMMARY
+================================================================================
+
+PROBLEM
+-------
+The Zillow stealth extractor downloads images from WRONG properties.
+- Every execution pulls 27-39 images instead of 5-15
+- Visual inspection shows different architectural styles (townhomes, etc.)
+- Issue occurs consistently on every iteration
+
+CONFIDENCE LEVEL: 95% (high confidence diagnosis)
+
+
+ROOT CAUSE
+----------
+The URL construction creates a SEARCH RESULTS page instead of a PROPERTY DETAIL page.
+
+File: src/phx_home_analysis/services/image_extraction/extractors/zillow.py
+Method: _build_search_url() (lines 78-109)
+
+Current Implementation:
+  street = quote_plus(property.street.replace(" ", "-"))
+  city = quote_plus(property.city.replace(" ", "-"))
+  search_path = f"{street}-{city}-{state}-{zip_code}_rb"
+  url = f"https://www.zillow.com/homes/{search_path}/"
+
+Example Output:
+  https://www.zillow.com/homes/4209-W-Wahalla-Ln-Glendale-AZ-85308_rb/
+
+What This URL Does:
+  - The "_rb" suffix means "Results Browse" - a search results page
+  - NOT a single property detail page
+  - Zillow returns multiple listings matching the address pattern
+  - The page shows property cards, thumbnails, and "Similar homes" carousel
+  - Image extraction blindly grabs images from ALL properties on the page
+
+
+WHY CURRENT QUALITY FILTER FAILS
+--------------------------------
+The _is_high_quality_url() filter assumes property detail page context:
+- Excludes patterns like "thumb", "small" (Zillow doesn't use these in URLs)
+- Includes "photos.zillowstatic.com" (search results use this CDN too!)
+- Accepts any .jpg/.jpeg/.png/.webp (search thumbnails have these!)
+- No way to detect images belong to OTHER properties in carousel
+
+
+COMPARISON: WHY REDFIN WORKS
+-----------------------------
+Redfin does INTERACTIVE search (correct approach):
+1. Visit homepage to establish session
+2. Find search input element
+3. Type address character-by-character
+4. Wait for autocomplete results
+5. Click matching property result
+6. Land on /home/{zpid} detail page (specific property)
+
+Result: Lands on CORRECT property detail page, extracts correct images
+
+
+THE FIX (3 Phases)
+------------------
+
+PHASE 1: Quick Fix (30 minutes) - PREVENT BAD DATA
+  - Add page type detection: _is_property_detail_page()
+  - If page is search results → return empty list (safe fallback)
+  - No images is better than 39 wrong images
+  - Location: zillow.py, new method + validation in extract_image_urls()
+
+PHASE 2: Proper Fix (2-3 hours) - RELIABLE EXTRACTION
+  - Implement interactive search like Redfin
+  - Replace _navigate_with_stealth() with search interaction
+  - 1. Visit homepage
+  2. Find and focus search input
+  3. Type address (human-like speed)
+  4. Wait for autocomplete
+  5. Click matching result
+  6. Validate landed on /homedetails/ page
+  - Location: zillow.py, replace _navigate_with_stealth() method
+
+PHASE 3: Optimization (1 hour) - USE PROPERTY IDS
+  - Extract zpid from Zillow during Phase 1 listing extraction
+  - Store in enrichment_data.json
+  - Use direct URL: https://www.zillow.com/homedetails/{zpid}/
+  - Fallback to Phase 2 interactive search if zpid missing
+  - Fastest and most reliable approach
+
+
+IMPACT & SEVERITY
+-----------------
+Data Quality: CRITICAL
+  - Wrong images in enrichment_data.json
+  - Phase 2 (image-assessor) scores wrong properties
+  - Deal sheets show mismatched images
+  - User discovers wrong images = credibility loss
+
+Recovery Required: YES
+  - Once fixed, need to re-extract images for all properties
+  - Phase 2 image scoring will need to be re-run
+
+
+TESTING STRATEGY
+----------------
+1. Unit Test: Verify _build_search_url() creates _rb format
+2. Integration Test: Verify Phase 1 returns empty list for search results
+3. Visual Inspection: Download 5-10 images, verify same property
+4. Image Count: Verify 8-15 images (not 27-39)
+5. Compare Sources: Zillow vs Redfin for same property
+
+
+IMPLEMENTATION TIMELINE
+-----------------------
+Phase 1: 30 minutes - prevents further bad data collection
+Phase 2: 2-3 hours - proper fix with interactive search
+Phase 3: 1 hour - optimization with property IDs
+Testing: 1-2 hours - validation and edge cases
+
+TOTAL: 4-6 hours to complete fix + testing
+
+
+FILES TO MODIFY
+---------------
+src/phx_home_analysis/services/image_extraction/extractors/zillow.py
+  - Add: _is_property_detail_page() method (~80 lines)
+  - Modify: extract_image_urls() with validation (~10 lines)
+  - Phase 2: Replace _navigate_with_stealth() (~200 lines)
+
+tests/integration/test_zillow_extraction.py (new)
+  - Add integration tests (~100 lines)
+
+
+DOCUMENTATION PROVIDED
+----------------------
+1. ROOT_CAUSE_ANALYSIS_ZILLOW_BUG.md (comprehensive)
+   - Detailed evidence and diagnosis
+   - Why current code fails
+   - Proof of concept
+
+2. ZILLOW_BUG_FIX_IMPLEMENTATION.md (code examples)
+   - Phase 1: Quick fix (ready to copy-paste)
+   - Phase 2: Proper fix (ready to copy-paste)
+   - Phase 3: Optimization approach
+   - Integration testing examples
+
+3. This summary (quick reference)
+
+
+NEXT STEPS
+----------
+1. Read ROOT_CAUSE_ANALYSIS_ZILLOW_BUG.md (10 min)
+2. Read ZILLOW_BUG_FIX_IMPLEMENTATION.md (20 min)
+3. Implement Phase 1 (30 min) - prevents further bad data
+4. Test Phase 1 (15 min)
+5. Implement Phase 2 (2-3 hours)
+6. Test Phase 2 (1-2 hours)
+7. Re-extract images for all properties (varies)
+8. Re-run Phase 2 image scoring (varies)
+
+
+RECOMMENDATION
+--------------
+BEGIN WITH PHASE 1 IMMEDIATELY.
+
+Phase 1 is low-risk and prevents new bad data from being collected.
+It's a defensive measure that lets you collect good data going forward.
+
+Then implement Phase 2 when you have 2-3 hours available.
+
+
+KEY INSIGHT
+-----------
+The image extraction logic itself is CORRECT. The problem is the URL
+destination. Fix the URL navigation, and everything else works.
+
+
+================================================================================
+Root Cause: URL format lands on search results page, not property detail page
+Fix: Use interactive search navigation (proven by Redfin implementation)
+Risk: LOW (isolated to extraction, backward compatible)
+Timeline: 4-6 hours total
+Effort: MEDIUM
+================================================================================

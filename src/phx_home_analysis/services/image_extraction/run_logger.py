@@ -40,6 +40,7 @@ class PropertyChanges:
         errors: Count of failed downloads
         new_image_ids: List of newly created image IDs
         error_messages: List of error messages
+        listing_metadata: Optional metadata from listing page (Zillow days_on_market, etc.)
     """
 
     address: str
@@ -54,6 +55,7 @@ class PropertyChanges:
     new_image_ids: list[str] = field(default_factory=list)
     removed_urls: list[str] = field(default_factory=list)
     error_messages: list[str] = field(default_factory=list)
+    listing_metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
@@ -70,6 +72,7 @@ class PropertyChanges:
             "new_image_ids": self.new_image_ids,
             "removed_urls": self.removed_urls,
             "error_messages": self.error_messages,
+            "listing_metadata": self.listing_metadata,
         }
 
     @property

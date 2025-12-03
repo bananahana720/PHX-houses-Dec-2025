@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_607c3ca09de1b825b71fa580ab153a97 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+    <div style="position: fixed; bottom: 50px; left: 50px;
+                background: white; padding: 15px; border: 2px solid gray;
+                border-radius: 8px; box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+                font-family: Arial; z-index: 9999;">
+        <h4 style="margin: 0 0 10px 0; font-size: 16px;">Flood Zone Risk</h4>
+        <div style="margin: 6px 0;">
+            <span style="display: inline-block; width: 16px; height: 16px;
+                         background: green; border: 1px solid black; border-radius: 50%;
+                         vertical-align: middle; margin-right: 8px;"></span>
+            <span style="font-size: 13px;">Zone X (Minimal)</span>
+        </div>
+        <div style="margin: 6px 0;">
+            <span style="display: inline-block; width: 16px; height: 16px;
+                         background: yellow; border: 1px solid black; border-radius: 50%;
+                         vertical-align: middle; margin-right: 8px;"></span>
+            <span style="font-size: 13px;">Zone X-Shaded (500yr)</span>
+        </div>
+        <div style="margin: 6px 0;">
+            <span style="display: inline-block; width: 16px; height: 16px;
+                         background: orange; border: 1px solid black; border-radius: 50%;
+                         vertical-align: middle; margin-right: 8px;"></span>
+            <span style="font-size: 13px;">Zone A/AH/AO (High Risk)</span>
+        </div>
+        <div style="margin: 6px 0;">
+            <span style="display: inline-block; width: 16px; height: 16px;
+                         background: red; border: 1px solid black; border-radius: 50%;
+                         vertical-align: middle; margin-right: 8px;"></span>
+            <span style="font-size: 13px;">Zone AE (High + BFE)</span>
+        </div>
+        <div style="margin: 6px 0;">
+            <span style="display: inline-block; width: 16px; height: 16px;
+                         background: darkred; border: 1px solid black; border-radius: 50%;
+                         vertical-align: middle; margin-right: 8px;"></span>
+            <span style="font-size: 13px;">Zone VE (Coastal)</span>
+        </div>
+        <div style="margin: 6px 0;">
+            <span style="display: inline-block; width: 16px; height: 16px;
+                         background: gray; border: 1px solid black; border-radius: 50%;
+                         vertical-align: middle; margin-right: 8px;"></span>
+            <span style="font-size: 13px;">Unknown</span>
+        </div>
+    </div>
+    
+    
+            <div class="folium-map" id="map_607c3ca09de1b825b71fa580ab153a97" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_607c3ca09de1b825b71fa580ab153a97 = L.map(
+                "map_607c3ca09de1b825b71fa580ab153a97",
+                {
+                    center: [33.4484, -112.074],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_f79c30132a45498d4eb3c695b34d6391 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_f79c30132a45498d4eb3c695b34d6391.addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+            var circle_marker_4fc99016e3e601e3fa073db0821216d8 = L.circleMarker(
+                [33.6314, -112.1998],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_5fc1c11d9c4d364cbb40250c9f292194 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2a207eef5d33ceae8337250437087f0d = $(`<div id="html_2a207eef5d33ceae8337250437087f0d" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">4732 W Davis Rd, Glendale, AZ 85306</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$475000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_5fc1c11d9c4d364cbb40250c9f292194.setContent(html_2a207eef5d33ceae8337250437087f0d);
+            
+        
+
+        circle_marker_4fc99016e3e601e3fa073db0821216d8.bindPopup(popup_5fc1c11d9c4d364cbb40250c9f292194)
+        ;
+
+        
+    
+    
+            circle_marker_4fc99016e3e601e3fa073db0821216d8.bindTooltip(
+                `<div>
+                     4732 W Davis Rd, Glendale, AZ 85306<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_96a3415bb582e2a63933d95586a0fd4e = L.circleMarker(
+                [33.6287, -112.1105],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_a748f70bbe3571f4f2e8e33f38cc6859 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e4450b4203b68fbd8548a5b066b58c1d = $(`<div id="html_e4450b4203b68fbd8548a5b066b58c1d" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">2353 W Tierra Buena Ln, Phoenix, AZ 85023</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$499900</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_a748f70bbe3571f4f2e8e33f38cc6859.setContent(html_e4450b4203b68fbd8548a5b066b58c1d);
+            
+        
+
+        circle_marker_96a3415bb582e2a63933d95586a0fd4e.bindPopup(popup_a748f70bbe3571f4f2e8e33f38cc6859)
+        ;
+
+        
+    
+    
+            circle_marker_96a3415bb582e2a63933d95586a0fd4e.bindTooltip(
+                `<div>
+                     2353 W Tierra Buena Ln, Phoenix, AZ 85023<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7a5e9a6dba0b7515ca7f58e9f0b5964a = L.circleMarker(
+                [33.6307, -112.11],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_e28f0340f74bff8ab202f23e7addd777 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9e480e786415aaf5f0b5d69428bcf3eb = $(`<div id="html_9e480e786415aaf5f0b5d69428bcf3eb" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">2344 W Marconi Ave, Phoenix, AZ 85023</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$560000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_e28f0340f74bff8ab202f23e7addd777.setContent(html_9e480e786415aaf5f0b5d69428bcf3eb);
+            
+        
+
+        circle_marker_7a5e9a6dba0b7515ca7f58e9f0b5964a.bindPopup(popup_e28f0340f74bff8ab202f23e7addd777)
+        ;
+
+        
+    
+    
+            circle_marker_7a5e9a6dba0b7515ca7f58e9f0b5964a.bindTooltip(
+                `<div>
+                     2344 W Marconi Ave, Phoenix, AZ 85023<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6dc7fe0a6246b8fbbfaecaf47fe815df = L.circleMarker(
+                [33.6505, -112.1212],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_28e2cc112fc694fe30a19947352e0b6f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bb4a78cc885d41b630a1621316367903 = $(`<div id="html_bb4a78cc885d41b630a1621316367903" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">2846 W Villa Rita Dr, Phoenix, AZ 85053</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$540000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_28e2cc112fc694fe30a19947352e0b6f.setContent(html_bb4a78cc885d41b630a1621316367903);
+            
+        
+
+        circle_marker_6dc7fe0a6246b8fbbfaecaf47fe815df.bindPopup(popup_28e2cc112fc694fe30a19947352e0b6f)
+        ;
+
+        
+    
+    
+            circle_marker_6dc7fe0a6246b8fbbfaecaf47fe815df.bindTooltip(
+                `<div>
+                     2846 W Villa Rita Dr, Phoenix, AZ 85053<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_28f39e658f9cbf69cb3a9c3c8753e8cb = L.circleMarker(
+                [33.625, -112.0011],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_512a23d82e9aa81daf3f60384309b53f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8484572f5ade5b1abbbef14b7fdd95e0 = $(`<div id="html_8484572f5ade5b1abbbef14b7fdd95e0" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">15225 N 37th Way, Phoenix, AZ 85032</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$565000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_512a23d82e9aa81daf3f60384309b53f.setContent(html_8484572f5ade5b1abbbef14b7fdd95e0);
+            
+        
+
+        circle_marker_28f39e658f9cbf69cb3a9c3c8753e8cb.bindPopup(popup_512a23d82e9aa81daf3f60384309b53f)
+        ;
+
+        
+    
+    
+            circle_marker_28f39e658f9cbf69cb3a9c3c8753e8cb.bindTooltip(
+                `<div>
+                     15225 N 37th Way, Phoenix, AZ 85032<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_706e98aa7afde1fc095fa5773ac17340 = L.circleMarker(
+                [33.6581, -112.0061],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_d6563d8d7cce82f9ce3f18ce1a3953a4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0f29f629c47942a27238acddf5bd396c = $(`<div id="html_0f29f629c47942a27238acddf5bd396c" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">18820 N 35th Way, Phoenix, AZ 85050</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$582000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_d6563d8d7cce82f9ce3f18ce1a3953a4.setContent(html_0f29f629c47942a27238acddf5bd396c);
+            
+        
+
+        circle_marker_706e98aa7afde1fc095fa5773ac17340.bindPopup(popup_d6563d8d7cce82f9ce3f18ce1a3953a4)
+        ;
+
+        
+    
+    
+            circle_marker_706e98aa7afde1fc095fa5773ac17340.bindTooltip(
+                `<div>
+                     18820 N 35th Way, Phoenix, AZ 85050<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9f8eda52e21b0c4f66f005cfceb6f01b = L.circleMarker(
+                [33.6658, -112.1999],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_5334ce7f9a5538fa879574c86920c24d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_02781022beb834df180be77be4fa10e6 = $(`<div id="html_02781022beb834df180be77be4fa10e6" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">4209 W Wahalla Ln, Glendale, AZ 85308</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$625000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_5334ce7f9a5538fa879574c86920c24d.setContent(html_02781022beb834df180be77be4fa10e6);
+            
+        
+
+        circle_marker_9f8eda52e21b0c4f66f005cfceb6f01b.bindPopup(popup_5334ce7f9a5538fa879574c86920c24d)
+        ;
+
+        
+    
+    
+            circle_marker_9f8eda52e21b0c4f66f005cfceb6f01b.bindTooltip(
+                `<div>
+                     4209 W Wahalla Ln, Glendale, AZ 85308<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0bdd8ae9bccd26ccd84127a3de835746 = L.circleMarker(
+                [33.6549, -112.2269],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_f0016250b61561b1ba016870603637dc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d17e20912ed290e8159311d48df4c955 = $(`<div id="html_d17e20912ed290e8159311d48df4c955" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">4137 W Cielo Grande, Glendale, AZ 85310</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$519900</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_f0016250b61561b1ba016870603637dc.setContent(html_d17e20912ed290e8159311d48df4c955);
+            
+        
+
+        circle_marker_0bdd8ae9bccd26ccd84127a3de835746.bindPopup(popup_f0016250b61561b1ba016870603637dc)
+        ;
+
+        
+    
+    
+            circle_marker_0bdd8ae9bccd26ccd84127a3de835746.bindTooltip(
+                `<div>
+                     4137 W Cielo Grande, Glendale, AZ 85310<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1b275ab31ee86a649a78fc39371800d9 = L.circleMarker(
+                [33.6055, -112.2393],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_6320baa52a5df95dae62d64134cf022f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0ac9f736eea91d8d4c62b55b00b01730 = $(`<div id="html_0ac9f736eea91d8d4c62b55b00b01730" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">13307 N 84th Ave, Peoria, AZ 85381</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$490000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_6320baa52a5df95dae62d64134cf022f.setContent(html_0ac9f736eea91d8d4c62b55b00b01730);
+            
+        
+
+        circle_marker_1b275ab31ee86a649a78fc39371800d9.bindPopup(popup_6320baa52a5df95dae62d64134cf022f)
+        ;
+
+        
+    
+    
+            circle_marker_1b275ab31ee86a649a78fc39371800d9.bindTooltip(
+                `<div>
+                     13307 N 84th Ave, Peoria, AZ 85381<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c7a968fa2cc6fe7db5cd64e989aece0b = L.circleMarker(
+                [33.6128, -112.1428],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_bf2498b52a530b05d4bffd22e5eb74d8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_95c763d178db648f936c1d8eddff7619 = $(`<div id="html_95c763d178db648f936c1d8eddff7619" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">14014 N 39th Ave, Phoenix, AZ 85053</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$495000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_bf2498b52a530b05d4bffd22e5eb74d8.setContent(html_95c763d178db648f936c1d8eddff7619);
+            
+        
+
+        circle_marker_c7a968fa2cc6fe7db5cd64e989aece0b.bindPopup(popup_bf2498b52a530b05d4bffd22e5eb74d8)
+        ;
+
+        
+    
+    
+            circle_marker_c7a968fa2cc6fe7db5cd64e989aece0b.bindTooltip(
+                `<div>
+                     14014 N 39th Ave, Phoenix, AZ 85053<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_faecac6ffa9ffea10f04480b0af395da = L.circleMarker(
+                [33.7211, -112.2022],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_8fef402262d366543030858bd961d454 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_12d3db4abf7e39c68f100c05bf312900 = $(`<div id="html_12d3db4abf7e39c68f100c05bf312900" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">25841 N 66th Dr, Phoenix, AZ 85083</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$499777</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_8fef402262d366543030858bd961d454.setContent(html_12d3db4abf7e39c68f100c05bf312900);
+            
+        
+
+        circle_marker_faecac6ffa9ffea10f04480b0af395da.bindPopup(popup_8fef402262d366543030858bd961d454)
+        ;
+
+        
+    
+    
+            circle_marker_faecac6ffa9ffea10f04480b0af395da.bindTooltip(
+                `<div>
+                     25841 N 66th Dr, Phoenix, AZ 85083<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1523c6cbbb7f1d82dc8e76e9bba925b9 = L.circleMarker(
+                [33.6479, -112.1841],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_0d66e90386cc68aa20821ab978a8540a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_330e78015bb9c1e1d61fd35a671845c8 = $(`<div id="html_330e78015bb9c1e1d61fd35a671845c8" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">4001 W Libby St, Glendale, AZ 85308</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$458000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_0d66e90386cc68aa20821ab978a8540a.setContent(html_330e78015bb9c1e1d61fd35a671845c8);
+            
+        
+
+        circle_marker_1523c6cbbb7f1d82dc8e76e9bba925b9.bindPopup(popup_0d66e90386cc68aa20821ab978a8540a)
+        ;
+
+        
+    
+    
+            circle_marker_1523c6cbbb7f1d82dc8e76e9bba925b9.bindTooltip(
+                `<div>
+                     4001 W Libby St, Glendale, AZ 85308<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4365132a47ff254aaebc16c422dfb6f1 = L.circleMarker(
+                [33.5718, -112.1788],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_8c3b6a789166e43a3442bfb54eed3dcc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_660ea674041538aa80147006959c9d49 = $(`<div id="html_660ea674041538aa80147006959c9d49" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">5522 W Carol Ave, Glendale, AZ 85302</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$442000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_8c3b6a789166e43a3442bfb54eed3dcc.setContent(html_660ea674041538aa80147006959c9d49);
+            
+        
+
+        circle_marker_4365132a47ff254aaebc16c422dfb6f1.bindPopup(popup_8c3b6a789166e43a3442bfb54eed3dcc)
+        ;
+
+        
+    
+    
+            circle_marker_4365132a47ff254aaebc16c422dfb6f1.bindTooltip(
+                `<div>
+                     5522 W Carol Ave, Glendale, AZ 85302<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_45cd9af3dc41bafc197e7d9284edba10 = L.circleMarker(
+                [33.5489, -112.1664],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_7d2967ab3647777527c408481458c86d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_26e4613903ce5ad9e305c86e5aa935f3 = $(`<div id="html_26e4613903ce5ad9e305c86e5aa935f3" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">5004 W Kaler Dr, Glendale, AZ 85301</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$459900</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_7d2967ab3647777527c408481458c86d.setContent(html_26e4613903ce5ad9e305c86e5aa935f3);
+            
+        
+
+        circle_marker_45cd9af3dc41bafc197e7d9284edba10.bindPopup(popup_7d2967ab3647777527c408481458c86d)
+        ;
+
+        
+    
+    
+            circle_marker_45cd9af3dc41bafc197e7d9284edba10.bindTooltip(
+                `<div>
+                     5004 W Kaler Dr, Glendale, AZ 85301<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_39b508d2571b7f1ad6a2da121490c9fd = L.circleMarker(
+                [33.5292, -112.1538],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_e636146d6b0751ebdfdbca2a41ef428a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c8ac3aeff2d420a389fa1aaf0a4ed60d = $(`<div id="html_c8ac3aeff2d420a389fa1aaf0a4ed60d" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">4342 W Claremont St, Glendale, AZ 85301</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$514800</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_e636146d6b0751ebdfdbca2a41ef428a.setContent(html_c8ac3aeff2d420a389fa1aaf0a4ed60d);
+            
+        
+
+        circle_marker_39b508d2571b7f1ad6a2da121490c9fd.bindPopup(popup_e636146d6b0751ebdfdbca2a41ef428a)
+        ;
+
+        
+    
+    
+            circle_marker_39b508d2571b7f1ad6a2da121490c9fd.bindTooltip(
+                `<div>
+                     4342 W Claremont St, Glendale, AZ 85301<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9d269ed385dfda09747ab62001d93e9f = L.circleMarker(
+                [33.6684, -112.1423],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_9ce9bfc04f181da738c491ca595c2ce4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_18c65293e043121aec06ad5b2d8fa42b = $(`<div id="html_18c65293e043121aec06ad5b2d8fa42b" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">20021 N 38th Ln, Glendale, AZ 85308</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$545000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_9ce9bfc04f181da738c491ca595c2ce4.setContent(html_18c65293e043121aec06ad5b2d8fa42b);
+            
+        
+
+        circle_marker_9d269ed385dfda09747ab62001d93e9f.bindPopup(popup_9ce9bfc04f181da738c491ca595c2ce4)
+        ;
+
+        
+    
+    
+            circle_marker_9d269ed385dfda09747ab62001d93e9f.bindTooltip(
+                `<div>
+                     20021 N 38th Ln, Glendale, AZ 85308<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_20b7322e1a8463e53d0bcd340054e894 = L.circleMarker(
+                [33.6583, -112.009],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_3a7ada23c074cc014fe2502f3a43b7df = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_61637f9abbd53b42c344ce039e06bbcd = $(`<div id="html_61637f9abbd53b42c344ce039e06bbcd" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">18825 N 34th St, Phoenix, AZ 85050</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$550000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_3a7ada23c074cc014fe2502f3a43b7df.setContent(html_61637f9abbd53b42c344ce039e06bbcd);
+            
+        
+
+        circle_marker_20b7322e1a8463e53d0bcd340054e894.bindPopup(popup_3a7ada23c074cc014fe2502f3a43b7df)
+        ;
+
+        
+    
+    
+            circle_marker_20b7322e1a8463e53d0bcd340054e894.bindTooltip(
+                `<div>
+                     18825 N 34th St, Phoenix, AZ 85050<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_56e126abe0143f447fe2713f41111070 = L.circleMarker(
+                [33.615, -112.1474],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_dfbe9302eedfe0c3918ad2fa66594cf0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3bd5d59e19c1330494f90feceda13b96 = $(`<div id="html_3bd5d59e19c1330494f90feceda13b96" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">4136 W Hearn Rd, Phoenix, AZ 85053</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$457000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_dfbe9302eedfe0c3918ad2fa66594cf0.setContent(html_3bd5d59e19c1330494f90feceda13b96);
+            
+        
+
+        circle_marker_56e126abe0143f447fe2713f41111070.bindPopup(popup_dfbe9302eedfe0c3918ad2fa66594cf0)
+        ;
+
+        
+    
+    
+            circle_marker_56e126abe0143f447fe2713f41111070.bindTooltip(
+                `<div>
+                     4136 W Hearn Rd, Phoenix, AZ 85053<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ab0a5685090d03a9cdbe0c47a26a3288 = L.circleMarker(
+                [33.6337, -112.1935],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_98e84c5bd09f57b44945861ba6a5b114 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_72e1c1b708071611cf466c97c0d7e490 = $(`<div id="html_72e1c1b708071611cf466c97c0d7e490" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">4020 W Anderson Dr, Glendale, AZ 85308</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$479900</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_98e84c5bd09f57b44945861ba6a5b114.setContent(html_72e1c1b708071611cf466c97c0d7e490);
+            
+        
+
+        circle_marker_ab0a5685090d03a9cdbe0c47a26a3288.bindPopup(popup_98e84c5bd09f57b44945861ba6a5b114)
+        ;
+
+        
+    
+    
+            circle_marker_ab0a5685090d03a9cdbe0c47a26a3288.bindTooltip(
+                `<div>
+                     4020 W Anderson Dr, Glendale, AZ 85308<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bda685e2682f8a8b9a1490c8f8139678 = L.circleMarker(
+                [33.4846, -111.8966],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_3b64dfee5fb79c2db51700010c0c6c78 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7d65ad8333eb65f3a4faaf7bab765763 = $(`<div id="html_7d65ad8333eb65f3a4faaf7bab765763" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">8714 E Plaza Ave, Scottsdale, AZ 85250</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$750000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_3b64dfee5fb79c2db51700010c0c6c78.setContent(html_7d65ad8333eb65f3a4faaf7bab765763);
+            
+        
+
+        circle_marker_bda685e2682f8a8b9a1490c8f8139678.bindPopup(popup_3b64dfee5fb79c2db51700010c0c6c78)
+        ;
+
+        
+    
+    
+            circle_marker_bda685e2682f8a8b9a1490c8f8139678.bindTooltip(
+                `<div>
+                     8714 E Plaza Ave, Scottsdale, AZ 85250<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cec94ceb518f44904bb61ee64edb3e9a = L.circleMarker(
+                [33.5316, -111.8989],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_9fe6474fa0e075238b8c537fbef4aa79 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cabc35d0548d59a9fe65d7f7bb0c6ce7 = $(`<div id="html_cabc35d0548d59a9fe65d7f7bb0c6ce7" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">8426 E Lincoln Dr, Scottsdale, AZ 85250</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$849900</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_9fe6474fa0e075238b8c537fbef4aa79.setContent(html_cabc35d0548d59a9fe65d7f7bb0c6ce7);
+            
+        
+
+        circle_marker_cec94ceb518f44904bb61ee64edb3e9a.bindPopup(popup_9fe6474fa0e075238b8c537fbef4aa79)
+        ;
+
+        
+    
+    
+            circle_marker_cec94ceb518f44904bb61ee64edb3e9a.bindTooltip(
+                `<div>
+                     8426 E Lincoln Dr, Scottsdale, AZ 85250<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_33899174367b9a1baa31c4466f0b0ec8 = L.circleMarker(
+                [33.5836, -111.8425],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_94c43937e4226b7f6b1eb1ed94b099f7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_edab2ea5185000a201557e430973429f = $(`<div id="html_edab2ea5185000a201557e430973429f" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">11035 E Clinton St, Scottsdale, AZ 85259</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$775000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_94c43937e4226b7f6b1eb1ed94b099f7.setContent(html_edab2ea5185000a201557e430973429f);
+            
+        
+
+        circle_marker_33899174367b9a1baa31c4466f0b0ec8.bindPopup(popup_94c43937e4226b7f6b1eb1ed94b099f7)
+        ;
+
+        
+    
+    
+            circle_marker_33899174367b9a1baa31c4466f0b0ec8.bindTooltip(
+                `<div>
+                     11035 E Clinton St, Scottsdale, AZ 85259<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fbf207bb51b53a6ab99a4594f8dff445 = L.circleMarker(
+                [33.6199, -112.0032],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_0d5e7a9d2fb843ff8b63130a0d6fc437 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cf99e8a5763b22972127a3be9db7643b = $(`<div id="html_cf99e8a5763b22972127a3be9db7643b" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">14622 N 37th St, Phoenix, AZ 85032</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$510000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_0d5e7a9d2fb843ff8b63130a0d6fc437.setContent(html_cf99e8a5763b22972127a3be9db7643b);
+            
+        
+
+        circle_marker_fbf207bb51b53a6ab99a4594f8dff445.bindPopup(popup_0d5e7a9d2fb843ff8b63130a0d6fc437)
+        ;
+
+        
+    
+    
+            circle_marker_fbf207bb51b53a6ab99a4594f8dff445.bindTooltip(
+                `<div>
+                     14622 N 37th St, Phoenix, AZ 85032<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d5be2781cbfce1bab9c308b59207e72b = L.circleMarker(
+                [33.6032, -112.0252],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_205fd7187ac83536e3c79b7b880dd7ad = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7c68721e272b4101c6d6c6f23e2d5baf = $(`<div id="html_7c68721e272b4101c6d6c6f23e2d5baf" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">12808 N 27th St, Phoenix, AZ 85032</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$509000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_205fd7187ac83536e3c79b7b880dd7ad.setContent(html_7c68721e272b4101c6d6c6f23e2d5baf);
+            
+        
+
+        circle_marker_d5be2781cbfce1bab9c308b59207e72b.bindPopup(popup_205fd7187ac83536e3c79b7b880dd7ad)
+        ;
+
+        
+    
+    
+            circle_marker_d5be2781cbfce1bab9c308b59207e72b.bindTooltip(
+                `<div>
+                     12808 N 27th St, Phoenix, AZ 85032<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5946a7e2de589c19fc88ca50e1a19d98 = L.circleMarker(
+                [33.6376, -112.1253],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_80e33254163c826755971c3761625e10 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_45e98e5ef6b5791a67cd07bb60d286af = $(`<div id="html_45e98e5ef6b5791a67cd07bb60d286af" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">16814 N 31st Ave, Phoenix, AZ 85053</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$400000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_80e33254163c826755971c3761625e10.setContent(html_45e98e5ef6b5791a67cd07bb60d286af);
+            
+        
+
+        circle_marker_5946a7e2de589c19fc88ca50e1a19d98.bindPopup(popup_80e33254163c826755971c3761625e10)
+        ;
+
+        
+    
+    
+            circle_marker_5946a7e2de589c19fc88ca50e1a19d98.bindTooltip(
+                `<div>
+                     16814 N 31st Ave, Phoenix, AZ 85053<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6a8c202c53437297531c44b43d8ada9b = L.circleMarker(
+                [33.6412, -112.1943],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_4c470f2565f5f80e36231e4ecc7b2982 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_29818745f282f74a37f770bd9472080f = $(`<div id="html_29818745f282f74a37f770bd9472080f" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">4417 W Sandra Cir, Glendale, AZ 85308</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$354000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_4c470f2565f5f80e36231e4ecc7b2982.setContent(html_29818745f282f74a37f770bd9472080f);
+            
+        
+
+        circle_marker_6a8c202c53437297531c44b43d8ada9b.bindPopup(popup_4c470f2565f5f80e36231e4ecc7b2982)
+        ;
+
+        
+    
+    
+            circle_marker_6a8c202c53437297531c44b43d8ada9b.bindTooltip(
+                `<div>
+                     4417 W Sandra Cir, Glendale, AZ 85308<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a1a15503522f66d1c616a7c204801361 = L.circleMarker(
+                [33.6346, -112.1394],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_e7cd1c0092cba840d40cfd2f20acda82 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9f1efe040f5d5511d18732e246f8217d = $(`<div id="html_9f1efe040f5d5511d18732e246f8217d" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">17244 N 36th Ln, Glendale, AZ 85308</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$425000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_e7cd1c0092cba840d40cfd2f20acda82.setContent(html_9f1efe040f5d5511d18732e246f8217d);
+            
+        
+
+        circle_marker_a1a15503522f66d1c616a7c204801361.bindPopup(popup_e7cd1c0092cba840d40cfd2f20acda82)
+        ;
+
+        
+    
+    
+            circle_marker_a1a15503522f66d1c616a7c204801361.bindTooltip(
+                `<div>
+                     17244 N 36th Ln, Glendale, AZ 85308<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_204833d4f170fee3e207ee8fc31dbf95 = L.circleMarker(
+                [33.5992, -112.2127],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_8efd7c1fcc196c9cdb594695708dc225 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3143754500b470747b15e1bb5d37526b = $(`<div id="html_3143754500b470747b15e1bb5d37526b" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">7126 W Columbine Dr, Peoria, AZ 85381</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$565000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_8efd7c1fcc196c9cdb594695708dc225.setContent(html_3143754500b470747b15e1bb5d37526b);
+            
+        
+
+        circle_marker_204833d4f170fee3e207ee8fc31dbf95.bindPopup(popup_8efd7c1fcc196c9cdb594695708dc225)
+        ;
+
+        
+    
+    
+            circle_marker_204833d4f170fee3e207ee8fc31dbf95.bindTooltip(
+                `<div>
+                     7126 W Columbine Dr, Peoria, AZ 85381<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8d99ce9e90dc17387320fa8ba05af670 = L.circleMarker(
+                [33.6158, -112.2227],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_557fdf7b033ad3eb085c45517da3cdbf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e1c7c89d7dd3f4c73e7943132e581eda = $(`<div id="html_e1c7c89d7dd3f4c73e7943132e581eda" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">14353 N 76th Dr, Peoria, AZ 85381</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$550000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_557fdf7b033ad3eb085c45517da3cdbf.setContent(html_e1c7c89d7dd3f4c73e7943132e581eda);
+            
+        
+
+        circle_marker_8d99ce9e90dc17387320fa8ba05af670.bindPopup(popup_557fdf7b033ad3eb085c45517da3cdbf)
+        ;
+
+        
+    
+    
+            circle_marker_8d99ce9e90dc17387320fa8ba05af670.bindTooltip(
+                `<div>
+                     14353 N 76th Dr, Peoria, AZ 85381<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2a611b7726563bed133b0a4974e25718 = L.circleMarker(
+                [33.6, -112.2151],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_451265a61955dfc2774989e06ef52625 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_822c4c7751c88e332153025ed0761f94 = $(`<div id="html_822c4c7751c88e332153025ed0761f94" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">7233 W Corrine Dr, Peoria, AZ 85381</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$749999</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_451265a61955dfc2774989e06ef52625.setContent(html_822c4c7751c88e332153025ed0761f94);
+            
+        
+
+        circle_marker_2a611b7726563bed133b0a4974e25718.bindPopup(popup_451265a61955dfc2774989e06ef52625)
+        ;
+
+        
+    
+    
+            circle_marker_2a611b7726563bed133b0a4974e25718.bindTooltip(
+                `<div>
+                     7233 W Corrine Dr, Peoria, AZ 85381<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b71baa49bde787bb4536402b1c4a6225 = L.circleMarker(
+                [33.5631, -112.2862],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_dc2370720791a4dad292fd75461aeee0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_59766ded08068948e8100062c5630019 = $(`<div id="html_59766ded08068948e8100062c5630019" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">8803 N 105th Dr, Peoria, AZ 85345</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$509000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_dc2370720791a4dad292fd75461aeee0.setContent(html_59766ded08068948e8100062c5630019);
+            
+        
+
+        circle_marker_b71baa49bde787bb4536402b1c4a6225.bindPopup(popup_dc2370720791a4dad292fd75461aeee0)
+        ;
+
+        
+    
+    
+            circle_marker_b71baa49bde787bb4536402b1c4a6225.bindTooltip(
+                `<div>
+                     8803 N 105th Dr, Peoria, AZ 85345<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6b97fe0e5f77790cf45cf3d136b574c7 = L.circleMarker(
+                [33.6486, -112.2514],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_22925b55830d2dc395ea09f6870d046e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cccacfd23dd09ea4ea11a2ad61789d73 = $(`<div id="html_cccacfd23dd09ea4ea11a2ad61789d73" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">8931 W Villa Rita Dr, Peoria, AZ 85382</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$549900</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_22925b55830d2dc395ea09f6870d046e.setContent(html_cccacfd23dd09ea4ea11a2ad61789d73);
+            
+        
+
+        circle_marker_6b97fe0e5f77790cf45cf3d136b574c7.bindPopup(popup_22925b55830d2dc395ea09f6870d046e)
+        ;
+
+        
+    
+    
+            circle_marker_6b97fe0e5f77790cf45cf3d136b574c7.bindTooltip(
+                `<div>
+                     8931 W Villa Rita Dr, Peoria, AZ 85382<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_20ff15fb977d3eb4f982cd0447df1a2d = L.circleMarker(
+                [33.6479, -112.2562],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_8e656cf48b2409e45417961f9776667c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c4b0ca127356a4de91f1c3682d780540 = $(`<div id="html_c4b0ca127356a4de91f1c3682d780540" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">9150 W Villa Rita Dr, Peoria, AZ 85382</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$605000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_8e656cf48b2409e45417961f9776667c.setContent(html_c4b0ca127356a4de91f1c3682d780540);
+            
+        
+
+        circle_marker_20ff15fb977d3eb4f982cd0447df1a2d.bindPopup(popup_8e656cf48b2409e45417961f9776667c)
+        ;
+
+        
+    
+    
+            circle_marker_20ff15fb977d3eb4f982cd0447df1a2d.bindTooltip(
+                `<div>
+                     9150 W Villa Rita Dr, Peoria, AZ 85382<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7bcbe416d9341ec882463f266730dfff = L.circleMarker(
+                [33.6146, -112.1739],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_8430889dd6634040f44a641de956d924 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d44a8ee41a48ffe15a5526865fa4c944 = $(`<div id="html_d44a8ee41a48ffe15a5526865fa4c944" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">5038 W Echo Ln, Glendale, AZ 85302</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$634000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">CONTENDER</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_8430889dd6634040f44a641de956d924.setContent(html_d44a8ee41a48ffe15a5526865fa4c944);
+            
+        
+
+        circle_marker_7bcbe416d9341ec882463f266730dfff.bindPopup(popup_8430889dd6634040f44a641de956d924)
+        ;
+
+        
+    
+    
+            circle_marker_7bcbe416d9341ec882463f266730dfff.bindTooltip(
+                `<div>
+                     5038 W Echo Ln, Glendale, AZ 85302<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_17d606d9d02f68ac4ace43cf1b94a236 = L.circleMarker(
+                [33.6241, -112.0058],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 1}
+            ).addTo(map_607c3ca09de1b825b71fa580ab153a97);
+        
+    
+        var popup_fff4dada06c615e7a1edb4587c4a2d69 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_65b7085ef98f204196b0a541c0b2d044 = $(`<div id="html_65b7085ef98f204196b0a541c0b2d044" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 280px;">             <h4 style="margin: 0 0 8px 0; color: gray;">9832 N 29th St, Phoenix, AZ 85028</h4>             <table style="width: 100%; border-collapse: collapse;">                 <tr>                     <td style="padding: 4px;"><b>Flood Zone:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Insurance Required:</b></td>                     <td style="padding: 4px;">Unknown</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Price:</b></td>                     <td style="padding: 4px;">$765000</td>                 </tr>                 <tr>                     <td style="padding: 4px;"><b>Tier:</b></td>                     <td style="padding: 4px;">N/A</td>                 </tr>             </table>         </div>         </div>`)[0];
+                popup_fff4dada06c615e7a1edb4587c4a2d69.setContent(html_65b7085ef98f204196b0a541c0b2d044);
+            
+        
+
+        circle_marker_17d606d9d02f68ac4ace43cf1b94a236.bindPopup(popup_fff4dada06c615e7a1edb4587c4a2d69)
+        ;
+
+        
+    
+    
+            circle_marker_17d606d9d02f68ac4ace43cf1b94a236.bindTooltip(
+                `<div>
+                     9832 N 29th St, Phoenix, AZ 85028<br>Unknown
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>

@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_8de3c8cf4fe32b2a4bd01c99cf5b003b {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+    <div style="position: fixed; bottom: 50px; left: 50px;
+                background: white; padding: 15px; border: 2px solid gray;
+                border-radius: 8px; box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+                font-family: Arial; z-index: 9999;">
+        <h4 style="margin: 0 0 10px 0; font-size: 16px;">Crime Safety Index</h4>
+        <div style="margin: 6px 0;">
+            <span style="display: inline-block; width: 16px; height: 16px;
+                         background: green; border: 1px solid black; border-radius: 50%;
+                         vertical-align: middle; margin-right: 8px;"></span>
+            <span style="font-size: 13px;">SAFE (70-100)</span>
+        </div>
+        <div style="margin: 6px 0;">
+            <span style="display: inline-block; width: 16px; height: 16px;
+                         background: yellow; border: 1px solid black; border-radius: 50%;
+                         vertical-align: middle; margin-right: 8px;"></span>
+            <span style="font-size: 13px;">AVERAGE (50-70)</span>
+        </div>
+        <div style="margin: 6px 0;">
+            <span style="display: inline-block; width: 16px; height: 16px;
+                         background: orange; border: 1px solid black; border-radius: 50%;
+                         vertical-align: middle; margin-right: 8px;"></span>
+            <span style="font-size: 13px;">BELOW AVG (30-50)</span>
+        </div>
+        <div style="margin: 6px 0;">
+            <span style="display: inline-block; width: 16px; height: 16px;
+                         background: red; border: 1px solid black; border-radius: 50%;
+                         vertical-align: middle; margin-right: 8px;"></span>
+            <span style="font-size: 13px;">DANGEROUS (<30)</span>
+        </div>
+        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ccc;">
+        <div style="font-size: 11px; color: #666;">
+            Higher = Safer (100 = safest)
+        </div>
+    </div>
+    
+    
+            <div class="folium-map" id="map_8de3c8cf4fe32b2a4bd01c99cf5b003b" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_8de3c8cf4fe32b2a4bd01c99cf5b003b = L.map(
+                "map_8de3c8cf4fe32b2a4bd01c99cf5b003b",
+                {
+                    center: [33.4484, -112.074],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_1f891e90e1606ebf1d51841df30b6afe = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1f891e90e1606ebf1d51841df30b6afe.addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+            var circle_marker_fdcbd54a498b3d6a554ec7d58243cfef = L.circleMarker(
+                [33.6314, -112.1998],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_6ce987921611f3b4f7ee8911b5c51de6 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_10c331a0bddb057d58ba836ab2ef456e = $(`<div id="html_10c331a0bddb057d58ba836ab2ef456e" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">4732 W Davis Rd, Glendale, AZ 85306</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85306</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$475000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_6ce987921611f3b4f7ee8911b5c51de6.setContent(html_10c331a0bddb057d58ba836ab2ef456e);
+            
+        
+
+        circle_marker_fdcbd54a498b3d6a554ec7d58243cfef.bindPopup(popup_6ce987921611f3b4f7ee8911b5c51de6)
+        ;
+
+        
+    
+    
+            circle_marker_fdcbd54a498b3d6a554ec7d58243cfef.bindTooltip(
+                `<div>
+                     4732 W Davis Rd, Glendale, AZ 85306<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_683e1455a488ad14cb356e4ebfdbe8eb = L.circleMarker(
+                [33.6287, -112.1105],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_5f7632a1fc463d5d202c7c1dcc41621a = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_83093aae335032c596857f44acf773fc = $(`<div id="html_83093aae335032c596857f44acf773fc" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">2353 W Tierra Buena Ln, Phoenix, AZ 85023</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85023</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$499900</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_5f7632a1fc463d5d202c7c1dcc41621a.setContent(html_83093aae335032c596857f44acf773fc);
+            
+        
+
+        circle_marker_683e1455a488ad14cb356e4ebfdbe8eb.bindPopup(popup_5f7632a1fc463d5d202c7c1dcc41621a)
+        ;
+
+        
+    
+    
+            circle_marker_683e1455a488ad14cb356e4ebfdbe8eb.bindTooltip(
+                `<div>
+                     2353 W Tierra Buena Ln, Phoenix, AZ 85023<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_545f2332b5cff36d1935271ee2de1fe2 = L.circleMarker(
+                [33.6307, -112.11],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_61fabe7750de669773d31413409989e2 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_d8155bdf26bade7db42e39db604885a8 = $(`<div id="html_d8155bdf26bade7db42e39db604885a8" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">2344 W Marconi Ave, Phoenix, AZ 85023</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85023</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$560000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_61fabe7750de669773d31413409989e2.setContent(html_d8155bdf26bade7db42e39db604885a8);
+            
+        
+
+        circle_marker_545f2332b5cff36d1935271ee2de1fe2.bindPopup(popup_61fabe7750de669773d31413409989e2)
+        ;
+
+        
+    
+    
+            circle_marker_545f2332b5cff36d1935271ee2de1fe2.bindTooltip(
+                `<div>
+                     2344 W Marconi Ave, Phoenix, AZ 85023<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0626d5ee9b4115bccca054a741057125 = L.circleMarker(
+                [33.6505, -112.1212],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_84b4ce4cf04f2d0c7c562fbb9f5cc20e = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_092aae9cc83f1fb9beebb5fddd34c7c6 = $(`<div id="html_092aae9cc83f1fb9beebb5fddd34c7c6" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">2846 W Villa Rita Dr, Phoenix, AZ 85053</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85053</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$540000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_84b4ce4cf04f2d0c7c562fbb9f5cc20e.setContent(html_092aae9cc83f1fb9beebb5fddd34c7c6);
+            
+        
+
+        circle_marker_0626d5ee9b4115bccca054a741057125.bindPopup(popup_84b4ce4cf04f2d0c7c562fbb9f5cc20e)
+        ;
+
+        
+    
+    
+            circle_marker_0626d5ee9b4115bccca054a741057125.bindTooltip(
+                `<div>
+                     2846 W Villa Rita Dr, Phoenix, AZ 85053<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6c2967b4c4754e0311dab45211523d47 = L.circleMarker(
+                [33.615, -112.1474],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_dd9a926241b87dd87967ecb6ed8d4205 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_349ec07e5ce7c11e5aa5f44587ab1d26 = $(`<div id="html_349ec07e5ce7c11e5aa5f44587ab1d26" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">4136 W Hearn Rd, Phoenix, AZ 85053</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85053</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$457000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_dd9a926241b87dd87967ecb6ed8d4205.setContent(html_349ec07e5ce7c11e5aa5f44587ab1d26);
+            
+        
+
+        circle_marker_6c2967b4c4754e0311dab45211523d47.bindPopup(popup_dd9a926241b87dd87967ecb6ed8d4205)
+        ;
+
+        
+    
+    
+            circle_marker_6c2967b4c4754e0311dab45211523d47.bindTooltip(
+                `<div>
+                     4136 W Hearn Rd, Phoenix, AZ 85053<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_21b4b533411954219a1cb4c86856631a = L.circleMarker(
+                [33.625, -112.0011],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_a5731f29cfb0fd17b6dff596031d0a04 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_46fa3330e0052eeb0087944c6f636755 = $(`<div id="html_46fa3330e0052eeb0087944c6f636755" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">15225 N 37th Way, Phoenix, AZ 85032</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">15225</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$565000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_a5731f29cfb0fd17b6dff596031d0a04.setContent(html_46fa3330e0052eeb0087944c6f636755);
+            
+        
+
+        circle_marker_21b4b533411954219a1cb4c86856631a.bindPopup(popup_a5731f29cfb0fd17b6dff596031d0a04)
+        ;
+
+        
+    
+    
+            circle_marker_21b4b533411954219a1cb4c86856631a.bindTooltip(
+                `<div>
+                     15225 N 37th Way, Phoenix, AZ 85032<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bbad0a347349d9aaf91037b0ed7ec6d8 = L.circleMarker(
+                [33.6581, -112.0061],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_83464d98bf947f704d602124c9d44189 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_0efaeee2e89fa12b457be2a6405b6683 = $(`<div id="html_0efaeee2e89fa12b457be2a6405b6683" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">18820 N 35th Way, Phoenix, AZ 85050</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">18820</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$582000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_83464d98bf947f704d602124c9d44189.setContent(html_0efaeee2e89fa12b457be2a6405b6683);
+            
+        
+
+        circle_marker_bbad0a347349d9aaf91037b0ed7ec6d8.bindPopup(popup_83464d98bf947f704d602124c9d44189)
+        ;
+
+        
+    
+    
+            circle_marker_bbad0a347349d9aaf91037b0ed7ec6d8.bindTooltip(
+                `<div>
+                     18820 N 35th Way, Phoenix, AZ 85050<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_decd0ad8d795a76592dca48a37e56c7f = L.circleMarker(
+                [33.6658, -112.1999],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_d6f0c1a77e0ad7aa36e8c51b0840025b = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_c879bf81b788496c7ec0cee58880b61b = $(`<div id="html_c879bf81b788496c7ec0cee58880b61b" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">4209 W Wahalla Ln, Glendale, AZ 85308</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85308</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$625000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_d6f0c1a77e0ad7aa36e8c51b0840025b.setContent(html_c879bf81b788496c7ec0cee58880b61b);
+            
+        
+
+        circle_marker_decd0ad8d795a76592dca48a37e56c7f.bindPopup(popup_d6f0c1a77e0ad7aa36e8c51b0840025b)
+        ;
+
+        
+    
+    
+            circle_marker_decd0ad8d795a76592dca48a37e56c7f.bindTooltip(
+                `<div>
+                     4209 W Wahalla Ln, Glendale, AZ 85308<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_54a2f4ea94825d8a0026e1593950ee8e = L.circleMarker(
+                [33.6479, -112.1841],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_8f5a8d6d361dc60c775f50941e7199c9 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_14f247c83d4116d4c3c7c80f2ed2ea84 = $(`<div id="html_14f247c83d4116d4c3c7c80f2ed2ea84" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">4001 W Libby St, Glendale, AZ 85308</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85308</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$458000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_8f5a8d6d361dc60c775f50941e7199c9.setContent(html_14f247c83d4116d4c3c7c80f2ed2ea84);
+            
+        
+
+        circle_marker_54a2f4ea94825d8a0026e1593950ee8e.bindPopup(popup_8f5a8d6d361dc60c775f50941e7199c9)
+        ;
+
+        
+    
+    
+            circle_marker_54a2f4ea94825d8a0026e1593950ee8e.bindTooltip(
+                `<div>
+                     4001 W Libby St, Glendale, AZ 85308<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5de531736bb0ef5f919b434e569b3218 = L.circleMarker(
+                [33.6337, -112.1935],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_e91b447f2ffd78b45ecc8cc1c8c33a5b = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_42891c03e306adbfc549428910828bcc = $(`<div id="html_42891c03e306adbfc549428910828bcc" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">4020 W Anderson Dr, Glendale, AZ 85308</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85308</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$479900</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_e91b447f2ffd78b45ecc8cc1c8c33a5b.setContent(html_42891c03e306adbfc549428910828bcc);
+            
+        
+
+        circle_marker_5de531736bb0ef5f919b434e569b3218.bindPopup(popup_e91b447f2ffd78b45ecc8cc1c8c33a5b)
+        ;
+
+        
+    
+    
+            circle_marker_5de531736bb0ef5f919b434e569b3218.bindTooltip(
+                `<div>
+                     4020 W Anderson Dr, Glendale, AZ 85308<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9070833a3c63a8c4dc8d477ea9d85aa1 = L.circleMarker(
+                [33.6412, -112.1943],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_9667dd66d4c2365e9bc888ce3eb99960 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_42fb867936d10defb24404826e9169f7 = $(`<div id="html_42fb867936d10defb24404826e9169f7" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">4417 W Sandra Cir, Glendale, AZ 85308</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85308</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$354000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_9667dd66d4c2365e9bc888ce3eb99960.setContent(html_42fb867936d10defb24404826e9169f7);
+            
+        
+
+        circle_marker_9070833a3c63a8c4dc8d477ea9d85aa1.bindPopup(popup_9667dd66d4c2365e9bc888ce3eb99960)
+        ;
+
+        
+    
+    
+            circle_marker_9070833a3c63a8c4dc8d477ea9d85aa1.bindTooltip(
+                `<div>
+                     4417 W Sandra Cir, Glendale, AZ 85308<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_39af1098608a8f445c63bceabd647d31 = L.circleMarker(
+                [33.6549, -112.2269],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_b49b2746d6dc35ecd750435fe4809ec6 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_05d06a7514ba014aa61d7e3fcab09b79 = $(`<div id="html_05d06a7514ba014aa61d7e3fcab09b79" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">4137 W Cielo Grande, Glendale, AZ 85310</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85310</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$519900</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_b49b2746d6dc35ecd750435fe4809ec6.setContent(html_05d06a7514ba014aa61d7e3fcab09b79);
+            
+        
+
+        circle_marker_39af1098608a8f445c63bceabd647d31.bindPopup(popup_b49b2746d6dc35ecd750435fe4809ec6)
+        ;
+
+        
+    
+    
+            circle_marker_39af1098608a8f445c63bceabd647d31.bindTooltip(
+                `<div>
+                     4137 W Cielo Grande, Glendale, AZ 85310<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b9f500c502ca4dc9373ef01366f5bd21 = L.circleMarker(
+                [33.6055, -112.2393],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_972dcc7cd3dc9b6e055047c367688413 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_efe5e5a76ff6e47c57f6ef1ddfb36499 = $(`<div id="html_efe5e5a76ff6e47c57f6ef1ddfb36499" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">13307 N 84th Ave, Peoria, AZ 85381</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">13307</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$490000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_972dcc7cd3dc9b6e055047c367688413.setContent(html_efe5e5a76ff6e47c57f6ef1ddfb36499);
+            
+        
+
+        circle_marker_b9f500c502ca4dc9373ef01366f5bd21.bindPopup(popup_972dcc7cd3dc9b6e055047c367688413)
+        ;
+
+        
+    
+    
+            circle_marker_b9f500c502ca4dc9373ef01366f5bd21.bindTooltip(
+                `<div>
+                     13307 N 84th Ave, Peoria, AZ 85381<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9be5a078e4014fe830e8a8fcfb514a2f = L.circleMarker(
+                [33.6128, -112.1428],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_a3e564bd54db46435786bc987025d361 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_ed90b55871068aaa47a8fd6d1077118e = $(`<div id="html_ed90b55871068aaa47a8fd6d1077118e" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">14014 N 39th Ave, Phoenix, AZ 85053</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">14014</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$495000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_a3e564bd54db46435786bc987025d361.setContent(html_ed90b55871068aaa47a8fd6d1077118e);
+            
+        
+
+        circle_marker_9be5a078e4014fe830e8a8fcfb514a2f.bindPopup(popup_a3e564bd54db46435786bc987025d361)
+        ;
+
+        
+    
+    
+            circle_marker_9be5a078e4014fe830e8a8fcfb514a2f.bindTooltip(
+                `<div>
+                     14014 N 39th Ave, Phoenix, AZ 85053<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8696fbffe6cabb6e1970ff65db741b55 = L.circleMarker(
+                [33.7211, -112.2022],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_94d469b24499d86409fc4dfa7f4f2d66 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_084aeb8440125a41fd3c86e7bb92a072 = $(`<div id="html_084aeb8440125a41fd3c86e7bb92a072" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">25841 N 66th Dr, Phoenix, AZ 85083</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">25841</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$499777</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_94d469b24499d86409fc4dfa7f4f2d66.setContent(html_084aeb8440125a41fd3c86e7bb92a072);
+            
+        
+
+        circle_marker_8696fbffe6cabb6e1970ff65db741b55.bindPopup(popup_94d469b24499d86409fc4dfa7f4f2d66)
+        ;
+
+        
+    
+    
+            circle_marker_8696fbffe6cabb6e1970ff65db741b55.bindTooltip(
+                `<div>
+                     25841 N 66th Dr, Phoenix, AZ 85083<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_39a0d6d676695ff83be991ded50d1630 = L.circleMarker(
+                [33.5718, -112.1788],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_5a43dd250d86ca23121797d33d7957ad = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_3a6932c26c7a8fc588137f4cf03790b4 = $(`<div id="html_3a6932c26c7a8fc588137f4cf03790b4" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">5522 W Carol Ave, Glendale, AZ 85302</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85302</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$442000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_5a43dd250d86ca23121797d33d7957ad.setContent(html_3a6932c26c7a8fc588137f4cf03790b4);
+            
+        
+
+        circle_marker_39a0d6d676695ff83be991ded50d1630.bindPopup(popup_5a43dd250d86ca23121797d33d7957ad)
+        ;
+
+        
+    
+    
+            circle_marker_39a0d6d676695ff83be991ded50d1630.bindTooltip(
+                `<div>
+                     5522 W Carol Ave, Glendale, AZ 85302<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_232a28a1b19db8886ceca82bdb9f26de = L.circleMarker(
+                [33.6146, -112.1739],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_2365b4f331f590bad2c25ab1bd8d0d9f = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_a22a2a4b51f52a686a3dd2d389c7254f = $(`<div id="html_a22a2a4b51f52a686a3dd2d389c7254f" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">5038 W Echo Ln, Glendale, AZ 85302</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85302</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$634000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">CONTENDER</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_2365b4f331f590bad2c25ab1bd8d0d9f.setContent(html_a22a2a4b51f52a686a3dd2d389c7254f);
+            
+        
+
+        circle_marker_232a28a1b19db8886ceca82bdb9f26de.bindPopup(popup_2365b4f331f590bad2c25ab1bd8d0d9f)
+        ;
+
+        
+    
+    
+            circle_marker_232a28a1b19db8886ceca82bdb9f26de.bindTooltip(
+                `<div>
+                     5038 W Echo Ln, Glendale, AZ 85302<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_867d6676b930e385bd32189ad285f0ad = L.circleMarker(
+                [33.5489, -112.1664],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_b5cc6223f686047a0d37325e561eddd9 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_d8463e33efd9e45b6e31fbe32aa8ce75 = $(`<div id="html_d8463e33efd9e45b6e31fbe32aa8ce75" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">5004 W Kaler Dr, Glendale, AZ 85301</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85301</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$459900</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_b5cc6223f686047a0d37325e561eddd9.setContent(html_d8463e33efd9e45b6e31fbe32aa8ce75);
+            
+        
+
+        circle_marker_867d6676b930e385bd32189ad285f0ad.bindPopup(popup_b5cc6223f686047a0d37325e561eddd9)
+        ;
+
+        
+    
+    
+            circle_marker_867d6676b930e385bd32189ad285f0ad.bindTooltip(
+                `<div>
+                     5004 W Kaler Dr, Glendale, AZ 85301<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_eaaee5842b68dba0a28baf423561e7a4 = L.circleMarker(
+                [33.5292, -112.1538],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_4d42cde000b76cf419a8e48c26565b09 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_f3fb5bce4b35dc33c9cf929e6460865b = $(`<div id="html_f3fb5bce4b35dc33c9cf929e6460865b" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">4342 W Claremont St, Glendale, AZ 85301</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85301</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$514800</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_4d42cde000b76cf419a8e48c26565b09.setContent(html_f3fb5bce4b35dc33c9cf929e6460865b);
+            
+        
+
+        circle_marker_eaaee5842b68dba0a28baf423561e7a4.bindPopup(popup_4d42cde000b76cf419a8e48c26565b09)
+        ;
+
+        
+    
+    
+            circle_marker_eaaee5842b68dba0a28baf423561e7a4.bindTooltip(
+                `<div>
+                     4342 W Claremont St, Glendale, AZ 85301<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d92fface2d466398b6afc9e4491a8057 = L.circleMarker(
+                [33.6684, -112.1423],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_bf0d8c2aeb3c3314884c3bd11a745652 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_ba061cb87388af5cbfafb455aaab3bdc = $(`<div id="html_ba061cb87388af5cbfafb455aaab3bdc" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">20021 N 38th Ln, Glendale, AZ 85308</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">20021</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$545000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_bf0d8c2aeb3c3314884c3bd11a745652.setContent(html_ba061cb87388af5cbfafb455aaab3bdc);
+            
+        
+
+        circle_marker_d92fface2d466398b6afc9e4491a8057.bindPopup(popup_bf0d8c2aeb3c3314884c3bd11a745652)
+        ;
+
+        
+    
+    
+            circle_marker_d92fface2d466398b6afc9e4491a8057.bindTooltip(
+                `<div>
+                     20021 N 38th Ln, Glendale, AZ 85308<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2c89fb71da9ced4b2cb9ef7bbde966c5 = L.circleMarker(
+                [33.6583, -112.009],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_9c79e390a6595525b92cd2d7d957afa5 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_d99e0296943232bfb2c01b549c29f7b5 = $(`<div id="html_d99e0296943232bfb2c01b549c29f7b5" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">18825 N 34th St, Phoenix, AZ 85050</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">18825</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$550000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_9c79e390a6595525b92cd2d7d957afa5.setContent(html_d99e0296943232bfb2c01b549c29f7b5);
+            
+        
+
+        circle_marker_2c89fb71da9ced4b2cb9ef7bbde966c5.bindPopup(popup_9c79e390a6595525b92cd2d7d957afa5)
+        ;
+
+        
+    
+    
+            circle_marker_2c89fb71da9ced4b2cb9ef7bbde966c5.bindTooltip(
+                `<div>
+                     18825 N 34th St, Phoenix, AZ 85050<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_09868dd05219d0a583cbd044a6dcd648 = L.circleMarker(
+                [33.4846, -111.8966],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_51a9358b6a9e3d59080a2a3fcf66e0b1 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_2ba2a56552a5e7d664493c84e813fb40 = $(`<div id="html_2ba2a56552a5e7d664493c84e813fb40" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">8714 E Plaza Ave, Scottsdale, AZ 85250</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85250</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$750000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_51a9358b6a9e3d59080a2a3fcf66e0b1.setContent(html_2ba2a56552a5e7d664493c84e813fb40);
+            
+        
+
+        circle_marker_09868dd05219d0a583cbd044a6dcd648.bindPopup(popup_51a9358b6a9e3d59080a2a3fcf66e0b1)
+        ;
+
+        
+    
+    
+            circle_marker_09868dd05219d0a583cbd044a6dcd648.bindTooltip(
+                `<div>
+                     8714 E Plaza Ave, Scottsdale, AZ 85250<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1c5d82b5b6c17c894b326251f7e59b96 = L.circleMarker(
+                [33.5316, -111.8989],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_63bfe63f200d1395eb1f97c017b830e7 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_3cba14361c718d477f4be722210bd728 = $(`<div id="html_3cba14361c718d477f4be722210bd728" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">8426 E Lincoln Dr, Scottsdale, AZ 85250</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85250</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$849900</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_63bfe63f200d1395eb1f97c017b830e7.setContent(html_3cba14361c718d477f4be722210bd728);
+            
+        
+
+        circle_marker_1c5d82b5b6c17c894b326251f7e59b96.bindPopup(popup_63bfe63f200d1395eb1f97c017b830e7)
+        ;
+
+        
+    
+    
+            circle_marker_1c5d82b5b6c17c894b326251f7e59b96.bindTooltip(
+                `<div>
+                     8426 E Lincoln Dr, Scottsdale, AZ 85250<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cc50df638a81e197599f70cc5909c462 = L.circleMarker(
+                [33.5836, -111.8425],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_196648b658f7a83fa4f6c82004101622 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_3970dd131505c28620539b1718c0253a = $(`<div id="html_3970dd131505c28620539b1718c0253a" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">11035 E Clinton St, Scottsdale, AZ 85259</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">11035</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$775000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_196648b658f7a83fa4f6c82004101622.setContent(html_3970dd131505c28620539b1718c0253a);
+            
+        
+
+        circle_marker_cc50df638a81e197599f70cc5909c462.bindPopup(popup_196648b658f7a83fa4f6c82004101622)
+        ;
+
+        
+    
+    
+            circle_marker_cc50df638a81e197599f70cc5909c462.bindTooltip(
+                `<div>
+                     11035 E Clinton St, Scottsdale, AZ 85259<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f2548ec991aef626b739feaefee24ba7 = L.circleMarker(
+                [33.6199, -112.0032],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_3ad89d6c1e77433fb66482a6a8e03c11 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_f25d05f31df28aeb9fcbc8b2102d4fb6 = $(`<div id="html_f25d05f31df28aeb9fcbc8b2102d4fb6" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">14622 N 37th St, Phoenix, AZ 85032</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">14622</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$510000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_3ad89d6c1e77433fb66482a6a8e03c11.setContent(html_f25d05f31df28aeb9fcbc8b2102d4fb6);
+            
+        
+
+        circle_marker_f2548ec991aef626b739feaefee24ba7.bindPopup(popup_3ad89d6c1e77433fb66482a6a8e03c11)
+        ;
+
+        
+    
+    
+            circle_marker_f2548ec991aef626b739feaefee24ba7.bindTooltip(
+                `<div>
+                     14622 N 37th St, Phoenix, AZ 85032<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f74150ba584c57c6b7e567cd4b2a9163 = L.circleMarker(
+                [33.6032, -112.0252],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_7531b1857049654e569fe27e0ea6275d = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_4919ba5f3d4587e72ab237af5bad928c = $(`<div id="html_4919ba5f3d4587e72ab237af5bad928c" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">12808 N 27th St, Phoenix, AZ 85032</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">12808</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$509000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_7531b1857049654e569fe27e0ea6275d.setContent(html_4919ba5f3d4587e72ab237af5bad928c);
+            
+        
+
+        circle_marker_f74150ba584c57c6b7e567cd4b2a9163.bindPopup(popup_7531b1857049654e569fe27e0ea6275d)
+        ;
+
+        
+    
+    
+            circle_marker_f74150ba584c57c6b7e567cd4b2a9163.bindTooltip(
+                `<div>
+                     12808 N 27th St, Phoenix, AZ 85032<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_48d2151ec8c614e84249fcfe2a37048f = L.circleMarker(
+                [33.6376, -112.1253],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_1d1a04c68f21e7b9b58396314a4c686d = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_314482936537ff555abc6428aa815012 = $(`<div id="html_314482936537ff555abc6428aa815012" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">16814 N 31st Ave, Phoenix, AZ 85053</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">16814</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$400000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_1d1a04c68f21e7b9b58396314a4c686d.setContent(html_314482936537ff555abc6428aa815012);
+            
+        
+
+        circle_marker_48d2151ec8c614e84249fcfe2a37048f.bindPopup(popup_1d1a04c68f21e7b9b58396314a4c686d)
+        ;
+
+        
+    
+    
+            circle_marker_48d2151ec8c614e84249fcfe2a37048f.bindTooltip(
+                `<div>
+                     16814 N 31st Ave, Phoenix, AZ 85053<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9379b2d962d9680ed2f9b0c1de68378b = L.circleMarker(
+                [33.6346, -112.1394],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_d3615b6dc80d79c6719a7e468829bcd1 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_4c82724be50ec8907aa68be0126dfce9 = $(`<div id="html_4c82724be50ec8907aa68be0126dfce9" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">17244 N 36th Ln, Glendale, AZ 85308</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">17244</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$425000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_d3615b6dc80d79c6719a7e468829bcd1.setContent(html_4c82724be50ec8907aa68be0126dfce9);
+            
+        
+
+        circle_marker_9379b2d962d9680ed2f9b0c1de68378b.bindPopup(popup_d3615b6dc80d79c6719a7e468829bcd1)
+        ;
+
+        
+    
+    
+            circle_marker_9379b2d962d9680ed2f9b0c1de68378b.bindTooltip(
+                `<div>
+                     17244 N 36th Ln, Glendale, AZ 85308<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5e3ad92886b2b32fa085d5679df457af = L.circleMarker(
+                [33.5992, -112.2127],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_b5f97cd9fffed6d1f7ca02021cd02f52 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_68e10cf8866ae19b8ed2796cd96c8504 = $(`<div id="html_68e10cf8866ae19b8ed2796cd96c8504" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">7126 W Columbine Dr, Peoria, AZ 85381</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85381</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$565000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_b5f97cd9fffed6d1f7ca02021cd02f52.setContent(html_68e10cf8866ae19b8ed2796cd96c8504);
+            
+        
+
+        circle_marker_5e3ad92886b2b32fa085d5679df457af.bindPopup(popup_b5f97cd9fffed6d1f7ca02021cd02f52)
+        ;
+
+        
+    
+    
+            circle_marker_5e3ad92886b2b32fa085d5679df457af.bindTooltip(
+                `<div>
+                     7126 W Columbine Dr, Peoria, AZ 85381<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7cefeb9b507a1472a06ebdfebbcd95fa = L.circleMarker(
+                [33.6, -112.2151],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_354e86b880fdf67e3aa3a7b11a4de0d4 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_824c447d4af7dfc518ac33e5753829d7 = $(`<div id="html_824c447d4af7dfc518ac33e5753829d7" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">7233 W Corrine Dr, Peoria, AZ 85381</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85381</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$749999</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_354e86b880fdf67e3aa3a7b11a4de0d4.setContent(html_824c447d4af7dfc518ac33e5753829d7);
+            
+        
+
+        circle_marker_7cefeb9b507a1472a06ebdfebbcd95fa.bindPopup(popup_354e86b880fdf67e3aa3a7b11a4de0d4)
+        ;
+
+        
+    
+    
+            circle_marker_7cefeb9b507a1472a06ebdfebbcd95fa.bindTooltip(
+                `<div>
+                     7233 W Corrine Dr, Peoria, AZ 85381<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1730fe280ccd3b65355ed1585df2afc9 = L.circleMarker(
+                [33.6158, -112.2227],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_a59caaae369640b0f31f5f5f4a004851 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_cc7f0db3c39202d5deb7e07616acb6fb = $(`<div id="html_cc7f0db3c39202d5deb7e07616acb6fb" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">14353 N 76th Dr, Peoria, AZ 85381</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">14353</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$550000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_a59caaae369640b0f31f5f5f4a004851.setContent(html_cc7f0db3c39202d5deb7e07616acb6fb);
+            
+        
+
+        circle_marker_1730fe280ccd3b65355ed1585df2afc9.bindPopup(popup_a59caaae369640b0f31f5f5f4a004851)
+        ;
+
+        
+    
+    
+            circle_marker_1730fe280ccd3b65355ed1585df2afc9.bindTooltip(
+                `<div>
+                     14353 N 76th Dr, Peoria, AZ 85381<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ab88a650a5bb54e61e912e2b18e8a170 = L.circleMarker(
+                [33.5631, -112.2862],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_30f9f368c521419cccbefce31a8bea0f = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_0852bcf3fcd034552eec5824d5ed1067 = $(`<div id="html_0852bcf3fcd034552eec5824d5ed1067" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">8803 N 105th Dr, Peoria, AZ 85345</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85345</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$509000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_30f9f368c521419cccbefce31a8bea0f.setContent(html_0852bcf3fcd034552eec5824d5ed1067);
+            
+        
+
+        circle_marker_ab88a650a5bb54e61e912e2b18e8a170.bindPopup(popup_30f9f368c521419cccbefce31a8bea0f)
+        ;
+
+        
+    
+    
+            circle_marker_ab88a650a5bb54e61e912e2b18e8a170.bindTooltip(
+                `<div>
+                     8803 N 105th Dr, Peoria, AZ 85345<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4d5403e05b760df8b5f3444c7ea0ff34 = L.circleMarker(
+                [33.6486, -112.2514],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_a8bebed785d214ca5ead69ae6ca87f42 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_5f9156ea57185fac93f948c91892350c = $(`<div id="html_5f9156ea57185fac93f948c91892350c" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">8931 W Villa Rita Dr, Peoria, AZ 85382</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85382</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$549900</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_a8bebed785d214ca5ead69ae6ca87f42.setContent(html_5f9156ea57185fac93f948c91892350c);
+            
+        
+
+        circle_marker_4d5403e05b760df8b5f3444c7ea0ff34.bindPopup(popup_a8bebed785d214ca5ead69ae6ca87f42)
+        ;
+
+        
+    
+    
+            circle_marker_4d5403e05b760df8b5f3444c7ea0ff34.bindTooltip(
+                `<div>
+                     8931 W Villa Rita Dr, Peoria, AZ 85382<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0b4fd655f50d9a7601696f299a3ffd56 = L.circleMarker(
+                [33.6479, -112.2562],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_ef1f763113b09a167b057e71ad2a5b28 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_fcda20451cc90a0171f58715715a9a7c = $(`<div id="html_fcda20451cc90a0171f58715715a9a7c" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">9150 W Villa Rita Dr, Peoria, AZ 85382</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85382</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$605000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_ef1f763113b09a167b057e71ad2a5b28.setContent(html_fcda20451cc90a0171f58715715a9a7c);
+            
+        
+
+        circle_marker_0b4fd655f50d9a7601696f299a3ffd56.bindPopup(popup_ef1f763113b09a167b057e71ad2a5b28)
+        ;
+
+        
+    
+    
+            circle_marker_0b4fd655f50d9a7601696f299a3ffd56.bindTooltip(
+                `<div>
+                     9150 W Villa Rita Dr, Peoria, AZ 85382<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9eb0cb759a85f38af1363ffaff91c1ab = L.circleMarker(
+                [33.6241, -112.0058],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 1}
+            ).addTo(map_8de3c8cf4fe32b2a4bd01c99cf5b003b);
+        
+    
+        var popup_ce0b270786aad9298be0988bc415de1a = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_948b2cea1087c3e5c1d0c9ae6788e65b = $(`<div id="html_948b2cea1087c3e5c1d0c9ae6788e65b" style="width: 100.0%; height: 100.0%;">             <div style="font-family: Arial; font-size: 12px; width: 300px;">                 <h4 style="margin: 0 0 8px 0; color: yellow;">9832 N 29th St, Phoenix, AZ 85028</h4>                 <table style="width: 100%; border-collapse: collapse;">                     <tr>                         <td style="padding: 4px;"><b>ZIP Code:</b></td>                         <td style="padding: 4px;">85028</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Violent Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Property Crime Index:</b></td>                         <td style="padding: 4px;">N/A/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Composite Index:</b></td>                         <td style="padding: 4px; font-weight: bold;">50/100</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Risk Level:</b></td>                         <td style="padding: 4px; font-weight: bold; color: yellow;">AVERAGE</td>                     </tr>                     <tr style="border-top: 1px solid #ccc;">                         <td style="padding: 4px;"><b>Price:</b></td>                         <td style="padding: 4px;">$765000</td>                     </tr>                     <tr>                         <td style="padding: 4px;"><b>Tier:</b></td>                         <td style="padding: 4px;">N/A</td>                     </tr>                 </table>                 <div style="margin-top: 8px; font-size: 11px; color: #666;">                     Higher index = safer (100 = safest)                 </div>             </div>             </div>`)[0];
+                popup_ce0b270786aad9298be0988bc415de1a.setContent(html_948b2cea1087c3e5c1d0c9ae6788e65b);
+            
+        
+
+        circle_marker_9eb0cb759a85f38af1363ffaff91c1ab.bindPopup(popup_ce0b270786aad9298be0988bc415de1a)
+        ;
+
+        
+    
+    
+            circle_marker_9eb0cb759a85f38af1363ffaff91c1ab.bindTooltip(
+                `<div>
+                     9832 N 29th St, Phoenix, AZ 85028<br>Crime Index: 50/100 (AVERAGE)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>

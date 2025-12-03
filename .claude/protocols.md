@@ -33,6 +33,34 @@ Detailed protocols referenced from root `CLAUDE.md`.
 4. VERIFY - Confirm original request now works
 5. NEVER suggest alternatives unless genuinely impossible
 
+### Tool Usage Protocol
+
+**ABSOLUTE PROHIBITIONS:**
+- NEVER use `bash cat FILE` - use **Read** tool instead
+- NEVER use `bash head/tail FILE` - use **Read** tool with offset/limit
+- NEVER use `bash grep PATTERN` - use **Grep** tool instead
+- NEVER use `bash rg PATTERN` - use **Grep** tool instead
+- NEVER use `bash find DIR` - use **Glob** tool instead
+- NEVER use `bash ls DIR` - use **Glob** tool instead
+- NEVER use `cat FILE | python -c` - use **Read** tool, then parse
+
+**Why This Matters:**
+1. Native tools have proper permissions and error handling
+2. Bash commands can fail silently or with unclear errors
+3. Native tools integrate with Claude Code's context system
+4. Bash file ops bypass the tool approval system
+
+**Correct Patterns:**
+| Task | Wrong | Right |
+|------|-------|-------|
+| Read JSON | `cat data.json \| python` | `Read: data.json` then parse |
+| Find files | `bash find . -name "*.py"` | `Glob: pattern="**/*.py"` |
+| Search content | `bash grep "pattern" file` | `Grep: pattern="pattern"` |
+| List directory | `bash ls -la dir/` | `Glob: pattern="*", path="dir/"` |
+
+**Agent/Skill Authors Note:**
+If you see `cat`, `grep`, `find`, or `ls` in example code blocks within agent or skill files, those examples are WRONG - always use native tools instead.
+
 ## TIER 1: CRITICAL PROTOCOLS
 
 ### Protocol 1: Root Cause Analysis

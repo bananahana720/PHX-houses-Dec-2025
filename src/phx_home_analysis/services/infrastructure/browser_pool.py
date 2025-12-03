@@ -8,8 +8,11 @@ with user input during stealth automation.
 """
 
 import asyncio
+import inspect
 import logging
 import random
+import os
+from pathlib import Path
 
 import nodriver as uc
 
@@ -139,9 +142,29 @@ class BrowserPool:
 
             logger.info("Initializing new browser instance with stealth configuration")
 
+            # Prefer an explicit Chrome binary if available (needed in sandbox/WSL)
+            chrome_path = os.environ.get("CHROME_PATH") or os.environ.get(
+                "GOOGLE_CHROME_SHIM"
+            )
+            if not chrome_path:
+                # Try Playwright-downloaded Chromium (no async calls inside loop)
+                pw_root = Path.home() / ".cache" / "ms-playwright"
+                for candidate in pw_root.glob("chromium-*/chrome-linux/chrome"):
+                    if candidate.exists():
+                        chrome_path = str(candidate)
+                        logger.info(
+                            "Using Playwright Chromium for nodriver: %s", chrome_path
+                        )
+                        break
+
             # Create browser with nodriver
             # Note: nodriver 0.48+ uses add_argument() instead of browser_args property
-            browser_config = uc.Config()
+            browser_config = (
+                uc.Config(browser_executable_path=chrome_path)
+                if chrome_path
+                else uc.Config()
+            )
+            browser_config.sandbox = False  # Needed for WSL/root environments
             browser_config.headless = self.headless
 
             # Add stealth arguments (nodriver has restrictions on certain flags)
@@ -333,7 +356,20 @@ class BrowserPool:
         if self._browser is not None:
             logger.info("Closing browser instance")
             try:
-                await self._browser.stop()
+                stop = getattr(self._browser, "stop", None)
+                if callable(stop):
+                    maybe_coro = stop()
+                    if inspect.iscoroutine(maybe_coro):
+                        await maybe_coro
+                else:
+                    # Fallback for nodriver versions without stop()
+                    close = getattr(self._browser, "close", None)
+                    if callable(close):
+                        maybe_coro = close()
+                        if inspect.iscoroutine(maybe_coro):
+                            await maybe_coro
+                    else:
+                        logger.warning("Browser instance has no stop/close coroutine")
                 self._browser = None
                 logger.info("Browser closed successfully")
             except Exception as e:

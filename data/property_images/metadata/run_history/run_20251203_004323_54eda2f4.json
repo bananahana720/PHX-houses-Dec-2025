@@ -1,0 +1,79 @@
+{
+  "run_id": "54eda2f4",
+  "started_at": "2025-12-03T00:42:54.936035-05:00",
+  "ended_at": "2025-12-03T00:43:23.537379-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 44,
+    "total_new_images": 0,
+    "total_unchanged": 32,
+    "total_duplicates": 12,
+    "total_content_changed": 0,
+    "total_removed": 12,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 44,
+      "new_images": 0,
+      "unchanged": 32,
+      "duplicates": 12,
+      "content_changed": 0,
+      "removed": 12,
+      "errors": 0,
+      "new_image_ids": [],
+      "removed_urls": [
+        "https://photos.zillowstatic.com/fp/b559c0d27a49667d16f556e66b8a0df0-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/faee40736bc0465c3e409f0b3e6bcd4c-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/280d5e2a98c4eb64a58e8ce4d16cce85-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/508dba0a3742800c2171f4d2c790080f-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/71764e1d036f015267bb65a7d11911a2-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/a616a86ccf4f18b56c387696ddb4ef61-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/d9dc32fea54ee2a2d31cee1b4c4b47d4-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/5dc3b773cee23cf149b7be76df00dc82-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/e3b0ddce44cc82aba2e2b8290ae0d773-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/557aa6064618cf19cbc3a1ef59adddf5-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/ae953c1fac0af5d315e21e327ba26d18-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/f920880e6b1c3c8322f4b0ce1ea5bd7d-p_e.jpg"
+      ],
+      "error_messages": [],
+      "listing_metadata": {
+        "beds": 4,
+        "baths": null,
+        "sqft": 1860,
+        "lot_sqft": null,
+        "year_built": 1983,
+        "property_type": "Single Family",
+        "garage_spaces": null,
+        "parking_spaces": null,
+        "pool": true,
+        "stories": 1,
+        "list_price": 650000,
+        "cooling_type": "Central",
+        "heating_type": null,
+        "flooring_types": [
+          "Tile"
+        ],
+        "appliances_included": [
+          "Stove/Oven"
+        ],
+        "sewer_type": "City",
+        "water_source": "City",
+        "days_on_market": null,
+        "original_list_price": null,
+        "price_reduced": true,
+        "price_reduced_pct": null,
+        "price_reduced_amount": 5100,
+        "hoa_fee": 0
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 28.601344
+}

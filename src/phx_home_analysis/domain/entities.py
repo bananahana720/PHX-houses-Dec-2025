@@ -118,6 +118,42 @@ class Property:
     high_rating: float | None = None  # 1-10
     school_count_1mi: int | None = None
 
+    # Market Data (Phase 1 listing extraction)
+    days_on_market: int | None = None
+    original_list_price: int | None = None
+    price_reduced: bool | None = None
+    price_reduced_pct: float | None = None
+
+    # Air Quality (Phase 2 - EPA AirNow)
+    air_quality_aqi: int | None = None
+    air_quality_category: str | None = None
+    air_quality_pollutant: str | None = None
+
+    # Permit History (Phase 2 - Maricopa GIS)
+    permit_count: int | None = None
+    permit_types: list[str] | None = None
+    last_roof_permit_year: int | None = None
+    last_hvac_permit_year: int | None = None
+    has_solar_permit: bool | None = None
+
+    # Exterior Assessment (Phase 2B - Image Analysis)
+    roof_visual_condition: str | None = None  # UAD C1-C6 rating
+    roof_age_visual_estimate: int | None = None
+    roof_condition_notes: str | None = None
+    pool_equipment_age_visual: int | None = None
+    pool_equipment_condition: str | None = None
+    pool_system_type: str | None = None  # salt/chlorine
+    hvac_age_visual_estimate: int | None = None
+    hvac_brand: str | None = None
+    hvac_refrigerant: str | None = None  # R-22/R-410A
+    hvac_condition_notes: str | None = None
+    foundation_concerns: list[str] | None = None
+    foundation_red_flags: list[str] | None = None
+    backyard_covered_patio: bool | None = None
+    backyard_patio_score: int | None = None
+    backyard_pool_ratio: str | None = None  # balanced/pool_dominant/minimal_pool
+    backyard_sun_orientation: str | None = None  # N/E/S/W
+
     def __post_init__(self) -> None:
         """Validate and normalize data after initialization."""
         # Ensure full_address is set
@@ -428,3 +464,39 @@ class EnrichmentData:
     middle_rating: float | None = None
     high_rating: float | None = None
     school_count_1mi: int | None = None
+
+    # Market Data (Phase 1 listing extraction)
+    days_on_market: int | None = None
+    original_list_price: int | None = None
+    price_reduced: bool | None = None
+    price_reduced_pct: float | None = None
+
+    # Air Quality (Phase 2 - EPA AirNow)
+    air_quality_aqi: int | None = None
+    air_quality_category: str | None = None
+    air_quality_pollutant: str | None = None
+
+    # Permit History (Phase 2 - Maricopa GIS)
+    permit_count: int | None = None
+    permit_types: list[str] | None = None
+    last_roof_permit_year: int | None = None
+    last_hvac_permit_year: int | None = None
+    has_solar_permit: bool | None = None
+
+    # Exterior Assessment (Phase 2B - Image Analysis)
+    roof_visual_condition: str | None = None  # UAD C1-C6 rating
+    roof_age_visual_estimate: int | None = None
+    roof_condition_notes: str | None = None
+    pool_equipment_age_visual: int | None = None
+    pool_equipment_condition: str | None = None
+    pool_system_type: str | None = None  # salt/chlorine
+    hvac_age_visual_estimate: int | None = None
+    hvac_brand: str | None = None
+    hvac_refrigerant: str | None = None  # R-22/R-410A
+    hvac_condition_notes: str | None = None
+    foundation_concerns: list[str] | None = None
+    foundation_red_flags: list[str] | None = None
+    backyard_covered_patio: bool | None = None
+    backyard_patio_score: int | None = None
+    backyard_pool_ratio: str | None = None  # balanced/pool_dominant/minimal_pool
+    backyard_sun_orientation: str | None = None  # N/E/S/W

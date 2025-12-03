@@ -54,6 +54,16 @@ VISUALIZATIONS = {
         "script": "scripts/radar_charts.py",
         "output": "reports/html/radar_comparison.html",
     },
+    "market": {
+        "name": "Market Activity Map",
+        "script": "scripts/generate_market_map.py",
+        "output": "reports/html/market_map.html",
+    },
+    "quality": {
+        "name": "Data Quality Dashboard",
+        "script": "scripts/generate_quality_dashboard.py",
+        "output": "reports/html/quality_dashboard.html",
+    },
 }
 
 
