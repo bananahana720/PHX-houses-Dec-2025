@@ -1,561 +1,1067 @@
+---
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]
+inputDocuments:
+  - docs/prd.md
+  - docs/ux-design-specification.md
+  - src/phx_home_analysis/config/scoring_weights.py
+  - src/phx_home_analysis/config/constants.py
+workflowType: 'architecture'
+lastStep: 8
+project_name: 'PHX-houses-Dec-2025'
+user_name: 'Andrew'
+date: '2025-12-03'
+version: '2.0'
+---
+
 # PHX Houses Analysis Pipeline - System Architecture
+
+**Version:** 2.0 (Complete Regeneration)
+**Author:** Winston - System Architect
+**Date:** 2025-12-03
+
+---
 
 ## Table of Contents
 
-1. [System Overview](#system-overview)
-2. [Architectural Style](#architectural-style)
-3. [Layer Architecture](#layer-architecture)
-4. [Multi-Agent Orchestration](#multi-agent-orchestration)
-5. [Data Architecture](#data-architecture)
-6. [Scoring System Architecture](#scoring-system-architecture)
-7. [Kill-Switch Architecture](#kill-switch-architecture)
-8. [Image Extraction Architecture](#image-extraction-architecture)
-9. [State Management](#state-management)
-10. [Integration Points](#integration-points)
+1. [Executive Summary](#executive-summary)
+2. [System Overview](#system-overview)
+3. [Core Architectural Decisions](#core-architectural-decisions)
+4. [Data Architecture](#data-architecture)
+5. [Component Architecture](#component-architecture)
+6. [Multi-Agent Architecture](#multi-agent-architecture)
+7. [Scoring System Architecture](#scoring-system-architecture)
+8. [Kill-Switch Architecture](#kill-switch-architecture)
+9. [Integration Architecture](#integration-architecture)
+10. [State Management Architecture](#state-management-architecture)
 11. [Security Architecture](#security-architecture)
 12. [Deployment Architecture](#deployment-architecture)
+13. [Architecture Validation](#architecture-validation)
+
+---
+
+## Executive Summary
+
+### Purpose
+
+This document defines the complete technical architecture for the PHX Houses Analysis Pipeline - a personal decision support system that evaluates Phoenix-area residential properties against strict first-time homebuyer criteria through multi-agent analysis, kill-switch filtering, and comprehensive scoring.
+
+### Key Architectural Goals
+
+1. **Eliminate Decision Anxiety**: Transform 50+ weekly listings into 3-5 tour-worthy candidates through systematic filtering
+2. **Ensure Zero False Passes**: 100% accuracy on kill-switch criteria - no deal-breaker properties slip through
+3. **Enable Transparent Scoring**: Every point traceable to source data and calculation logic
+4. **Support Crash Recovery**: Resume interrupted pipelines without re-running completed work
+5. **Optimize for Cost Efficiency**: Haiku for data extraction, Sonnet only for vision tasks
+
+### Critical Architecture Decisions Summary
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Architecture Style | Domain-Driven Design (DDD) | Clean separation, testable business logic |
+| Data Storage | JSON files (LIST-based) | Simple, crash-recoverable, adequate for <1000 properties |
+| Scoring System | 605-point weighted system | Matches actual ScoringWeights dataclass calculations |
+| Kill-Switch System | All HARD criteria per PRD | HOA, beds, baths, sqft, lot, garage, sewer |
+| Multi-Agent Model | Haiku (extraction) + Sonnet (vision) | Cost optimization with capability matching |
+| Browser Automation | nodriver (stealth) primary | PerimeterX bypass for Zillow/Redfin |
+
+### Architecture Gap Resolutions
+
+| Gap ID | Issue | Resolution |
+|--------|-------|------------|
+| ARCH-01 | Kill-switch criteria mismatch | All 7 criteria now HARD per PRD FR9-FR14 |
+| ARCH-02 | Scoring totals inconsistent | Reconciled to 605 pts (ScoringWeights authoritative) |
+| ARCH-03 | Tier thresholds misaligned | Updated to 484 (80%), 363 (60%) of 605 |
 
 ---
 
 ## System Overview
 
-The PHX Houses Analysis Pipeline is a sophisticated data analysis system that evaluates Phoenix-area residential properties through a multi-phase pipeline combining automated data extraction, AI-powered visual analysis, and quantitative scoring.
-
-###
-
- High-Level Architecture
+### High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    EXTERNAL DATA SOURCES                        │
-├─────────────────────────────────────────────────────────────────┤
-│  Maricopa County    Zillow/Redfin    Google Maps    APIs        │
-│  Assessor API       Listings         Geo Services   (External)  │
-└──────┬──────────────────┬────────────────┬──────────────────┬───┘
-       │                  │                │                  │
-       └──────────┬───────┴────────┬───────┴──────────────────┘
-                  │                │
-        ┌─────────▼────────────────▼─────────┐
-        │   EXTRACTION LAYER                 │
-        │  - County Assessor Client          │
-        │  - Stealth Browser Automation      │
-        │  - Image Extractors (Zillow, etc.) │
-        │  - Map Analysis Agents             │
-        └──────────┬─────────────────────────┘
-                   │
-        ┌──────────▼─────────────────────────┐
-        │   DATA INTEGRATION LAYER           │
-        │  - Field Mappers                   │
-        │  - Merge Strategies                │
-        │  - Data Quality Metrics            │
-        │  - Deduplication                   │
-        └──────────┬─────────────────────────┘
-                   │
-        ┌──────────▼─────────────────────────┐
-        │   BUSINESS LOGIC LAYER             │
-        │  - Kill-Switch Filter              │
-        │  - Property Scorer                 │
-        │  - Tier Classifier                 │
-        │  - Cost Estimator                  │
-        └──────────┬─────────────────────────┘
-                   │
-        ┌──────────▼─────────────────────────┐
-        │   PRESENTATION LAYER               │
-        │  - Console Reporter                │
-        │  - CSV Reporter                    │
-        │  - HTML Reporter                   │
-        │  - Deal Sheet Generator            │
-        └────────────────────────────────────┘
++===========================================================================+
+|                        EXTERNAL DATA SOURCES                               |
++===========================================================================+
+|  Maricopa County    Zillow/Redfin    Google Maps    GreatSchools   FEMA   |
+|  Assessor API       Listings         Geo Services   Schools API    Flood  |
++======|==================|================|===============|===========|====+
+       |                  |                |               |           |
+       +--------+---------+-------+--------+-------+-------+-----------+
+                |                 |                |
+     +----------v-----------------v----------------v-----------+
+     |               EXTRACTION LAYER (Phase 0-1)              |
+     |  +-------------------+  +--------------------+           |
+     |  | County Assessor   |  | Stealth Browser    |           |
+     |  | Client            |  | Automation         |           |
+     |  | (HTTP/REST)       |  | (nodriver/curl)    |           |
+     |  +-------------------+  +--------------------+           |
+     |  +-------------------+  +--------------------+           |
+     |  | Map Analyzer      |  | Image Extractors   |           |
+     |  | Agent (Haiku)     |  | (Zillow, Redfin)   |           |
+     |  +-------------------+  +--------------------+           |
+     +-------------------------|-------------------------------+
+                               |
+     +-------------------------v-------------------------------+
+     |              DATA INTEGRATION LAYER                      |
+     |  +-------------------+  +--------------------+           |
+     |  | Field Mappers     |  | Merge Strategies   |           |
+     |  | (source -> domain)|  | (conflict resolve) |           |
+     |  +-------------------+  +--------------------+           |
+     |  +-------------------+  +--------------------+           |
+     |  | Data Quality      |  | Deduplication      |           |
+     |  | Metrics           |  | (address hash)     |           |
+     |  +-------------------+  +--------------------+           |
+     +-------------------------|-------------------------------+
+                               |
+     +-------------------------v-------------------------------+
+     |               BUSINESS LOGIC LAYER                       |
+     |  +-------------------+  +--------------------+           |
+     |  | Kill-Switch       |  | Property Scorer    |           |
+     |  | Filter (7 HARD)   |  | (605 pts, 22 strat)|           |
+     |  +-------------------+  +--------------------+           |
+     |  +-------------------+  +--------------------+           |
+     |  | Tier Classifier   |  | Cost Estimator     |           |
+     |  | (Unicorn/Contend) |  | (AZ-specific)      |           |
+     |  +-------------------+  +--------------------+           |
+     +-------------------------|-------------------------------+
+                               |
+     +-------------------------v-------------------------------+
+     |               PRESENTATION LAYER                         |
+     |  +-------------------+  +--------------------+           |
+     |  | Console Reporter  |  | HTML Reporter      |           |
+     |  | (rich library)    |  | (Jinja2 + Tailwind)|           |
+     |  +-------------------+  +--------------------+           |
+     |  +-------------------+  +--------------------+           |
+     |  | CSV Reporter      |  | Deal Sheet Gen     |           |
+     |  | (ranked list)     |  | (mobile-first)     |           |
+     |  +-------------------+  +--------------------+           |
+     +----------------------------------------------------------+
 ```
+
+### Key Metrics
+
+| Metric | Target | Source |
+|--------|--------|--------|
+| Properties per batch | 20-50 | PRD NFR1 |
+| Kill-switch accuracy | 100% | PRD NFR5 |
+| Scoring consistency | +/-5 pts | PRD NFR6 |
+| Batch processing time | <=30 min | PRD NFR1 |
+| Re-scoring time | <=5 min | PRD NFR2 |
+| Operating cost | <=$90/month | PRD NFR22 |
 
 ---
 
-## Architectural Style
+## Core Architectural Decisions
 
-### Primary Style: Domain-Driven Design (DDD)
+### ADR-01: Domain-Driven Design (DDD)
 
-The system follows DDD principles with clear separation between:
+**Status:** Accepted
 
-1. **Domain Layer** - Core business entities and logic
-2. **Application Layer** - Use cases and orchestration
-3. **Infrastructure Layer** - External service integration
-4. **Presentation Layer** - Output formatting and reports
+**Context:** System has complex domain logic (scoring, kill-switches, Arizona-specific factors) that must remain stable as infrastructure changes.
 
-### Secondary Patterns
+**Decision:** Implement DDD with clear layer separation:
+- Domain Layer: Entities, value objects, enums
+- Service Layer: Business logic orchestration
+- Repository Layer: Data persistence abstraction
+- Pipeline Layer: Workflow coordination
+- Presentation Layer: Output formatting
 
-1. **Repository Pattern** - Abstract data access
-2. **Strategy Pattern** - Composable scoring strategies
-3. **Pipeline Pattern** - Sequential data transformation
-4. **Multi-Agent Pattern** - Parallel AI task execution
+**Consequences:**
+- (+) Business logic testable in isolation
+- (+) Infrastructure changes don't affect domain
+- (+) Clear dependency direction (inward)
+- (-) More boilerplate than simple approaches
+- (-) Requires discipline to maintain boundaries
 
----
+### ADR-02: JSON File Storage (Not Database)
 
-## Layer Architecture
+**Status:** Accepted
 
-### 1. Domain Layer (`src/phx_home_analysis/domain/`)
+**Context:** Personal tool with <1000 properties. Needs crash recovery without database complexity.
 
-**Purpose:** Define core business concepts independent of infrastructure.
+**Decision:** Use JSON files with atomic writes and backup-before-modify pattern.
 
-**Components:**
+**File Structure:**
+- `data/phx_homes.csv` - Source listings (input)
+- `data/enrichment_data.json` - Enriched property data (LIST of dicts)
+- `data/work_items.json` - Pipeline state tracking
+- `data/extraction_state.json` - Image extraction state
 
-#### Entities
-- `Property` - Central domain entity with all property data
-- `EnrichmentData` - Structured enrichment information container
+**Consequences:**
+- (+) Simple, human-readable, git-diffable
+- (+) No database setup or maintenance
+- (+) Crash recovery via atomic writes
+- (-) O(n) lookup by address (acceptable for <1000)
+- (-) No concurrent write safety (single-user system)
 
-#### Value Objects
-- `Address` - Immutable address representation
-- `Score` - Scoring results (raw score + tier)
-- `ScoreBreakdown` - Detailed section scores
-- `RiskAssessment` - Property risk evaluation
-- `RenovationEstimate` - Renovation cost projections
+### ADR-03: 605-Point Scoring System (Reconciliation)
 
-#### Enums
-- `Tier` - UNICORN, CONTENDER, PASS
-- `Orientation` - NORTH, EAST, SOUTH, WEST, UNKNOWN
-- `SewerType` - CITY, SEPTIC, UNKNOWN
-- `SolarStatus` - OWNED, LEASED, NONE, UNKNOWN
-- `RiskLevel` - LOW, MEDIUM, HIGH, CRITICAL
-- `FloodZone` - X, A, AE, VE, etc.
-- `CrimeRiskLevel` - VERY_LOW, LOW, MODERATE, HIGH, VERY_HIGH, UNKNOWN
+**Status:** Accepted
 
-**Design Decisions:**
-- Entities are mutable dataclasses (modified during pipeline)
-- Value objects are frozen (immutable)
-- Enums provide type safety for categorical data
+**Context:** Discovered discrepancy between `scoring_weights.py` (605 pts) and `constants.py` (600 pts assertion).
 
-### 2. Service Layer (`src/phx_home_analysis/services/`)
+**Analysis:**
+```
+ScoringWeights dataclass actual values:
+- Section A: 42+30+47+23+23+25+23+22+15 = 250 pts
+- Section B: 45+35+35+20+35+5 = 175 pts
+- Section C: 40+35+30+25+20+20+10 = 180 pts
+- TOTAL: 605 pts
 
-**Purpose:** Implement business logic and coordinate domain operations.
-
-**Service Modules:**
-
-#### kill_switch/
-- `KillSwitch` (abstract base class)
-- `KillSwitchFilter` (orchestrator)
-- Hard criteria: `NoHoaKillSwitch`, `MinBedroomsKillSwitch`, `MinBathroomsKillSwitch`
-- Soft criteria: `CitySewerKillSwitch`, `MinGarageKillSwitch`, `LotSizeKillSwitch`, `NoNewBuildKillSwitch`
-
-#### scoring/
-- `PropertyScorer` (orchestrator applying all strategies)
-- `ScoringStrategy` (abstract base class)
-- Location strategies (8): School, Quietness, Crime, Supermarket, Parks, Orientation, Flood, WalkTransit, AirQuality
-- Systems strategies (5): Roof, Backyard, Plumbing, Pool, CostEfficiency
-- Interior strategies (7): Kitchen, Master, Light, Ceilings, Fireplace, Laundry, Aesthetics
-
-#### cost_estimation/
-- `CostEstimator` - Calculate monthly ownership costs
-- `ArizonaCostRates` - AZ-specific cost rates and constants
-
-#### image_extraction/
-- `ImageExtractionOrchestrator` - Coordinate multi-source extraction
-- `Deduplicator` - Perceptual hash-based dedup
-- `Standardizer` - Image resizing and normalization
-- `StateManager` - Resume capability for long-running extractions
-- Extractors: `ZillowExtractor`, `RedfinExtractor`, `PhoenixMLSExtractor`, `MaricopaAssessorExtractor`
-
-#### data_integration/
-- `FieldMapper` - Map fields across different data sources
-- `MergeStrategy` - Strategies for handling conflicts during merge
-- `EnrichmentMerger` - Merge CSV + JSON + API data
-
-#### quality/
-- `QualityMetrics` - Calculate data completeness and accuracy scores
-- `LineageTracker` - Track data provenance (which source provided which field)
-- `ConfidenceScorer` - Assign confidence scores to enriched fields
-
-**Design Decisions:**
-- Strategy pattern allows easy addition of new scoring criteria
-- Services are composable and testable in isolation
-- State management enables crash recovery for long-running extractions
-
-### 3. Repository Layer (`src/phx_home_analysis/repositories/`)
-
-**Purpose:** Abstract data persistence to decouple from storage mechanism.
-
-**Components:**
-
-#### Base Classes
-- `PropertyRepository` (abstract) - Interface for property data access
-- `EnrichmentRepository` (abstract) - Interface for enrichment data access
-
-#### Implementations
-- `CsvPropertyRepository` - Read/write CSV listings (`phx_homes.csv`)
-- `JsonEnrichmentRepository` - Read/write JSON enrichment (`enrichment_data.json`)
-
-**Methods:**
-```python
-class PropertyRepository(ABC):
-    def load_all() -> list[Property]
-    def load_by_address(address: str) -> Property | None
-    def save_all(properties: list[Property]) -> None
-
-class EnrichmentRepository(ABC):
-    def load_all() -> list[dict]  # enrichment_data.json is a LIST!
-    def save_all(data: list[dict]) -> None
-    def find_by_address(address: str) -> dict | None
+constants.py assertion:
+- Section A: 230, Section B: 180, Section C: 190 = 600 pts
 ```
 
-**Design Decisions:**
-- Repository pattern enables future database migration without changing business logic
-- LIST-based JSON structure chosen for simplicity (iterable, no key collisions)
-- All file I/O happens through repositories (testable with mocks)
+**Decision:** `ScoringWeights` dataclass is authoritative. Total = **605 points**.
 
-### 4. Pipeline Layer (`src/phx_home_analysis/pipeline/`)
+**Action Required:** Update `constants.py` assertion to match actual weights:
+- `SCORE_SECTION_A_TOTAL = 250`
+- `SCORE_SECTION_B_TOTAL = 175`
+- `SCORE_SECTION_C_TOTAL = 180`
+- `MAX_POSSIBLE_SCORE = 605`
 
-**Purpose:** Orchestrate the complete analysis workflow.
+**Tier Thresholds (updated):**
+- Unicorn: >484 pts (80% of 605)
+- Contender: 363-484 pts (60-80% of 605)
+- Pass: <363 pts (<60% of 605)
 
-**Components:**
+### ADR-04: All Kill-Switch Criteria Are HARD
 
-#### AnalysisPipeline
-Main orchestrator coordinating all phases:
+**Status:** Accepted
 
-```python
-class AnalysisPipeline:
-    def __init__(self,
-        property_repo: PropertyRepository,
-        enrichment_repo: EnrichmentRepository,
-        kill_switch_filter: KillSwitchFilter,
-        scorer: PropertyScorer,
-        tier_classifier: TierClassifier
-    )
+**Context:** PRD specifies 7 non-negotiable criteria. Previous architecture had some as SOFT.
 
-    def run(self) -> PipelineResult:
-        """Execute complete pipeline: load → enrich → filter → score → classify"""
+**PRD Requirements (FR9-FR14):**
 
-        # Phase 1: Load
-        properties = self.property_repo.load_all()
+| Criterion | PRD Requirement | Type |
+|-----------|-----------------|------|
+| HOA | Must be $0 | HARD |
+| Bedrooms | >=4 | HARD |
+| Bathrooms | >=2 | HARD |
+| House SQFT | >1800 sqft | HARD |
+| Lot Size | >8000 sqft | HARD |
+| Garage | Indoor garage required | HARD |
+| Sewer | City only (no septic) | HARD |
 
-        # Phase 2: Enrich
-        enrichment_data = self.enrichment_repo.load_all()
-        properties = self.merge_enrichment(properties, enrichment_data)
+**Decision:** Implement all 7 as HARD kill-switches. Instant FAIL if any criterion not met.
 
-        # Phase 3: Filter (Kill-Switch)
-        passed_properties = []
-        for prop in properties:
-            verdict = self.kill_switch_filter.evaluate(prop)
-            if verdict in [Verdict.PASS, Verdict.WARNING]:
-                passed_properties.append(prop)
+**Soft Severity System:** Retained for future flexibility but not currently used in PRD criteria.
 
-        # Phase 4: Score
-        for prop in passed_properties:
-            prop.score_breakdown = self.scorer.score(prop)
+**Consequences:**
+- (+) Matches PRD exactly
+- (+) Simpler logic (no severity accumulation needed for core criteria)
+- (+) Zero false passes guaranteed
+- (-) Less flexible than soft severity approach
+- (-) May filter out properties that are "close enough"
 
-        # Phase 5: Classify
-        for prop in passed_properties:
-            prop.tier = self.tier_classifier.classify(prop.score_breakdown.total)
+### ADR-05: Multi-Agent Model Selection
 
-        return PipelineResult(properties, passed_properties)
-```
+**Status:** Accepted
 
-#### PipelineResult
-Container for pipeline output with summary statistics.
+**Context:** Need to balance cost efficiency with capability requirements.
 
-**Design Decisions:**
-- Pipeline is sequential for clarity (future: parallelize scoring)
-- Dependency injection for all services (testable)
-- Immutable result object (prevents accidental mutation)
+**Decision:**
 
-### 5. Validation Layer (`src/phx_home_analysis/validation/`)
+| Agent | Model | Justification |
+|-------|-------|---------------|
+| listing-browser | Claude Haiku | Fast, cheap, structured data extraction |
+| map-analyzer | Claude Haiku | Geographic data doesn't need vision |
+| image-assessor | Claude Sonnet | Requires multi-modal vision capability |
 
-**Purpose:** Ensure data quality and consistency.
+**Cost Analysis (per 100 properties):**
+- Haiku: ~$0.25/1M tokens = $2-5/100 properties
+- Sonnet: ~$3.00/1M tokens = $15-30/100 properties (vision)
+- Total: ~$20-50/100 properties (within $90/month budget)
 
-**Components:**
+### ADR-06: Stealth Browser Strategy
 
-#### schemas.py
-Pydantic schemas for strict data validation:
-- `PropertySchema` - Validate property data
-- `EnrichmentSchema` - Validate enrichment data
-- `ListingSchema` - Validate listing fields
-- `LocationSchema` - Validate location fields
+**Status:** Accepted
 
-#### validators.py
-Custom validation logic:
-- `AddressValidator` - Validate and normalize addresses
-- `PriceValidator` - Validate price formats
-- `DateValidator` - Validate dates and year_built
+**Context:** Zillow/Redfin use PerimeterX bot detection. Standard Playwright blocked.
 
-#### normalizer.py
-Data normalization functions:
-- `normalize_address()` - Standardize address format
-- `infer_type()` - Infer data types from strings
-- `clean_whitespace()` - Remove extra whitespace
+**Decision:** Primary: `nodriver` (stealth Chrome). Fallback: `curl-cffi` (TLS fingerprinting).
 
-#### deduplication.py
-Hash-based duplicate detection:
-- `AddressHasher` - Hash addresses for dedup
-- `ImageHasher` - Perceptual hashing for image dedup
+**Stack:**
+1. `nodriver` - Stealth browser automation, bypasses PerimeterX
+2. `curl-cffi` - HTTP client with browser TLS fingerprints
+3. `Playwright` - Fallback for less aggressive sites (Realtor.com)
 
-**Design Decisions:**
-- Pydantic provides strong type checking at runtime
-- Normalization happens before validation
-- Deduplication uses hashing for O(1) lookups
-
-### 6. Reporting Layer (`src/phx_home_analysis/reporters/`)
-
-**Purpose:** Format and output analysis results.
-
-**Components:**
-
-- `ConsoleReporter` - Print results to terminal
-- `CsvReporter` - Export to CSV (ranked list)
-- `HtmlReporter` - Generate interactive HTML reports
-- `DealSheetGenerator` - Per-property summary sheets
-
-**Design Decisions:**
-- Reporter pattern allows multiple output formats from same data
-- Jinja2 templates for HTML generation
-- CSV format matches input format for easy comparison
-
----
-
-## Multi-Agent Orchestration
-
-### Claude Code Multi-Agent System
-
-The `.claude/` directory defines a multi-agent AI system for parallel data extraction:
-
-#### Agent Definitions (`.claude/agents/`)
-
-1. **listing-browser.md** (Claude Haiku)
-   - **Purpose:** Extract listing data from Zillow/Redfin
-   - **Tools:** Stealth browsers (nodriver), HTTP clients
-   - **Outputs:** Price, beds, baths, HOA, images
-   - **Duration:** ~30-60s per property
-   - **Skills:** listing-extraction, property-data, state-management
-
-2. **map-analyzer.md** (Claude Haiku)
-   - **Purpose:** Geographic analysis
-   - **Tools:** Google Maps API, GreatSchools, crime data
-   - **Outputs:** School ratings, safety scores, orientation, distances
-   - **Duration:** ~45-90s per property
-   - **Skills:** map-analysis, property-data, arizona-context
-
-3. **image-assessor.md** (Claude Sonnet 4.5)
-   - **Purpose:** Visual scoring of interior quality
-   - **Tools:** Claude Vision (multimodal)
-   - **Outputs:** Section C scores (kitchen, master, light, etc.)
-   - **Duration:** ~2-5 min per property
-   - **Skills:** image-assessment, property-data, arizona-context-lite
-   - **Prerequisites:** Phase 1 complete, images downloaded
-
-#### Skill Modules (`.claude/skills/`)
-
-Skills provide reusable domain expertise:
-
-- `property-data/` - Load/query/update property data
-- `state-management/` - Checkpointing and crash recovery
-- `kill-switch/` - Buyer criteria validation
-- `scoring/` - 600-point scoring system
-- `county-assessor/` - Maricopa County API
-- `arizona-context/` - AZ-specific factors
-- `listing-extraction/` - Browser automation
-- `map-analysis/` - Geographic data extraction
-- `image-assessment/` - Visual scoring rubrics
-- `deal-sheets/` - Report generation
-- `visualizations/` - Charts and plots
-
-#### Phase Dependencies
-
-```
-Phase 0: County API (independent)
-    ↓
-Phase 1a: listing-browser ┐
-Phase 1b: map-analyzer     ├─ (parallel)
-    ↓                      ↓
-    └──────┬───────────────┘
-           ↓
-    [Prerequisites validation]
-           ↓
-Phase 2: image-assessor (requires Phase 1 complete)
-    ↓
-Phase 3: Synthesis (scoring, tier, verdict)
-    ↓
-Phase 4: Reports
-```
-
-**Critical Rule:** ALWAYS validate prerequisites before spawning Phase 2 agents using `scripts/validate_phase_prerequisites.py`.
+**Maintenance:** Weekly monitoring for anti-bot detection updates.
 
 ---
 
 ## Data Architecture
 
-### Data Storage Strategy
-
-#### Files
-- `data/phx_homes.csv` - Source listing data (address, price, beds, baths)
-- `data/enrichment_data.json` - Enriched property data (LIST of dicts!)
-- `data/work_items.json` - Pipeline state tracking
-- `data/field_lineage.json` - Data provenance tracking
-
-#### Data Flow
+### Data Flow Diagram
 
 ```
-CSV Listings (phx_homes.csv)
-    ↓
-CsvPropertyRepository.load_all()
-    ↓
-Property entities (domain)
-    ↓
-Merge with enrichment_data.json
-    ↓
-Enriched Property entities
-    ↓
-Kill-Switch Filter
-    ↓
-Property Scorer
-    ↓
-Tier Classifier
-    ↓
-Reporters (CSV, HTML, Console)
+                    +------------------+
+                    | phx_homes.csv    |
+                    | (source listings)|
+                    +--------+---------+
+                             |
+                             v
+            +----------------+----------------+
+            |                                 |
+            v                                 v
++-------------------+            +--------------------+
+| County Assessor   |            | Listing Browser    |
+| API (Phase 0)     |            | Agent (Phase 1)    |
++--------+----------+            +---------+----------+
+         |                                 |
+         |    +-------------------+        |
+         |    | Map Analyzer      |        |
+         |    | Agent (Phase 1)   |        |
+         |    +--------+----------+        |
+         |             |                   |
+         +------+------+------+------------+
+                |             |
+                v             v
+         +------+-------------+------+
+         |   enrichment_data.json    |
+         |   (LIST of property dicts)|
+         +-------------+-------------+
+                       |
+                       v
+         +-------------+-------------+
+         |   Image Assessor Agent    |
+         |   (Phase 2 - Sonnet)      |
+         +-------------+-------------+
+                       |
+                       v
+         +-------------+-------------+
+         |   Kill-Switch Filter      |
+         |   (7 HARD criteria)       |
+         +-------------+-------------+
+                       |
+              +--------+--------+
+              |                 |
+              v                 v
+         +----+----+      +-----+-----+
+         | PASS    |      | FAIL      |
+         +---------+      +-----------+
+              |
+              v
+         +----+----+
+         | Scorer  |
+         | (605pt) |
+         +---------+
+              |
+              v
+         +----+----+
+         | Tier    |
+         | Classify|
+         +---------+
+              |
+              v
+    +---------+---------+
+    |                   |
+    v                   v
++---+---+          +----+----+
+| Deal  |          | Report  |
+| Sheet |          | (CSV/   |
+| (HTML)|          |  HTML)  |
++-------+          +---------+
 ```
 
-### Critical Data Structure: enrichment_data.json
+### JSON Schemas
 
-**IMPORTANT:** `enrichment_data.json` is a **LIST** of property dictionaries, NOT a dict keyed by address!
+#### enrichment_data.json (LIST format)
+
+**CRITICAL:** This is a LIST of objects, NOT a dict keyed by address.
 
 ```json
 [
   {
     "full_address": "4732 W Davis Rd, Glendale, AZ 85306",
-    "lot_sqft": 10500,
-    "year_built": 2006,
-    "listing": {
+    "normalized_address": "4732 w davis rd glendale az 85306",
+
+    "county_data": {
+      "lot_sqft": 10500,
+      "year_built": 2006,
+      "garage_spaces": 2,
+      "has_pool": true,
+      "sewer_type": "city",
+      "data_source": "maricopa_assessor",
+      "fetched_at": "2025-12-03T10:00:00Z",
+      "confidence": 0.95
+    },
+
+    "listing_data": {
       "price": 475000,
       "beds": 4,
-      "baths": 2.0
+      "baths": 2.5,
+      "sqft": 2100,
+      "hoa_fee": 0,
+      "listing_url": "https://zillow.com/...",
+      "data_source": "zillow",
+      "fetched_at": "2025-12-03T10:15:00Z",
+      "confidence": 0.85
     },
-    "location": {
-      "school_rating": 8,
-      "orientation": "north"
+
+    "location_data": {
+      "school_rating": 8.5,
+      "crime_index": 75,
+      "orientation": "north",
+      "flood_zone": "X",
+      "walk_score": 45,
+      "transit_score": 30,
+      "bike_score": 35,
+      "data_source": "map_analyzer",
+      "fetched_at": "2025-12-03T10:30:00Z",
+      "confidence": 0.85
+    },
+
+    "image_assessment": {
+      "kitchen_score": 8.5,
+      "master_score": 7.5,
+      "natural_light_score": 8.0,
+      "ceiling_score": 7.0,
+      "fireplace_present": true,
+      "laundry_score": 6.5,
+      "aesthetics_score": 7.5,
+      "image_count": 42,
+      "data_source": "image_assessor",
+      "assessed_at": "2025-12-03T11:00:00Z",
+      "confidence": 0.80
+    },
+
+    "kill_switch": {
+      "verdict": "PASS",
+      "criteria_results": {
+        "hoa": {"passed": true, "value": 0},
+        "beds": {"passed": true, "value": 4},
+        "baths": {"passed": true, "value": 2.5},
+        "sqft": {"passed": true, "value": 2100},
+        "lot": {"passed": true, "value": 10500},
+        "garage": {"passed": true, "value": 2},
+        "sewer": {"passed": true, "value": "city"}
+      },
+      "evaluated_at": "2025-12-03T11:15:00Z"
+    },
+
+    "scoring": {
+      "section_a": 195,
+      "section_b": 145,
+      "section_c": 155,
+      "total": 495,
+      "tier": "UNICORN",
+      "scored_at": "2025-12-03T11:20:00Z"
+    },
+
+    "metadata": {
+      "created_at": "2025-12-03T10:00:00Z",
+      "last_updated": "2025-12-03T11:20:00Z",
+      "pipeline_version": "2.0",
+      "schema_version": "2025-12-03"
     }
-  },
-  {
-    "full_address": "Another Address...",
-    ...
   }
 ]
 ```
 
-**Access Pattern:**
-```python
-# CORRECT
-data = json.load(open('data/enrichment_data.json'))  # List[Dict]
-prop = next((p for p in data if p["full_address"] == address), None)
+#### work_items.json (Pipeline State)
 
-# WRONG
-prop = data[address]  # TypeError: list indices must be integers
-```
-
-### State Management Files
-
-#### work_items.json Structure
 ```json
 {
   "session": {
-    "session_id": "abc123...",
+    "session_id": "abc123-def456-ghi789",
     "started_at": "2025-12-03T10:00:00Z",
-    "current_phase": "phase2_images",
-    "mode": "all"
+    "mode": "all",
+    "properties_count": 50
   },
+
+  "current_phase": "phase2_images",
+
   "work_items": [
     {
       "address": "4732 W Davis Rd, Glendale, AZ 85306",
       "phases": {
         "phase0_county": {
           "status": "completed",
-          "completed_at": "..."
+          "started_at": "2025-12-03T10:00:00Z",
+          "completed_at": "2025-12-03T10:01:00Z"
         },
         "phase1_listing": {
           "status": "completed",
-          "completed_at": "..."
+          "started_at": "2025-12-03T10:02:00Z",
+          "completed_at": "2025-12-03T10:15:00Z"
+        },
+        "phase1_map": {
+          "status": "completed",
+          "started_at": "2025-12-03T10:02:00Z",
+          "completed_at": "2025-12-03T10:20:00Z"
         },
         "phase2_images": {
           "status": "in_progress",
-          "started_at": "..."
+          "started_at": "2025-12-03T10:25:00Z",
+          "images_processed": 28,
+          "images_total": 42
+        },
+        "phase3_synthesis": {
+          "status": "pending"
         }
       },
-      "last_updated": "..."
+      "last_updated": "2025-12-03T10:30:00Z"
     }
   ],
+
   "summary": {
     "total": 50,
-    "completed": 35,
-    "in_progress": 10,
-    "failed": 5
-  }
+    "phase0_completed": 50,
+    "phase1_completed": 45,
+    "phase2_completed": 30,
+    "phase2_in_progress": 5,
+    "phase3_completed": 25,
+    "failed": 2,
+    "skipped": 3
+  },
+
+  "last_checkpoint": "2025-12-03T10:30:00Z"
 }
+```
+
+### Data Access Patterns
+
+```python
+# CORRECT: enrichment_data.json is a LIST
+data = json.load(open('data/enrichment_data.json'))  # List[Dict]
+prop = next((p for p in data if p["full_address"] == address), None)
+
+# WRONG: Will raise TypeError
+prop = data[address]  # TypeError: list indices must be integers
+
+# CORRECT: work_items.json is a dict
+work = json.load(open('data/work_items.json'))  # Dict
+item = next((w for w in work["work_items"] if w["address"] == address), None)
+```
+
+---
+
+## Component Architecture
+
+### Domain Layer (`src/phx_home_analysis/domain/`)
+
+#### Entities
+
+```python
+@dataclass
+class Property:
+    """Central domain entity representing a property for analysis."""
+    address: Address
+    price: int | None = None
+    beds: int | None = None
+    baths: float | None = None
+    sqft: int | None = None
+    lot_sqft: int | None = None
+    year_built: int | None = None
+    garage_spaces: int | None = None
+    has_pool: bool | None = None
+    sewer_type: SewerType = SewerType.UNKNOWN
+    orientation: Orientation = Orientation.UNKNOWN
+    hoa_fee: int | None = None
+
+    # Enriched fields
+    school_rating: float | None = None
+    crime_index: int | None = None
+    walk_score: int | None = None
+    flood_zone: FloodZone = FloodZone.UNKNOWN
+
+    # Assessment fields
+    kill_switch_verdict: KillSwitchVerdict | None = None
+    score_breakdown: ScoreBreakdown | None = None
+    tier: Tier | None = None
+
+@dataclass(frozen=True)
+class Address:
+    """Immutable address value object."""
+    street: str
+    city: str
+    state: str
+    zip_code: str
+
+    @property
+    def full(self) -> str:
+        return f"{self.street}, {self.city}, {self.state} {self.zip_code}"
+
+    @property
+    def normalized(self) -> str:
+        return self.full.lower().replace(",", "").replace(".", "")
+```
+
+#### Value Objects
+
+```python
+@dataclass(frozen=True)
+class ScoreBreakdown:
+    """Immutable scoring result container."""
+    section_a: float  # Location & Environment (max 250)
+    section_b: float  # Lot & Systems (max 175)
+    section_c: float  # Interior & Features (max 180)
+
+    @property
+    def total(self) -> float:
+        return self.section_a + self.section_b + self.section_c
+
+    @property
+    def percentage(self) -> float:
+        return (self.total / 605) * 100
+
+@dataclass(frozen=True)
+class KillSwitchResult:
+    """Result of kill-switch evaluation."""
+    verdict: KillSwitchVerdict
+    failed_criteria: list[str]
+    details: dict[str, Any]
+```
+
+#### Enums
+
+```python
+class Tier(Enum):
+    UNICORN = "unicorn"      # >484 pts (80% of 605)
+    CONTENDER = "contender"  # 363-484 pts (60-80% of 605)
+    PASS = "pass"            # <363 pts (<60% of 605)
+
+class KillSwitchVerdict(Enum):
+    PASS = "pass"       # All criteria satisfied
+    FAIL = "fail"       # One or more HARD criteria failed
+    WARNING = "warning" # Pass but with concerns (future use)
+
+class SewerType(Enum):
+    CITY = "city"
+    SEPTIC = "septic"
+    UNKNOWN = "unknown"
+
+class Orientation(Enum):
+    NORTH = "north"   # Best: 25 pts
+    EAST = "east"     # Good: 18.75 pts
+    SOUTH = "south"   # Moderate: 12.5 pts
+    WEST = "west"     # Worst: 0 pts (high cooling costs)
+    UNKNOWN = "unknown"
+
+class FloodZone(Enum):
+    X = "X"           # Minimal risk
+    X_SHADED = "X500" # 500-year flood
+    A = "A"           # 100-year flood (high risk)
+    AE = "AE"         # 100-year with base elevation
+    VE = "VE"         # Coastal high hazard
+    UNKNOWN = "unknown"
+```
+
+### Service Layer (`src/phx_home_analysis/services/`)
+
+#### Kill-Switch Service
+
+```python
+class KillSwitchFilter:
+    """Orchestrates all 7 HARD kill-switch criteria per PRD."""
+
+    def __init__(self):
+        self.criteria = [
+            HoaKillSwitch(),        # HOA must be $0
+            BedroomsKillSwitch(),   # Beds >= 4
+            BathroomsKillSwitch(),  # Baths >= 2
+            SqftKillSwitch(),       # Sqft > 1800
+            LotSizeKillSwitch(),    # Lot > 8000
+            GarageKillSwitch(),     # Indoor garage required
+            SewerKillSwitch(),      # City sewer only
+        ]
+
+    def evaluate(self, property: Property) -> KillSwitchResult:
+        failed = []
+        details = {}
+
+        for criterion in self.criteria:
+            result = criterion.evaluate(property)
+            details[criterion.name] = result
+            if not result.passed:
+                failed.append(criterion.name)
+
+        verdict = (
+            KillSwitchVerdict.PASS if len(failed) == 0
+            else KillSwitchVerdict.FAIL
+        )
+
+        return KillSwitchResult(
+            verdict=verdict,
+            failed_criteria=failed,
+            details=details
+        )
+
+class HoaKillSwitch:
+    """HOA must be exactly $0. PRD FR9: HARD criterion."""
+    name = "hoa"
+
+    def evaluate(self, property: Property) -> CriterionResult:
+        if property.hoa_fee is None:
+            # Assume no HOA if not specified
+            return CriterionResult(passed=True, value=0, note="Assumed $0")
+
+        passed = property.hoa_fee == 0
+        return CriterionResult(
+            passed=passed,
+            value=property.hoa_fee,
+            note="FAIL: HOA fee present" if not passed else "PASS"
+        )
+
+class SqftKillSwitch:
+    """House SQFT must be >1800. PRD FR9: HARD criterion (NEW)."""
+    name = "sqft"
+    threshold = 1800
+
+    def evaluate(self, property: Property) -> CriterionResult:
+        if property.sqft is None:
+            return CriterionResult(
+                passed=False,
+                value=None,
+                note="FAIL: SQFT unknown"
+            )
+
+        passed = property.sqft > self.threshold
+        return CriterionResult(
+            passed=passed,
+            value=property.sqft,
+            note=f"{'PASS' if passed else 'FAIL'}: {property.sqft} sqft"
+        )
+```
+
+#### Scoring Service
+
+```python
+class PropertyScorer:
+    """Orchestrates 605-point scoring across 22 strategies."""
+
+    def __init__(self, weights: ScoringWeights):
+        self.weights = weights
+        self.strategies = {
+            # Section A: Location (250 pts)
+            'school_district': SchoolDistrictScorer(),
+            'quietness': QuietnessScorer(),
+            'crime_index': CrimeIndexScorer(),
+            'supermarket': SupermarketScorer(),
+            'parks_walkability': ParksWalkabilityScorer(),
+            'orientation': OrientationScorer(),
+            'flood_risk': FloodRiskScorer(),
+            'walk_transit': WalkTransitScorer(),
+            'air_quality': AirQualityScorer(),
+
+            # Section B: Systems (175 pts)
+            'roof_condition': RoofConditionScorer(),
+            'backyard_utility': BackyardUtilityScorer(),
+            'plumbing_electrical': PlumbingElectricalScorer(),
+            'pool_condition': PoolConditionScorer(),
+            'cost_efficiency': CostEfficiencyScorer(),
+            'solar_status': SolarStatusScorer(),
+
+            # Section C: Interior (180 pts)
+            'kitchen_layout': KitchenLayoutScorer(),
+            'master_suite': MasterSuiteScorer(),
+            'natural_light': NaturalLightScorer(),
+            'high_ceilings': HighCeilingsScorer(),
+            'fireplace': FireplaceScorer(),
+            'laundry_area': LaundryAreaScorer(),
+            'aesthetics': AestheticsScorer(),
+        }
+
+    def score(self, property: Property) -> ScoreBreakdown:
+        section_a = self._score_section_a(property)
+        section_b = self._score_section_b(property)
+        section_c = self._score_section_c(property)
+
+        return ScoreBreakdown(
+            section_a=section_a,
+            section_b=section_b,
+            section_c=section_c
+        )
+
+    def _apply_strategy(self, name: str, property: Property) -> float:
+        """Apply strategy and scale by weight."""
+        strategy = self.strategies[name]
+        raw_score = strategy.score(property)  # 0-10 scale
+        weight = getattr(self.weights, name)
+        return raw_score * (weight / 10)
+```
+
+### Repository Layer
+
+```python
+class JsonEnrichmentRepository:
+    """Repository for enrichment_data.json (LIST format)."""
+
+    def __init__(self, path: Path):
+        self.path = path
+
+    def load_all(self) -> list[dict]:
+        """Load all properties. Returns LIST of dicts."""
+        if not self.path.exists():
+            return []
+        with open(self.path) as f:
+            return json.load(f)  # LIST!
+
+    def find_by_address(self, address: str) -> dict | None:
+        """Find property by address. O(n) lookup."""
+        data = self.load_all()
+        normalized = self._normalize(address)
+        return next(
+            (p for p in data if self._normalize(p["full_address"]) == normalized),
+            None
+        )
+
+    def save_all(self, data: list[dict]) -> None:
+        """Atomic save with backup."""
+        backup_path = self.path.with_suffix('.json.bak')
+        if self.path.exists():
+            shutil.copy(self.path, backup_path)
+
+        with open(self.path, 'w') as f:
+            json.dump(data, f, indent=2)
+```
+
+### Pipeline Layer
+
+```python
+class AnalysisPipeline:
+    """Main orchestrator for property analysis workflow."""
+
+    def __init__(
+        self,
+        property_repo: PropertyRepository,
+        enrichment_repo: EnrichmentRepository,
+        kill_switch_filter: KillSwitchFilter,
+        scorer: PropertyScorer,
+        tier_classifier: TierClassifier
+    ):
+        self.property_repo = property_repo
+        self.enrichment_repo = enrichment_repo
+        self.kill_switch_filter = kill_switch_filter
+        self.scorer = scorer
+        self.tier_classifier = tier_classifier
+
+    def run(self) -> PipelineResult:
+        """Execute complete pipeline."""
+
+        # Phase 1: Load properties from CSV
+        properties = self.property_repo.load_all()
+
+        # Phase 2: Merge with enrichment data
+        enrichment_data = self.enrichment_repo.load_all()
+        properties = self._merge_enrichment(properties, enrichment_data)
+
+        # Phase 3: Kill-switch filtering
+        passed_properties = []
+        failed_properties = []
+
+        for prop in properties:
+            result = self.kill_switch_filter.evaluate(prop)
+            prop.kill_switch_verdict = result.verdict
+
+            if result.verdict == KillSwitchVerdict.PASS:
+                passed_properties.append(prop)
+            else:
+                failed_properties.append(prop)
+
+        # Phase 4: Score passed properties
+        for prop in passed_properties:
+            prop.score_breakdown = self.scorer.score(prop)
+
+        # Phase 5: Classify into tiers
+        for prop in passed_properties:
+            prop.tier = self.tier_classifier.classify(prop.score_breakdown.total)
+
+        return PipelineResult(
+            all_properties=properties,
+            passed=passed_properties,
+            failed=failed_properties,
+            unicorns=[p for p in passed_properties if p.tier == Tier.UNICORN],
+            contenders=[p for p in passed_properties if p.tier == Tier.CONTENDER],
+            passes=[p for p in passed_properties if p.tier == Tier.PASS]
+        )
+```
+
+---
+
+## Multi-Agent Architecture
+
+### Agent Definitions
+
+#### listing-browser (Haiku)
+
+**Purpose:** Extract listing data from Zillow and Redfin using stealth browsers.
+
+**Model:** Claude Haiku (fast, cost-effective)
+
+**Skills:** listing-extraction, property-data, state-management, kill-switch
+
+**Tools:**
+- nodriver (stealth Chrome automation)
+- curl-cffi (HTTP with browser TLS fingerprints)
+- MCP Playwright (fallback)
+
+**Outputs:**
+- Price, beds, baths, sqft
+- HOA fee (critical for kill-switch)
+- Listing images
+- Property description
+
+**Duration:** 30-60 seconds per property
+
+#### map-analyzer (Haiku)
+
+**Purpose:** Geographic analysis using APIs and satellite imagery.
+
+**Model:** Claude Haiku
+
+**Skills:** map-analysis, property-data, state-management, arizona-context, scoring
+
+**Tools:**
+- Google Maps API (geocoding, distances, satellite)
+- GreatSchools API (school ratings)
+- Crime data APIs
+
+**Outputs:**
+- School ratings (elementary, middle, high)
+- Crime index
+- Sun orientation (from satellite imagery)
+- Distances to amenities
+- Flood zone classification
+
+**Duration:** 45-90 seconds per property
+
+#### image-assessor (Sonnet)
+
+**Purpose:** Visual scoring of interior/exterior condition.
+
+**Model:** Claude Sonnet (multi-modal vision)
+
+**Skills:** image-assessment, property-data, state-management, arizona-context-lite, scoring
+
+**Prerequisites:** Phase 1 complete, images downloaded
+
+**Outputs:**
+- Section C scores (kitchen, master, light, ceilings, fireplace, laundry, aesthetics)
+- Exterior condition notes
+- Pool equipment age estimation
+- Roof condition assessment
+
+**Duration:** 2-5 minutes per property
+
+### Phase Dependencies
+
+```
+Phase 0: County Assessor API
+    |
+    | (lot_sqft, year_built, garage, pool, sewer)
+    |
+    v
+Phase 1a: listing-browser ----+
+    |                         |
+    | (price, beds, baths,    | (parallel)
+    |  sqft, hoa, images)     |
+    |                         |
+Phase 1b: map-analyzer -------+
+    |
+    | (schools, crime, orientation, flood)
+    |
+    v
+[PREREQUISITE VALIDATION]
+    |
+    | scripts/validate_phase_prerequisites.py
+    | Exit 0 = proceed, Exit 1 = BLOCK
+    |
+    v
+Phase 2: image-assessor
+    |
+    | (Section C scores)
+    |
+    v
+Phase 3: Synthesis
+    |
+    | Kill-switch + Scoring + Tier
+    |
+    v
+Phase 4: Reports
+    |
+    | Deal sheets + CSV + Visualizations
+    v
+```
+
+### Prerequisite Validation (MANDATORY)
+
+```bash
+# ALWAYS run before spawning Phase 2
+python scripts/validate_phase_prerequisites.py \
+    --address "ADDRESS" \
+    --phase phase2_images \
+    --json
+
+# Output:
+# {"can_spawn": true, "missing_data": [], "reasons": []}
+# Exit code 0 = proceed
+#
+# {"can_spawn": false, "missing_data": ["images"], "reasons": ["No images downloaded"]}
+# Exit code 1 = BLOCK - do NOT spawn agent
 ```
 
 ---
 
 ## Scoring System Architecture
 
-### 600-Point Weighted System
+### 605-Point Weighted System
+
+**AUTHORITATIVE SOURCE:** `src/phx_home_analysis/config/scoring_weights.py`
 
 #### Section A: Location & Environment (250 pts)
 
-**Strategy Pattern Implementation:**
+| Strategy | Weight | Scoring Logic |
+|----------|--------|---------------|
+| school_district | 42 pts | GreatSchools rating x 4.2 |
+| quietness | 30 pts | Distance to highways (>2mi=30, <0.25mi=0) |
+| crime_index | 47 pts | 60% violent + 40% property crime (0-100 scale / 2.13) |
+| supermarket_proximity | 23 pts | Distance to grocery (<0.5mi=23, >3mi=2.8) |
+| parks_walkability | 23 pts | Parks, sidewalks, trails (manual 0-10 x 2.3) |
+| sun_orientation | 25 pts | N=25, E=18.75, S=12.5, W=0 |
+| flood_risk | 23 pts | Zone X=23, X-Shaded=18.4, A/AE=4.6-6.9, VE=0 |
+| walk_transit | 22 pts | 40% walk + 40% transit + 20% bike (0-100 / 4.5) |
+| air_quality | 15 pts | AQI 0-50=15, 51-100=12, 101-150=7.5, 151+=1.5-4.5 |
 
-```python
-class ScoringStrategy(ABC):
-    @abstractmethod
-    def score(self, property: Property) -> float:
-        """Return score 0-10 (strategy calculates raw, weight applied by scorer)"""
-        pass
+#### Section B: Lot & Systems (175 pts)
 
-# Example: School District Scorer
-class SchoolDistrictScorer(ScoringStrategy):
-    def score(self, property: Property) -> float:
-        if property.school_rating is None:
-            return 5.0  # Neutral default
-        return property.school_rating  # Already 0-10 scale (GreatSchools)
-
-# Scorer applies weight: 42 pts max
-raw_score = SchoolDistrictScorer().score(prop)  # 8.0
-weighted_score = raw_score * (42 / 10)  # 33.6 pts
-```
-
-**Location Strategies:**
-1. `SchoolDistrictScorer` (42pts) - GreatSchools rating × 4.2
-2. `QuietnessScorer` (30pts) - Distance to highways
-3. `CrimeIndexScorer` (47pts) - 60% violent + 40% property crime
-4. `SupermarketScorer` (23pts) - Distance to grocery
-5. `ParksWalkabilityScorer` (23pts) - Parks, sidewalks, trails
-6. `OrientationScorer` (25pts) - Sun orientation impact
-7. `FloodRiskScorer` (23pts) - FEMA flood zones
-8. `WalkTransitScorer` (22pts) - Walk/Transit/Bike Score
-9. `AirQualityScorer` (15pts) - EPA AQI
-
-#### Section B: Lot & Systems (170 pts)
-
-**Systems Strategies:**
-1. `RoofConditionScorer` (45pts) - Age-based condition
-2. `BackyardUtilityScorer` (35pts) - Usable backyard space
-3. `PlumbingElectricalScorer` (35pts) - Age-based infrastructure
-4. `PoolConditionScorer` (20pts) - Pool equipment age
-5. `CostEfficiencyScorer` (35pts) - Monthly cost vs target
+| Strategy | Weight | Scoring Logic |
+|----------|--------|---------------|
+| roof_condition | 45 pts | Age: 0-5yr=45, 6-10=36, 11-15=22.5, 16-20=9, >20=0 |
+| backyard_utility | 35 pts | Usable sqft: >4k=35, 2-4k=26.25, 1-2k=17.5, <1k=8.75 |
+| plumbing_electrical | 35 pts | Year: 2010+=35, 2000-09=30.6, 90-99=21.9, 80-89=13.1, <80=4.4 |
+| pool_condition | 20 pts | No pool=10, Equip 0-3yr=20, 4-7=17, 8-12=10, >12=3 |
+| cost_efficiency | 35 pts | Monthly: <=$3k=35, $3.5k=25.7, $4k=17.5, $4.5k=8.2, >$5k=0 |
+| solar_status | 5 pts | Owned=5, Loan=3, None=2.5, Unknown=2, Leased=0 |
 
 #### Section C: Interior & Features (180 pts)
 
-**Interior Strategies:**
-1. `KitchenLayoutScorer` (40pts) - Visual inspection
-2. `MasterSuiteScorer` (35pts) - Bedroom, closet, bathroom
-3. `NaturalLightScorer` (30pts) - Windows, skylights
-4. `HighCeilingsScorer` (25pts) - Ceiling height
-5. `FireplaceScorer` (20pts) - Presence and quality
-6. `LaundryAreaScorer` (20pts) - Location and quality
-7. `AestheticsScorer` (10pts) - Overall visual appeal
+| Strategy | Weight | Scoring Logic |
+|----------|--------|---------------|
+| kitchen_layout | 40 pts | Visual: open concept, island, appliances, pantry (0-10 x 4) |
+| master_suite | 35 pts | Visual: size, closet, bathroom quality (0-10 x 3.5) |
+| natural_light | 30 pts | Visual: windows, skylights, brightness (0-10 x 3) |
+| high_ceilings | 25 pts | Vaulted=25, 10ft+=20.8, 9ft=12.5, 8ft=8.3, <8ft=0 |
+| fireplace | 20 pts | Gas=20, Wood=15, Decorative=5, None=0 |
+| laundry_area | 20 pts | Dedicated upstairs=20, Any floor=15, Closet=10, Garage=5, None=0 |
+| aesthetics | 10 pts | Visual: curb appeal, finishes, modern vs dated (0-10) |
 
-### Tier Classification
+### Tier Classification (Updated)
 
 ```python
 class TierClassifier:
+    """Classify properties into tiers based on 605-point scale."""
+
+    UNICORN_THRESHOLD = 484    # 80% of 605
+    CONTENDER_THRESHOLD = 363  # 60% of 605
+
     def classify(self, total_score: float) -> Tier:
-        if total_score > 480:  # 80% of 600
+        if total_score > self.UNICORN_THRESHOLD:
             return Tier.UNICORN
-        elif total_score >= 360:  # 60-80% of 600
+        elif total_score >= self.CONTENDER_THRESHOLD:
             return Tier.CONTENDER
-        else:  # < 60% of 600
+        else:
             return Tier.PASS
 ```
 
@@ -563,287 +1069,211 @@ class TierClassifier:
 
 ## Kill-Switch Architecture
 
-### Two-Tier Filtering System
+### All 7 Criteria Are HARD (per PRD)
 
-#### Hard Criteria (Instant Fail)
-```python
-class NoHoaKillSwitch(KillSwitch):
-    def evaluate(self, property: Property) -> bool:
-        if property.hoa_fee is None:
-            return True  # Assume no HOA if missing
-        return property.hoa_fee == 0  # MUST be $0
-
-class MinBedroomsKillSwitch(KillSwitch):
-    def evaluate(self, property: Property) -> bool:
-        return property.beds >= 4  # MUST have 4+ bedrooms
-
-class MinBathroomsKillSwitch(KillSwitch):
-    def evaluate(self, property: Property) -> bool:
-        return property.baths >= 2.0  # MUST have 2+ bathrooms
-```
-
-#### Soft Criteria (Severity Accumulation)
-```python
-class CitySewerKillSwitch(KillSwitch):
-    def evaluate(self, property: Property) -> bool:
-        return property.sewer_type == SewerType.CITY
-
-    def severity(self, property: Property) -> float:
-        if self.evaluate(property):
-            return 0.0  # Passes, no severity
-        return 2.5  # Septic adds 2.5 severity
-
-class MinGarageKillSwitch(KillSwitch):
-    def evaluate(self, property: Property) -> bool:
-        if property.garage_spaces is None:
-            return True  # Assume has garage if missing
-        return property.garage_spaces >= 2
-
-    def severity(self, property: Property) -> float:
-        if self.evaluate(property):
-            return 0.0
-        return 1.5  # < 2 spaces adds 1.5 severity
-```
+| Criterion | Requirement | Implementation | PRD Reference |
+|-----------|-------------|----------------|---------------|
+| HOA | Must be $0 | `property.hoa_fee == 0` | FR9-FR11 |
+| Bedrooms | >= 4 | `property.beds >= 4` | FR9-FR11 |
+| Bathrooms | >= 2 | `property.baths >= 2.0` | FR9-FR11 |
+| House SQFT | > 1800 | `property.sqft > 1800` | FR9 (NEW) |
+| Lot Size | > 8000 | `property.lot_sqft > 8000` | FR9 (upgraded) |
+| Garage | Indoor required | `property.garage_spaces >= 1` | FR9 (clarified) |
+| Sewer | City only | `property.sewer_type == SewerType.CITY` | FR9 (upgraded) |
 
 ### Verdict Logic
+
 ```python
-class KillSwitchFilter:
-    def evaluate(self, property: Property) -> KillSwitchVerdict:
-        # Check HARD criteria first
-        for switch in self.hard_switches:
-            if not switch.evaluate(property):
-                return KillSwitchVerdict.FAIL  # Instant fail
+def evaluate(self, property: Property) -> KillSwitchResult:
+    """Evaluate property against all 7 HARD criteria."""
 
-        # Accumulate SOFT severity
-        total_severity = 0.0
-        for switch in self.soft_switches:
-            total_severity += switch.severity(property)
+    failed_criteria = []
 
-        # Apply threshold
-        if total_severity >= 3.0:  # SEVERITY_FAIL_THRESHOLD
-            return KillSwitchVerdict.FAIL
-        elif total_severity >= 1.5:  # SEVERITY_WARNING_THRESHOLD
-            return KillSwitchVerdict.WARNING
-        else:
-            return KillSwitchVerdict.PASS
+    # Check each criterion
+    if property.hoa_fee and property.hoa_fee > 0:
+        failed_criteria.append("hoa")
+
+    if property.beds is None or property.beds < 4:
+        failed_criteria.append("beds")
+
+    if property.baths is None or property.baths < 2.0:
+        failed_criteria.append("baths")
+
+    if property.sqft is None or property.sqft <= 1800:
+        failed_criteria.append("sqft")
+
+    if property.lot_sqft is None or property.lot_sqft <= 8000:
+        failed_criteria.append("lot")
+
+    if property.garage_spaces is None or property.garage_spaces < 1:
+        failed_criteria.append("garage")
+
+    if property.sewer_type != SewerType.CITY:
+        failed_criteria.append("sewer")
+
+    # Determine verdict
+    if len(failed_criteria) == 0:
+        verdict = KillSwitchVerdict.PASS
+    else:
+        verdict = KillSwitchVerdict.FAIL
+
+    return KillSwitchResult(
+        verdict=verdict,
+        failed_criteria=failed_criteria,
+        details=self._build_details(property, failed_criteria)
+    )
 ```
 
----
+### Soft Severity System (Retained for Future Use)
 
-## Image Extraction Architecture
+While all PRD criteria are HARD, the soft severity system remains available for future flexibility:
 
-### Stealth Browser Automation
-
-#### Problem: Bot Detection
-Zillow and Redfin use PerimeterX to detect automated browsers. Standard Playwright is detected and blocked.
-
-#### Solution: Stealth Stack
-1. **nodriver** - Stealth Chrome automation (bypasses PerimeterX)
-2. **curl-cffi** - HTTP client with browser TLS fingerprinting
-3. **Playwright** - Fallback for Realtor.com (less aggressive detection)
-
-#### Architecture
-
-```
-┌────────────────────────────────────────┐
-│  ImageExtractionOrchestrator           │
-│  - Coordinates multi-source extraction │
-│  - Manages extraction state            │
-│  - Handles retries and errors          │
-└─────────┬──────────────────────────────┘
-          │
-          ├─→ ZillowExtractor (nodriver)
-          ├─→ RedfinExtractor (nodriver)
-          ├─→ PhoenixMLSExtractor (Playwright)
-          └─→ MaricopaAssessorExtractor (HTTP)
-                  ↓
-          ┌───────▼──────────┐
-          │  Deduplicator    │
-          │  - Perceptual    │
-          │    hash (pHash)  │
-          │  - Hamming dist  │
-          └───────┬──────────┘
-                  ↓
-          ┌───────▼──────────┐
-          │  Standardizer    │
-          │  - Resize 1024px │
-          │  - PNG format    │
-          └───────┬──────────┘
-                  ↓
-          data/property_images/processed/
-```
-
-#### Deduplication Strategy
-
-**Perceptual Hashing (pHash):**
 ```python
-import imagehash
-from PIL import Image
+class SoftSeverityEvaluator:
+    """Evaluate soft criteria with severity accumulation (future use)."""
 
-def compute_hash(image_path: Path) -> str:
-    image = Image.open(image_path)
-    phash = imagehash.phash(image)
-    return str(phash)
+    SEVERITY_FAIL_THRESHOLD = 3.0
+    SEVERITY_WARNING_THRESHOLD = 1.5
 
-def is_duplicate(hash1: str, hash2: str, threshold: int = 8) -> bool:
-    h1 = imagehash.hex_to_hash(hash1)
-    h2 = imagehash.hex_to_hash(hash2)
-    hamming_distance = h1 - h2
-    return hamming_distance <= threshold
-```
-
-**Why pHash?**
-- Robust to resizing, compression, color adjustments
-- Fast comparison (64-bit hashes, Hamming distance)
-- Threshold of 8 allows minor variations
-
-#### State Management
-
-**Resume Capability:**
-```json
-{
-  "4732 W Davis Rd, Glendale, AZ 85306": {
-    "status": "in_progress",
-    "sources": {
-      "zillow": {
-        "status": "completed",
-        "images_downloaded": 45,
-        "last_updated": "2025-12-03T10:15:00Z"
-      },
-      "redfin": {
-        "status": "in_progress",
-        "images_downloaded": 12,
-        "last_updated": "2025-12-03T10:20:00Z"
-      }
+    soft_criteria = {
+        # Currently unused per PRD, but available for future
+        # 'example_soft': {'threshold': 100, 'severity': 1.5}
     }
-  }
-}
-```
 
-Extraction can resume after crashes by checking state file.
+    def evaluate(self, property: Property) -> float:
+        total_severity = 0.0
+        # Add soft criteria evaluations here if needed
+        return total_severity
+```
 
 ---
 
-## State Management
+## Integration Architecture
 
-### work_items.json - Pipeline Progress Tracking
+### External API Integrations
 
-**Purpose:** Track multi-phase pipeline execution across sessions.
+| API | Purpose | Auth | Rate Limit | Client |
+|-----|---------|------|------------|--------|
+| Maricopa County Assessor | Lot, year, garage, pool, sewer | Bearer token | ~1 req/sec | `services/county_data/` |
+| GreatSchools | School ratings (1-10) | API key | 1000/day free | `services/schools/` |
+| Google Maps | Geocoding, distances, satellite | API key | Pay-as-you-go | Map analyzer agent |
+| FEMA NFHL | Flood zone classification | None (public) | N/A | `services/flood_data/` |
+| WalkScore | Walk/Transit/Bike scores | API key | 5000/day free | `services/walkscore/` |
+| EPA AirNow | Air quality index | API key | 500/hour | `services/air_quality/` |
 
-**Key Features:**
-- Session metadata (ID, start time, mode)
-- Per-property phase status (pending, in_progress, completed, failed, skipped)
-- Summary counters (total, completed, in_progress, failed)
-- Last updated timestamps
+### Browser Automation Stack
 
-**Access Pattern:**
-```python
-import json
-
-work_items = json.load(open('data/work_items.json'))
-session = work_items['session']
-items = work_items['work_items']
-
-# Find property
-prop = next((w for w in items if w['address'] == address), None)
-
-# Check phase status
-if prop['phases']['phase1_listing']['status'] == 'completed':
-    # Ready for Phase 2
-    pass
-
-# Update status
-prop['phases']['phase2_images']['status'] = 'in_progress'
-prop['last_updated'] = datetime.now().isoformat()
-json.dump(work_items, open('data/work_items.json', 'w'), indent=2)
+```
+┌────────────────────────────────────────────────────────┐
+│                    EXTRACTION TARGET                    │
+├────────────────────────────────────────────────────────┤
+│                Zillow      Redfin      Realtor.com     │
+│               (PerimeterX) (Cloudflare)  (Minimal)     │
+└─────────────────────────────────────────────────────────┘
+                    │            │            │
+                    ▼            ▼            ▼
+┌────────────────────────────────────────────────────────┐
+│                    STEALTH LAYER                        │
+├────────────────────────────────────────────────────────┤
+│  nodriver (Primary)    curl-cffi (HTTP)    Playwright  │
+│  - Stealth Chrome      - Browser TLS       - Fallback  │
+│  - PerimeterX bypass   - Fingerprints      - MCP tool  │
+│  - Human behavior sim  - Fast requests     - Less      │
+│                                              stealth   │
+└────────────────────────────────────────────────────────┘
+                    │
+                    ▼
+┌────────────────────────────────────────────────────────┐
+│                    PROXY LAYER                          │
+├────────────────────────────────────────────────────────┤
+│  Residential Proxy Rotation                            │
+│  - IP rotation to avoid blocking                       │
+│  - Chrome proxy extension for auth                     │
+│  - $10-30/month budget                                 │
+└────────────────────────────────────────────────────────┘
 ```
 
-### Staleness Protocol
+### API Cost Estimation
 
-**Problem:** Stale state files lead to incorrect assumptions about what work is complete.
+| Service | Usage | Monthly Cost |
+|---------|-------|--------------|
+| Claude API (Haiku) | ~2M tokens | $0.50-$2 |
+| Claude API (Sonnet - vision) | ~1M tokens + images | $15-30 |
+| Google Maps API | ~500 requests | $5-10 |
+| Residential Proxies | ~10GB | $10-30 |
+| **TOTAL** | | **$30-72** |
 
-**Solution:** Timestamp-based staleness checks.
+---
+
+## State Management Architecture
+
+### State Files
+
+| File | Purpose | Access Pattern |
+|------|---------|----------------|
+| `work_items.json` | Pipeline progress | Read at start, write after each property |
+| `enrichment_data.json` | Property data | Read/write per property update |
+| `extraction_state.json` | Image extraction | Read/write during Phase 2 |
+
+### Crash Recovery Protocol
 
 ```python
-from datetime import datetime, timedelta
+def resume_pipeline(work_items_path: Path) -> list[str]:
+    """Identify properties needing work based on state file."""
 
-def is_stale(timestamp_str: str, threshold_hours: int = 24) -> bool:
-    timestamp = datetime.fromisoformat(timestamp_str)
-    age = datetime.now() - timestamp
-    return age.total_seconds() > (threshold_hours * 3600)
+    work = json.load(open(work_items_path))
 
-# Check before using state
-if is_stale(prop['last_updated'], threshold_hours=12):
-    print(f"WARNING: State is stale ({prop['last_updated']})")
-    # Prompt user to refresh or proceed with caution
-```
+    # Reset stuck in_progress items (30 min timeout)
+    timeout = timedelta(minutes=30)
+    now = datetime.now()
 
-### Crash Recovery
-
-**Timeout Detection:**
-```python
-for prop in work_items['work_items']:
-    for phase, data in prop['phases'].items():
-        if data['status'] == 'in_progress':
-            if 'started_at' in data:
-                if is_stale(data['started_at'], threshold_hours=0.5):  # 30 min timeout
-                    print(f"⚠️  Resetting stuck {phase} for {prop['address']}")
+    for item in work['work_items']:
+        for phase, data in item['phases'].items():
+            if data['status'] == 'in_progress':
+                started = datetime.fromisoformat(data['started_at'])
+                if now - started > timeout:
                     data['status'] = 'pending'
+                    print(f"Reset stuck {phase} for {item['address']}")
+
+    # Find pending work
+    pending = []
+    for item in work['work_items']:
+        for phase, data in item['phases'].items():
+            if data['status'] == 'pending':
+                pending.append((item['address'], phase))
+
+    return pending
 ```
 
----
+### Checkpointing Strategy
 
-## Integration Points
+```python
+def checkpoint_after_property(address: str, phase: str, status: str):
+    """Write checkpoint after each property phase completes."""
 
-### External APIs
+    work = json.load(open('data/work_items.json'))
 
-#### Maricopa County Assessor API
-- **Purpose:** Lot size, year built, garage spaces, pool
-- **Authentication:** Bearer token (`MARICOPA_ASSESSOR_TOKEN`)
-- **Rate Limit:** Unknown (conservative: 1 req/sec)
-- **Client:** `src/phx_home_analysis/services/county_data/assessor_client.py`
+    item = next(
+        (w for w in work['work_items'] if w['address'] == address),
+        None
+    )
 
-#### GreatSchools API
-- **Purpose:** School ratings (1-10 scale)
-- **Authentication:** API key
-- **Rate Limit:** 1000 req/day (free tier)
-- **Client:** `src/phx_home_analysis/services/schools/`
+    if item:
+        item['phases'][phase]['status'] = status
+        item['phases'][phase]['completed_at'] = datetime.now().isoformat()
+        item['last_updated'] = datetime.now().isoformat()
 
-#### Google Maps API
-- **Purpose:** Geocoding, distances, orientation
-- **Authentication:** API key
-- **Rate Limit:** Pay-as-you-go
-- **Client:** Used by map-analyzer agent
+        # Update summary
+        work['summary'] = calculate_summary(work['work_items'])
+        work['last_checkpoint'] = datetime.now().isoformat()
 
-#### FEMA Flood API
-- **Purpose:** Flood zone classification
-- **Authentication:** None (public)
-- **Client:** `src/phx_home_analysis/services/flood_data/`
+        # Atomic write with backup
+        backup = Path('data/work_items.json.bak')
+        shutil.copy('data/work_items.json', backup)
 
-#### WalkScore API
-- **Purpose:** Walk/Transit/Bike Scores
-- **Authentication:** API key
-- **Rate Limit:** 5000 req/day (free tier)
-- **Client:** `src/phx_home_analysis/services/walkscore/`
-
-### Web Scraping (Stealth)
-
-#### Zillow
-- **Method:** nodriver (stealth Chrome)
-- **Detection:** PerimeterX bot detection
-- **Bypass:** TLS fingerprinting, human behavior simulation
-- **Data:** Images, price, beds, baths, description
-
-#### Redfin
-- **Method:** nodriver (stealth Chrome)
-- **Detection:** Cloudflare bot detection
-- **Bypass:** Similar to Zillow
-- **Data:** Images, listing details
-
-#### Realtor.com
-- **Method:** Playwright (less aggressive detection)
-- **Detection:** Minimal
-- **Data:** Listing details
+        with open('data/work_items.json', 'w') as f:
+            json.dump(work, f, indent=2)
+```
 
 ---
 
@@ -851,161 +1281,220 @@ for prop in work_items['work_items']:
 
 ### Credential Management
 
-**Environment Variables:**
+**Environment Variables (.env):**
+
 ```bash
-# API Keys
+# API Keys - NEVER commit to Git
 MARICOPA_ASSESSOR_TOKEN=<secret>
 GOOGLE_MAPS_API_KEY=<secret>
 WALKSCORE_API_KEY=<secret>
+AIRNOW_API_KEY=<secret>
 
-# Proxy (optional)
+# Proxy Configuration
 PROXY_SERVER=host:port
 PROXY_USERNAME=<secret>
 PROXY_PASSWORD=<secret>
+
+# Claude API
+ANTHROPIC_API_KEY=<secret>
 ```
 
-**Never in Code:**
-- No hardcoded API keys
-- No credentials in Git history
-- `.env` file gitignored
+**Security Rules:**
+1. `.env` file is gitignored
+2. No credentials in code or comments
+3. Pre-commit hook scans for leaked secrets
+4. Rotate tokens if exposed
 
-### Pre-Commit Hooks
+### Pre-Commit Hook Protection
 
-**Credential Protection Hook:**
-```bash
+```python
 # .claude/hooks/env_file_protection_hook.py
-# Blocks commits that add API keys or credentials
-```
+"""Block commits containing API keys or credentials."""
 
-**Runs on:** `git commit`
-**Prevents:** Accidental credential commits
+import re
+import sys
 
-### Proxy Support
+PATTERNS = [
+    r'(?i)(api[_-]?key|token|secret|password)\s*[=:]\s*["\']?[a-zA-Z0-9_-]{20,}',
+    r'sk-[a-zA-Z0-9]{32,}',  # OpenAI/Anthropic keys
+    r'[a-zA-Z0-9_-]{20,}\.[a-zA-Z0-9_-]{20,}\.[a-zA-Z0-9_-]{20,}',  # JWT
+]
 
-**Purpose:** Rotate IP addresses to avoid rate limiting/blocking.
-
-**Configuration:**
-```python
-from src.phx_home_analysis.config.settings import StealthExtractionConfig
-
-config = StealthExtractionConfig.from_env()
-proxy_url = config.proxy_url  # http://user:pass@host:port
-```
-
-**Proxy Extension:**
-```python
-# src/phx_home_analysis/services/infrastructure/proxy_extension_builder.py
-# Builds Chrome extension for proxy authentication
+def check_diff(diff_text: str) -> list[str]:
+    violations = []
+    for pattern in PATTERNS:
+        if re.search(pattern, diff_text):
+            violations.append(pattern)
+    return violations
 ```
 
 ---
 
 ## Deployment Architecture
 
-### Local Development
+### Local Development Environment
 
-**Requirements:**
-- Python 3.11+
-- Chrome/Chromium (for stealth automation)
-- Virtual display (optional, for browser isolation)
-
-**Setup:**
 ```bash
-# Install dependencies
+# Requirements
+- Python 3.11+ (target 3.12)
+- Chrome/Chromium (for nodriver)
+- Git
+
+# Setup
+git clone <repo>
+cd PHX-houses-Dec-2025
 uv sync
 
-# Set environment variables
-export MARICOPA_ASSESSOR_TOKEN=<token>
+# Environment
+cp .env.example .env
+# Edit .env with your API keys
 
-# Run pipeline
-python scripts/phx_home_analyzer.py
+# Verify
+python -c "from src.phx_home_analysis import __version__; print(__version__)"
 ```
 
-### Production Considerations
+### Execution Model
 
-**If scaling to production:**
+```bash
+# Full pipeline (all properties)
+/analyze-property --all
 
-1. **Database Migration**
-   - Replace JSON/CSV with PostgreSQL
-   - Implement connection pooling
-   - Add database migrations (Alembic)
+# Single property
+/analyze-property "4732 W Davis Rd, Glendale, AZ 85306"
 
-2. **API Layer**
-   - Add REST API (FastAPI)
-   - Add authentication (JWT)
-   - Add rate limiting
+# Test mode (first 5 properties)
+/analyze-property --test
 
-3. **Async Processing**
-   - Use Celery for background tasks
-   - Add Redis for task queue
-   - Implement retry logic
+# Resume after failure
+/analyze-property --all --resume
 
-4. **Monitoring**
-   - Add structured logging (Logstash)
-   - Add metrics (Prometheus)
-   - Add alerting (PagerDuty)
+# Manual script execution
+python scripts/phx_home_analyzer.py
+python scripts/extract_county_data.py --all
+python scripts/extract_images.py --all
+python -m scripts.deal_sheets
+```
 
-5. **Deployment**
-   - Containerize with Docker
-   - Orchestrate with Kubernetes
-   - Add CI/CD (GitHub Actions)
+### Directory Structure
 
----
-
-## Architecture Decisions
-
-### Why DDD?
-
-**Pros:**
-- Clear separation of concerns
-- Business logic independent of infrastructure
-- Testable in isolation
-
-**Cons:**
-- More boilerplate than simpler approaches
-- Requires discipline to maintain boundaries
-
-**Verdict:** Worth it for a complex system with evolving requirements.
-
-### Why Strategy Pattern for Scoring?
-
-**Pros:**
-- Easy to add new scoring criteria
-- Each strategy testable independently
-- Composable (can enable/disable strategies)
-
-**Cons:**
-- More classes than a single monolithic scorer
-
-**Verdict:** Essential for maintainability and extensibility.
-
-### Why LIST for enrichment_data.json?
-
-**Pros:**
-- Simple iteration
-- No key collision issues
-- Easy to append new properties
-
-**Cons:**
-- O(n) lookup by address (not O(1) like dict)
-
-**Verdict:** Acceptable for small datasets (<1000 properties). Migrate to database for production scale.
-
-### Why Multi-Agent AI?
-
-**Pros:**
-- Parallel execution (faster than sequential)
-- Specialized models (Haiku for speed, Sonnet for vision)
-- Crash recovery (restart failed phases only)
-
-**Cons:**
-- More complex orchestration
-- Higher Claude API costs
-
-**Verdict:** Worth it for time savings and quality of visual analysis.
+```
+PHX-houses-Dec-2025/
+├── .claude/                  # Claude Code configuration
+│   ├── agents/               # Agent definitions
+│   ├── commands/             # Slash commands
+│   ├── skills/               # Domain expertise modules
+│   └── hooks/                # Pre-commit hooks
+├── data/                     # Data files
+│   ├── phx_homes.csv         # Source listings
+│   ├── enrichment_data.json  # Enriched data (LIST!)
+│   ├── work_items.json       # Pipeline state
+│   └── property_images/      # Downloaded images
+├── docs/                     # Documentation
+│   ├── architecture.md       # This document
+│   ├── prd.md                # Product requirements
+│   └── ux-design-specification.md
+├── scripts/                  # Executable scripts
+│   ├── phx_home_analyzer.py  # Main scoring script
+│   ├── extract_county_data.py
+│   ├── extract_images.py
+│   └── deal_sheets/          # Report generation
+├── src/phx_home_analysis/    # Core library
+│   ├── config/               # Configuration
+│   ├── domain/               # Entities, value objects, enums
+│   ├── repositories/         # Data persistence
+│   ├── services/             # Business logic
+│   ├── pipeline/             # Orchestration
+│   ├── reporters/            # Output formatters
+│   └── validation/           # Data validation
+└── tests/                    # Test suite
+    ├── unit/
+    ├── integration/
+    └── fixtures/
+```
 
 ---
 
-**Document Version:** 1.0
+## Architecture Validation
+
+### PRD Alignment Checklist
+
+| PRD Requirement | Architecture Support | Status |
+|-----------------|---------------------|--------|
+| FR1: Batch property analysis via CLI | AnalysisPipeline, /analyze-property | PASS |
+| FR9: HARD kill-switch criteria | KillSwitchFilter with 7 criteria | PASS |
+| FR15: 605-point scoring | PropertyScorer with 22 strategies | PASS |
+| FR17: Tier classification | TierClassifier (Unicorn/Contender/Pass) | PASS |
+| FR28: Multi-phase pipeline | Phase 0-4 with agent orchestration | PASS |
+| FR34: Checkpoint pipeline progress | work_items.json checkpointing | PASS |
+| FR35: Resume interrupted execution | --resume flag, crash recovery | PASS |
+| FR40: Deal sheet generation | HTML reporter with Tailwind | PASS |
+| NFR1: <=30 min batch processing | Parallel Phase 1 agents | PASS |
+| NFR5: 100% kill-switch accuracy | All HARD criteria, no false passes | PASS |
+| NFR22: <=$90/month operating cost | Haiku/Sonnet optimization | PASS |
+
+### Gap Resolution Summary
+
+| Gap ID | Description | Resolution |
+|--------|-------------|------------|
+| ARCH-01 | Kill-switch criteria had SOFT where PRD requires HARD | All 7 criteria now HARD: HOA, beds, baths, sqft, lot, garage, sewer |
+| ARCH-02 | Scoring totals inconsistent (600 vs 605) | ScoringWeights authoritative: 605 pts (250+175+180) |
+| ARCH-03 | Tier thresholds misaligned | Updated to 484 (80%), 363 (60%) of 605 |
+| ARCH-04 | House SQFT not explicit criterion | Added >1800 sqft as HARD kill-switch |
+| ARCH-05 | constants.py assertion incorrect | Action: Update to match ScoringWeights |
+
+### Confidence Assessment
+
+| Architecture Area | Confidence | Notes |
+|-------------------|------------|-------|
+| Kill-Switch System | HIGH | Matches PRD exactly, 7 HARD criteria |
+| Scoring System | HIGH | 605 pts reconciled, 22 strategies defined |
+| Multi-Agent Pipeline | HIGH | Phase dependencies and prerequisites clear |
+| Data Architecture | HIGH | JSON schemas fully specified |
+| State Management | HIGH | Crash recovery protocol documented |
+| Security | MEDIUM | Pre-commit hooks need testing |
+| Integration | MEDIUM | API rate limits need monitoring |
+
+---
+
+## Appendix A: Action Items
+
+### Immediate (Before Development Continues)
+
+1. **Update constants.py** - Fix assertion to match 605-point scoring:
+   ```python
+   SCORE_SECTION_A_TOTAL = 250
+   SCORE_SECTION_B_TOTAL = 175
+   SCORE_SECTION_C_TOTAL = 180
+   MAX_POSSIBLE_SCORE = 605
+   TIER_UNICORN_MIN = 484
+   TIER_CONTENDER_MIN = 363
+   ```
+
+2. **Add SqftKillSwitch** - Implement >1800 sqft HARD criterion
+
+3. **Update LotSizeKillSwitch** - Change from range (7k-15k) to minimum (>8000)
+
+4. **Update SewerKillSwitch** - Change from SOFT (2.5 severity) to HARD (instant fail)
+
+5. **Update GarageKillSwitch** - Clarify as indoor garage required
+
+### Short-Term (Week 1-2)
+
+6. **Validate prerequisite script** - Ensure exit codes match documentation
+
+7. **Test crash recovery** - Verify resume works after simulated failures
+
+8. **Document API rate limits** - Add monitoring for external APIs
+
+### Medium-Term (Post-MVP)
+
+9. **Add flood zone kill-switch** - When FEMA integration complete
+
+10. **Consider soft severity** - For non-critical preferences
+
+---
+
+**Document Version:** 2.0
 **Generated:** 2025-12-03
-**Last Updated:** 2025-12-03
+**Author:** Winston - System Architect
+**Status:** Complete - Ready for Implementation

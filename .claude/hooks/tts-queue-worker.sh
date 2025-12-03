@@ -13,7 +13,7 @@ if [[ -n "${XDG_RUNTIME_DIR:-}" ]] && [[ -d "$XDG_RUNTIME_DIR" ]]; then
   QUEUE_DIR="$XDG_RUNTIME_DIR/agentvibes-tts-queue"
 else
   # Fallback to user-specific temp directory
-  QUEUE_DIR="/tmp/agentvibes-tts-queue-$USER"
+  QUEUE_DIR="/tmp/agentvibes-tts-queue-${USER:-$(id -un)}"
 fi
 
 # Security: Validate queue directory exists and has correct ownership

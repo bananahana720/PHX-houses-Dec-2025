@@ -135,3 +135,4 @@ deal_sheets/ - DELETED (superseded by reports/deal_sheets/)
 .claude/commands/: ai-assistant.md, config-validate.md, deps-audit.md, error-analysis.md,
   error-trace.md, langchain-agent.md, ml-pipeline.md, prompt-optimize.md, python-scaffold.md,
   refactor-clean.md, smart-debug.md, tech-debt.md - DELETED (not project-specific)
+ux-steps-9-11-content.md - moved to docs/TRASH/ - temporary file used to append steps 9-11 content to ux-design-specification.md

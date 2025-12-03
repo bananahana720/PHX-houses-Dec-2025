@@ -14,10 +14,9 @@ if [[ -n "${XDG_RUNTIME_DIR:-}" ]] && [[ -d "$XDG_RUNTIME_DIR" ]]; then
   QUEUE_DIR="$XDG_RUNTIME_DIR/agentvibes-tts-queue"
 else
   # Fallback to user-specific temp directory
-  QUEUE_DIR="/tmp/agentvibes-tts-queue-$USER"
+  QUEUE_DIR="/tmp/agentvibes-tts-queue-${USER:-$(id -un)}"
 fi
 
-QUEUE_LOCK="$QUEUE_DIR/queue.lock"
 WORKER_PID_FILE="$QUEUE_DIR/worker.pid"
 
 # Get script directory
@@ -54,35 +53,38 @@ EOF
 # @function start_worker_if_needed
 # @intent Start the queue worker process if it's not already running
 start_worker_if_needed() {
-  # Security: Use file locking to prevent race condition
-  # Open file descriptor 200 for locking
-  exec 200>"$QUEUE_LOCK"
+  # Cross-platform locking: use mkdir (atomic on all platforms including Windows/Git Bash)
+  local lock_dir="$QUEUE_DIR/.worker_lock"
 
-  # Acquire exclusive lock (flock -x) with timeout
-  if ! flock -x -w 5 200; then
-    echo "Warning: Could not acquire queue lock" >&2
-    return 1
-  fi
+  # Try to acquire lock via mkdir (atomic operation)
+  if mkdir "$lock_dir" 2>/dev/null; then
+    # We got the lock - ensure cleanup on exit
+    trap "rmdir '$lock_dir' 2>/dev/null" EXIT
 
-  # Check if worker is already running (within lock)
-  if [[ -f "$WORKER_PID_FILE" ]]; then
-    local pid=$(cat "$WORKER_PID_FILE")
-    if kill -0 "$pid" 2>/dev/null; then
-      # Worker is running, release lock and return
-      flock -u 200
-      exec 200>&-
-      return 0
+    # Check if worker is already running
+    if [[ -f "$WORKER_PID_FILE" ]]; then
+      local pid=$(cat "$WORKER_PID_FILE")
+      if kill -0 "$pid" 2>/dev/null; then
+        # Worker is running, release lock and return
+        rmdir "$lock_dir" 2>/dev/null
+        trap - EXIT
+        return 0
+      fi
     fi
+
+    # Start worker in background
+    "$SCRIPT_DIR/tts-queue-worker.sh" &
+    local worker_pid=$!
+    echo $worker_pid > "$WORKER_PID_FILE"
+
+    # Release lock
+    rmdir "$lock_dir" 2>/dev/null
+    trap - EXIT
+  else
+    # Could not acquire lock - another process has it, which is fine
+    # The worker is likely already starting
+    return 0
   fi
-
-  # Start worker in background
-  "$SCRIPT_DIR/tts-queue-worker.sh" &
-  local worker_pid=$!
-  echo $worker_pid > "$WORKER_PID_FILE"
-
-  # Release lock
-  flock -u 200
-  exec 200>&-
 }
 
 # @function clear_queue
