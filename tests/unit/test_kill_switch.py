@@ -524,9 +524,9 @@ class TestKillSwitchFilter:
         assert len(failed) == 0
 
     def test_default_kill_switches_count(self):
-        """Test that default filter has all 7 kill switches."""
+        """Test that default filter has all 8 kill switches."""
         filter_service = KillSwitchFilter()
-        assert len(filter_service.get_kill_switch_names()) == 7
+        assert len(filter_service.get_kill_switch_names()) == 8
 
     def test_default_kill_switch_names(self):
         """Test that all expected kill switch names are present."""
@@ -535,6 +535,7 @@ class TestKillSwitchFilter:
 
         expected_names = {
             "no_hoa",
+            "no_solar_lease",
             "city_sewer",
             "min_garage",
             "min_bedrooms",

@@ -18,7 +18,7 @@ failure messages explaining why a property was rejected.
 
 from typing import TYPE_CHECKING
 
-from ...domain.enums import SewerType
+from ...domain.enums import SewerType, SolarStatus
 from .base import KillSwitch
 
 if TYPE_CHECKING:
@@ -405,3 +405,57 @@ class NoNewBuildKillSwitch(KillSwitch):
             f"New build: {property.year_built} "
             f"(buyer requires {self._max_year} or earlier)"
         )
+
+
+class NoSolarLeaseKillSwitch(KillSwitch):
+    """Kill switch: Property must not have active solar lease.
+
+    Solar leases are liabilities, not assets:
+    - $100-200/mo payment transfers to buyer
+    - 3-8% home value reduction
+    - Transfer complications (credit check required)
+    - Industry instability (100+ bankruptcies since 2023)
+
+    Buyer requirement is no leased solar panels. Properties with solar leases
+    are automatically rejected.
+    """
+
+    @property
+    def name(self) -> str:
+        """Kill switch identifier."""
+        return "no_solar_lease"
+
+    @property
+    def description(self) -> str:
+        """Human-readable requirement description."""
+        return "No solar lease allowed (liability, not asset)"
+
+    def check(self, property: "Property") -> bool:
+        """Test if property does not have leased solar.
+
+        Args:
+            property: Property to evaluate
+
+        Returns:
+            True if solar_status is not LEASED, False if LEASED
+        """
+        # Check solar_status field if exists
+        solar_status = getattr(property, 'solar_status', None)
+        if solar_status is None:
+            return True  # Unknown = pass (don't fail on missing data)
+
+        # Leased solar is a HARD fail
+        if isinstance(solar_status, str):
+            return solar_status.lower() != "leased"
+        return solar_status != SolarStatus.LEASED
+
+    def failure_message(self, property: "Property") -> str:
+        """Generate specific failure message for solar lease.
+
+        Args:
+            property: Property that failed
+
+        Returns:
+            Detailed failure message including solar lease implications
+        """
+        return "Solar lease present - liability transfers to buyer ($100-200/mo)"

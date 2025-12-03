@@ -5,7 +5,7 @@ kill switch criteria to evaluate properties using a weighted severity threshold
 system.
 
 Severity Threshold System:
-- HARD criteria (instant fail): beds < 4, baths < 2, HOA > $0
+- HARD criteria (instant fail): beds < 4, baths < 2, HOA > $0, solar lease
 - SOFT criteria (severity weighted): sewer, garage, lot_size, year_built
 
 Verdict Logic:
@@ -31,7 +31,9 @@ from .criteria import (
     MinGarageKillSwitch,
     NoHoaKillSwitch,
     NoNewBuildKillSwitch,
+    NoSolarLeaseKillSwitch,
 )
+from .explanation import CriterionResult, VerdictExplainer, VerdictExplanation
 
 if TYPE_CHECKING:
     from ...domain.entities import Property
@@ -47,6 +49,7 @@ class KillSwitchFilter:
 
     Default kill switches match buyer requirements from CLAUDE.md:
     - NO HOA (HARD)
+    - NO solar lease (HARD)
     - Minimum 4 bedrooms (HARD)
     - Minimum 2 bathrooms (HARD)
     - City sewer only (SOFT, weight=2.5)
@@ -79,6 +82,9 @@ class KillSwitchFilter:
         else:
             self._kill_switches = kill_switches
 
+        # Initialize verdict explainer with threshold from constants
+        self._explainer = VerdictExplainer(severity_threshold=SEVERITY_FAIL_THRESHOLD)
+
     @staticmethod
     def _get_default_kill_switches() -> list[KillSwitch]:
         """Get default kill switches matching CLAUDE.md buyer requirements.
@@ -88,6 +94,7 @@ class KillSwitchFilter:
         """
         return [
             NoHoaKillSwitch(),
+            NoSolarLeaseKillSwitch(),
             CitySewerKillSwitch(),
             MinGarageKillSwitch(min_spaces=2),
             MinBedroomsKillSwitch(min_beds=4),
@@ -147,6 +154,65 @@ class KillSwitchFilter:
 
         verdict = self._calculate_verdict(has_hard_failure, severity_score)
         return verdict, severity_score, failures
+
+    def evaluate_with_explanation(
+        self, property: "Property"
+    ) -> tuple[KillSwitchVerdict, float, list[str], VerdictExplanation]:
+        """Evaluate property with full severity information and human-readable explanation.
+
+        This method extends evaluate_with_severity by also generating a complete
+        explanation of the verdict that can be displayed to users or included in reports.
+
+        Args:
+            property: Property entity to evaluate
+
+        Returns:
+            Tuple of (verdict, severity_score, failure_messages, explanation) where:
+            - verdict: KillSwitchVerdict (PASS/WARNING/FAIL)
+            - severity_score: Sum of SOFT weights for failed criteria
+            - failure_messages: List of failure messages with severity info
+            - explanation: VerdictExplanation with structured breakdown
+
+        Example:
+            verdict, severity, failures, explanation = filter.evaluate_with_explanation(prop)
+            print(explanation.to_text())  # Display explanation
+            print(explanation.summary)    # Get one-line summary
+        """
+        # Build criterion results for all kill switches
+        criterion_results: list[CriterionResult] = []
+        has_hard_failure: bool = False
+        severity_score: float = 0.0
+        failures: list[str] = []
+
+        for kill_switch in self._kill_switches:
+            passed = kill_switch.check(property)
+
+            # Create criterion result
+            cr = CriterionResult(
+                name=kill_switch.name,
+                passed=passed,
+                is_hard=kill_switch.is_hard,
+                severity=0.0 if passed or kill_switch.is_hard else kill_switch.severity_weight,
+                message=kill_switch.failure_message(property) if not passed else "",
+            )
+            criterion_results.append(cr)
+
+            # Track failures for backward compatibility
+            if not passed:
+                failures.append(cr.message)
+                if kill_switch.is_hard:
+                    has_hard_failure = True
+                else:
+                    severity_score += kill_switch.severity_weight
+
+        # Calculate verdict
+        verdict = self._calculate_verdict(has_hard_failure, severity_score)
+
+        # Generate explanation
+        explanation = self._explainer.explain(verdict, criterion_results)
+
+        return verdict, severity_score, failures, explanation
+
 
     def evaluate(self, property: "Property") -> tuple[bool, list[str]]:
         """Evaluate single property against all kill switches.

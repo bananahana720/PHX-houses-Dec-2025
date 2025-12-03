@@ -4,6 +4,9 @@ This module provides the PropertyScorer class that orchestrates scoring across
 all strategies, calculates category totals, and assigns tier classifications.
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from ...config.scoring_weights import ScoringWeights, TierThresholds
 from ...domain.entities import Property
@@ -11,6 +14,9 @@ from ...domain.enums import Tier
 from ...domain.value_objects import ScoreBreakdown
 from .base import ScoringStrategy
 from .strategies import ALL_STRATEGIES
+
+if TYPE_CHECKING:
+    from .explanation import FullScoreExplanation, ScoringExplainer
 
 
 class PropertyScorer:
@@ -156,6 +162,71 @@ class PropertyScorer:
             if strategy.name == name:
                 return strategy
         return None
+
+    def explain_score(
+        self,
+        property: Property,
+        breakdown: ScoreBreakdown | None = None,
+    ) -> FullScoreExplanation:
+        """Generate human-readable explanation for a property's scores.
+
+        Creates a detailed explanation of why the property received each score,
+        what would improve scores, and how it compares to tier thresholds.
+
+        Args:
+            property: Property entity to explain
+            breakdown: Optional pre-calculated score breakdown. If None,
+                will calculate scores first.
+
+        Returns:
+            FullScoreExplanation with detailed reasoning for all scores
+
+        Example:
+            >>> scorer = PropertyScorer()
+            >>> property = load_property("123 Main St")
+            >>> explanation = scorer.explain_score(property)
+            >>> print(explanation.to_text())  # Markdown output
+            >>> print(explanation.to_dict())  # JSON-serializable dict
+        """
+        # Import here to avoid circular dependency
+        from .explanation import ScoringExplainer
+
+        # Calculate breakdown if not provided
+        if breakdown is None:
+            breakdown = self.score(property)
+
+        # Create explainer with same weights and thresholds
+        explainer = ScoringExplainer(
+            weights=self._weights,
+            thresholds=self._thresholds,
+        )
+
+        return explainer.explain(property, breakdown)
+
+    def score_with_explanation(
+        self,
+        property: Property,
+    ) -> tuple[ScoreBreakdown, FullScoreExplanation]:
+        """Calculate scores and generate explanation in one call.
+
+        Convenience method that returns both the score breakdown and
+        explanation without recalculating scores.
+
+        Args:
+            property: Property entity to score and explain
+
+        Returns:
+            Tuple of (ScoreBreakdown, FullScoreExplanation)
+
+        Example:
+            >>> scorer = PropertyScorer()
+            >>> breakdown, explanation = scorer.score_with_explanation(property)
+            >>> print(f"Total: {breakdown.total_score}")
+            >>> print(explanation.to_text())
+        """
+        breakdown = self.score(property)
+        explanation = self.explain_score(property, breakdown)
+        return breakdown, explanation
 
     def __str__(self) -> str:
         """String representation shows strategy count and max score."""

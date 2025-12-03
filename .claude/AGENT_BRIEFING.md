@@ -4,591 +4,297 @@
 
 ---
 
-## Quick State Check Commands
+## Critical Behavior (Agent-Level)
 
-```bash
-# Current session summary (one-liner)
-python -c "import json; s=json.load(open('data/work_items.json')); print(f\"Session: {s['session']['session_id'][:8]}... | Progress: {s['summary']['completed']}/{s['session']['total_items']} | Phase: {s['session']['current_phase']}\")"
-
-# Check specific property status
-python -c "import json; props=json.load(open('data/work_items.json'))['properties']; target='4732 W Davis Rd'; print([p for p in props if target.lower() in p['address'].lower()][0])"
-
-# List incomplete properties
-python -c "import json; props=json.load(open('data/work_items.json'))['properties']; incomplete=[p['address'] for p in props if not all(s=='completed' for s in p['phase_status'].values())]; print('\n'.join(incomplete[:5]))"
-
-# Session metadata
-python -c "import json; s=json.load(open('data/work_items.json'))['session']; print(f\"Started: {s['started_at']}\\nMode: {s['mode']}\\nSkip phases: {s.get('skip_phases', [])}\")"
-```
+- [x] Always read this briefing before starting work
+- [x] Check `work_items.json` for current phase and property status
+- [x] Validate prerequisites before Phase 2 (images + Phase 1 complete)
+- [x] Update state files atomically (read-modify-write with locks)
+- [x] Return structured JSON results per protocol
+- Never do:
+  - [x] Start Phase 2 without Phase 1 completion
+  - [x] Overwrite data without reading current state first
+  - [x] Leave status as `in_progress` on exit (always set `completed` or `failed`)
 
 ---
 
-## DATA STRUCTURE REFERENCE
+## Data Structure Reference
 
 ### Critical: Know Your Data Types
 
 | File | Type | Key Field | Access Pattern |
 |------|------|-----------|----------------|
 | `enrichment_data.json` | **LIST** | `full_address` | Iterate to find |
-| `work_items.json` | Dict | `work_items` (list inside) | `data["work_items"]` |
+| `work_items.json` | Dict | `work_items` (list) | `data["work_items"]` |
 | `address_folder_lookup.json` | Dict | `mappings[address]` | Direct key lookup |
-| `phx_homes.csv` | CSV | `full_address` | Pandas or csv module |
+| `phx_homes.csv` | CSV | `full_address` | pandas or csv module |
 
-### enrichment_data.json Structure
-
-**Type:** List of property dictionaries (NOT a dict keyed by address)
+### enrichment_data.json (LIST, not dict!)
 
 ```python
 # CORRECT - It's a list, search by address
 data = json.loads(file_content)  # List[Dict]
 prop = next((p for p in data if p["full_address"] == address), None)
 
-# WRONG - This will fail
-prop = data[address]  # TypeError: list indices must be integers
-prop = data.get(address)  # AttributeError: 'list' object has no attribute 'get'
+# WRONG - These will fail
+prop = data[address]      # TypeError: list indices must be integers
+prop = data.get(address)  # AttributeError: 'list' has no 'get'
 ```
 
-**Required fields per property:**
-- `full_address` (str): Full address with city, state, zip
-- `lot_sqft` (int): Lot size in square feet
-- `year_built` (int): Year of construction
-- `beds` (int): Number of bedrooms
-- `baths` (float): Number of bathrooms
-- `has_pool` (bool): Pool present
-
-### address_folder_lookup.json Structure
-
-**Type:** Dict with `mappings` key containing address->object mappings
+### address_folder_lookup.json
 
 ```python
-# CORRECT
+# CORRECT - Access via mappings key
 lookup = json.loads(file_content)
 mapping = lookup.get("mappings", {}).get(address)
 if mapping:
-    folder = mapping["folder"]  # e.g., "686067a4"
-    path = mapping["path"]      # e.g., "data/property_images/processed/686067a4/"
+    folder = mapping["folder"]      # e.g., "686067a4"
+    path = mapping["path"]          # e.g., "data/property_images/processed/686067a4/"
     count = mapping["image_count"]
-
-# WRONG - Don't access root level (may have orphan entries)
-folder = lookup.get(address)  # May return string or None, not the expected dict
 ```
 
-### work_items.json Structure
-
-**Type:** Dict with metadata and `work_items` list
-
-```python
-data = json.loads(file_content)
-items = data["work_items"]  # List of work item dicts
-prop = next((w for w in items if w["address"] == address), None)
-if prop:
-    status = prop["phases"]["phase2_images"]["status"]
-```
-
-### Common Errors and Fixes
+### Common Errors
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| `'list' object has no attribute 'keys'` | Treating enrichment as dict | Use list iteration |
-| `'list' object has no attribute 'get'` | Treating enrichment as dict | Use `next((p for p in data if ...), None)` |
+| `'list' object has no attribute 'get'` | Treating enrichment as dict | Use list iteration |
 | `KeyError: 'address'` | Wrong key in lookup | Use `lookup["mappings"][address]` |
-| `TypeError: string indices must be integers` | Lookup returned string | Check if result is dict, not orphan entry |
+| `TypeError: string indices` | Lookup returned string | Check if result is dict |
 
 ---
 
-## Key File Locations
+## Key Files
 
-| File | Purpose | Access | Critical Fields |
-|------|---------|--------|-----------------|
-| `data/work_items.json` | Pipeline state & progress | RW | `properties[].phase_status`, `session.current_phase` |
-| `data/enrichment_data.json` | Property enrichment data (LIST) | RW | `[].full_address`, `[].listing`, `[].location` |
-| `data/property_images/metadata/extraction_state.json` | Image extraction state | RW | `[address].status`, `[address].sources` |
-| `data/property_images/metadata/address_folder_lookup.json` | Address → folder mapping | R | `[address]` → folder hash |
-| `data/property_images/metadata/image_manifest.json` | Downloaded images inventory | R | `[folder_hash][]` → image paths |
-| `data/phx_homes.csv` | Source listing data | R | `address`, `price`, `beds`, `baths` |
-| `data/field_lineage.json` | Data provenance tracking | RW | `[address].[field].source`, `.timestamp` |
+| File | Purpose | Mode | Critical Fields |
+|------|---------|------|-----------------|
+| `data/work_items.json` | Pipeline state | RW | `properties[].phase_status` |
+| `data/enrichment_data.json` | Property data (LIST) | RW | `[].full_address`, `[].listing` |
+| `data/property_images/metadata/extraction_state.json` | Image state | RW | `[address].status` |
+| `data/property_images/metadata/address_folder_lookup.json` | Address→folder | R | `mappings[address]` |
+| `data/phx_homes.csv` | Source listings | R | `address`, `price` |
 
 ---
 
-## Agent Role Summary
+## Agent Roles
 
-### listing-browser (Haiku)
-**Phase:** 1
-**Purpose:** Extract listing data from Zillow/Redfin using stealth browsers
-**Skills:** `listing-extraction`, `property-data`, `state-management`
-**Outputs:** Price, beds, baths, sqft, HOA, description, listing URL
-**Duration:** ~30-60s per property
+| Agent | Phase | Model | Purpose | Outputs |
+|-------|-------|-------|---------|---------|
+| listing-browser | 1 | Haiku | Zillow/Redfin extraction | price, beds, baths, HOA |
+| map-analyzer | 1 | Haiku | Geographic analysis | schools, safety, orientation |
+| image-assessor | 2 | Sonnet | Interior scoring (190 pts) | 7 interior scores (0-10 each) |
 
-### map-analyzer (Haiku)
-**Phase:** 1 (parallel with listing-browser)
-**Purpose:** Geographic analysis via Google Maps, GreatSchools, crime data
-**Skills:** `map-analysis`, `property-data`, `arizona-context-lite`
-**Outputs:** School ratings, safety scores, commute times, sun orientation, distances
-**Duration:** ~45-90s per property
+### Skills by Agent
 
-### image-assessor (Sonnet)
-**Phase:** 2
-**Purpose:** Visual scoring of interior quality (Section C: 190 pts)
-**Skills:** `image-assessment`, `property-data`, `arizona-context-lite`
-**Outputs:** Kitchen (40), Master (40), Light (30), Ceilings (30), Fireplace (20), Laundry (20), Aesthetics (10)
-**Prerequisites:** Phase 1 complete, images downloaded
-**Duration:** ~2-5 min per property (multi-image analysis)
+| Agent | Required Skills |
+|-------|-----------------|
+| listing-browser | `listing-extraction`, `property-data`, `state-management` |
+| map-analyzer | `map-analysis`, `property-data`, `arizona-context-lite` |
+| image-assessor | `image-assessment`, `property-data`, `arizona-context-lite` |
+
+---
+
+## Phase Dependencies
+
+```
+Phase 0: County API (independent)
+    └── lot_sqft, year_built, garage_spaces, pool
+
+Phase 1: Listing + Map (parallel)
+    ├── listing-browser → price, beds, baths, HOA, images
+    └── map-analyzer → schools, safety, orientation
+              │
+              ▼ (requires Phase 1 complete)
+
+Phase 2: Image Assessment
+    └── image-assessor → 7 interior scores (Section C: 190 pts)
+              │
+              ▼ (requires Phase 2 complete)
+
+Phase 3: Synthesis
+    └── total_score, tier, kill_switch_verdict
+              │
+              ▼
+
+Phase 4: Reports
+    └── deal_sheets, visualizations
+```
+
+**Rules:**
+- Phase 0 is optional, runs anytime
+- Phase 1 agents run in parallel
+- Phase 2 **blocks** until Phase 1 `completed`
+- Phase 3 **blocks** until Phase 2 `completed`
 
 ---
 
 ## Pre-Work Checklist
 
-Before starting any task:
+```python
+# 1. Load state
+work_items = json.load(open('data/work_items.json'))
+enrichment = json.load(open('data/enrichment_data.json'))  # LIST!
 
-1. **Load Current State:**
-   ```python
-   import json
-   work_items = json.load(open('data/work_items.json'))
-   enrichment = json.load(open('data/enrichment_data.json'))  # LIST of dicts!
-   ```
+# 2. Find property
+prop = next(p for p in work_items['properties'] if p['address'] == target_address)
 
-2. **Check Property Status:**
-   ```python
-   target_address = "4732 W Davis Rd, Glendale, AZ 85306"
-   prop = next(p for p in work_items['properties'] if p['address'] == target_address)
-   current_phase = work_items['session']['current_phase']
-   ```
+# 3. Check not already complete
+if prop['phase_status'].get(f'phase_{current_phase}') == 'completed':
+    print("WARNING: Already processed")
 
-3. **Verify Not Already Complete:**
-   ```python
-   if prop['phase_status'].get(f'phase_{current_phase}') == 'completed':
-       print(f"WARNING: Property already processed for Phase {current_phase}")
-       # Skip or ask for confirmation
-   ```
+# 4. Phase 2 prerequisites
+if current_phase == 2:
+    assert prop['phase_status']['phase_1'] == 'completed'
+    enrich_prop = next((p for p in enrichment if p['full_address'] == target_address), None)
+    assert enrich_prop and 'images' in enrich_prop
 
-4. **Check Prerequisites:**
-   ```python
-   # Phase 2 requires Phase 1 complete
-   if current_phase == 2:
-       assert prop['phase_status']['phase_1'] == 'completed', "Phase 1 not complete"
-       # enrichment is a LIST - find property by address
-       enrich_prop = next((p for p in enrichment if p['full_address'] == target_address), None)
-       assert enrich_prop is not None, "No enrichment data"
-       assert 'images' in enrich_prop, "No images downloaded"
-   ```
-
-5. **Load Required Context:**
-   ```python
-   # Image assessment needs year_built for era calibration
-   if current_phase == 2:
-       # enrichment is a LIST - find property by address
-       enrich_prop = next((p for p in enrichment if p['full_address'] == target_address), None)
-       year_built = enrich_prop.get('year_built') if enrich_prop else None
-       pool_exists = enrich_prop.get('has_pool', False) if enrich_prop else False
-   ```
-
-6. **Update Status to In-Progress:**
-   ```python
-   prop['phase_status'][f'phase_{current_phase}'] = 'in_progress'
-   json.dump(work_items, open('data/work_items.json', 'w'), indent=2)
-   ```
+# 5. Set in-progress
+prop['phase_status'][f'phase_{current_phase}'] = 'in_progress'
+json.dump(work_items, open('data/work_items.json', 'w'), indent=2)
+```
 
 ---
 
 ## Post-Work Protocol
 
-After completing task:
+```python
+# 1. Update enrichment (LIST - find by address)
+enrich_prop = next((p for p in enrichment if p['full_address'] == target_address), None)
+if enrich_prop:
+    enrich_prop['listing'] = {'price': 425000, 'beds': 4, ...}
+json.dump(enrichment, open('data/enrichment_data.json', 'w'), indent=2)
 
-1. **Update Enrichment Data:**
-   ```python
-   # enrichment is a LIST - find and update by address
-   enrich_prop = next((p for p in enrichment if p['full_address'] == target_address), None)
-   if enrich_prop:
-       enrich_prop['listing'] = {
-           'price': 425000,
-           'beds': 4,
-           'baths': 2.0,
-           # ... other fields
-       }
-   else:
-       # Add new property to list
-       enrichment.append({
-           'full_address': target_address,
-           'listing': {'price': 425000, 'beds': 4, 'baths': 2.0}
-       })
-   json.dump(enrichment, open('data/enrichment_data.json', 'w'), indent=2)
-   ```
+# 2. Update phase status
+prop['phase_status'][f'phase_{current_phase}'] = 'completed'
+prop['last_updated'] = datetime.now().isoformat()
+json.dump(work_items, open('data/work_items.json', 'w'), indent=2)
 
-2. **Update Phase Status:**
-   ```python
-   prop['phase_status'][f'phase_{current_phase}'] = 'completed'
-   prop['last_updated'] = datetime.now().isoformat()
-   json.dump(work_items, open('data/work_items.json', 'w'), indent=2)
-   ```
-
-3. **Update Summary Counters:**
-   ```python
-   work_items['summary']['completed'] += 1
-   work_items['summary']['in_progress'] -= 1
-   ```
-
-4. **Return Structured JSON Result:**
-   ```python
-   result = {
-       'status': 'success',
-       'address': target_address,
-       'phase': current_phase,
-       'data': {
-           # Extracted/analyzed data
-       },
-       'warnings': [],  # Any issues encountered
-       'next_steps': []  # What needs to happen next
-   }
-   ```
-
-5. **Log Data Lineage (if applicable):**
-   ```python
-   # Update field_lineage.json with source attribution
-   lineage[target_address]['price'] = {
-       'value': 425000,
-       'source': 'zillow_listing',
-       'timestamp': datetime.now().isoformat(),
-       'confidence': 'high'
-   }
-   ```
+# 3. Return structured result
+result = {
+    'status': 'success',
+    'address': target_address,
+    'phase': current_phase,
+    'data': {...},
+    'warnings': [],
+    'next_steps': []
+}
+```
 
 ---
 
-## Error Recovery Patterns
+## Error Recovery
 
 ### File Not Found
 
 ```python
-# work_items.json missing
 if not os.path.exists('data/work_items.json'):
-    print("❌ CRITICAL: work_items.json not found")
-    print("→ Ask orchestrator to initialize session with /analyze-property")
+    print("CRITICAL: work_items.json not found")
+    print("→ Ask orchestrator to initialize with /analyze-property")
     sys.exit(1)
-
-# enrichment_data.json missing
-if not os.path.exists('data/enrichment_data.json'):
-    print("WARNING: Creating new enrichment_data.json")
-    json.dump([], open('data/enrichment_data.json', 'w'))  # LIST, not dict!
 ```
 
-### Images Missing (Phase 2)
+### Missing Images (Phase 2)
 
 ```python
-# Check image manifest
-manifest_path = 'data/property_images/metadata/image_manifest.json'
-if not os.path.exists(manifest_path):
-    print("❌ Image manifest not found - images not extracted")
-    print("→ Run: python scripts/extract_images.py --address '{address}'")
-    return {'status': 'error', 'reason': 'images_not_extracted'}
-
-# Check specific property images
-manifest = json.load(open(manifest_path))
+manifest = json.load(open('data/property_images/metadata/image_manifest.json'))
 folder_hash = get_folder_hash(target_address)
 if folder_hash not in manifest or len(manifest[folder_hash]) == 0:
-    print(f"❌ No images found for {target_address}")
-    print("→ Attempting extraction...")
-    # Trigger extraction or mark for retry
+    print(f"No images for {target_address}")
+    print("→ Run: python scripts/extract_images.py --address '{address}'")
     return {'status': 'retry', 'reason': 'missing_images'}
 ```
 
-### Previous Phase Failed
+### Stale State (Stuck in_progress)
 
 ```python
-# Check phase dependencies
-current_phase = 2
-prev_phase_status = prop['phase_status'].get('phase_1')
-
-if prev_phase_status != 'completed':
-    print(f"❌ Cannot start Phase {current_phase} - Phase 1 status: {prev_phase_status}")
-
-    if prev_phase_status == 'failed':
-        print("→ Review Phase 1 errors and retry")
-    elif prev_phase_status == 'in_progress':
-        print("→ Wait for Phase 1 to complete")
-    elif prev_phase_status is None:
-        print("→ Phase 1 not started - trigger Phase 1 agents first")
-
-    return {'status': 'blocked', 'reason': f'phase_1_{prev_phase_status}'}
-```
-
-### Partial Data (Incomplete Phase 1)
-
-```python
-# Validate Phase 1 completeness before Phase 2
-required_fields = ['listing.price', 'listing.beds', 'location.school_rating']
-
-# enrichment is a LIST - find property by address
-enrich_prop = next((p for p in enrichment if p['full_address'] == target_address), None)
-
-if not enrich_prop:
-    print(f"ERROR: No enrichment data for {target_address}")
-    return {'status': 'error', 'reason': 'missing_enrichment'}
-
-missing = []
-for field in required_fields:
-    keys = field.split('.')
-    value = enrich_prop
-    for key in keys:
-        value = value.get(key, {}) if isinstance(value, dict) else None
-    if not value:
-        missing.append(field)
-
-if missing:
-    print(f"WARNING: Incomplete Phase 1 data: {missing}")
-    print("-> Rerun Phase 1 or mark fields as N/A")
-    # Decide: proceed with warnings or fail
-```
-
----
-
-## Phase Dependencies Chart
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    PHASE DEPENDENCY FLOW                    │
-└─────────────────────────────────────────────────────────────┘
-
-Phase 0: County Data (Optional - can run anytime)
-┌───────────────────┐
-│ County Assessor   │  Outputs: lot_sqft, year_built, garage, pool
-│ (API)             │  Independent - no dependencies
-└───────────────────┘
-         │
-         ↓ (enriches)
-
-Phase 1: Listing + Map (Parallel execution)
-┌───────────────────┐     ┌───────────────────┐
-│ listing-browser   │     │ map-analyzer      │
-│ (Haiku)           │     │ (Haiku)           │
-│                   │     │                   │
-│ Zillow/Redfin     │     │ Google Maps       │
-│ Price, beds, HOA  │     │ Schools, safety   │
-└───────────────────┘     └───────────────────┘
-         │                         │
-         └────────┬────────────────┘
-                  ↓
-            [Phase 1 Complete]
-                  │
-                  ↓ (requires)
-
-Phase 2: Image Assessment
-┌───────────────────┐
-│ image-assessor    │  Prerequisites:
-│ (Sonnet)          │  - Phase 1 complete
-│                   │  - Images downloaded
-│ Interior scoring  │  - year_built known (era calibration)
-└───────────────────┘
-         │
-         ↓
-
-Phase 3: Cost Estimation + Synthesis
-┌───────────────────┐
-│ Cost calculator   │  Prerequisites:
-│ Scoring engine    │  - All phases complete
-│ Kill-switch check │  - All required fields populated
-└───────────────────┘
-         │
-         ↓
-
-Phase 4: Report Generation
-┌───────────────────┐
-│ Deal sheets       │  Prerequisites:
-│ Visualizations    │  - Scoring complete
-│ Rankings          │  - Kill-switch verdict rendered
-└───────────────────┘
-```
-
-**Key Rules:**
-- Phase 0 is **optional** and can run independently at any time
-- Phase 1 agents run **in parallel** (listing-browser + map-analyzer)
-- Phase 2 **blocks** until Phase 1 is `completed`
-- Phase 3 **blocks** until Phase 2 is `completed`
-- Phase 4 runs after all analysis phases complete
-
-**Skip Logic:**
-```python
-# Check if phases can be skipped
-session = work_items['session']
-skip_phases = session.get('skip_phases', [])
-
-if current_phase in skip_phases:
-    print(f"⏭️  Skipping Phase {current_phase} per session config")
-    prop['phase_status'][f'phase_{current_phase}'] = 'skipped'
-    # Move to next phase
-```
-
----
-
-## Common Failure Modes
-
-### 1. Browser Detection (Phase 1 - Listing)
-**Symptom:** 403 Forbidden, CAPTCHA challenges
-**Cause:** PerimeterX/Cloudflare bot detection
-**Recovery:**
-```python
-# Use stealth browser rotation
-from src.phx_home_analysis.services.infrastructure.browser_pool import BrowserPool
-pool = BrowserPool(stealth_mode=True)
-# Retry with different user-agent/fingerprint
-```
-
-### 2. Missing Images (Phase 2)
-**Symptom:** `KeyError` on image paths, empty manifest
-**Cause:** Phase 1 didn't trigger image extraction
-**Recovery:**
-```bash
-# Manual extraction
-python scripts/extract_images.py --address "4732 W Davis Rd"
-# Then retry Phase 2
-```
-
-### 3. Stale State (All Phases)
-**Symptom:** Status shows `in_progress` but no agent running
-**Cause:** Crashed agent didn't update status
-**Recovery:**
-```python
-# Reset stuck properties
 for prop in work_items['properties']:
     for phase, status in prop['phase_status'].items():
         if status == 'in_progress':
             age = datetime.now() - datetime.fromisoformat(prop['last_updated'])
             if age.seconds > 600:  # 10 min timeout
-                print(f"⚠️  Resetting stuck {phase} for {prop['address']}")
+                print(f"Resetting stuck {phase} for {prop['address']}")
                 prop['phase_status'][phase] = 'pending'
 ```
 
-### 4. Data Conflict (Write Race)
-**Symptom:** Lost updates, overwritten data
-**Cause:** Multiple agents writing simultaneously
-**Recovery:**
-```python
-# Always read-modify-write atomically
-import json
-import os
-import time
-from filelock import FileLock
-
-lock_path = 'data/enrichment_data.json.lock'
-with FileLock(lock_path, timeout=10):
-    data = json.load(open('data/enrichment_data.json'))  # LIST of dicts!
-    # Find property by address
-    prop = next((p for p in data if p['full_address'] == address), None)
-    if prop:
-        prop['new_field'] = value
-    json.dump(data, open('data/enrichment_data.json', 'w'), indent=2)
-```
-
 ---
 
-## Quick Reference: Phase Exit Criteria
+## Phase Exit Criteria
 
 | Phase | Required Outputs | Quality Gates |
 |-------|------------------|---------------|
-| 0 | lot_sqft, year_built, garage_spaces | Data from Assessor API |
-| 1 | price, beds, baths, HOA, school_rating, safety_score | All required fields populated |
-| 2 | kitchen_score, master_score, light_score, ceilings_score | All 7 interior scores (0-10) |
-| 3 | monthly_cost, total_score, tier, kill_switch_verdict | Scoring complete, verdict rendered |
-| 4 | deal_sheet.html, property in rankings | Report generated |
+| 0 | lot_sqft, year_built, garage_spaces | Assessor API data |
+| 1 | price, beds, baths, HOA, school_rating, safety_score | All required fields |
+| 2 | kitchen, master, light, ceilings, fireplace, laundry, aesthetics | All 7 scores (0-10) |
+| 3 | monthly_cost, total_score, tier, kill_switch_verdict | Verdict rendered |
+| 4 | deal_sheet.html | Report generated |
 
 ---
 
-## Environmental Context
+## Common Failure Modes
 
-```python
-# Project root detection
-import os
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+| Issue | Symptom | Recovery |
+|-------|---------|----------|
+| Browser detection | 403, CAPTCHA | Use stealth browser rotation |
+| Missing images | KeyError on paths | Run `extract_images.py` |
+| Stale state | Stuck `in_progress` | Reset to `pending` after 10 min |
+| Data conflict | Lost updates | Use FileLock for atomic writes |
 
-# Key paths
-DATA_DIR = f"{PROJECT_ROOT}/data"
-IMAGES_DIR = f"{DATA_DIR}/property_images"
-METADATA_DIR = f"{IMAGES_DIR}/metadata"
-REPORTS_DIR = f"{PROJECT_ROOT}/reports"
+---
 
-# Required environment variables
-MARICOPA_ASSESSOR_TOKEN = os.getenv('MARICOPA_ASSESSOR_TOKEN')  # Phase 0
-```
+## Environment
+
+| Variable | Purpose | Required For |
+|----------|---------|--------------|
+| `MARICOPA_ASSESSOR_TOKEN` | County API access | Phase 0 |
+
+| Path | Purpose |
+|------|---------|
+| `data/` | Property data, state files |
+| `data/property_images/` | Downloaded images |
+| `data/property_images/metadata/` | Manifests, lookups |
+| `reports/` | Generated deal sheets |
 
 ---
 
 ## Agent Spawn Template
 
-When spawning a new agent task:
-
 ```python
-# Example: Spawn image-assessor for specific property
 task_description = f"""
-You are the image-assessor agent for the PHX Houses pipeline.
-
-**Your Task:** Analyze interior images for property and score Section C (190 pts).
+You are the {agent_name} agent for the PHX Houses pipeline.
 
 **Target Property:** {address}
 
 **Prerequisites Verified:**
 - Phase 1 status: {phase_1_status}
 - Images available: {len(images)} photos
-- Year built: {year_built} (era: {era})
+- Year built: {year_built}
 
 **Required Outputs:**
-- Kitchen score (0-10)
-- Master bedroom score (0-10)
-- Natural light score (0-10)
-- Ceiling quality score (0-10)
-- Fireplace score (0-10)
-- Laundry setup score (0-10)
-- Overall aesthetics score (0-10)
-- Detailed reasoning for each score
+{output_list}
 
-**Skills to Load:** image-assessment, property-data, arizona-context-lite
+**Skills to Load:** {skills}
 
 **State Files to Update:**
-- data/enrichment_data.json (LIST - find by full_address, add scores to prop.images.assessment)
-- data/work_items.json (update phase_status.phase_2 to 'completed')
+- data/enrichment_data.json (LIST - find by full_address)
+- data/work_items.json (update phase_status)
 
-**Pre-Work:** Read `.claude/AGENT_BRIEFING.md` for orientation.
-
-**Post-Work:** Return structured JSON result per protocol.
+**Pre-Work:** Read `.claude/AGENT_BRIEFING.md`
+**Post-Work:** Return structured JSON result
 """
 ```
 
 ---
 
-## Logging & Debugging
-
-```python
-# Enable verbose logging
-import logging
-logging.basicConfig(level=logging.DEBUG)
-
-# Check recent activity
-import json
-work_items = json.load(open('data/work_items.json'))
-recent = sorted(work_items['properties'],
-                key=lambda p: p.get('last_updated', ''),
-                reverse=True)[:5]
-for prop in recent:
-    print(f"{prop['address']}: {prop['phase_status']}")
-
-# Trace data lineage
-lineage = json.load(open('data/field_lineage.json'))
-field_history = lineage.get(address, {}).get('price', {})
-print(f"Price source: {field_history.get('source')} at {field_history.get('timestamp')}")
-```
-
----
-
-## Emergency Contacts
+## Emergency Actions
 
 | Issue | Action |
 |-------|--------|
-| Pipeline stuck | Check `work_items.json` for `in_progress` older than 10 min, reset to `pending` |
-| Data corruption | Restore from `data/enrichment_data.json.bak` (auto-created on writes) |
-| Session confusion | Check `session.session_id` in `work_items.json` - ensure single active session |
-| Agent unresponsive | Kill process, check logs, reset phase status, retry |
+| Pipeline stuck | Reset `in_progress` older than 10 min to `pending` |
+| Data corruption | Restore from `.bak` file |
+| Session confusion | Check `session.session_id` in work_items |
+| Agent unresponsive | Kill process, reset status, retry |
 
 ---
 
-**Document Version:** 1.1
-**Last Updated:** 2025-12-02
-**Maintainer:** Claude Code Orchestrator
+**Version:** 1.2 | **Updated:** 2025-12-03
 
-*This briefing is optimized for sub-5-second orientation. Refer to full documentation in `../CLAUDE.md` for detailed specifications.*
+*Optimized for sub-5-second orientation. Full docs in `../CLAUDE.md`.*

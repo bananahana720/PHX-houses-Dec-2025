@@ -1,6 +1,8 @@
 # .claude/CLAUDE.md
 
-See `../CLAUDE.md` for full project documentation.
+See `../CLAUDE.md` for full project documentation (stack, testing, CI/CD, project-specific instructions).
+
+This directory contains Claude Code configuration: agents, skills, commands, and protocols.
 
 ## Directory Structure
 

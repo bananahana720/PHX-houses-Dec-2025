@@ -1,13 +1,14 @@
 """Lot & Systems scoring strategies (Section B).
 
 This module implements scoring strategies for property systems and lot:
-- Roof Condition/Age (50 pts)
-- Backyard Utility (40 pts)
-- Plumbing/Electrical (40 pts)
+- Roof Condition/Age (45 pts)
+- Backyard Utility (35 pts)
+- Plumbing/Electrical (35 pts)
 - Pool Condition (20 pts)
-- Cost Efficiency (30 pts) - in cost_efficiency.py
+- Cost Efficiency (35 pts) - in cost_efficiency.py
+- Solar Status (5 pts)
 
-Total Section B maximum: 180 points
+Total Section B maximum: 175 points
 """
 
 
@@ -278,3 +279,76 @@ class PoolConditionScorer(ScoringStrategy):
             return SCORE_POOL_FAIR
         else:
             return SCORE_POOL_REPLACEMENT
+
+
+class SolarStatusScorer(ScoringStrategy):
+    """Awards bonus points for owned solar panels.
+
+    Scoring:
+    - Owned solar (paid off): 10 pts - valuable asset, adds 4-7% home value
+    - Solar loan (building equity): 6 pts - becoming asset
+    - No solar: 5 pts - neutral, no burden
+    - Unknown: 4 pts - conservative default
+    - Leased solar: 0 pts - liability (also fails kill-switch)
+
+    Note: Leased solar typically fails the kill-switch before
+    reaching scoring, but we score it at 0 for completeness.
+    """
+
+    def __init__(self, weights: ScoringWeights | None = None) -> None:
+        """Initialize with scoring weights.
+
+        Args:
+            weights: Scoring weights config, defaults to standard weights
+        """
+        self._weights = weights or ScoringWeights()
+
+    @property
+    def name(self) -> str:
+        return "Solar Status"
+
+    @property
+    def category(self) -> str:
+        return "systems"
+
+    @property
+    def weight(self) -> int:
+        return self._weights.solar_status
+
+    def calculate_base_score(self, property: Property) -> float:
+        """Calculate base score (0-10) for solar status.
+
+        Args:
+            property: Property to score
+
+        Returns:
+            Base score (0-10) based on solar ownership status
+        """
+        from ....domain.enums import SolarStatus
+
+        solar_status = getattr(property, 'solar_status', None)
+
+        if solar_status is None:
+            return 4.0  # Unknown - conservative middle
+
+        # Handle both SolarStatus enum and string values
+        if isinstance(solar_status, SolarStatus):
+            if solar_status == SolarStatus.OWNED:
+                return 10.0  # Full points - asset
+            elif solar_status == SolarStatus.NONE:
+                return 5.0  # Neutral
+            elif solar_status == SolarStatus.LEASED:
+                return 0.0  # Liability
+            elif solar_status == SolarStatus.UNKNOWN:
+                return 4.0  # Conservative default
+        else:
+            # Handle string comparison for backward compatibility
+            status = solar_status.lower() if isinstance(solar_status, str) else str(solar_status)
+            if status in ('owned', 'solarstatus.owned'):
+                return 10.0  # Full points - asset
+            elif status in ('none', 'solarstatus.none'):
+                return 5.0  # Neutral
+            elif status in ('leased', 'solarstatus.leased'):
+                return 0.0  # Liability
+
+        return 4.0  # Unknown default

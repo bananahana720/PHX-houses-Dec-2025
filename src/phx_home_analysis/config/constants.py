@@ -190,17 +190,28 @@ TRASH_MONTHLY: Final[float] = 40.0
 # ---- POOL COSTS (Arizona-specific) ----
 
 # Monthly pool service cost (cleaning, chemical balance, maintenance)
-# Standard pool service in Phoenix metro area
-POOL_SERVICE_MONTHLY: Final[float] = 125.0
+# Updated 2024-12: Research shows $250-400/mo comprehensive cost in Phoenix
+# Source: Market-Beta research report (pool-solar-economics)
+POOL_SERVICE_MONTHLY: Final[float] = 185.0
 
 # Monthly pool energy cost (pump, heater, cleaning system)
 # Higher during summer months (June-September)
-POOL_ENERGY_MONTHLY: Final[float] = 75.0
+# Updated 2024-12: Reflects higher pump/chemical costs
+POOL_ENERGY_MONTHLY: Final[float] = 140.0
 
 # Combined monthly pool cost (service + energy)
+# Target: $325/mo mid-range of $250-400 research finding
 POOL_TOTAL_MONTHLY: Final[float] = POOL_SERVICE_MONTHLY + POOL_ENERGY_MONTHLY
 
 # Note: Seasonal variation - Summer pool costs can be 20-30% higher
+
+# ============================================================================
+# COMMUTE & TRANSPORTATION COSTS
+# ============================================================================
+
+# IRS standard mileage rate for 2024-2025
+# Source: Market-Alpha research report (financial-baseline)
+COMMUTE_COST_PER_MILE: Final[float] = 0.685
 
 # ---- MAINTENANCE RESERVES ----
 

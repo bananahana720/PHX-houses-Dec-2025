@@ -109,7 +109,7 @@ class ScoringWeights:
         Data source: EPA AirNow API
         Note: Arizona summer ozone spikes are common (AQI 80-120)
 
-    SECTION B: LOT & SYSTEMS (170 pts max)
+    SECTION B: LOT & SYSTEMS (175 pts max)
     ---------------------------------------
 
     roof_condition (45 pts max):
@@ -163,6 +163,17 @@ class ScoringWeights:
             - $5,000+/mo: 0 pts (exceeds target)
         Includes: mortgage, taxes, HOA, solar lease, pool maintenance
         Note: Captures total ownership cost beyond purchase price
+
+    solar_status (5 pts max):
+        Bonus points for owned solar panels
+        Scoring logic:
+            - Owned (paid off): 5 pts (asset, adds 4-7% home value)
+            - Solar loan (building equity): 3 pts (becoming asset)
+            - No solar: 2.5 pts (neutral, no burden)
+            - Unknown: 2 pts (conservative default)
+            - Leased solar: 0 pts (liability, monthly cost, transfer issues)
+        Note: Leased solar typically fails kill-switch before scoring
+        Data source: Listing details, county records
 
     SECTION C: INTERIOR & FEATURES (180 pts max)
     ---------------------------------------------
@@ -250,12 +261,13 @@ class ScoringWeights:
     walk_transit: int = 22  # NEW
     air_quality: int = 15  # NEW
 
-    # SECTION B: LOT & SYSTEMS (170 pts)
+    # SECTION B: LOT & SYSTEMS (175 pts)
     roof_condition: int = 45
     backyard_utility: int = 35
     plumbing_electrical: int = 35
     pool_condition: int = 20
     cost_efficiency: int = 35
+    solar_status: int = 5
 
     # SECTION C: INTERIOR & FEATURES (180 pts)
     kitchen_layout: int = 40
@@ -290,6 +302,7 @@ class ScoringWeights:
             + self.plumbing_electrical
             + self.pool_condition
             + self.cost_efficiency
+            + self.solar_status
             # Section C: Interior & Features
             + self.kitchen_layout
             + self.master_suite
@@ -324,6 +337,7 @@ class ScoringWeights:
             + self.plumbing_electrical
             + self.pool_condition
             + self.cost_efficiency
+            + self.solar_status
         )
 
     @property

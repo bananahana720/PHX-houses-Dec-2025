@@ -39,7 +39,9 @@ from .criteria import (
     MinGarageKillSwitch,
     NoHoaKillSwitch,
     NoNewBuildKillSwitch,
+    NoSolarLeaseKillSwitch,
 )
+from .explanation import CriterionResult, VerdictExplanation, VerdictExplainer
 from .filter import KillSwitchFilter
 
 __all__ = [
@@ -60,4 +62,9 @@ __all__ = [
     "MinBathroomsKillSwitch",
     "LotSizeKillSwitch",
     "NoNewBuildKillSwitch",
+    "NoSolarLeaseKillSwitch",
+    # Explanation system
+    "VerdictExplainer",
+    "VerdictExplanation",
+    "CriterionResult",
 ]

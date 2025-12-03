@@ -34,6 +34,7 @@ from .systems import (
     PlumbingElectricalScorer,
     PoolConditionScorer,
     RoofConditionScorer,
+    SolarStatusScorer,
 )
 
 # Location strategies (Section A: 250 pts max)
@@ -49,13 +50,14 @@ LOCATION_STRATEGIES = [
     AirQualityScorer,  # NEW - EPA AirNow AQI scoring
 ]
 
-# Systems strategies (Section B: 170 pts max)
+# Systems strategies (Section B: 175 pts max)
 SYSTEMS_STRATEGIES = [
     RoofConditionScorer,
     BackyardUtilityScorer,
     PlumbingElectricalScorer,
     PoolConditionScorer,
     CostEfficiencyScorer,
+    SolarStatusScorer,
 ]
 
 # Interior strategies (Section C: 180 pts max)
@@ -91,6 +93,7 @@ __all__ = [
     "PlumbingElectricalScorer",
     "PoolConditionScorer",
     "CostEfficiencyScorer",
+    "SolarStatusScorer",
     # Interior strategies
     "KitchenLayoutScorer",
     "MasterSuiteScorer",

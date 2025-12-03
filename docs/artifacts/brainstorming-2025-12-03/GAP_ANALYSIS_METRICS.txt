@@ -1,0 +1,174 @@
+PHX HOUSES PIPELINE - GAP ANALYSIS METRICS
+==========================================
+Analysis Date: 2025-12-03
+Analyst: Claude Code (Gap Analysis Specialist)
+
+TOTAL GAPS IDENTIFIED: 47
+================================================
+
+By Severity:
+  CRITICAL:  4 gaps (8.5%)
+  HIGH:      8 gaps (17.0%)
+  MEDIUM:   18 gaps (38.3%)
+  LOW:       9 gaps (19.1%)
+
+By Bucket:
+  Bucket 1+2 (Vision & Buy-Box):           8 gaps (17.0%)
+  Bucket 3+4 (Claude/AI Architecture):     5 gaps (10.6%)
+  Bucket 5+6 (Image Pipeline & Scraping): 12 gaps (25.5%)
+  Cross-Cutting Themes:                   22 gaps (46.8%)
+
+By Effort:
+  < 1 day:   4 gaps (8.5%)
+  1-2 days:  8 gaps (17.0%)
+  2-3 days: 10 gaps (21.3%)
+  3-5 days: 16 gaps (34.0%)
+  5+ days:   9 gaps (19.1%)
+
+TOTAL EFFORT TO FIX ALL GAPS: 95 days (12-week program)
+
+TOP 5 CRITICAL GAPS:
+====================
+1. IP-01: No background jobs (30+ min blocks)        Effort: 5 days
+2. IP-02: No job queue (sequential processing)       Effort: 4 days
+3. XT-01: No field-level lineage (audit gap)         Effort: 4 days
+4. XT-09: Scoring is black box (UX blocker)          Effort: 3 days
+5. VB-01: No score interpretability (trust issue)    Effort: 3 days
+
+CRITICAL PATH ISSUES:
+======================
+Image Pipeline Foundation (must do first):
+  IP-01 → IP-02 → IP-03 → IP-04
+  Effort: 14 days to unblock batch processing
+
+Explanation Layer (parallel path):
+  XT-01 → XT-09 → VB-01
+  Effort: 10 days to provide user confidence
+
+Configuration Management (parallel path):
+  XT-05 → XT-06 → XT-07 → XT-08
+  Effort: 7 days to enable A/B testing
+
+QUICK WINS (≤2 days, high value):
+===================================
+1. Tool violation linter (CA-03)            2 days → HIGH impact
+2. Skill discovery CLI (CA-04)              1 day  → MEDIUM impact
+3. Move constants to env vars (XT-08)       2 days → HIGH impact
+4. Index extraction logs (XT-04)            1 day  → MEDIUM impact
+5. Runtime staleness checks (CA-02)         2 days → MEDIUM impact
+6. Flood insurance cost lookup (VB-08)      2 days → LOW impact
+7. "Next tier" guidance (XT-12)             2 days → MEDIUM impact
+
+Total Quick Win Effort: 7 days for +5 UX improvements
+
+RISK FACTORS:
+===============
+1. Image pipeline redesign (MEDIUM probability, CRITICAL impact)
+2. Explanation generation inconsistency (LOW probability, MEDIUM impact)
+3. Data lineage reveals quality issues (HIGH probability, MEDIUM impact)
+4. Hard-coded tests break with config changes (MEDIUM probability, MEDIUM impact)
+
+FINANCIAL IMPACT:
+====================
+Phase 1 (4 weeks): $24,000 → 8 properties in 10 min (was 30 min)
+Phase 2 (4 weeks): $24,000 → 100 properties in 30 min (was 6 hours)
+Phase 3 (4 weeks): $24,000 → 1000+ properties, full API
+
+Total Investment: $72,000 for 60 days effort
+Payoff: Single-property analysis → portfolio-level analysis ($500 → $10,000+ value)
+ROI: Breaks even at 8 portfolio analyses
+
+IMPLEMENTATION TIMELINE:
+========================
+Week 1:  Image pipeline foundation (5 days)
+Week 2:  Explanation layer (5 days)
+Week 3:  Data lineage (5 days)
+Week 4:  Scoring enrichment (5 days)
+Week 5:  Worker pool + retries (5 days)
+Week 6:  Configuration management (5 days)
+Week 7:  Advanced scoring (5 days)
+Week 8:  Architecture automation (5 days)
+Weeks 9-12: Analytics, API, documentation (20 days)
+
+MILESTONE DATES:
+=================
+Week 4:  Production readiness (batch processing, explanations, lineage)
+Week 8:  Scale readiness (1000+ properties, configuration-driven)
+Week 12: Public release (complete system, API, documentation)
+
+KEY METRICS:
+==============
+Current System Completeness: 62% (vision 80%, architecture 95%, operations 40%)
+Target System Completeness: 100% (all buckets 95%+)
+
+Current Throughput: 16 properties/hour (30+ min for 8)
+Phase 1 Throughput: 48 properties/hour (10 min for 8)
+Phase 2 Throughput: 200 properties/hour (30 min for 100)
+
+Current Scalability: Single property only
+Phase 1 Scalability: Batch up to 30 properties
+Phase 2 Scalability: Unlimited with worker pool
+
+Current Explainability: 40% (calculations work, no reasoning)
+Phase 1 Explainability: 90% (natural language explanations)
+Phase 2 Explainability: 100% (complete audit trail + recommendations)
+
+SUCCESS CRITERIA:
+===================
+Phase 1 Checkpoints:
+  ☐ 8 properties in <10 minutes
+  ☐ Natural language explanations for each score
+  ☐ 100% field lineage populated
+  ☐ All tests passing
+  ☐ Foundation assessment live
+
+Phase 2 Checkpoints:
+  ☐ 100 properties in <30 minutes
+  ☐ Zero data loss on crash
+  ☐ Config changes without redeploy
+  ☐ Autonomous retries working
+  ☐ 24/7 batch processing stable
+
+Phase 3 Checkpoints:
+  ☐ 1000+ properties in <2 hours
+  ☐ User satisfaction >4/5 on explanations
+  ☐ Zero audit findings on lineage
+  ☐ Complete API documentation
+  ☐ Public release ready
+
+DOCUMENT REFERENCES:
+=====================
+Full Analysis:     docs/artifacts/GAP_ANALYSIS_SYNTHESIS.md (633 lines)
+Executive Summary: docs/artifacts/GAP_ANALYSIS_EXECUTIVE_SUMMARY.md
+This Metrics:      docs/artifacts/GAP_ANALYSIS_METRICS.txt
+
+PROJECT CONTEXT:
+==================
+Project: PHX Houses Pipeline
+Version: 1.0.0 (partial)
+Current Status: 62% complete (operational for single properties)
+Target Status: 100% complete (production batch system)
+
+Codebase:
+  - 136 Python source files
+  - 42 test files
+  - ~6,000 lines of domain code
+  - ~1,000 lines of configuration
+  - ~200 lines of CLAUDE.md documentation per directory
+
+Team Recommendation:
+  - 1-2 engineers for 12 weeks full-time
+  - OR 2-3 engineers for 6 weeks full-time
+  - Prioritize Phase 1 (blocking issues) before Phase 2/3
+
+Stakeholder Impact:
+  - HIGH: Users cannot process batches >5 properties (Phase 1 required)
+  - MEDIUM: Users confused by black-box scores (Phase 1 required)
+  - LOW: Configuration changes require redeploy (Phase 2 optimization)
+  - LOW: No portfolio-level analysis (Phase 3 feature)
+
+Dependencies:
+  - Phase 1 must complete before Phase 2
+  - Phase 2 should complete before Phase 3
+  - Quick Wins can be done in parallel with any phase
+

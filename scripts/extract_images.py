@@ -7,6 +7,8 @@ for properties in phx_homes.csv. Features:
 - Progress tracking and summary statistics
 - Dry-run mode for URL discovery without download
 - Source filtering for targeted extraction
+- Job queue mode for async, non-blocking execution (--queue)
+- Real-time status visibility (--status)
 
 Usage:
     # Extract from all sources for all properties
@@ -29,6 +31,15 @@ Usage:
 
     # Verbose output
     python scripts/extract_images.py --all -v
+
+    # Queue mode (persistent, resumable, with progress visibility)
+    python scripts/extract_images.py --all --queue
+
+    # Check queue status
+    python scripts/extract_images.py --status
+
+    # Queue with custom concurrency
+    python scripts/extract_images.py --all --queue --max-concurrent 10
 """
 
 import argparse
@@ -142,6 +153,37 @@ def parse_args() -> argparse.Namespace:
         "--show-displays",
         action="store_true",
         help="Show detected displays and exit (useful for debugging isolation)",
+    )
+
+    # Job queue options
+    parser.add_argument(
+        "--queue",
+        action="store_true",
+        help=(
+            "Use job queue mode for persistent, resumable extraction. "
+            "Jobs survive crashes and can be monitored with --status."
+        ),
+    )
+    parser.add_argument(
+        "--status",
+        action="store_true",
+        help="Show queue status and exit (pending, running, completed jobs)",
+    )
+    parser.add_argument(
+        "--max-concurrent",
+        type=int,
+        default=5,
+        help="Maximum concurrent jobs in queue mode (default: 5)",
+    )
+    parser.add_argument(
+        "--clear-queue",
+        action="store_true",
+        help="Clear all jobs from the queue and exit",
+    )
+    parser.add_argument(
+        "--retry-failed",
+        action="store_true",
+        help="Reset failed jobs to pending and exit",
     )
 
     return parser.parse_args()
@@ -305,6 +347,180 @@ def map_isolation_mode(mode: str) -> str:
     return mode_map.get(mode, "virtual_display")
 
 
+async def handle_queue_commands(args: argparse.Namespace, logger: logging.Logger) -> int | None:
+    """Handle queue-related commands that exit early.
+
+    Args:
+        args: Parsed arguments
+        logger: Logger instance
+
+    Returns:
+        Exit code if handled, None if not a queue command
+    """
+    from phx_home_analysis.services.job_queue import (
+        JobQueue,
+        format_queue_status,
+        get_queue_status,
+    )
+
+    queue_path = Path("data/job_queue.json")
+
+    # Handle --status
+    if args.status:
+        status = get_queue_status(queue_path)
+        print(format_queue_status(status))
+        return 0
+
+    # Handle --clear-queue
+    if args.clear_queue:
+        queue = JobQueue(state_file=queue_path)
+        queue.clear_all()
+        print("Queue cleared.")
+        return 0
+
+    # Handle --retry-failed
+    if args.retry_failed:
+        queue = JobQueue(state_file=queue_path)
+        count = queue.retry_failed()
+        if count > 0:
+            print(f"Reset {count} failed jobs to pending.")
+        else:
+            print("No failed jobs to retry.")
+        return 0
+
+    return None
+
+
+async def run_queued_extraction(args: argparse.Namespace, logger: logging.Logger) -> int:
+    """Run extraction using job queue mode.
+
+    Args:
+        args: Parsed arguments
+        logger: Logger instance
+
+    Returns:
+        Exit code
+    """
+    from phx_home_analysis.services.job_queue import (
+        Job,
+        JobExecutor,
+        JobQueue,
+        JobType,
+        ProgressTracker,
+        create_completion_callback,
+        create_extraction_handler,
+        create_progress_callback,
+        format_queue_status,
+        get_queue_status,
+    )
+
+    queue_path = Path("data/job_queue.json")
+    work_items_path = Path("data/work_items.json")
+
+    # Initialize queue
+    queue = JobQueue(state_file=queue_path)
+    tracker = ProgressTracker(work_items_path=work_items_path, queue=queue)
+
+    # Parse source list for jobs
+    source_list = None
+    if args.sources:
+        source_list = [s.strip().lower() for s in args.sources.split(",")]
+
+    # Load properties and create jobs
+    repo = CsvPropertyRepository(csv_file_path=args.csv)
+
+    if args.all:
+        properties = repo.load_all()
+        addresses = [p.full_address for p in properties]
+    elif args.address:
+        property = repo.load_by_address(args.address)
+        if not property:
+            print(f"Error: Property not found: {args.address}", file=sys.stderr)
+            return 1
+        addresses = [property.full_address]
+    else:
+        print("Error: --all or --address required for --queue mode", file=sys.stderr)
+        return 1
+
+    # Enqueue jobs
+    jobs = queue.enqueue_batch(
+        addresses=addresses,
+        sources=source_list,
+        job_type=JobType.IMAGE_EXTRACTION,
+    )
+
+    new_jobs = sum(1 for j in jobs if j.status.value == "pending")
+    existing_jobs = len(jobs) - new_jobs
+
+    print()
+    print("=" * 60)
+    print("Job Queue Extraction")
+    print("=" * 60)
+    print(f"Total addresses: {len(addresses)}")
+    print(f"New jobs created: {new_jobs}")
+    print(f"Existing jobs: {existing_jobs}")
+    print(f"Max concurrent: {args.max_concurrent}")
+    print("=" * 60)
+    print()
+
+    # Create executor
+    executor = JobExecutor(queue, max_concurrent=args.max_concurrent)
+
+    # Register handler
+    handler = create_extraction_handler(
+        output_dir=args.output_dir,
+        csv_path=args.csv,
+    )
+    executor.register_handler(JobType.IMAGE_EXTRACTION, handler)
+
+    # Create callbacks
+    on_progress = create_progress_callback(tracker)
+    on_complete = create_completion_callback(tracker)
+
+    # Progress display callback
+    async def print_job_progress(job: Job) -> None:
+        if job.status.value == "running":
+            print(
+                f"[{job.id}] {job.address[:40]} - "
+                f"{job.progress.percent:.0%} {job.progress.current_step}"
+            )
+
+    # Combine callbacks
+    async def combined_progress(job: Job) -> None:
+        await on_progress(job)
+        await print_job_progress(job)
+
+    async def combined_complete(job: Job) -> None:
+        await on_complete(job)
+        status = "OK" if job.status.value == "completed" else job.status.value.upper()
+        images = job.result.images_extracted if job.result else 0
+        print(f"[{job.id}] {job.address[:40]} - {status} ({images} images)")
+
+    try:
+        # Run extraction
+        await executor.start(
+            on_progress=combined_progress,
+            on_complete=combined_complete,
+        )
+
+        # Print final status
+        print()
+        status = get_queue_status(queue_path)
+        print(format_queue_status(status))
+
+        # Return based on results
+        stats = queue.get_stats()
+        if stats.get("failed_count", 0) > 0:
+            return 1 if stats.get("completed_count", 0) == 0 else 0
+        return 0
+
+    except KeyboardInterrupt:
+        print("\n\nInterrupted. Jobs have been saved.")
+        print("Run with --queue again to resume, or --status to check progress.")
+        await executor.stop(wait=False)
+        return 1
+
+
 async def main() -> int:
     """Main execution function.
 
@@ -328,6 +544,18 @@ async def main() -> int:
         print(get_display_summary())
         print("=" * 60)
         return 0
+
+    # Handle queue commands that exit early
+    queue_result = await handle_queue_commands(args, logger)
+    if queue_result is not None:
+        return queue_result
+
+    # Handle --queue mode
+    if args.queue:
+        if not args.all and not args.address:
+            print("Error: --all or --address required for --queue mode", file=sys.stderr)
+            return 1
+        return await run_queued_extraction(args, logger)
 
     # Validate that --all or --address is provided for extraction
     if not args.all and not args.address:

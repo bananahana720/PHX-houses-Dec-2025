@@ -1,0 +1,127 @@
+# Project: Maricopa Homehunt – Real Estate Data & Reporting
+
+## 1. What this project is
+
+Goal: help the user buy a first home in Maricopa County, AZ by:
+- Continuously ingesting Zillow/Redfin listings
+- Normalizing & enriching data (location, condition, risk, economics)
+- Managing listing images with smart tagging
+- Producing scores, shortlists, and reports
+
+Primary outcomes:
+- Ranked list of candidate properties
+- Historical timelines of price & status changes
+- Visual + tabular dashboards to support offers & timing decisions
+
+---
+
+## 2. Claude context management strat
+
+check out anthropics cookbook GitHub repo - link:https://github.com/anthropics/claude-quickstarts/tree/main/autonomous-coding; good inspiration
+
+Each directory SHOULD contain a `CLAUDE.md`:
+- Summarize purpose (“what / why”)
+- Briefly list key files and their roles
+- Note recent changes, pitfalls, and TODOs for this subtree only
+
+If a directory is missing `CLAUDE.md`, a claude hook event can create a stub.
+
+---
+
+## 3. Why this project exists (decision DNA)
+
+This project encodes the user’s buy-box and intuition into data + rules:
+
+- **Location-critical**: commute, neighborhood safety/vibe, amenities, school zones, future growth, zoning, flood/heat risk.
+- **Home condition**: roof/foundation/HVAC/plumbing/electrical; layout fit (beds/baths/office, yard), “bones over cosmetics”.
+- **Climate & lifestyle**: desert heat, power usage, outdoor living, low-water landscaping.
+- **Logistics & economics**: property tax, HOA, utilities, insurance, commuting cost, new-build vs older stock.
+- **Resale**: features valued locally (energy efficiency, outdoor spaces, pools, covered patios, parking, storage).
+
+Analytics MUST aim to:
+- Explain *why* a listing is good/bad with interpretable signals
+- Avoid tunnel-vision on price alone
+- Preserve raw data + events for re-scoring as criteria evolve
+
+---
+
+## 4. Tools & AI usage
+
+Tool inventory and rules live in `tools_kg.json`:
+- Tools available to Claude (Bash, Task, Grep/Search, MCP, etc.)
+- Project CLI/scripts and Claude “skills”
+- Subagents called via `Task` tool
+- Custom slash commands
+
+Priority hierarchy (most preferred first when solving problems):
+1. Project-level scripts / CLIs (when available and safe)
+2. High-level `Task`-based subagents for complex workflows
+3. Structured tools (DB queries, search, ripgrep)
+4. Raw Bash (carefully scoped)
+
+For each tool:
+- Prefer idempotent, read-only actions when exploring
+- Avoid destructive ops unless the instructions explicitly allow it
+- Log what was run, with params, to help diagnose failures later
+
+---
+
+## 5. Context management model
+
+Context state and attention rules live in `context_kg.json`.
+
+Key principles:
+- **Load only what you need**: prefer narrow, local context (current dir, current feature) over whole-project dumps.
+- **Follow the breadcrumbs**: when entering a directory or reading a file:
+  - FIRST check for `CLAUDE.md` at that directory root.
+  - THEN load only referenced paths or line ranges noted there.
+- **Keep CLAUDE.md token-dense**: instructions > narrative; lists > prose.
+
+Directory `CLAUDE.md` expectations:
+- Sections: `What`, `Why`, `Files`, `Pending Tasks`, `Key Learnings / Pitfalls`.
+- Include links + line ranges (e.g. `./file.py:L20-58`) to key context.
+- Timestamp updates and check for staleness before trusting instructions.
+
+Update triggers (when agents SHOULD refresh a directory `CLAUDE.md`):
+- A new `CLAUDE.md` stub with `UPDATE ME` appears.
+- New files created or major edits made in that directory.
+- At the end of a substantial task in that directory (before handing control back to user).
+- Discovery of confusion, conflicting instructions, or repeated mistakes.
+
+---
+
+## 6. Image pipeline summary
+
+Goals:
+- Store all Zillow/Redfin images in a stable structure
+- Tag images for room type, features, interior/exterior, and time
+- Improve downstream vision-based assessment by Claude and subagents
+
+High-level rules:
+- Every image MUST be linked to a canonical property record and listing event.
+- Naming SHOULD encode: `{property_id}/{event_date}_{source}_{seq}_{tags...}.jpg`
+- Vision pipeline MUST:
+  - Bucket interior vs exterior
+  - Tag room types (kitchen, bathroom, bedroom, living room, office, garage)
+  - Tag outdoor & mechanical features (pool, spa, yard, A/C unit, solar panels)
+
+When re-scraping a property:
+- Detect new images vs previously seen (hashes or perceptual hashes).
+- For large batches of net-new images or new price events:
+  - Emit a **console warning** prompting manual review.
+
+---
+
+## 7. Scraping & automation principles
+
+Web automation MUST:
+- Run as background jobs, decoupled from interactive sessions.
+- Use robust anti-blocking patterns (rotating UA, human-like timings, retries).
+- Avoid dependence on the chat agent being “active”.
+
+Stealth/headless constraints:
+- When headless is disabled (for stealth plugins or site constraints), run scrapers:
+  - In a separate process/container from the chat agent
+  - On a scheduler/queue (e.g., cron, worker), not tied to user prompts
+- User input MUST NOT alter ongoing scraping jobs mid-run; instead:
+  - User actions enqueue new jobs or update configs for future runs.

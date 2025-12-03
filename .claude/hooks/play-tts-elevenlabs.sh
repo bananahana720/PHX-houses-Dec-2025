@@ -398,6 +398,22 @@ if [ -f "${TEMP_FILE}" ]; then
       # macOS: Use afplay (native macOS audio player)
       afplay "${TEMP_FILE}" >/dev/null 2>&1 &
       PLAYER_PID=$!
+    elif [[ -n "$MSYSTEM" ]] || [[ "$(uname -s)" == MINGW* ]] || [[ "$(uname -s)" == CYGWIN* ]]; then
+      # Windows Git Bash/MSYS2/Cygwin: Use PowerShell MediaPlayer
+      WIN_PATH=$(cygpath -w "${TEMP_FILE}" 2>/dev/null || echo "${TEMP_FILE}" | sed 's|^/c/|C:/|; s|^/d/|D:/|')
+      # Use PowerShell to play audio and wait for completion using MediaEnded event
+      /c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -Command "
+        Add-Type -AssemblyName presentationCore
+        \$m = New-Object System.Windows.Media.MediaPlayer
+        \$done = \$false
+        Register-ObjectEvent \$m MediaEnded -Action { \$global:done = \$true } | Out-Null
+        \$m.Open([Uri]'${WIN_PATH}')
+        Start-Sleep -Milliseconds 300
+        \$m.Play()
+        while (-not \$done) { Start-Sleep -Milliseconds 100 }
+        Start-Sleep -Milliseconds 200
+      " >/dev/null 2>&1 &
+      PLAYER_PID=$!
     else
       # Linux/WSL: Try paplay, aplay, or mpg123
       (paplay "${TEMP_FILE}" || aplay "${TEMP_FILE}" || mpg123 "${TEMP_FILE}") >/dev/null 2>&1 &

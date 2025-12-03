@@ -1,0 +1,114 @@
+# BMAD Workflow Status
+# Tracks progress through BMM methodology phases
+
+generated: "2025-12-03T11:30:00Z"
+project: "PHX-houses-Dec-2025"
+project_type: "brownfield"
+selected_track: "analysis-first"
+field_type: "real-estate-analysis"
+workflow_path: ".bmad/bmm/workflows/"
+
+# Current Phase
+current_phase: "analysis"
+current_agent: "analyst"
+last_activity: "2025-12-03T11:30:00Z"
+
+# Phase 1: Analysis
+analysis:
+  brainstorming:
+    status: "completed"
+    output: "docs/analysis/brainstorming-session-2025-12-03.md"
+    artifacts_folder: "docs/artifacts/brainstorming-2025-12-03/"
+    completed_at: "2025-12-03T11:30:00Z"
+    summary: |
+      3-wave parallel exploration of scattered design notes.
+      47 gaps identified across 6 buckets.
+      12-week implementation roadmap created.
+      20 artifacts generated (~450 KB).
+
+  research:
+    status: "optional"
+    output: null
+    notes: "Market/domain research available if needed"
+
+  product_brief:
+    status: "pending"
+    output: null
+    notes: "Recommended next step after brainstorming"
+
+  document_project:
+    status: "optional"
+    output: null
+    notes: "Brownfield documentation available"
+
+# Phase 2: Planning (not started)
+planning:
+  prd:
+    status: "pending"
+    output: null
+    requires: ["product_brief"]
+
+  ux_design:
+    status: "conditional"
+    condition: "if_has_ui"
+    output: null
+
+  architecture:
+    status: "pending"
+    output: null
+    requires: ["prd"]
+
+# Phase 3: Solutioning (not started)
+solutioning:
+  epics_stories:
+    status: "pending"
+    output: null
+    requires: ["architecture"]
+
+  tech_specs:
+    status: "pending"
+    output: null
+    requires: ["epics_stories"]
+
+# Phase 4: Implementation (tracked in sprint-status.yaml)
+implementation:
+  status: "pending"
+  sprint_status_file: null
+
+# Key Decisions Made
+decisions:
+  - date: "2025-12-03"
+    decision: "Use 3-wave parallel subagent approach for brainstorming"
+    rationale: "Maximize coverage while minimizing orchestrator context usage"
+
+  - date: "2025-12-03"
+    decision: "Prioritize background jobs (IP-01) as Phase 1 critical path"
+    rationale: "Blocks multi-user operation, highest impact gap"
+
+# Artifacts Index
+artifacts:
+  brainstorming_session:
+    count: 20
+    total_size: "~450 KB"
+    location: "docs/artifacts/brainstorming-2025-12-03/"
+    key_files:
+      - "GAP_ANALYSIS_SYNTHESIS.md"
+      - "CROSS_CUTTING_ANALYSIS.md"
+      - "IMPLEMENTATION_EXAMPLES.md"
+      - "ARCHITECTURE_SUMMARY.md"
+
+# Next Recommended Actions
+next_actions:
+  - action: "Review Phase 1 scope"
+    priority: "high"
+    owner: "Andrew"
+
+  - action: "Create product brief"
+    priority: "medium"
+    agent: "analyst"
+    command: "*product-brief"
+
+  - action: "Begin implementation planning"
+    priority: "medium"
+    agent: "pm"
+    requires: ["product_brief"]

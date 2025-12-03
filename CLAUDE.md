@@ -1,8 +1,23 @@
 # PHX Houses Analysis Pipeline
 
-## INSTRUCTION PRIORITY (Highest to Lowest)
+## Critical Behavior (Project-Level)
 
-When instructions conflict, follow this priority order:
+- Inherits the organizational Critical Behavior rules from `~/.claude/CLAUDE.md`; project rules may add, but must not relax, those hard rules without an explicit, approved exception.
+- Maintain context headroom of 10–20%; if the next step would drop below this headroom, pause and use the `/compact` template before proceeding.
+- Stop-the-line triggers (project additions):
+  - [x] Data integrity risks: `enrichment_data.json` or `work_items.json` corruption
+  - [x] Kill-switch criteria changes without scoring recalculation
+  - [x] Phase 2 spawn without Phase 1 completion validation
+- Always ask before (project additions):
+  - [x] Modifying kill-switch thresholds or severity weights
+  - [x] Adding new scoring dimensions or changing max points
+  - [x] Schema changes to `enrichment_data.json` structure
+- Never do:
+  - [x] Placeholders, stubs, or TODOs in place of working code
+  - [x] Bypassing failing checks or disabling lint/tests without approved ticket + timebox
+  - [x] Destructive operations on `data/*.json` without explicit approval and backups
+
+## INSTRUCTION PRIORITY (Highest to Lowest)
 
 1. **TIER 0 Protocols** (protocols.md) - NEVER violate
 2. **Tool Usage Rules** (below) - ALWAYS apply, override agent examples
@@ -26,23 +41,108 @@ These rules override ALL other instructions, including agent-specific code examp
 | `bash find DIR` | `Glob` tool | Pattern matching |
 | `bash ls DIR` | `Glob` tool | Structured results |
 | `cat FILE \| python -c` | `Read` tool, then parse | Reliability |
-
-### Agent/Skill Authors
-Do NOT include `cat`, `grep`, `find`, or `ls` in example code blocks.
-If you see these in existing agent/skill files, use the native tools instead.
+| Playwright for Zillow/Redfin | `scripts/extract_images.py` | Stealth required |
+| WebSearch without sources | Include Sources: section | Attribution |
 
 ---
 
-First-time home buyer analysis for Phoenix metro with kill-switch filtering and 600-point scoring.
+## Stack
 
-## What This Project Does
+### Languages/Runtimes
+- **Primary language:** Python 3.10+ (target 3.12)
+- **Runtime version:** CPython 3.12.x
+- **Secondary languages:** Bash (scripts), YAML (config)
+
+### Frameworks/Libraries
+- **Data processing:** pandas 2.3, Pydantic 2.12
+- **Visualization:** plotly 6.5, folium 0.20
+- **Browser automation:** nodriver 0.48 (stealth), playwright 1.56 (fallback)
+- **HTTP client:** httpx 0.28, curl-cffi 0.13
+- **Image processing:** Pillow 12, imagehash 4.3
+
+### Package Manager/Build Tools
+- **Package manager:** uv (fast Python package installer)
+- **Build tool:** hatchling
+- **Task runner:** Custom scripts in `scripts/`
+
+## Code Style
+
+### Formatter + Linter
+- **Tool:** ruff 0.14.7 (both formatter and linter)
+- **Config:** `pyproject.toml` [tool.ruff]
+- **Line length:** 100
+- **Rules:** E, W, F, I (isort), B (bugbear), C4, UP
+
+### Type Checking
+- **Tool:** mypy 1.19
+- **Config:** `pyproject.toml` [tool.mypy]
+- **Strictness:** `disallow_untyped_defs = true`
+
+### Naming Conventions
+- **Files:** snake_case (e.g., `extract_images.py`)
+- **Classes:** PascalCase (e.g., `PropertyScorer`)
+- **Functions:** snake_case (e.g., `calculate_kill_switch`)
+- **Constants:** UPPER_SNAKE_CASE (e.g., `MAX_SEVERITY_THRESHOLD`)
+
+## Testing
+
+### Frameworks
+- **Unit test:** pytest 9.0.1
+- **Coverage:** pytest-cov 7.0
+- **Async:** pytest-asyncio 1.3
+- **HTTP mocking:** respx 0.22
+
+### Coverage Targets
+- **Line coverage:** 80% minimum
+- **Critical paths:** kill-switch, scoring algorithms
+- **Excluded:** `scripts/` CLI wrappers, `__pycache__`
+
+### Test Structure
+```
+tests/
+├── unit/           # Fast, isolated tests
+├── integration/    # Multi-component tests
+├── fixtures/       # Shared test data
+└── conftest.py     # Pytest configuration
+```
+
+## CI/CD
+
+### Required PR Checks
+- [x] Lint/format: `ruff check . && ruff format --check .`
+- [x] Type check: `mypy src/`
+- [x] Unit tests: `pytest tests/unit/`
+- [x] Security scan: `pip-audit`
+- [ ] Integration tests (manual)
+
+### Pre-commit Hooks
+- ruff format
+- ruff check --fix
+- mypy (optional)
+
+## Security/Compliance
+
+### Secrets Handling
+- **Tool:** python-dotenv
+- **Location:** `.env` (gitignored)
+- **Required:** `MARICOPA_ASSESSOR_TOKEN`
+
+### Dependencies
+- **Vulnerability scan:** pip-audit 2.7.3
+- **License:** MIT (permissive)
+
+---
+
+## Project-Specific Instructions
+
+### What This Project Does
 
 Evaluates Phoenix residential properties against strict buyer criteria:
 - **Kill-switches**: Hard fails (HOA, beds, baths) + soft severity threshold (≥3.0 = fail)
 - **Scoring**: 600 pts max across Location (230), Systems (180), Interior (190)
 - **Tiers**: Unicorn (>480), Contender (360-480), Pass (<360)
 
-## Where Things Live
+### Where Things Live
 
 | Purpose | Location |
 |---------|----------|
@@ -54,7 +154,7 @@ Evaluates Phoenix residential properties against strict buyer criteria:
 | Skills library | `.claude/skills/*/SKILL.md` |
 | Knowledge graphs | `.claude/knowledge/*.json` |
 
-## Quick Commands
+### Quick Commands
 
 ```bash
 # Multi-agent analysis
@@ -70,45 +170,15 @@ python -m scripts.deal_sheets                    # Reports
 
 ### Pre-Spawn Validation (REQUIRED for Phase 2)
 
-Before spawning Phase 2 image-assessor agents, ALWAYS validate prerequisites:
-
 ```bash
 # Validate prerequisites (returns JSON)
 python scripts/validate_phase_prerequisites.py --address "ADDRESS" --phase phase2_images --json
 
 # Exit code 0 = can_spawn=true, proceed
 # Exit code 1 = can_spawn=false, BLOCKED - do NOT spawn agent
-
-# Data quality reconciliation (optional, with auto-repair)
-python scripts/validate_phase_prerequisites.py --reconcile --address "ADDRESS" --repair
 ```
 
-**If blocked:** Check the `reason` field in JSON output for remediation steps.
-
-## Key Principles
-
-### Tool Usage (CRITICAL)
-| ❌ Never | ✅ Always |
-|----------|----------|
-| `bash grep/rg` | `Grep` tool |
-| `bash cat/head/tail` | `Read` tool |
-| `bash find` | `Glob` tool |
-| `bash sed` | `Edit` tool |
-| Playwright for Zillow/Redfin | `scripts/extract_images.py` |
-| WebSearch without sources | Include Sources: section |
-
-### Context Management
-1. **Session start**: Read `.claude/AGENT_BRIEFING.md` + check `work_items.json`
-2. **Directory entry**: Check for CLAUDE.md, create placeholder if missing
-3. **Work complete**: Update pending_tasks, add key_learnings
-4. **On errors**: Document in key_learnings with workaround
-5. **Before Phase 2 spawn**: MANDATORY - validate prerequisites with `validate_phase_prerequisites.py`
-
-### File Organization
-- Scripts → `scripts/` | Tests → `tests/` | Docs → `docs/` | Data → `data/`
-- **Never create files in project root**
-
-## Multi-Agent Pipeline
+### Multi-Agent Pipeline
 
 ```
 Phase 0: County API → lot_sqft, year_built, garage_spaces
@@ -119,7 +189,7 @@ Phase 3: Synthesis → total score, tier, kill-switch verdict
 Phase 4: Reports → deal sheets, visualizations
 ```
 
-## Kill-Switch Criteria
+### Kill-Switch Criteria
 
 | Type | Criterion | Requirement | Severity |
 |------|-----------|-------------|----------|
@@ -133,14 +203,14 @@ Phase 4: Reports → deal sheets, visualizations
 
 **Verdict**: FAIL if HARD fails OR severity ≥3.0 | WARNING if 1.5-3.0 | PASS if <1.5
 
-## Arizona Specifics
+### Arizona Specifics
 
 - **Orientation**: North=30pts (best), West=0pts (worst for cooling)
 - **HVAC lifespan**: 10-15 years (not 20+ like elsewhere)
 - **Pool costs**: $250-400/month total ownership
 - **Solar leases**: Liability, not asset ($100-200/mo + transfer issues)
 
-## Agents & Skills
+### Agents & Skills
 
 | Agent | Model | Skills |
 |-------|-------|--------|
@@ -148,7 +218,7 @@ Phase 4: Reports → deal sheets, visualizations
 | map-analyzer | Haiku | property-data, state-management, map-analysis, arizona-context, scoring |
 | image-assessor | Sonnet | property-data, state-management, image-assessment, arizona-context-lite, scoring |
 
-## State Files
+### State Files
 
 | File | Purpose | Check When |
 |------|---------|------------|
@@ -156,24 +226,32 @@ Phase 4: Reports → deal sheets, visualizations
 | `enrichment_data.json` | Property data | Before property ops |
 | `extraction_state.json` | Image pipeline | Before image ops |
 
-## Knowledge Graphs
+### Context Management
 
-Detailed tool schemas, relationships, and protocols:
-- @.claude/knowledge/toolkit.json - Tools, scripts, agents, skills
-- @.claude/knowledge/context-management.json - State tracking, staleness, handoff
+1. **Session start**: Read `.claude/AGENT_BRIEFING.md` + check `work_items.json`
+2. **Directory entry**: Check for CLAUDE.md, create placeholder if missing
+3. **Work complete**: Update pending_tasks, add key_learnings
+4. **On errors**: Document in key_learnings with workaround
+5. **Before Phase 2 spawn**: MANDATORY - validate prerequisites
+
+### File Organization
+
+- Scripts → `scripts/` | Tests → `tests/` | Docs → `docs/` | Data → `data/`
+- **Never create files in project root**
+
+---
 
 ## References
 
-- Kill-switch: `src/phx_home_analysis/config/constants.py:1-50`
-- Scoring: `src/phx_home_analysis/config/scoring_weights.py:1-100`
-- Schemas: `src/phx_home_analysis/validation/schemas.py:1-200`
-- Agent briefing: `.claude/AGENT_BRIEFING.md`
-- Protocols: `.claude/protocols.md`
-
-## Environment Variables
-
-- `MARICOPA_ASSESSOR_TOKEN` - County Assessor API
+| Resource | Location |
+|----------|----------|
+| Kill-switch config | `src/phx_home_analysis/config/constants.py:1-50` |
+| Scoring weights | `src/phx_home_analysis/config/scoring_weights.py:1-100` |
+| Schemas | `src/phx_home_analysis/validation/schemas.py:1-200` |
+| Agent briefing | `.claude/AGENT_BRIEFING.md` |
+| Protocols | `.claude/protocols.md` |
+| Tool schemas | `.claude/knowledge/toolkit.json` |
+| Context management | `.claude/knowledge/context-management.json` |
 
 ---
 *Knowledge graphs provide HOW. This file provides WHAT, WHERE, WHY.*
-*Lines: ~120 (target: <200)*

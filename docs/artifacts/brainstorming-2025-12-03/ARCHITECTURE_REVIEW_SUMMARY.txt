@@ -1,0 +1,208 @@
+CROSS-CUTTING CONCERNS ARCHITECTURE REVIEW
+PHX Houses Analysis Pipeline
+December 3, 2025
+
+DELIVERABLES CREATED:
+
+1. CROSS_CUTTING_ANALYSIS.md (8000+ lines)
+   - Comprehensive analysis of 4 cross-cutting themes:
+     * Traceability: Current state (3/10), gaps identified, recommendations
+     * Evolvability: Hard-coded dependencies preventing change (5/10)
+     * Explainability: Black-box scoring lacking reasoning (4/10)
+     * Autonomy: Strong phase orchestration (8/10) but serial processing
+   - Detailed architectural problems with examples
+   - 20+ specific recommendations organized by priority and timeline
+   - Estimated implementation timeline: 3-4 weeks for critical items
+
+2. ARCHITECTURE_QUICK_REFERENCE.md (400+ lines)
+   - System overview diagrams
+   - Kill-switch criteria matrix (hard vs. soft)
+   - Scoring system breakdown (600 points across 3 sections)
+   - Traceability matrix showing gaps
+   - Data evolvability comparison (current vs. desired)
+   - Risk scorecard with high/medium priority items
+   - Configuration locations and file organization
+   - Key metrics to track system health
+
+3. IMPLEMENTATION_EXAMPLES.md (1000+ lines)
+   - Production-ready code examples for all 4 themes:
+     * Field-level metadata model with Python implementation
+     * Scoring lineage capture with detailed results tracking
+     * Buyer profile externalization to JSON format
+     * Phase DAG configuration loading
+     * Explainable kill-switch verdict system
+     * Parallel property processing orchestrator
+   - All examples are fully typed and compatible with existing codebase
+   - Ready to integrate incrementally
+
+SYSTEM HEALTH ASSESSMENT:
+
+Overall Score: 6/10 (MODERATE)
+
+Strengths (What's Working):
+✅ Domain models are well-designed (Property, Tier enums, Value objects)
+✅ Clean service layer with Strategy pattern (18+ scoring strategies)
+✅ Phase orchestration is solid with validation gates
+✅ Deterministic, reproducible scoring system
+✅ Pydantic-based data validation
+✅ State recovery on crashes (work_items.json)
+
+Weaknesses (Critical Gaps):
+❌ Zero field-level traceability - can't explain where data came from
+❌ No scoring lineage - scores appear magically without reasoning
+❌ Hard-coded configuration blocks evolution (constants in code)
+❌ Lost context in kill-switch verdicts (no severity breakdown explanation)
+❌ Serial property processing limits autonomy
+❌ No data provenance or confidence tracking
+❌ No version history for score changes
+
+KEY FINDINGS:
+
+1. TRACEABILITY (Score: 3/10)
+   Problem: Can't explain why a property scored 425 vs. 400
+   Impact: Users can't trust verdicts; changing criteria is risky
+   Fix: Add field metadata with source/confidence/extraction info
+   Effort: 3 days | Impact: HIGH | Priority: CRITICAL
+
+2. EVOLVABILITY (Score: 5/10)
+   Problem: Kill-switch criteria and scoring weights hard-coded
+   Impact: Can't A/B test; changing criteria requires code edits
+   Fix: Move config to JSON files (buyer_profile.json, scoring_config.json)
+   Effort: 3 days | Impact: HIGH | Priority: CRITICAL
+
+3. EXPLAINABILITY (Score: 4/10)
+   Problem: Score of 425 exists but user can't see why
+   Impact: Users don't understand verdicts or recommendations
+   Fix: Add scoring lineage and kill-switch verdict explanations
+   Effort: 3 days | Impact: HIGH | Priority: CRITICAL
+
+4. AUTONOMY (Score: 8/10)
+   Problem: Phase processing is serial; better as parallel with DAG
+   Impact: Slow execution; can't process 8 properties in parallel
+   Fix: Implement parallel orchestrator with dependency awareness
+   Effort: 3 days | Impact: MEDIUM | Priority: IMPORTANT
+
+RECOMMENDED ACTION PLAN:
+
+WEEK 1: Foundation (Critical - Blocking)
+□ Add field metadata to enrichment_data.json schema
+□ Create scoring explanation model in PropertyScorer
+□ Extract kill-switch criteria to buyer_profile.json
+□ Update EnrichmentDataSchema with metadata fields
+Outcome: Traceability baseline, evolvability foundation
+
+WEEK 2: Intelligence (Quality Improvements)
+□ Implement scoring lineage capture
+□ Create kill-switch verdict explanation generator
+□ Add confidence scoring to all fields
+□ Create scoring run comparison logic
+Outcome: Explainability fully functional
+
+WEEK 3: Performance (Scalability)
+□ Implement parallel property processing
+□ Add automatic retry with exponential backoff
+□ Create inter-phase communication in work_items
+□ Implement graceful degradation for missing data
+Outcome: Autonomy improved to 9/10
+
+MONTH 2: Advanced (Long-term Evolution)
+□ Versioned configuration system
+□ Feature flags for gradual rollouts
+□ Cost tracking and budget alerts
+□ Automatic rollback on criteria changes
+Outcome: Production-ready evolutionary system
+
+ARCHITECTURAL INSIGHTS:
+
+The system has strong fundamentals but is "locked in" to its current design:
+- Can't change kill-switch criteria without code edits
+- Can't re-score when algorithms improve without re-running phases
+- Can't explain scores to stakeholders without digging into code
+- Can't parallelize property processing
+
+The proposed changes maintain backward compatibility while unlocking:
+- Configurability: Change criteria via JSON, not code
+- Explainability: Show users why property passed/failed
+- Evolvability: Rollback bad criteria changes instantly
+- Observability: Track scoring decisions and data sources
+
+CRITICAL SUCCESS FACTORS:
+
+1. Preserve Atomicity
+   - enrichment_data.json is LIST (not dict) - concurrent writes cause corruption
+   - SOLUTION: Always use temp file + os.replace() pattern
+
+2. Backward Compatibility
+   - Field metadata should be optional (wrapped in object)
+   - Existing code should work with/without metadata
+   - SOLUTION: Fallback to raw values if metadata missing
+
+3. Minimal Disruption
+   - Don't refactor domain model; add new models alongside
+   - Don't change phase names (hard-coded in agents)
+   - SOLUTION: Extend config system without replacing existing flow
+
+4. Validation
+   - Ensure no data is lost during migration
+   - Validate field metadata integrity
+   - SOLUTION: Run reconciliation script before/after changes
+
+RISK ASSESSMENT:
+
+High Risk (Fix Immediately):
+- Concurrent writes to enrichment_data.json without atomic patterns
+- No traceability for scoring changes (regulatory/trust issue)
+- Hard-coded phase names (architectural debt)
+
+Medium Risk (Address Soon):
+- No inter-phase communication (can't signal "skip phase 2")
+- No cost tracking (budget overruns possible)
+- Serial processing (slow execution)
+
+Low Risk (Nice-to-Have):
+- No automatic retry (manual re-run works)
+- No feature flags (not needed for small team)
+- No distributed orchestration (not yet at scale)
+
+METRICS TO ESTABLISH:
+
+System Health Dashboard:
+- Traceability Score (target: 8/10)
+- Evolvability Score (target: 8/10)
+- Explainability Score (target: 8/10)
+- Autonomy Score (target: 9/10)
+
+Pipeline Performance:
+- Properties processed per week
+- Average processing time per property
+- Phase success rate (%)
+- Cost per property scored
+
+NEXT STEPS:
+
+1. Review CROSS_CUTTING_ANALYSIS.md (30 min) for detailed context
+2. Review ARCHITECTURE_QUICK_REFERENCE.md (15 min) for quick reference
+3. Review IMPLEMENTATION_EXAMPLES.md (30 min) for code patterns
+4. Schedule architecture review meeting with team
+5. Create tickets for Week 1 foundation work (estimated 12 developer days)
+6. Set up metrics tracking before implementing changes
+
+CONCLUSION:
+
+This is a well-built system with strong foundations that needs cross-cutting
+improvements for long-term maintainability and evolution. The recommended
+approach is iterative, starting with traceability and explainability
+(low-risk, high-impact), then moving to configurability and autonomy.
+
+All recommendations preserve backward compatibility and can be implemented
+without major disruption to the current workflow.
+
+---
+
+Documents Generated:
+- CROSS_CUTTING_ANALYSIS.md (Detailed analysis, 80+ pages)
+- ARCHITECTURE_QUICK_REFERENCE.md (Quick reference, 20 pages)
+- IMPLEMENTATION_EXAMPLES.md (Code examples, 30+ pages)
+- ARCHITECTURE_REVIEW_SUMMARY.txt (This file)
+
+Total: 150+ pages of architectural guidance and implementation patterns

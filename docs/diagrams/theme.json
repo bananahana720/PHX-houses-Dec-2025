@@ -1,0 +1,23 @@
+{
+  "name": "Standard DFD",
+  "colors": {
+    "process": {
+      "background": "#e3f2fd",
+      "stroke": "#1976d2"
+    },
+    "dataStore": {
+      "background": "#e8f5e9",
+      "stroke": "#388e3c"
+    },
+    "externalEntity": {
+      "background": "#f3e5f5",
+      "stroke": "#7b1fa2"
+    },
+    "arrow": {
+      "stroke": "#1976d2"
+    },
+    "text": {
+      "stroke": "#1e1e1e"
+    }
+  }
+}

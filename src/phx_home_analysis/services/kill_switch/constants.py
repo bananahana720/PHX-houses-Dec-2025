@@ -85,4 +85,4 @@ HARD_CRITERIA: set[str] = {"hoa", "beds", "baths"}
 
 # HARD criteria names (service layer naming convention)
 # Used by src/phx_home_analysis/services/kill_switch/
-HARD_CRITERIA_NAMES: set[str] = {"no_hoa", "min_bedrooms", "min_bathrooms"}
+HARD_CRITERIA_NAMES: set[str] = {"no_hoa", "min_bedrooms", "min_bathrooms", "no_solar_lease"}

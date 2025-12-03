@@ -42,6 +42,8 @@ dependencies = [
     "curl-cffi==0.13.0",
     # Development server with auto-refresh
     "livereload>=2.7.0",
+    # Configuration file parsing
+    "pyyaml>=6.0.0",
 ]
 
 [project.optional-dependencies]
