@@ -17,14 +17,14 @@ development_status:
   #             pipeline execution that supports crash recovery and data integrity
   # Stories: 6 | PRD Coverage: FR7, FR8, FR34-39, FR46-51, FR56
   # =============================================================================
-  epic-1: backlog
+  epic-1: done
   1-1-configuration-system-setup: done
   1-2-property-data-storage-layer: done
-  1-3-data-provenance-and-lineage-tracking: backlog
-  1-4-pipeline-state-checkpointing: backlog
+  1-3-data-provenance-and-lineage-tracking: done
+  1-4-pipeline-state-checkpointing: done
   1-5-pipeline-resume-capability: done
   1-6-transient-error-recovery: done
-  epic-1-retrospective: optional
+  epic-1-retrospective: recommended
 
   # =============================================================================
   # Epic 2: Property Data Acquisition
@@ -143,17 +143,19 @@ summary:
   total_epics: 7
   total_stories: 42
   stories_by_status:
-    backlog: 33
+    backlog: 31
     drafted: 0
     ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 9
+    done: 11
   epics_by_status:
-    backlog: 6
+    backlog: 5
     contexted: 1
-  p0_stories: 33
-  p1_stories: 9
+    done: 1
+  p0_stories: 31
+  p1_stories: 11
   fr_coverage: "62/62 (100%)"
   last_updated: "2025-12-04"
   last_story_completed: "1-5-pipeline-resume-capability"
+  last_epic_completed: "epic-1"
