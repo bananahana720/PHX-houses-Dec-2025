@@ -59,12 +59,12 @@ development_status:
   # Stories: 7 | PRD Coverage: FR1-6, FR58-62
   # =============================================================================
   epic-2: contexted
-  2-1-batch-analysis-cli-entry-point: backlog
+  2-1-batch-analysis-cli-entry-point: done
   2-2-maricopa-county-assessor-api-integration: backlog
-  2-3-zillow-redfin-listing-extraction: backlog
+  2-3-zillow-redfin-listing-extraction: done
   2-4-property-image-download-and-caching: backlog
-  2-5-google-maps-api-geographic-data: backlog
-  2-6-greatschools-api-school-ratings: backlog
+  2-5-google-maps-api-geographic-data: done
+  2-6-greatschools-api-school-ratings: done
   2-7-api-integration-infrastructure: done
   epic-2-retrospective: optional
 
@@ -149,12 +149,12 @@ summary:
   total_epics: 7
   total_stories: 42
   stories_by_status:
-    backlog: 29
+    backlog: 25
     drafted: 0
     ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 13
+    done: 17
   epics_by_status:
     backlog: 4
     contexted: 2
@@ -166,5 +166,5 @@ summary:
   p1_stories: 7
   fr_coverage: "62/62 (100%)"
   last_updated: "2025-12-04"
-  last_story_completed: "2-7-api-integration-infrastructure"
+  last_story_completed: "2-6-greatschools-api-school-ratings"
   last_epic_completed: "epic-1"
