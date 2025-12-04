@@ -18,7 +18,6 @@ Exit codes:
 """
 
 import json
-import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -33,31 +32,6 @@ try:
 except ImportError as e:
     LIB_AVAILABLE = False
     IMPORT_ERROR = str(e)
-
-
-def is_agent_session(transcript_path: str | None) -> bool:
-    """
-    Detect if this is an agent/subagent session based on transcript filename.
-
-    Agent sessions: agent-*.jsonl (e.g., agent-e8765739.jsonl)
-    Main sessions: UUID.jsonl (e.g., efd54b1a-d40f-4583-9e0f-a64c78188aff.jsonl)
-
-    Args:
-        transcript_path: Path to the transcript file from hook input
-
-    Returns:
-        True if agent session, False if main session or unknown
-    """
-    if not transcript_path:
-        return False
-
-    filename = Path(transcript_path).name
-
-    # Agent session pattern: agent-<hex>.jsonl
-    if filename.startswith("agent-"):
-        return True
-
-    return False
 
 
 def evaluate_hygiene(is_agent: bool = False) -> dict[str, str]:
@@ -154,7 +128,7 @@ def evaluate_hygiene(is_agent: bool = False) -> dict[str, str]:
             "reason": (
                 f"Session modified {len(relevant_dirs)} directories:{issues_text}\n{dir_list}\n\n"
                 "Spawn Task(model=haiku) subagent(s) to assess changes and update CLAUDE.md files "
-                "using the '.claude/templates/CLAUDE.md.template' template."
+                "using the '.claude/templates/CLAUDE.md.template' schema."
             )
         }
     else:
@@ -170,30 +144,31 @@ def main():
     # Read hook event data from stdin
     transcript_path = None
     session_id = None
+    tool_name = None
+    stop_hook_active = False
     try:
         stdin_data = sys.stdin.read()
         if stdin_data.strip():
             hook_input = json.loads(stdin_data)
             transcript_path = hook_input.get("transcript_path")
             session_id = hook_input.get("session_id")
+            tool_name = hook_input.get("hook_event_name")
+            stop_hook_active = hook_input.get("stop_hook_active", False)
             # Debug: log what we received
-            print(f"DEBUG stop_hygiene_hook: transcript_path={transcript_path}, session_id={session_id}", file=sys.stderr)
+            print(f"DEBUG stop_hygiene_hook: transcript_path={transcript_path}, session_id={session_id}, tool_name={tool_name}, stop_hook_active={stop_hook_active}", file=sys.stderr)
     except (json.JSONDecodeError, OSError) as e:
         print(f"WARN: stop_hygiene_hook: failed to parse stdin: {e}", file=sys.stderr)
 
-    # Detect if this is an agent session
-    # Check both transcript_path (agent-*.jsonl) and session_id (agent-* prefix)
-    is_agent = is_agent_session(transcript_path)
+    # Prevent infinite loops: if we're already continuing from a stop hook, approve immediately
+    if stop_hook_active:
+        print(json.dumps({
+            "decision": "approve",
+            "reason": "Stop hook already active - approving to prevent infinite loop."
+        }))
+        sys.exit(0)
 
-    # Fallback: also check session_id if transcript_path didn't detect agent
-    if not is_agent and session_id and str(session_id).startswith("agent-"):
-        is_agent = True
-        print(f"DEBUG stop_hygiene_hook: detected agent via session_id={session_id}", file=sys.stderr)
-
-    # Fallback: check environment variable (Claude Code may set this for subagents)
-    if not is_agent and os.environ.get("CLAUDE_AGENT_SESSION"):
-        is_agent = True
-        print(f"DEBUG stop_hygiene_hook: detected agent via CLAUDE_AGENT_SESSION env", file=sys.stderr)
+    # Detect if this is an agent session by checking tool_name
+    is_agent = tool_name == "SubagentStop"
 
     result = evaluate_hygiene(is_agent=is_agent)
 
