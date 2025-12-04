@@ -342,5 +342,39 @@
       "bool      # Whether failure blocks pipeline"
     ],
     "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T16:00:34.654473+00:00",
+    "subagent_type": "backend-development:tdd-orchestrator",
+    "file_references": [],
+    "error_patterns": [
+      "After 3 retries, mark failed, continue batch",
+      "** Focus on tests that validate REAL agent behavior:"
+    ],
+    "learnings": [
+      "Only orchestrator writes state, agents return data"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T16:01:16.640480+00:00",
+    "subagent_type": "backend-development:tdd-orchestrator",
+    "file_references": [],
+    "error_patterns": [
+      "** Focus on tests that catch issues MOCKING would hide:"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T16:01:40.090600+00:00",
+    "subagent_type": "full-stack-orchestration:performance-engineer",
+    "file_references": [],
+    "error_patterns": [
+      "int",
+      "int",
+      "10%",
+      "24 hours",
+      "** Design for:"
+    ],
+    "learnings": []
   }
 ]

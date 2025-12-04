@@ -1,14 +1,40 @@
 # Sprint Status Tracking
-# Generated: 2025-12-03
+# Generated: 2025-12-04
 # Project: PHX Houses Analysis Pipeline
 # Tracking System: file-system
+# Story Location: docs/sprint-artifacts/stories
 
-metadata:
-  generated: "2025-12-03"
-  project: "PHX Houses Analysis"
-  project_key: "PHX"
-  tracking_system: "file-system"
-  story_location: "docs/sprint_artifacts/stories"
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic exists in epic file but not contexted
+#   - contexted: Epic tech context created (required before drafting stories)
+#   - done: Epic completed
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - drafted: Story file created in stories folder
+#   - ready-for-dev: Draft approved and story context created
+#   - in-progress: Developer actively working on implementation
+#   - review: Under SM review (via code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - completed: Retrospective has been done
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epics should be 'contexted' before stories can be 'drafted'
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically drafts next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
+
+generated: 2025-12-04
+project: PHX Houses Analysis Pipeline
+project_key: PHX
+tracking_system: file-system
+story_location: docs/sprint-artifacts/stories
 
 development_status:
   # =============================================================================
@@ -24,7 +50,7 @@ development_status:
   1-4-pipeline-state-checkpointing: done
   1-5-pipeline-resume-capability: done
   1-6-transient-error-recovery: done
-  epic-1-retrospective: recommended
+  epic-1-retrospective: completed
 
   # =============================================================================
   # Epic 2: Property Data Acquisition
@@ -32,7 +58,7 @@ development_status:
   #             (County Assessor, Zillow/Redfin, Google Maps, GreatSchools)
   # Stories: 7 | PRD Coverage: FR1-6, FR58-62
   # =============================================================================
-  epic-2: backlog
+  epic-2: contexted
   2-1-batch-analysis-cli-entry-point: backlog
   2-2-maricopa-county-assessor-api-integration: backlog
   2-3-zillow-redfin-listing-extraction: backlog
@@ -117,45 +143,28 @@ development_status:
   epic-7-retrospective: optional
 
 # =============================================================================
-# Status Definitions
-# =============================================================================
-# Epic Statuses:
-#   backlog    - Epic not yet started
-#   contexted  - Epic is being actively worked on
-#
-# Story Statuses:
-#   backlog        - Story not yet started
-#   drafted        - Story details written but not ready for dev
-#   ready-for-dev  - Story fully specified and approved for implementation
-#   in-progress    - Story actively being implemented
-#   review         - Story implementation complete, under review
-#   done           - Story accepted and merged
-#
-# Retrospective Statuses:
-#   optional   - Not required until epic complete
-#   completed  - Retrospective has been conducted
-# =============================================================================
-
-# =============================================================================
-# Summary Statistics (auto-calculated on status changes)
+# Summary Statistics
 # =============================================================================
 summary:
   total_epics: 7
   total_stories: 42
   stories_by_status:
-    backlog: 31
+    backlog: 29
     drafted: 0
     ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 11
+    done: 13
   epics_by_status:
-    backlog: 5
-    contexted: 1
+    backlog: 4
+    contexted: 2
     done: 1
-  p0_stories: 31
-  p1_stories: 11
+  retrospectives_by_status:
+    optional: 6
+    completed: 1
+  p0_stories: 35
+  p1_stories: 7
   fr_coverage: "62/62 (100%)"
   last_updated: "2025-12-04"
-  last_story_completed: "1-5-pipeline-resume-capability"
+  last_story_completed: "2-7-api-integration-infrastructure"
   last_epic_completed: "epic-1"
