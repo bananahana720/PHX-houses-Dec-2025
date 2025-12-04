@@ -18,6 +18,7 @@ Exit codes:
 """
 
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -168,16 +169,31 @@ def main():
     """Main entry point."""
     # Read hook event data from stdin
     transcript_path = None
+    session_id = None
     try:
         stdin_data = sys.stdin.read()
         if stdin_data.strip():
             hook_input = json.loads(stdin_data)
             transcript_path = hook_input.get("transcript_path")
+            session_id = hook_input.get("session_id")
+            # Debug: log what we received
+            print(f"DEBUG stop_hygiene_hook: transcript_path={transcript_path}, session_id={session_id}", file=sys.stderr)
     except (json.JSONDecodeError, OSError) as e:
         print(f"WARN: stop_hygiene_hook: failed to parse stdin: {e}", file=sys.stderr)
 
     # Detect if this is an agent session
+    # Check both transcript_path (agent-*.jsonl) and session_id (agent-* prefix)
     is_agent = is_agent_session(transcript_path)
+
+    # Fallback: also check session_id if transcript_path didn't detect agent
+    if not is_agent and session_id and str(session_id).startswith("agent-"):
+        is_agent = True
+        print(f"DEBUG stop_hygiene_hook: detected agent via session_id={session_id}", file=sys.stderr)
+
+    # Fallback: check environment variable (Claude Code may set this for subagents)
+    if not is_agent and os.environ.get("CLAUDE_AGENT_SESSION"):
+        is_agent = True
+        print(f"DEBUG stop_hygiene_hook: detected agent via CLAUDE_AGENT_SESSION env", file=sys.stderr)
 
     result = evaluate_hygiene(is_agent=is_agent)
 

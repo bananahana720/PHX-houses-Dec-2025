@@ -93,5 +93,74 @@
     "learnings": [
       "** `Read .claude/skills/orchestration/examples/{pattern}.yaml`"
     ]
+  },
+  {
+    "timestamp": "2025-12-04T05:50:54.147201+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "enrichment_data.json is a LIST. Address normalization: `address.lower().replace(\",\", \"\").replace(\".\", \"\").strip()`. Use `shutil.copy` for backup, atomic write via temp file + rename."
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T06:16:02.207840+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\docs\\stories\\CLAUDE.md",
+      "C:\\Users\\Andrew\\.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T06:16:06.784330+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\tests\\integration\\CLAUDE.md",
+      "C:\\Users\\Andrew\\.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T06:16:06.892997+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\src\\phx_home_analysis\\utils\\CLAUDE.md"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T06:16:07.395468+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\src\\phx_home_analysis\\repositories\\CLAUDE.md"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T06:16:22.757143+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\src\\phx_home_analysis\\domain\\CLAUDE.md"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T06:18:07.561879+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\tests\\unit\\CLAUDE.md",
+      "C:\\Users\\Andrew\\.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
   }
 ]
