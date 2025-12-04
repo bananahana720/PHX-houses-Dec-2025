@@ -1,5 +1,7 @@
 .env
 nul
+archive/
+TRASH/
 
 # Security
 .pip-audit-cache/
