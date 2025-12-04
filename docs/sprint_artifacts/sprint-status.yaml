@@ -22,7 +22,7 @@ development_status:
   1-2-property-data-storage-layer: done
   1-3-data-provenance-and-lineage-tracking: backlog
   1-4-pipeline-state-checkpointing: backlog
-  1-5-pipeline-resume-capability: backlog
+  1-5-pipeline-resume-capability: done
   1-6-transient-error-recovery: done
   epic-1-retrospective: optional
 
@@ -143,17 +143,17 @@ summary:
   total_epics: 7
   total_stories: 42
   stories_by_status:
-    backlog: 34
+    backlog: 33
     drafted: 0
     ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 8
+    done: 9
   epics_by_status:
     backlog: 6
     contexted: 1
-  p0_stories: 34
-  p1_stories: 8
+  p0_stories: 33
+  p1_stories: 9
   fr_coverage: "62/62 (100%)"
   last_updated: "2025-12-04"
-  last_story_completed: "7-1-deal-sheet-html-generation"
+  last_story_completed: "1-5-pipeline-resume-capability"

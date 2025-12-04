@@ -17,11 +17,19 @@ Usage:
     reporter = ProgressReporter()
     coordinator = PhaseCoordinator(progress_reporter=reporter)
     await coordinator.execute_pipeline(properties=["123 Main St, Phoenix, AZ 85001"])
+
+    # Resume capability (crash recovery)
+    from phx_home_analysis.pipeline import ResumePipeline, StateValidationError
+
+    resumer = ResumePipeline(work_items_repo)
+    if resumer.can_resume():
+        pending = resumer.get_pending_addresses()
 """
 
 from .orchestrator import AnalysisPipeline, PipelineResult
 from .phase_coordinator import Phase, PhaseCoordinator, PhaseResult, PropertyState
 from .progress import PipelineStats, ProgressReporter
+from .resume import ResumePipeline, StateValidationError
 
 __all__ = [
     # Data pipeline
@@ -35,4 +43,7 @@ __all__ = [
     # Progress reporting
     "ProgressReporter",
     "PipelineStats",
+    # Resume capability (E1.S5)
+    "ResumePipeline",
+    "StateValidationError",
 ]
