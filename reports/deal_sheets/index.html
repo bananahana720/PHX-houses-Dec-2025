@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix Home Deal Sheets - Master List</title>
+    <style>
+/* Reset and Mobile-First Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+/* Typography - Mobile-First */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #1a1a1a;
+    min-width: 320px;
+    overflow-x: hidden;
+}
+
+/* Touch-Friendly Base Styles */
+a, button, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Prevent text overflow */
+p, h1, h2, h3, h4, h5, h6, span, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Tier Badges */
+.tier-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tier-unicorn {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    color: white;
+}
+
+.tier-contender {
+    background: #3b82f6;
+    color: white;
+}
+
+.tier-pass {
+    background: #6b7280;
+    color: white;
+}
+
+/* Status Colors */
+.status-green { background: #22c55e; color: white; }
+.status-red { background: #ef4444; color: white; }
+.status-yellow { background: #f59e0b; color: white; }
+
+/* Header Styles */
+.header {
+    border-bottom: 3px solid #2563eb;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #1e40af;
+}
+
+/* Index Body */
+body {
+    background: #f3f4f6;
+    padding: 20px;
+}
+
+/* Container */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Index Header */
+.header {
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.header h1 { font-size: 32px; }
+.header p { font-size: 16px; color: #6b7280; }
+
+/* Stats Cards */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    opacity: 0.9;
+}
+
+.stat-card .value { font-size: 32px; font-weight: 700; }
+
+/* Properties Table */
+.properties-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.properties-table thead { background: #f3f4f6; }
+
+.properties-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #d1d5db;
+    font-size: 14px;
+    color: #374151;
+}
+
+.properties-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+.properties-table tbody tr:hover { background: #f9fafb; }
+.properties-table tbody tr.failed { background: #fef2f2; }
+.properties-table tbody tr.failed:hover { background: #fee2e2; }
+
+/* Rank Badge */
+.rank-badge {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.rank-badge.top3 { background: linear-gradient(135deg, #10b981, #059669); }
+
+/* Status Badge */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.status-pass { background: #dcfce7; color: #166534; }
+.status-fail { background: #fee2e2; color: #991b1b; }
+
+/* Links */
+.address-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.address-link:hover { text-decoration: underline; }
+
+/* Score */
+.score { font-weight: 700; color: #1e40af; font-size: 16px; }
+
+/* Loading State */
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 1.2em;
+    color: #2563eb;
+}
+
+.loading::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+}
+
+/* Error State */
+.error {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.error strong { display: block; margin-bottom: 10px; }
+.error em { font-size: 0.9em; opacity: 0.8; }
+</style>
+</head>
+<body>
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading" class="loading">Loading property data</div>
+
+        <!-- Error State -->
+        <div id="error" class="error" style="display: none;"></div>
+
+        <!-- Content (hidden until data loads) -->
+        <div id="content" style="display: none;">
+            <div class="header">
+                <h1>Phoenix Home Deal Sheets</h1>
+                <p>Automated property analysis with traffic light kill-switch indicators</p>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>Total Properties</h3>
+                    <div class="value" id="stat-total">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Passed Filters</h3>
+                    <div class="value" id="stat-passed">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Failed Filters</h3>
+                    <div class="value" id="stat-failed">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg Score (Passed)</h3>
+                    <div class="value" id="stat-avg">-</div>
+                </div>
+            </div>
+
+            <table class="properties-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>Price</th>
+                        <th>Score</th>
+                        <th>Tier</th>
+                        <th>Status</th>
+                        <th>Deal Sheet</th>
+                    </tr>
+                </thead>
+                <tbody id="properties-body">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Format currency
+        function formatCurrency(value) {
+            return '$' + value.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+        }
+
+        // Capitalize first letter
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Get tier badge HTML
+        function getTierBadge(tier) {
+            const tierLower = tier.toLowerCase();
+            return '<span class="tier-badge tier-' + tierLower + '">' + capitalize(tierLower) + '</span>';
+        }
+
+        // Get status badge HTML
+        function getStatusBadge(status) {
+            const statusLower = status.toLowerCase();
+            const cssClass = statusLower === 'pass' ? 'status-pass' : 'status-fail';
+            return '<span class="status-badge ' + cssClass + '">' + status + '</span>';
+        }
+
+        // Load and display data
+        async function loadData() {
+            try {
+                const response = await fetch('./data.json');
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+                }
+
+                const data = await response.json();
+
+                // Update stats
+                document.getElementById('stat-total').textContent = data.metadata.total_properties;
+                document.getElementById('stat-passed').textContent = data.metadata.passed_properties;
+                document.getElementById('stat-failed').textContent = data.metadata.failed_properties;
+                document.getElementById('stat-avg').textContent = data.metadata.avg_score_passed.toFixed(1);
+
+                // Build table rows
+                const tbody = document.getElementById('properties-body');
+                let html = '';
+
+                if (data.properties.length === 0) {
+                    html = '<tr><td colspan="8" style="text-align: center; padding: 40px;">No properties found</td></tr>';
+                } else {
+                    data.properties.forEach(function(prop) {
+                        const rowClass = prop.status !== 'PASS' ? 'failed' : '';
+                        const rankClass = prop.rank <= 3 ? 'top3' : '';
+
+                        html += '<tr class="' + rowClass + '">';
+                        html += '<td><span class="rank-badge ' + rankClass + '">' + prop.rank + '</span></td>';
+                        html += '<td>' + prop.address + '</td>';
+                        html += '<td>' + prop.city + '</td>';
+                        html += '<td>' + formatCurrency(prop.price) + '</td>';
+                        html += '<td class="score">' + prop.total_score.toFixed(1) + '</td>';
+                        html += '<td>' + getTierBadge(prop.tier) + '</td>';
+                        html += '<td>' + getStatusBadge(prop.status) + '</td>';
+                        html += '<td><a href="' + prop.filename + '" class="address-link">View Details \u2192</a></td>';
+                        html += '</tr>';
+                    });
+                }
+
+                tbody.innerHTML = html;
+
+                // Hide loading, show content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML =
+                    '<strong>Error loading property data</strong>' +
+                    error.message + '<br><br>' +
+                    '<em>Note: If opening this file directly (file:// protocol), ' +
+                    'the browser may block loading data.json for security reasons. ' +
+                    'Try using a local web server: python -m http.server 8000</em>';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

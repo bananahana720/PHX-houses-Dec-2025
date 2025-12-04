@@ -14,6 +14,7 @@ Main analysis scripts and utilities for the PHX Home Analysis pipeline. Orchestr
 
 | Script | Purpose | Usage | Phase |
 |--------|---------|-------|-------|
+| `pipeline_cli.py` | Modern unified CLI for complete pipeline execution with progress reporting and phase coordination (NEW - E5.S1) | `python scripts/pipeline_cli.py --all` | All (0-4) |
 | `phx_home_analyzer.py` | Main scoring pipeline - applies kill-switch filters and weighted scoring | `python scripts/phx_home_analyzer.py` | Phase 3 |
 | `extract_county_data.py` | Extract official county data from Maricopa Assessor API (lot size, year built, garage, sewer, pool) | `python scripts/extract_county_data.py --all [--update-only]` | Phase 0 |
 | `extract_images.py` | Multi-source image extraction with stealth browsers (Zillow, Redfin) using nodriver + curl_cffi | `python scripts/extract_images.py --all [--sources zillow,redfin]` | Phase 1 |
@@ -37,6 +38,14 @@ Main analysis scripts and utilities for the PHX Home Analysis pipeline. Orchestr
 - **Reconciliation**: `--reconcile` flag repairs data inconsistencies between work_items.json, enrichment_data.json, CSV
 - **Returns**: JSON with `can_spawn`, `reason`, `context` (image_folder, image_count, property_data)
 - **Exit Codes**: 0 = success/can_spawn, 1 = blocked/errors_found
+
+### Pipeline CLI Details (NEW - E5.S1)
+- **Framework**: Typer CLI framework with async/await support
+- **Progress**: Rich library progress bar with percentage, ETA, status table
+- **Commands**: `--all` (all properties), `--test` (first 5), `<address>` (single), `--status` (current state)
+- **Options**: `--resume` (default), `--fresh` (clear state), `--strict` (fail fast), `--skip-phase N`
+- **Output**: Real-time progress, phase transitions, final tier breakdown, deal sheet generation
+- **State**: Tracks in work_items.json for crash recovery and resumption
 
 ## Visualization Scripts
 
@@ -172,6 +181,10 @@ Package for generating property deal sheet reports (see Reporting Scripts sectio
 
 ### Full Pipeline Execution
 ```bash
+# NEW (E5.S1): Single unified command for complete pipeline
+python scripts/pipeline_cli.py --all
+
+# OR manual phase-by-phase execution:
 # Phase 0: County data
 python scripts/extract_county_data.py --all --update-only
 

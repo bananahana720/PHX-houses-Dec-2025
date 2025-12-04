@@ -8,6 +8,49 @@ description: Multi-agent property analysis with visual browsing
 
 Orchestrate multi-phase property analysis using specialized agents and skills.
 
+## PRIMARY: CLI Execution (Recommended)
+
+For automated pipeline execution with progress reporting, use the CLI:
+
+```bash
+# Process all properties from CSV
+python scripts/pipeline_cli.py --all
+
+# Process first 5 properties (test mode)
+python scripts/pipeline_cli.py --test
+
+# Process a single property
+python scripts/pipeline_cli.py "123 Main St, Phoenix, AZ 85001"
+
+# Show current pipeline status
+python scripts/pipeline_cli.py --status
+
+# Resume from checkpoint (default)
+python scripts/pipeline_cli.py --all --resume
+
+# Fresh start, clear all checkpoints
+python scripts/pipeline_cli.py --all --fresh
+
+# Strict mode - fail fast on errors
+python scripts/pipeline_cli.py --all --strict
+
+# Skip a specific phase (0-4)
+python scripts/pipeline_cli.py --all --skip-phase 1
+```
+
+The CLI provides:
+- Rich progress bar with ETA
+- Status table with tier breakdown
+- Automatic checkpoint/resume
+- Phase dependency validation
+- Parallel Phase 1 execution (listing + map)
+
+---
+
+## FALLBACK: Manual Orchestration
+
+If CLI execution is not available or manual control is needed, follow the steps below.
+
 ## STEP 0: GET YOUR BEARINGS (MANDATORY)
 
 Before ANY property analysis, orient yourself to current pipeline state.

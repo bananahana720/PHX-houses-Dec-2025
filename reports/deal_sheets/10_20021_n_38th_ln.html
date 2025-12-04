@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deal Sheet: 20021 N 38th Ln, Glendale, AZ 85308</title>
+    <style>
+/* Reset and Mobile-First Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+/* Typography - Mobile-First */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #1a1a1a;
+    min-width: 320px;
+    overflow-x: hidden;
+}
+
+/* Touch-Friendly Base Styles */
+a, button, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Prevent text overflow */
+p, h1, h2, h3, h4, h5, h6, span, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Tier Badges */
+.tier-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tier-unicorn {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    color: white;
+}
+
+.tier-contender {
+    background: #3b82f6;
+    color: white;
+}
+
+.tier-pass {
+    background: #6b7280;
+    color: white;
+}
+
+/* Status Colors */
+.status-green { background: #22c55e; color: white; }
+.status-red { background: #ef4444; color: white; }
+.status-yellow { background: #f59e0b; color: white; }
+
+/* Header Styles */
+.header {
+    border-bottom: 3px solid #2563eb;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #1e40af;
+}
+
+/* Deal Sheet Body */
+body {
+    background: #ffffff;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media print {
+    body { padding: 0; }
+    .no-print { display: none; }
+}
+
+/* Deal Sheet Header */
+.header h1 { font-size: 28px; }
+
+.header-meta {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 18px;
+}
+
+.header-meta .price {
+    font-size: 24px;
+    font-weight: 700;
+    color: #059669;
+}
+
+.header-meta .score {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/* Deal Sheet Tier Badge Override */
+.tier-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+/* Sections */
+.section {
+    margin-bottom: 25px;
+    page-break-inside: avoid;
+}
+
+.section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #1e40af;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 6px;
+}
+
+/* Kill Switch Table */
+.kill-switch-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.kill-switch-table th {
+    background: #f3f4f6;
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #d1d5db;
+    font-size: 14px;
+}
+
+.kill-switch-table td {
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+.kill-switch-table tr:last-child td { border-bottom: none; }
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 80px;
+    padding: 4px 0;
+    text-align: center;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Verdict Badges */
+.verdict-badge-container { margin-bottom: 15px; }
+
+.verdict-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.verdict-pass { background: #28a745; color: white; }
+.verdict-warning { background: #ffc107; color: #212529; }
+.verdict-fail { background: #dc3545; color: white; }
+
+.severity-info {
+    display: inline-block;
+    margin-left: 15px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Kill Switch Markers */
+.hard-marker { color: #dc3545; font-weight: 700; font-size: 12px; }
+.soft-marker { color: #6b7280; font-size: 12px; }
+.severity-points { font-weight: 700; color: #dc3545; font-size: 12px; margin-left: 8px; }
+
+/* Severity Breakdown */
+.severity-breakdown {
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 15px;
+    font-size: 13px;
+}
+
+.severity-breakdown .score-line { font-weight: 600; margin-bottom: 5px; }
+.severity-breakdown .threshold-line { color: #6b7280; }
+
+/* Scorecard */
+.scorecard {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.score-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 15px;
+}
+
+.score-row:last-child {
+    margin-bottom: 0;
+    padding-top: 12px;
+    border-top: 2px solid #d1d5db;
+    font-weight: 700;
+}
+
+.score-label { min-width: 100px; font-weight: 600; font-size: 14px; }
+.score-value { min-width: 80px; font-weight: 700; color: #1e40af; font-size: 14px; }
+
+.score-bar-container {
+    flex: 1;
+    height: 24px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.score-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+}
+
+.score-bar-percentage { color: white; font-size: 11px; font-weight: 700; }
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.metric {
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid #3b82f6;
+}
+
+.metric-label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.metric-value { font-size: 18px; font-weight: 700; color: #1e40af; }
+.metric-note { font-size: 11px; color: #6b7280; margin-top: 2px; }
+
+/* Assessment Notes */
+.assessment-notes {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f8fafc;
+    border-left: 3px solid #3b82f6;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #475569;
+}
+
+/* Features */
+.features { display: flex; gap: 20px; flex-wrap: wrap; }
+.feature-column { flex: 1; min-width: 250px; }
+.feature-column h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #059669; }
+.feature-column.missing h3 { color: #dc2626; }
+.feature-column ul { list-style: none; padding-left: 0; }
+.feature-column li { padding: 4px 0; padding-left: 20px; position: relative; font-size: 14px; }
+.feature-column li:before { content: "\2713"; position: absolute; left: 0; color: #059669; font-weight: 700; }
+.feature-column.missing li:before { content: "\2717"; color: #dc2626; }
+
+/* Back Link */
+.back-link {
+    display: inline-block;
+    margin-bottom: 15px;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 2px solid #2563eb;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.back-link:hover { background: #2563eb; color: white; }
+
+/* Failure Notice */
+.failure-notice {
+    background: #fef2f2;
+    border: 2px solid #ef4444;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.failure-notice h3 { color: #dc2626; font-size: 16px; margin-bottom: 8px; font-weight: 700; }
+.failure-notice ul { margin-left: 20px; color: #7f1d1d; }
+
+/* Cost Warning */
+.cost-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cost-warning .warning-badge {
+    background-color: #ffc107;
+    color: #000;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cost-warning .warning-text { font-weight: 600; font-size: 15px; color: #856404; }
+.cost-warning .warning-note { font-size: 13px; color: #856404; opacity: 0.9; }
+
+/* Location Risk Styling */
+.metric-value.flood-minimal { color: #059669; }
+.metric-value.flood-moderate { color: #f59e0b; }
+.metric-value.flood-high { color: #dc2626; }
+.metric-value.crime-safe { color: #059669; }
+.metric-value.crime-average { color: #3b82f6; }
+.metric-value.crime-dangerous { color: #dc2626; }
+
+/* Noise Level Styling */
+.metric-value.noise-quiet { color: #059669; }
+.metric-value.noise-moderate { color: #f59e0b; }
+.metric-value.noise-loud { color: #dc2626; }
+
+/* =============================================================================
+   MOBILE RESPONSIVE BREAKPOINTS
+   ============================================================================= */
+
+/* Small Mobile (320px - 374px) */
+@media (max-width: 374px) {
+    body { padding: 10px; font-size: 14px; }
+    .header h1 { font-size: 20px; }
+    .header-meta { flex-direction: column; gap: 10px; align-items: flex-start; }
+    .header-meta .price { font-size: 20px; }
+    .header-meta .score { font-size: 16px; }
+    .metrics-grid { grid-template-columns: 1fr; gap: 10px; }
+    .score-row { flex-direction: column; gap: 8px; }
+    .score-label { min-width: auto; }
+    .score-value { min-width: auto; }
+    .kill-switch-table { font-size: 12px; }
+    .kill-switch-table th, .kill-switch-table td { padding: 6px 4px; }
+    .features { flex-direction: column; }
+    .feature-column { min-width: 100%; }
+}
+
+/* Standard Mobile (375px - 767px) */
+@media (min-width: 375px) and (max-width: 767px) {
+    body { padding: 15px; }
+    .header h1 { font-size: 22px; }
+    .header-meta { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .score-row { flex-wrap: wrap; }
+    .features { flex-direction: column; }
+    .feature-column { min-width: 100%; }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    body { padding: 20px; }
+    .header h1 { font-size: 26px; }
+    .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+    body { padding: 20px; max-width: 1200px; margin: 0 auto; }
+    .header h1 { font-size: 28px; }
+    .metrics-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+}
+
+/* =============================================================================
+   IMAGE GALLERY STYLES
+   ============================================================================= */
+
+.image-gallery {
+    margin-top: 15px;
+}
+
+.image-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+@media (min-width: 768px) {
+    .image-gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+}
+
+.image-gallery-item {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f3f4f6;
+}
+
+.image-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.image-gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+.image-gallery-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    background: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    color: #6b7280;
+    text-align: center;
+}
+
+.image-gallery-placeholder svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+/* =============================================================================
+   TOUR CHECKLIST STYLES
+   ============================================================================= */
+
+.tour-checklist {
+    margin-top: 15px;
+}
+
+.checklist-items {
+    list-style: none;
+    padding: 0;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: #f9fafb;
+    border-radius: 6px;
+    border-left: 4px solid #3b82f6;
+    min-height: 44px;
+}
+
+.checklist-item.warning {
+    border-left-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.checklist-item.fail {
+    border-left-color: #ef4444;
+    background: #fef2f2;
+}
+
+.checklist-checkbox {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    margin-top: 2px;
+}
+
+.checklist-content {
+    flex: 1;
+}
+
+.checklist-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+
+.checklist-detail {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.checklist-priority {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+
+.priority-high {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.priority-medium {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.priority-low {
+    background: #f0f9ff;
+    color: #2563eb;
+}
+
+/* =============================================================================
+   PRINT STYLES
+   ============================================================================= */
+
+@media print {
+    body {
+        padding: 0;
+        font-size: 12px;
+        color: #000;
+        background: #fff;
+    }
+
+    .no-print { display: none !important; }
+
+    .header { page-break-after: avoid; }
+    .section { page-break-inside: avoid; }
+
+    .tier-badge, .verdict-badge, .status-indicator {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .image-gallery-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .checklist-checkbox {
+        border: 1px solid #000;
+    }
+
+    .checklist-item {
+        padding: 8px;
+        margin-bottom: 4px;
+    }
+
+    a { color: #000; text-decoration: none; }
+
+    .back-link { display: none; }
+}
+</style>
+</head>
+<body>
+    <a href="index.html" class="back-link no-print">\u2190 Back to All Properties</a>
+
+    
+    <div class="failure-notice">
+        <h3>\u26a0\ufe0f KILL SWITCH FAILURES</h3>
+        <ul>
+        
+            <li>N/A</li>
+        
+        </ul>
+    </div>
+    
+
+    
+
+    <div class="header">
+        <h1>20021 N 38th Ln, Glendale, AZ 85308</h1>
+        <div class="header-meta">
+            <span class="price">$545,000</span>
+            <span class="score">355.0/605 pts</span>
+            <span class="tier-badge tier-pass">pass</span>
+            <span style="color: #6b7280;">Rank #10</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Kill Switch Status</h2>
+
+        <!-- Verdict Badge -->
+        <div class="verdict-badge-container">
+            
+            <span class="verdict-badge verdict-pass">PASS</span>
+            
+        </div>
+
+        <table class="kill-switch-table">
+            <thead>
+                <tr>
+                    <th>Criterion</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+            
+                <tr>
+                    <td><strong>HOA</strong></td>
+                    <td>
+                        
+                        <span class="hard-marker">[H]</span>
+                        
+                    </td>
+                    <td>
+                        <span class="status-indicator status-green">
+                            PASS
+                        </span>
+                    </td>
+                    <td>
+                        $0/mo
+                        
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td><strong>BEDS</strong></td>
+                    <td>
+                        
+                        <span class="hard-marker">[H]</span>
+                        
+                    </td>
+                    <td>
+                        <span class="status-indicator status-green">
+                            PASS
+                        </span>
+                    </td>
+                    <td>
+                        4 beds
+                        
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td><strong>Baths</strong></td>
+                    <td>
+                        
+                        <span class="hard-marker">[H]</span>
+                        
+                    </td>
+                    <td>
+                        <span class="status-indicator status-green">
+                            PASS
+                        </span>
+                    </td>
+                    <td>
+                        3.0 baths
+                        
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td><strong>SQFT</strong></td>
+                    <td>
+                        
+                        <span class="hard-marker">[H]</span>
+                        
+                    </td>
+                    <td>
+                        <span class="status-indicator status-green">
+                            PASS
+                        </span>
+                    </td>
+                    <td>
+                        2,627 sqft
+                        
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td><strong>Lot_Size</strong></td>
+                    <td>
+                        
+                        <span class="hard-marker">[H]</span>
+                        
+                    </td>
+                    <td>
+                        <span class="status-indicator status-green">
+                            PASS
+                        </span>
+                    </td>
+                    <td>
+                        10,019 sqft
+                        
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td><strong>Sewer</strong></td>
+                    <td>
+                        
+                        <span class="hard-marker">[H]</span>
+                        
+                    </td>
+                    <td>
+                        <span class="status-indicator status-green">
+                            PASS
+                        </span>
+                    </td>
+                    <td>
+                        City
+                        
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td><strong>Garage</strong></td>
+                    <td>
+                        
+                        <span class="hard-marker">[H]</span>
+                        
+                    </td>
+                    <td>
+                        <span class="status-indicator status-green">
+                            PASS
+                        </span>
+                    </td>
+                    <td>
+                        3-car
+                        
+                    </td>
+                </tr>
+            
+            </tbody>
+        </table>
+
+        <!-- Severity Breakdown Footer -->
+        
+    </div>
+
+    <div class="section">
+        <h2>Scorecard</h2>
+        <div class="scorecard">
+            <div class="score-row">
+                <div class="score-label">Location:</div>
+                <div class="score-value">150.5/250</div>
+                <div class="score-bar-container">
+                    <div class="score-bar" style="width: 60.2%">
+                        <span class="score-bar-percentage">60%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="score-row">
+                <div class="score-label">Systems:</div>
+                <div class="score-value">109.8/175</div>
+                <div class="score-bar-container">
+                    <div class="score-bar" style="width: 62.7%">
+                        <span class="score-bar-percentage">63%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="score-row">
+                <div class="score-label">Interior:</div>
+                <div class="score-value">95.0/180</div>
+                <div class="score-bar-container">
+                    <div class="score-bar" style="width: 52.8%">
+                        <span class="score-bar-percentage">53%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="score-row">
+                <div class="score-label">TOTAL:</div>
+                <div class="score-value">355.0/605</div>
+                <div class="score-bar-container">
+                    <div class="score-bar" style="width: 58.7%">
+                        <span class="score-bar-percentage">59%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Interior Assessment (Section C: 180 pts)</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Kitchen</div>
+                <div class="metric-value">N/A/10</div>
+                <div class="metric-note">(40 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Master Suite</div>
+                <div class="metric-value">N/A/10</div>
+                <div class="metric-note">(35 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Natural Light</div>
+                <div class="metric-value">N/A/10</div>
+                <div class="metric-note">(30 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Ceilings</div>
+                <div class="metric-value">N/A/10</div>
+                <div class="metric-note">(25 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Fireplace</div>
+                <div class="metric-value">Yes</div>
+                <div class="metric-note">(20 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Laundry</div>
+                <div class="metric-value">N/A/10</div>
+                <div class="metric-note">(20 pts max)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Aesthetics</div>
+                <div class="metric-value">N/A/10</div>
+                <div class="metric-note">(10 pts max)</div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="section">
+        <h2>Exterior Assessment</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Roof Condition</div>
+                <div class="metric-value">N/A</div>
+                <div class="metric-note">Est. Age: 8.0 yrs</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">HVAC</div>
+                <div class="metric-value">Unknown</div>
+                <div class="metric-note">Est. Age: 4.0 yrs | N/A</div>
+            </div>
+            
+            <div class="metric">
+                <div class="metric-label">Pool Equipment</div>
+                <div class="metric-value">Unknown</div>
+                <div class="metric-note">Est. Age: 8.0 yrs</div>
+            </div>
+            
+            <div class="metric">
+                <div class="metric-label">Covered Patio</div>
+                <div class="metric-value">No</div>
+                <div class="metric-note">Score: N/A/10</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Market Position</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Days on Market</div>
+                <div class="metric-value">N/A</div>
+                <div class="metric-note"></div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Price Reduced</div>
+                <div class="metric-value">No</div>
+                <div class="metric-note"></div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Air Quality</div>
+                <div class="metric-value">N/A</div>
+                <div class="metric-note">Unknown</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Location Risk Assessment</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Flood Zone</div>
+                <div class="metric-value">Unknown</div>
+                <div class="metric-note">Insurance: Unknown</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Violent Crime Index</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note">Higher = Safer</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Property Crime Index</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note">Higher = Safer</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Crime Risk Level</div>
+                <div class="metric-value">Unknown</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Zoning</div>
+                <div class="metric-value">Unknown</div>
+                <div class="metric-note"></div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Noise Level</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note">Unknown (100=Quietest)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Walkability & Transit</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Walk Score</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note"></div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Transit Score</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note"></div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Bike Score</div>
+                <div class="metric-value">N/A/100</div>
+                <div class="metric-note"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Neighborhood Demographics</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Census Tract</div>
+                <div class="metric-value">Unknown</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Median Household Income</div>
+                <div class="metric-value">$N/A</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Median Home Value</div>
+                <div class="metric-value">$N/A</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Key Metrics</h2>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Price/Sqft</div>
+                <div class="metric-value">$207.46</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Living Area</div>
+                <div class="metric-value">2,627 sqft</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Commute Time</div>
+                <div class="metric-value">25 min</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">School Rating</div>
+                <div class="metric-value">8.4/10</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Property Tax</div>
+                <div class="metric-value">$2,350/yr</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Grocery Distance</div>
+                <div class="metric-value">1.0 mi</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Feature Highlights</h2>
+        <div class="features">
+            <div class="feature-column">
+                <h3>PRESENT</h3>
+                <ul>
+                
+                    <li>Pool</li>
+                
+                    <li>3-car garage</li>
+                
+                    <li>3.0 bathrooms</li>
+                
+                    <li>HVAC 4 years old</li>
+                
+                </ul>
+            </div>
+            <div class="feature-column missing">
+                <h3>MISSING/UNKNOWN</h3>
+                <ul>
+                
+                    <li>Solar (unknown)</li>
+                
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Gallery Section -->
+    <div class="section">
+        <h2>Property Images</h2>
+        <div class="image-gallery">
+            
+            <div class="image-gallery-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>No property images available</span>
+                <span style="font-size: 12px; margin-top: 5px;">Images will appear after Phase 1 extraction</span>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Tour Checklist Section -->
+    <div class="section">
+        <h2>Tour Checklist</h2>
+        <div class="tour-checklist">
+            
+            <ul class="checklist-items">
+                
+                <li class="checklist-item warning">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            HVAC System Inspection
+                            
+                            <span class="checklist-priority priority-high">high</span>
+                            
+                        </div>
+                        
+                        <div class="checklist-detail">Home is 28 years old. Arizona HVAC units typically last 10-15 years. Check unit age, condition, and refrigerant type.</div>
+                        
+                    </div>
+                </li>
+                
+                <li class="checklist-item warning">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            Roof Condition Check
+                            
+                            <span class="checklist-priority priority-high">high</span>
+                            
+                        </div>
+                        
+                        <div class="checklist-detail">Home is 28 years old. Tile roofs last 30-40 years, shingle 15-20 years in AZ. Look for cracked tiles, exposed underlayment, or worn shingles.</div>
+                        
+                    </div>
+                </li>
+                
+            </ul>
+            
+        </div>
+    </div>
+</body>
+</html>

@@ -142,12 +142,26 @@ All tests follow clear structure:
 **Async Tests:** Async tests decorated with `@pytest.mark.asyncio`
 **Mocking:** External APIs mocked (GreatSchools, WalkScore, FEMA); internal services real
 
+### test_pipeline_integration.py (NEW - E5.S1)
+**Focus:** Pipeline orchestration integration (PhaseCoordinator + ProgressReporter)
+
+**Test Coverage:**
+- Phase execution and sequencing validation
+- Progress tracking across batch operations
+- State file integration (work_items.json updates)
+- Multi-property batch processing (5-100 properties)
+- Error recovery and retry logic
+- CLI command execution end-to-end
+
+**Estimated Tests:** ~20 integration tests validating orchestration
+
 ## Tasks
 
 - [x] Document integration test structure and test files
 - [x] Map test organization: fixtures, parametrization, async patterns
 - [x] Extract test counts per file (27 total integration tests)
 - [x] Document error recovery test scenarios (crash recovery, transient retry)
+- [x] Add test_pipeline_integration.py for E5.S1 orchestration (NEW)
 - [ ] Add performance benchmarks for large batches P:M
 - [ ] Implement CI/CD gates for integration test coverage P:H
 

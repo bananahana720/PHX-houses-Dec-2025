@@ -48,6 +48,10 @@ dependencies = [
     "pydantic-settings>=2.8.0",
     # Hot-reload file watching
     "watchfiles>=1.0.0",
+    # CLI framework for pipeline orchestration
+    "typer>=0.15.0",
+    # Rich terminal output (progress bars, tables, formatting)
+    "rich>=13.0.0",
 ]
 
 [project.optional-dependencies]
