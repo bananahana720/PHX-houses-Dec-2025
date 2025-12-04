@@ -14,18 +14,38 @@ All templates use Jinja2 syntax for dynamic content rendering.
 # COMMON CSS - Shared across all templates
 # =============================================================================
 COMMON_CSS = """
-/* Reset */
+/* Reset and Mobile-First Base */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Typography */
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+/* Typography - Mobile-First */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     line-height: 1.6;
     color: #1a1a1a;
+    min-width: 320px;
+    overflow-x: hidden;
+}
+
+/* Touch-Friendly Base Styles */
+a, button, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Prevent text overflow */
+p, h1, h2, h3, h4, h5, h6, span, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Tier Badges */
@@ -374,6 +394,238 @@ body {
 .metric-value.noise-quiet { color: #059669; }
 .metric-value.noise-moderate { color: #f59e0b; }
 .metric-value.noise-loud { color: #dc2626; }
+
+/* =============================================================================
+   MOBILE RESPONSIVE BREAKPOINTS
+   ============================================================================= */
+
+/* Small Mobile (320px - 374px) */
+@media (max-width: 374px) {
+    body { padding: 10px; font-size: 14px; }
+    .header h1 { font-size: 20px; }
+    .header-meta { flex-direction: column; gap: 10px; align-items: flex-start; }
+    .header-meta .price { font-size: 20px; }
+    .header-meta .score { font-size: 16px; }
+    .metrics-grid { grid-template-columns: 1fr; gap: 10px; }
+    .score-row { flex-direction: column; gap: 8px; }
+    .score-label { min-width: auto; }
+    .score-value { min-width: auto; }
+    .kill-switch-table { font-size: 12px; }
+    .kill-switch-table th, .kill-switch-table td { padding: 6px 4px; }
+    .features { flex-direction: column; }
+    .feature-column { min-width: 100%; }
+}
+
+/* Standard Mobile (375px - 767px) */
+@media (min-width: 375px) and (max-width: 767px) {
+    body { padding: 15px; }
+    .header h1 { font-size: 22px; }
+    .header-meta { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .score-row { flex-wrap: wrap; }
+    .features { flex-direction: column; }
+    .feature-column { min-width: 100%; }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    body { padding: 20px; }
+    .header h1 { font-size: 26px; }
+    .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+    body { padding: 20px; max-width: 1200px; margin: 0 auto; }
+    .header h1 { font-size: 28px; }
+    .metrics-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+}
+
+/* =============================================================================
+   IMAGE GALLERY STYLES
+   ============================================================================= */
+
+.image-gallery {
+    margin-top: 15px;
+}
+
+.image-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+@media (min-width: 768px) {
+    .image-gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+}
+
+.image-gallery-item {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f3f4f6;
+}
+
+.image-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.image-gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+.image-gallery-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    background: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    color: #6b7280;
+    text-align: center;
+}
+
+.image-gallery-placeholder svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+/* =============================================================================
+   TOUR CHECKLIST STYLES
+   ============================================================================= */
+
+.tour-checklist {
+    margin-top: 15px;
+}
+
+.checklist-items {
+    list-style: none;
+    padding: 0;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: #f9fafb;
+    border-radius: 6px;
+    border-left: 4px solid #3b82f6;
+    min-height: 44px;
+}
+
+.checklist-item.warning {
+    border-left-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.checklist-item.fail {
+    border-left-color: #ef4444;
+    background: #fef2f2;
+}
+
+.checklist-checkbox {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    margin-top: 2px;
+}
+
+.checklist-content {
+    flex: 1;
+}
+
+.checklist-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+
+.checklist-detail {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.checklist-priority {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+
+.priority-high {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.priority-medium {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.priority-low {
+    background: #f0f9ff;
+    color: #2563eb;
+}
+
+/* =============================================================================
+   PRINT STYLES
+   ============================================================================= */
+
+@media print {
+    body {
+        padding: 0;
+        font-size: 12px;
+        color: #000;
+        background: #fff;
+    }
+
+    .no-print { display: none !important; }
+
+    .header { page-break-after: avoid; }
+    .section { page-break-inside: avoid; }
+
+    .tier-badge, .verdict-badge, .status-indicator {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .image-gallery-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .checklist-checkbox {
+        border: 1px solid #000;
+    }
+
+    .checklist-item {
+        padding: 8px;
+        margin-bottom: 4px;
+    }
+
+    a { color: #000; text-decoration: none; }
+
+    .back-link { display: none; }
+}
 """
 
 # =============================================================================
@@ -654,8 +906,8 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
                 <div class="score-label">Location:</div>
                 <div class="score-value">{{{{ "{{:.1f}}".format(property.score_location) }}}}/250</div>
                 <div class="score-bar-container">
-                    <div class="score-bar" style="width: {{{{ (property.score_location / 230 * 100)|round(1) }}}}%">
-                        <span class="score-bar-percentage">{{{{ (property.score_location / 230 * 100)|round(0)|int }}}}%</span>
+                    <div class="score-bar" style="width: {{{{ (property.score_location / 250 * 100)|round(1) }}}}%">
+                        <span class="score-bar-percentage">{{{{ (property.score_location / 250 * 100)|round(0)|int }}}}%</span>
                     </div>
                 </div>
             </div>
@@ -663,8 +915,8 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
                 <div class="score-label">Systems:</div>
                 <div class="score-value">{{{{ "{{:.1f}}".format(property.score_lot_systems) }}}}/175</div>
                 <div class="score-bar-container">
-                    <div class="score-bar" style="width: {{{{ (property.score_lot_systems / 180 * 100)|round(1) }}}}%">
-                        <span class="score-bar-percentage">{{{{ (property.score_lot_systems / 180 * 100)|round(0)|int }}}}%</span>
+                    <div class="score-bar" style="width: {{{{ (property.score_lot_systems / 175 * 100)|round(1) }}}}%">
+                        <span class="score-bar-percentage">{{{{ (property.score_lot_systems / 175 * 100)|round(0)|int }}}}%</span>
                     </div>
                 </div>
             </div>
@@ -672,8 +924,8 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
                 <div class="score-label">Interior:</div>
                 <div class="score-value">{{{{ "{{:.1f}}".format(property.score_interior) }}}}/180</div>
                 <div class="score-bar-container">
-                    <div class="score-bar" style="width: {{{{ (property.score_interior / 190 * 100)|round(1) }}}}%">
-                        <span class="score-bar-percentage">{{{{ (property.score_interior / 190 * 100)|round(0)|int }}}}%</span>
+                    <div class="score-bar" style="width: {{{{ (property.score_interior / 180 * 100)|round(1) }}}}%">
+                        <span class="score-bar-percentage">{{{{ (property.score_interior / 180 * 100)|round(0)|int }}}}%</span>
                     </div>
                 </div>
             </div>
@@ -681,8 +933,8 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
                 <div class="score-label">TOTAL:</div>
                 <div class="score-value">{{{{ property.total_score }}}}/605</div>
                 <div class="score-bar-container">
-                    <div class="score-bar" style="width: {{{{ (property.total_score / 600 * 100)|round(1) }}}}%">
-                        <span class="score-bar-percentage">{{{{ (property.total_score / 600 * 100)|round(0)|int }}}}%</span>
+                    <div class="score-bar" style="width: {{{{ (property.total_score / 605 * 100)|round(1) }}}}%">
+                        <span class="score-bar-percentage">{{{{ (property.total_score / 605 * 100)|round(0)|int }}}}%</span>
                     </div>
                 </div>
             </div>
@@ -690,7 +942,7 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
     </div>
 
     <div class="section">
-        <h2>Interior Assessment (Section C)</h2>
+        <h2>Interior Assessment (Section C: 180 pts)</h2>
         <div class="metrics-grid">
             <div class="metric">
                 <div class="metric-label">Kitchen</div>
@@ -700,7 +952,7 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
             <div class="metric">
                 <div class="metric-label">Master Suite</div>
                 <div class="metric-value">{{{{ property.master_suite_score or 'N/A' }}}}/10</div>
-                <div class="metric-note">(40 pts max)</div>
+                <div class="metric-note">(35 pts max)</div>
             </div>
             <div class="metric">
                 <div class="metric-label">Natural Light</div>
@@ -710,7 +962,7 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
             <div class="metric">
                 <div class="metric-label">Ceilings</div>
                 <div class="metric-value">{{{{ property.high_ceilings_score or 'N/A' }}}}/10</div>
-                <div class="metric-note">(30 pts max)</div>
+                <div class="metric-note">(25 pts max)</div>
             </div>
             <div class="metric">
                 <div class="metric-label">Fireplace</div>
@@ -907,6 +1159,65 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
                 {{% endfor %}}
                 </ul>
             </div>
+        </div>
+    </div>
+
+    <!-- Image Gallery Section -->
+    <div class="section">
+        <h2>Property Images</h2>
+        <div class="image-gallery">
+            {{% if property_images and property_images|length > 0 %}}
+            <div class="image-gallery-grid">
+                {{% for image in property_images %}}
+                <div class="image-gallery-item">
+                    <img src="{{{{ image.path }}}}" alt="Property image {{{{ loop.index }}}}" loading="lazy">
+                </div>
+                {{% endfor %}}
+            </div>
+            {{% else %}}
+            <div class="image-gallery-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>No property images available</span>
+                <span style="font-size: 12px; margin-top: 5px;">Images will appear after Phase 1 extraction</span>
+            </div>
+            {{% endif %}}
+        </div>
+    </div>
+
+    <!-- Tour Checklist Section -->
+    <div class="section">
+        <h2>Tour Checklist</h2>
+        <div class="tour-checklist">
+            {{% if tour_checklist and tour_checklist|length > 0 %}}
+            <ul class="checklist-items">
+                {{% for item in tour_checklist %}}
+                <li class="checklist-item {{{{ item.severity }}}}">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            {{{{ item.title }}}}
+                            {{% if item.priority %}}
+                            <span class="checklist-priority priority-{{{{ item.priority }}}}">{{{{ item.priority }}}}</span>
+                            {{% endif %}}
+                        </div>
+                        {{% if item.detail %}}
+                        <div class="checklist-detail">{{{{ item.detail }}}}</div>
+                        {{% endif %}}
+                    </div>
+                </li>
+                {{% endfor %}}
+            </ul>
+            {{% else %}}
+            <div class="image-gallery-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>No special inspection items</span>
+                <span style="font-size: 12px; margin-top: 5px;">All kill-switch criteria passed - standard inspection recommended</span>
+            </div>
+            {{% endif %}}
         </div>
     </div>
 </body>
