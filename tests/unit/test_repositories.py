@@ -680,6 +680,262 @@ class TestJsonEnrichmentRepositorySerialization:
 
 
 # ============================================================================
+# Normalized Address Lookup Tests
+# ============================================================================
+
+
+class TestNormalizedAddressLookup:
+    """Tests for normalized address lookup functionality."""
+
+    def test_load_for_property_exact_match(self, temp_json_file):
+        """Exact address match should return enrichment data."""
+        repo = JsonEnrichmentRepository(temp_json_file)
+        result = repo.load_for_property("123 Main St, Phoenix, AZ 85001")
+
+        assert result is not None
+        assert result.full_address == "123 Main St, Phoenix, AZ 85001"
+
+    def test_load_for_property_case_insensitive(self, temp_json_file):
+        """Lookup should be case-insensitive."""
+        repo = JsonEnrichmentRepository(temp_json_file)
+        result = repo.load_for_property("123 MAIN ST, PHOENIX, AZ 85001")
+
+        assert result is not None
+        assert result.lot_sqft == 9500
+
+    def test_load_for_property_punctuation_insensitive(self, temp_json_file):
+        """Lookup should ignore punctuation differences."""
+        repo = JsonEnrichmentRepository(temp_json_file)
+        # Data stored as "123 Main St, Phoenix, AZ 85001"
+        result = repo.load_for_property("123 Main St Phoenix AZ 85001")
+
+        assert result is not None
+        assert result.lot_sqft == 9500
+
+    def test_load_for_property_whitespace_insensitive(self, temp_json_file):
+        """Lookup should handle extra whitespace."""
+        repo = JsonEnrichmentRepository(temp_json_file)
+        result = repo.load_for_property("  123 Main St,  Phoenix,  AZ 85001  ")
+
+        assert result is not None
+        assert result.lot_sqft == 9500
+
+    def test_load_for_property_not_found(self, temp_json_file):
+        """Non-existent address should return None."""
+        repo = JsonEnrichmentRepository(temp_json_file)
+        result = repo.load_for_property("999 Nonexistent St, Mesa, AZ 85201")
+
+        assert result is None
+
+
+class TestNormalizedAddressPersistence:
+    """Tests for normalized_address field persistence."""
+
+    def test_save_includes_normalized_address(self, tmp_path):
+        """Saved data should include normalized_address field."""
+        json_file = tmp_path / "enrichment_data.json"
+        repo = JsonEnrichmentRepository(json_file)
+
+        enrichment_data = {
+            "123 Main St, Phoenix, AZ 85001": EnrichmentData(
+                full_address="123 Main St, Phoenix, AZ 85001",
+                lot_sqft=9500,
+            )
+        }
+
+        repo.save_all(enrichment_data)
+
+        # Read back raw JSON and verify normalized_address
+        with open(json_file, encoding="utf-8") as f:
+            data = json.load(f)
+
+        assert len(data) == 1
+        assert "normalized_address" in data[0]
+        assert data[0]["normalized_address"] == "123 main st phoenix az 85001"
+
+    def test_load_computes_normalized_if_missing(self, tmp_path):
+        """Loading data without normalized_address should compute it."""
+        json_file = tmp_path / "enrichment_data.json"
+
+        # Write JSON without normalized_address field
+        data = [{"full_address": "123 Main St, Phoenix, AZ 85001", "lot_sqft": 9500}]
+        with open(json_file, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+
+        # Load and verify normalized_address is populated
+        repo = JsonEnrichmentRepository(json_file)
+        enrichment = repo.load_all()
+
+        assert "123 Main St, Phoenix, AZ 85001" in enrichment
+        result = enrichment["123 Main St, Phoenix, AZ 85001"]
+        assert result.normalized_address == "123 main st phoenix az 85001"
+
+    def test_existing_normalized_address_preserved(self, tmp_path):
+        """Existing normalized_address should be preserved, not recomputed."""
+        json_file = tmp_path / "enrichment_data.json"
+
+        # Write JSON with custom normalized_address
+        data = [
+            {
+                "full_address": "123 Main St, Phoenix, AZ 85001",
+                "normalized_address": "custom normalized value",
+                "lot_sqft": 9500,
+            }
+        ]
+        with open(json_file, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+
+        # Load and verify custom value is preserved
+        repo = JsonEnrichmentRepository(json_file)
+        enrichment = repo.load_all()
+
+        result = enrichment["123 Main St, Phoenix, AZ 85001"]
+        assert result.normalized_address == "custom normalized value"
+
+
+class TestRestoreFromBackup:
+    """Tests for backup restore functionality."""
+
+    def test_restore_finds_most_recent_backup(self, tmp_path):
+        """Should restore from most recent backup when path not specified."""
+        json_file = tmp_path / "enrichment_data.json"
+        repo = JsonEnrichmentRepository(json_file)
+
+        # Create some backups with different timestamps
+        backup1 = tmp_path / "enrichment_data.20231201_100000.bak.json"
+        backup2 = tmp_path / "enrichment_data.20231202_100000.bak.json"
+
+        backup1.write_text(json.dumps([{"full_address": "old address", "lot_sqft": 1000}]))
+        backup2.write_text(json.dumps([{"full_address": "newer address", "lot_sqft": 2000}]))
+
+        # Most recent by mtime
+        import os
+        import time
+
+        os.utime(backup1, (time.time() - 1000, time.time() - 1000))
+        os.utime(backup2, (time.time(), time.time()))
+
+        result = repo.restore_from_backup()
+
+        assert result is True
+        assert json_file.exists()
+
+        # Verify newer backup was restored
+        loaded = repo.load_all()
+        assert "newer address" in loaded
+
+    def test_restore_specific_backup(self, tmp_path):
+        """Should restore from specified backup path."""
+        json_file = tmp_path / "enrichment_data.json"
+        backup_file = tmp_path / "my_backup.json"
+
+        backup_file.write_text(
+            json.dumps([{"full_address": "123 Backup St", "lot_sqft": 5000}])
+        )
+
+        repo = JsonEnrichmentRepository(json_file)
+        result = repo.restore_from_backup(backup_file)
+
+        assert result is True
+        assert json_file.exists()
+
+        # Verify backup was restored
+        loaded = repo.load_all()
+        assert "123 Backup St" in loaded
+        assert loaded["123 Backup St"].lot_sqft == 5000
+
+    def test_restore_no_backup_returns_false(self, tmp_path):
+        """Should return False when no backups exist."""
+        json_file = tmp_path / "enrichment_data.json"
+        repo = JsonEnrichmentRepository(json_file)
+
+        result = repo.restore_from_backup()
+
+        assert result is False
+
+    def test_restore_nonexistent_path_returns_false(self, tmp_path):
+        """Should return False when specified backup doesn't exist."""
+        json_file = tmp_path / "enrichment_data.json"
+        repo = JsonEnrichmentRepository(json_file)
+
+        result = repo.restore_from_backup(tmp_path / "nonexistent.json")
+
+        assert result is False
+
+    def test_restore_invalidates_cache(self, tmp_path):
+        """Should invalidate cache after restore."""
+        json_file = tmp_path / "enrichment_data.json"
+        backup_file = tmp_path / "backup.json"
+
+        # Create initial data
+        json_file.write_text(
+            json.dumps([{"full_address": "123 Original", "lot_sqft": 1000}])
+        )
+        backup_file.write_text(
+            json.dumps([{"full_address": "456 Backup", "lot_sqft": 2000}])
+        )
+
+        repo = JsonEnrichmentRepository(json_file)
+        repo.load_all()  # Populate cache
+
+        assert repo._enrichment_cache is not None
+        assert "123 Original" in repo._enrichment_cache
+
+        repo.restore_from_backup(backup_file)
+
+        # Cache should be invalidated
+        assert repo._enrichment_cache is None
+
+        # Reloading should get backup data
+        loaded = repo.load_all()
+        assert "456 Backup" in loaded
+
+    def test_restore_saves_corrupted_file(self, tmp_path):
+        """Should save corrupted file before overwriting."""
+        json_file = tmp_path / "enrichment_data.json"
+        backup_file = tmp_path / "backup.json"
+        corrupted_file = tmp_path / "enrichment_data.corrupted.json"
+
+        # Create corrupted main file
+        json_file.write_text("{corrupted json content}")
+        backup_file.write_text(
+            json.dumps([{"full_address": "123 Good Data", "lot_sqft": 5000}])
+        )
+
+        repo = JsonEnrichmentRepository(json_file)
+        result = repo.restore_from_backup(backup_file)
+
+        assert result is True
+        assert corrupted_file.exists()
+        assert corrupted_file.read_text() == "{corrupted json content}"
+
+    def test_restore_invalid_backup_format_raises_error(self, tmp_path):
+        """Should raise DataLoadError for invalid backup format."""
+        json_file = tmp_path / "enrichment_data.json"
+        backup_file = tmp_path / "backup.json"
+
+        # Backup with dict format instead of list
+        backup_file.write_text(json.dumps({"not": "a list"}))
+
+        repo = JsonEnrichmentRepository(json_file)
+
+        with pytest.raises(DataLoadError, match="Invalid backup format"):
+            repo.restore_from_backup(backup_file)
+
+    def test_restore_invalid_json_raises_error(self, tmp_path):
+        """Should raise DataLoadError for invalid JSON in backup."""
+        json_file = tmp_path / "enrichment_data.json"
+        backup_file = tmp_path / "backup.json"
+
+        backup_file.write_text("{invalid json")
+
+        repo = JsonEnrichmentRepository(json_file)
+
+        with pytest.raises(DataLoadError, match="Invalid JSON in backup file"):
+            repo.restore_from_backup(backup_file)
+
+
+# ============================================================================
 # Integration Tests
 # ============================================================================
 

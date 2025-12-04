@@ -106,10 +106,14 @@ class JsonEnrichmentRepository(EnrichmentRepository):
             raise DataLoadError(f"Missing required field in JSON: {e}") from e
 
     def load_for_property(self, full_address: str) -> EnrichmentData | None:
-        """Load enrichment data for a specific property.
+        """Load enrichment data for a specific property using normalized address matching.
+
+        Lookup priority:
+        1. Exact match on full_address (fastest, most common)
+        2. Normalized address matching (case-insensitive, punctuation-removed)
 
         Args:
-            full_address: The complete formatted address.
+            full_address: The address to look up (will be normalized for matching).
 
         Returns:
             EnrichmentData object if found, None otherwise.
@@ -117,10 +121,27 @@ class JsonEnrichmentRepository(EnrichmentRepository):
         Raises:
             DataLoadError: If data cannot be loaded.
         """
+        from ..utils.address_utils import normalize_address
+
         if self._enrichment_cache is None:
             self.load_all()
 
-        return self._enrichment_cache.get(full_address) if self._enrichment_cache else None
+        if not self._enrichment_cache:
+            return None
+
+        # Try exact match first (fastest path)
+        if full_address in self._enrichment_cache:
+            return self._enrichment_cache[full_address]
+
+        # Fall back to normalized lookup
+        normalized_lookup = normalize_address(full_address)
+
+        # Search by normalized_address field
+        for enrichment in self._enrichment_cache.values():
+            if enrichment.normalized_address == normalized_lookup:
+                return enrichment
+
+        return None
 
     def save_all(self, enrichment_data: dict[str, EnrichmentData], validate: bool = True) -> None:
         """Save all enrichment data to the JSON file atomically with optional validation.
@@ -178,6 +199,83 @@ class JsonEnrichmentRepository(EnrichmentRepository):
 
         except OSError as e:
             raise DataSaveError(f"Failed to write JSON file: {e}") from e
+
+    def restore_from_backup(self, backup_path: Path | str | None = None) -> bool:
+        """Restore enrichment data from backup file.
+
+        If backup_path is not specified, finds the most recent valid backup
+        in the same directory as the main JSON file.
+
+        Args:
+            backup_path: Specific backup file to restore from.
+                If None, uses most recent backup matching pattern.
+
+        Returns:
+            True if restore was successful, False if no valid backup found.
+
+        Raises:
+            DataLoadError: If backup file cannot be read or is invalid.
+
+        Example:
+            >>> repo = JsonEnrichmentRepository("data/enrichment_data.json")
+            >>> if repo.restore_from_backup():
+            ...     print("Restored from backup successfully")
+        """
+        import shutil
+
+        if backup_path is None:
+            # Find most recent backup
+            backup_pattern = f"{self.json_file_path.stem}.*.bak{self.json_file_path.suffix}"
+            backups = sorted(
+                self.json_file_path.parent.glob(backup_pattern),
+                key=lambda p: p.stat().st_mtime,
+                reverse=True,
+            )
+
+            if not backups:
+                logger.warning(f"No backup files found matching {backup_pattern}")
+                return False
+
+            backup_path = backups[0]
+        else:
+            backup_path = Path(backup_path)
+
+        if not backup_path.exists():
+            logger.error(f"Backup file not found: {backup_path}")
+            return False
+
+        # Validate backup is valid JSON with expected structure
+        try:
+            with open(backup_path, encoding="utf-8") as f:
+                data = json.load(f)
+
+            if not isinstance(data, list):
+                raise DataLoadError(f"Invalid backup format: expected list, got {type(data)}")
+
+            # Verify at least one entry has required fields
+            if data and not all("full_address" in item for item in data[:5]):
+                raise DataLoadError("Backup file missing required 'full_address' field")
+
+        except json.JSONDecodeError as e:
+            raise DataLoadError(f"Invalid JSON in backup file: {e}") from e
+
+        # Create backup of current (possibly corrupted) file before restore
+        if self.json_file_path.exists():
+            corrupted_backup = self.json_file_path.with_suffix(".corrupted.json")
+            try:
+                shutil.copy2(self.json_file_path, corrupted_backup)
+                logger.info(f"Saved corrupted file to: {corrupted_backup}")
+            except OSError:
+                pass  # Best effort
+
+        # Restore from backup
+        shutil.copy2(backup_path, self.json_file_path)
+        logger.info(f"Restored from backup: {backup_path}")
+
+        # Invalidate cache to force reload
+        self._enrichment_cache = None
+
+        return True
 
     def apply_enrichment_to_property(self, property: Property, enrichment_dict: dict | None = None) -> Property:
         """Apply enrichment data to a property object.
@@ -238,14 +336,23 @@ class JsonEnrichmentRepository(EnrichmentRepository):
     def _dict_to_enrichment(self, data: dict) -> EnrichmentData:
         """Convert dictionary to EnrichmentData object.
 
+        Computes normalized_address if not present in data for backward compatibility.
+
         Args:
             data: Dictionary from JSON.
 
         Returns:
             EnrichmentData object.
         """
+        from ..utils.address_utils import normalize_address
+
+        full_address = data["full_address"]
+        # Compute normalized_address if not in data (backward compatibility)
+        normalized = data.get("normalized_address") or normalize_address(full_address)
+
         return EnrichmentData(
-            full_address=data['full_address'],
+            full_address=full_address,
+            normalized_address=normalized,
             lot_sqft=data.get('lot_sqft'),
             year_built=data.get('year_built'),
             garage_spaces=data.get('garage_spaces'),
@@ -269,14 +376,22 @@ class JsonEnrichmentRepository(EnrichmentRepository):
     def _enrichment_to_dict(self, enrichment: EnrichmentData) -> dict:
         """Convert EnrichmentData object to dictionary for JSON serialization.
 
+        Ensures normalized_address is always included in output.
+
         Args:
             enrichment: EnrichmentData object.
 
         Returns:
             Dictionary suitable for JSON serialization.
         """
+        from ..utils.address_utils import normalize_address
+
+        # Ensure normalized_address is present
+        normalized = enrichment.normalized_address or normalize_address(enrichment.full_address)
+
         return {
             'full_address': enrichment.full_address,
+            'normalized_address': normalized,
             'lot_sqft': enrichment.lot_sqft,
             'year_built': enrichment.year_built,
             'garage_spaces': enrichment.garage_spaces,

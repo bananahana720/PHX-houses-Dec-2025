@@ -390,9 +390,27 @@ class EnrichmentData:
 
     This is a data transfer object used to load enrichment from JSON
     and merge into Property entities.
+
+    Field Categories:
+    -----------------
+    RAW FIELDS (from external sources):
+        - full_address: CSV/user input
+        - normalized_address: Computed from full_address (lowercase, no punctuation)
+        - lot_sqft, year_built, garage_spaces, sewer_type, tax_annual: County Assessor
+        - hoa_fee, school_rating, orientation: Phase 1 extraction
+        - kitchen_layout_score, master_suite_score, etc.: Phase 2 image assessment
+
+    DERIVED FIELDS (computed during scoring):
+        - Scores are NOT stored in enrichment_data.json
+        - Scores are computed at runtime by PropertyScorer
+        - This keeps raw data separate from derived values
+
+    Note: The design intentionally does NOT store scores in enrichment_data.json.
+    Raw enrichment data is preserved; scores are computed fresh each run.
     """
 
     full_address: str
+    normalized_address: str | None = None  # Lowercase, no punctuation for matching
 
     # County assessor data
     lot_sqft: int | None = None
