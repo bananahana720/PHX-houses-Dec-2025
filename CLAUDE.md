@@ -1,3 +1,10 @@
+---
+last_updated: 2025-12-04
+updated_by: agent
+staleness_hours: 72
+flags: []
+---
+
 # PHX Houses Analysis Pipeline
 
 ## Critical Behavior (Project-Level)

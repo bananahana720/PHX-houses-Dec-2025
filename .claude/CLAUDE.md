@@ -1,3 +1,10 @@
+---
+last_updated: 2025-12-04
+updated_by: agent
+staleness_hours: 72
+flags: []
+---
+
 # .claude/CLAUDE.md
 
 See `../CLAUDE.md` for full project documentation (stack, testing, CI/CD, project-specific instructions).
