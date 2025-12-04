@@ -1,6 +1,6 @@
 ---
 last_updated: 2025-12-04
-updated_by: Claude (Agent)
+updated_by: Claude Code (Haiku)
 staleness_hours: 24
 flags: []
 ---
@@ -15,12 +15,16 @@ Integration test suite validating multi-component workflows end-to-end. Tests ve
 
 | Test File | Purpose | Test Count |
 |-----------|---------|-----------|
-| `test_pipeline.py` | Complete AnalysisPipeline workflow: load → enrich → filter → score → report | ~8 tests |
-| `test_kill_switch_chain.py` | Kill-switch filter chain with HARD/SOFT criteria accumulation | ~6 tests |
-| `test_deal_sheets_simple.py` | Deal sheet HTML generation from scored properties | ~4 tests |
-| `test_crash_recovery.py` | Crash recovery: corrupt JSON, missing files, backup restore | ~3 tests |
-| `test_transient_error_recovery.py` | Transient error retry logic with exponential backoff, work_items tracking | ~4 tests |
-| `test_proxy_extension.py` | Proxy extension for stealth browser image extraction | ~2 tests |
+| `test_pipeline.py` | Complete AnalysisPipeline workflow: load → enrich → filter → score → report | 31 tests |
+| `test_kill_switch_chain.py` | Kill-switch filter chain with HARD/SOFT criteria accumulation | 26 tests |
+| `test_api_client_integration.py` | HTTP client integration with caching, retries, authentication | 18 tests |
+| `test_transient_error_recovery.py` | Transient error retry logic with exponential backoff, work_items tracking | 11 tests |
+| `test_resume_workflow.py` | Pipeline resume workflow: interruptions, backups, staleness, duplicates | 9 tests |
+| `test_pipeline_integration.py` | Pipeline orchestration and progress tracking | 9 tests |
+| `test_crash_recovery.py` | Crash recovery: corrupt JSON, missing files, backup restore | 8 tests |
+| `test_deal_sheets_simple.py` | Deal sheet HTML generation from scored properties | 5 tests |
+| `test_checkpoint_workflow.py` | Checkpoint workflow for state persistence and recovery | 5 tests |
+| `test_proxy_extension.py` | Proxy extension for stealth browser image extraction | 4 tests |
 
 ## Key Test Scenarios
 
@@ -97,6 +101,34 @@ Integration test suite validating multi-component workflows end-to-end. Tests ve
 - restore_from_backup() restores most recent backup
 - Missing normalized_address computed and reapplied on load
 
+### test_resume_workflow.py (9 tests - E1.S5)
+**Focus:** Pipeline resume workflow and state recovery on interruption
+
+**Test Classes:**
+- `TestResumeWorkflowIntegration` - Complete resume scenarios
+
+**Test Methods:**
+- `test_resume_after_interruption()` - Resume after simulated interruption (3 properties, 1 complete, 1 in-progress)
+- `test_fresh_start_preserves_backup()` - Fresh start creates timestamped backup, new session_id
+- `test_stale_item_recovery()` - Automatic reset of in_progress items after 30+ minutes
+- `test_no_duplicate_processing()` - Completed items excluded from pending on resume
+- `test_corrupt_state_error_handling()` - StateValidationError for corrupt JSON with recovery suggestion
+- `test_resume_summary_statistics()` - Accurate counts: total, pending, completed, session_id
+- `test_estimate_data_loss()` - Calculates completed items lost on fresh start
+- `test_fresh_flag_prevents_resume()` - Fresh flag overrides existing state
+- `test_version_mismatch_error()` - StateValidationError for incompatible schema versions
+
+**Key Patterns:**
+- State checkpoints: phase_start, phase_complete track progress atomically
+- Stale detection: Items in_progress >30 min auto-reset to pending
+- Backup management: Timestamped backups before fresh start prevent data loss
+- Data loss estimation: count_completed_items() before fresh start decision
+- Error recovery: StateValidationError.suggestion includes --fresh flag for recovery
+
+**Integration Points:**
+- WorkItemsRepository - State persistence and recovery
+- ResumePipeline - Resume logic, validation, summary generation
+
 ### test_deal_sheets_simple.py (5 tests)
 **Focus:** Data loading and enrichment merge validation
 
@@ -159,9 +191,10 @@ All tests follow clear structure:
 
 - [x] Document integration test structure and test files
 - [x] Map test organization: fixtures, parametrization, async patterns
-- [x] Extract test counts per file (27 total integration tests)
+- [x] Extract test counts per file (126 total integration tests)
 - [x] Document error recovery test scenarios (crash recovery, transient retry)
-- [x] Add test_pipeline_integration.py for E5.S1 orchestration (NEW)
+- [x] Add test_pipeline_integration.py for E5.S1 orchestration
+- [x] Add test_resume_workflow.py for E1.S5 resume workflow (9 tests)
 - [ ] Add performance benchmarks for large batches P:M
 - [ ] Implement CI/CD gates for integration test coverage P:H
 
@@ -171,19 +204,24 @@ All tests follow clear structure:
 - **State management validation:** Test work_items.json state transitions (pending → done/failed) through complete workflows
 - **Crash recovery coverage:** Tests verify atomic writes, backup creation, restore from backup with corrupted/missing files
 - **Error propagation:** Transient errors retry with backoff; permanent errors fail immediately; all failures logged to work_items.json
+- **Resume patterns:** Pipeline resume requires checkpoint tracking (phase_start/complete), stale item detection (>30 min), and data loss estimation before fresh start
+- **State validation:** StateValidationError must include recovery suggestions (--fresh flag) for corrupted state or version mismatches
+- **Atomicity:** Backup creation and timestamped naming prevent data loss on interruptions; fresh start shows data loss estimate
 
 ## Refs
 
 - Pipeline integration: `test_pipeline.py:1-50` (full workflow)
 - Kill-switch chain: `test_kill_switch_chain.py:1-100` (HARD/SOFT accumulation)
+- Resume workflow: `test_resume_workflow.py:1-80` (interruption recovery, fresh start)
 - Crash recovery: `test_crash_recovery.py:1-80` (corruption/restore)
 - Transient retry: `test_transient_error_recovery.py:1-150` (exponential backoff, work_items tracking)
 
 ## Deps
 
 ← Imports from:
-  - `src/phx_home_analysis/pipeline/` - AnalysisPipeline orchestrator
+  - `src/phx_home_analysis/pipeline/` - AnalysisPipeline orchestrator, ResumePipeline
   - `src/phx_home_analysis/services/` - Kill-switch, scoring services
+  - `src/phx_home_analysis/repositories/` - WorkItemsRepository state management
   - `data/*.json, data/*.csv` - Test data files
   - `conftest.py` - Shared pytest fixtures
 
@@ -191,3 +229,4 @@ All tests follow clear structure:
   - CI/CD pipeline (pytest command)
   - Manual testing before releases
   - Regression detection on API changes
+  - Resume workflow validation before production deployment

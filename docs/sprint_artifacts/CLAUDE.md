@@ -45,7 +45,7 @@ Sprint status tracking system for PHX Houses Analysis Pipeline. Contains YAML-ba
 
 - Status definitions: `sprint-status.yaml:119-137`
 - Epic 1 config: `sprint-status.yaml:13-27` (6 stories + retrospective)
-- Summary stats: `sprint-status.yaml:140-158` (total_stories: 42, p0_stories: 35)
+- Summary stats: `sprint-status.yaml:140-160` (total_stories: 42, p0_stories: 33, done: 9)
 
 ## Deps
 

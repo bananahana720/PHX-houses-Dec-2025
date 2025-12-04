@@ -17,6 +17,7 @@ User story repository for PHX Houses Analysis Pipeline. Stores implementation-re
 | `sprint-0-architecture-prerequisites.md` | Foundational alignment: 605→600 point scoring, kill-switch HARD/SOFT clarification (P0, 8pts) |
 | `e1-s1-configuration-system-setup.md` | Config externalization from YAML with env overrides, validation, hot-reload (P0, 8pts) |
 | `e1-s2-property-data-storage-layer.md` | JSON storage with atomic writes, address normalization, backup/restore (P0, 5pts, depends E1.S1) |
+| `e1-s5-pipeline-resume-capability.md` | Resume interrupted pipeline runs from checkpoints, stale item recovery, state validation (P0, 8pts, depends E1.S4) |
 | `e1-s6-transient-error-recovery.md` | Retry decorator with exponential backoff, error classification, work_items.json integration (P0, 5pts) |
 | `E4.S1-three-dimension-scoring.md` | Three-dimension scoring refinement: cost efficiency, systems quality, interior condition (DONE, 13pts) |
 | `e5-s1-pipeline-orchestrator-cli.md` | Pipeline orchestration with typer CLI, progress reporting with rich, phase coordination (NEW, 13pts) |
@@ -48,12 +49,14 @@ User story repository for PHX Houses Analysis Pipeline. Stores implementation-re
 - **AC format is executable:** Given-When-Then acceptance criteria map directly to unit/integration tests (AC1 → test_ac1_*)
 - **Dependency chains prevent ordering errors:** E1.S1 blocks E1.S2 blocks E1.S3 explicitly documented, preventing parallel sprint hazards
 - **Technical task nesting provides structure:** Each AC has corresponding technical task(s) with implementation code snippets, acceptance criteria, and file locations
+- **E1.S5 resume capability design:** ResumePipeline is a helper class (not replacement) that works alongside PhaseCoordinator; minimal coupling (depends only on WorkItemsRepository) improves testability; StateValidationError with guidance fields improves UX; deferring CLI work to E5.S1 keeps story focused on core resume logic
 
 ## Refs
 
 - Sprint 0 blocking work: `sprint-0-architecture-prerequisites.md:1-150`
 - E1.S1 config system: `e1-s1-configuration-system-setup.md:1-100` (8 technical tasks)
 - E1.S2 data storage: `e1-s2-property-data-storage-layer.md:1-150` (10 technical tasks)
+- E1.S5 pipeline resume: `e1-s5-pipeline-resume-capability.md:1-250` (DONE, 8pts, 7 technical tasks, 43 tests)
 - E1.S6 error recovery: `e1-s6-transient-error-recovery.md:1-200` (8 technical tasks, 81 tests)
 - E4.S1 three-dimension scoring: `E4.S1-three-dimension-scoring.md:1-120` (DONE, 13pts)
 - E5.S1 pipeline CLI: `e5-s1-pipeline-orchestrator-cli.md:1-180` (NEW, 13pts, PhaseCoordinator + ProgressReporter)
