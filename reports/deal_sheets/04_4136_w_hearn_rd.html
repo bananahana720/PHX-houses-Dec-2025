@@ -70,6 +70,34 @@ p, h1, h2, h3, h4, h5, h6, span, div {
 .status-red { background: #ef4444; color: white; }
 .status-yellow { background: #f59e0b; color: white; }
 
+/* Confidence Badges */
+.confidence-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.confidence-green {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.confidence-yellow {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.confidence-red {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
 /* Header Styles */
 .header {
     border-bottom: 3px solid #2563eb;
@@ -936,6 +964,14 @@ body {
                 <div class="metric-note">Insurance: Unknown</div>
             </div>
             <div class="metric">
+                <div class="metric-label">Safety Score</div>
+                <div class="metric-value">
+                    N/A/100
+                    
+                </div>
+                <div class="metric-note">Higher = Safer</div>
+            </div>
+            <div class="metric">
                 <div class="metric-label">Violent Crime Index</div>
                 <div class="metric-value">N/A/100</div>
                 <div class="metric-note">Higher = Safer</div>
@@ -1013,12 +1049,50 @@ body {
                 <div class="metric-value">2,228 sqft</div>
             </div>
             <div class="metric">
+                <div class="metric-label">Lot Size</div>
+                <div class="metric-value">
+                    10,890 sqft
+                    
+                </div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Year Built</div>
+                <div class="metric-value">
+                    1973
+                    
+                </div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Garage Spaces</div>
+                <div class="metric-value">
+                    2
+                    
+                </div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">HOA Fee</div>
+                <div class="metric-value">
+                    $0/mo
+                    
+                </div>
+            </div>
+            <div class="metric">
                 <div class="metric-label">Commute Time</div>
                 <div class="metric-value">22 min</div>
             </div>
             <div class="metric">
                 <div class="metric-label">School Rating</div>
-                <div class="metric-value">8.0/10</div>
+                <div class="metric-value">
+                    8.0/10
+                    
+                </div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Sun Orientation</div>
+                <div class="metric-value">
+                    south
+                    
+                </div>
             </div>
             <div class="metric">
                 <div class="metric-label">Property Tax</div>

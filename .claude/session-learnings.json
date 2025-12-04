@@ -171,5 +171,14 @@
     "learnings": [
       "- Severity (Critical/Major/Minor)"
     ]
+  },
+  {
+    "timestamp": "2025-12-04T11:35:08.022538+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "** `F821 Undefined name 'get_confidence_html'` at line 730"
+    ],
+    "learnings": []
   }
 ]
