@@ -1,6 +1,6 @@
 ---
 name: orchestration
-description: Coordinate multi-agent workflows using parallel swarm waves (non-destructive) and sequential orchestrated waves (destructive). Main Agent delegates non-trivial work to sub-agents. Includes SDLC, TDD, and BMAD patterns. Use when user mentions subagents, managing complex multi-step tasks, spawning sub-agents, executing phased workflows, or orchestrating parallel work.
+description: Coordinate subagent workflows using parallel swarm waves (non-destructive) and sequential orchestrated waves (destructive). Main Agent delegates non-trivial work to subagents. Includes SDLC, TDD, and BMAD patterns. Use when user mentions using subagents, when you are planning on making a Task() tool call, managing complex multi-step tasks, spawning sub-agents, executing phased workflows, or orchestrating parallel work.
 allowed-tools: Task, Read, Glob, Grep, Bash, TodoWrite, Skill
 ---
 

@@ -1,6 +1,6 @@
 ---
 last_updated: 2025-12-04
-updated_by: agent
+updated_by: Claude (Agent)
 staleness_hours: 24
 flags: []
 ---
@@ -9,18 +9,18 @@ flags: []
 
 ## Purpose
 
-Integration tests validating multi-component workflows in the PHX property analysis pipeline, including end-to-end property processing, kill-switch filtering with severity accumulation, crash recovery, and data loading. Tests the complete data flow from CSV/JSON loading through enrichment, filtering, and scoring.
+Integration test suite validating multi-component workflows end-to-end. Tests verify complete pipeline execution from data loading through scoring, kill-switch filtering, error recovery, and report generation without mocking internal services.
 
 ## Contents
 
-| Path | Purpose |
-|------|---------|
-| `test_pipeline.py` | End-to-end pipeline: properties through filtering → scoring (31 tests) |
-| `test_kill_switch_chain.py` | Kill-switch severity system: HARD criteria, SOFT accumulation, thresholds (27 tests) |
-| `test_crash_recovery.py` | Data integrity: atomic writes, backups, JSON corruption recovery (13 tests) |
-| `test_deal_sheets_simple.py` | Data loading: CSV, JSON enrichment merge, field preservation (5 tests) |
-| `test_proxy_extension.py` | Proxy extension integration: builder, auth, BrowserPool (4 test functions) |
-| `README.md` | Comprehensive integration test guide with severity reference and execution instructions |
+| Test File | Purpose | Test Count |
+|-----------|---------|-----------|
+| `test_pipeline.py` | Complete AnalysisPipeline workflow: load → enrich → filter → score → report | ~8 tests |
+| `test_kill_switch_chain.py` | Kill-switch filter chain with HARD/SOFT criteria accumulation | ~6 tests |
+| `test_deal_sheets_simple.py` | Deal sheet HTML generation from scored properties | ~4 tests |
+| `test_crash_recovery.py` | Crash recovery: corrupt JSON, missing files, backup restore | ~3 tests |
+| `test_transient_error_recovery.py` | Transient error retry logic with exponential backoff, work_items tracking | ~4 tests |
+| `test_proxy_extension.py` | Proxy extension for stealth browser image extraction | ~2 tests |
 
 ## Key Test Scenarios
 
@@ -135,52 +135,45 @@ All tests follow clear structure:
 - File not found → Creates template or raises error
 - Type coercion failures → ValueError with context
 
+## Test Organization
+
+**Fixtures:** Shared fixtures in conftest.py (properties, enrichment data, temp files)
+**Parametrization:** Tests use `@pytest.mark.parametrize` for multi-scenario coverage
+**Async Tests:** Async tests decorated with `@pytest.mark.asyncio`
+**Mocking:** External APIs mocked (GreatSchools, WalkScore, FEMA); internal services real
+
 ## Tasks
 
-- [x] Map integration test coverage (5 test modules, 50+ tests) `P:H`
-- [x] Identify kill-switch severity system patterns (HARD vs SOFT, thresholds) `P:H`
-- [x] Catalog component dependencies (KillSwitchFilter, PropertyScorer, repositories) `P:H`
-- [ ] Add property-based tests with Hypothesis for boundary conditions `P:M`
-- [ ] Expand crash recovery tests for concurrent writes `P:M`
+- [x] Document integration test structure and test files
+- [x] Map test organization: fixtures, parametrization, async patterns
+- [x] Extract test counts per file (27 total integration tests)
+- [x] Document error recovery test scenarios (crash recovery, transient retry)
+- [ ] Add performance benchmarks for large batches P:M
+- [ ] Implement CI/CD gates for integration test coverage P:H
 
 ## Learnings
 
-- **Kill-switch two-tier verdict system critical:** HARD criteria cause instant FAIL; SOFT criteria accumulate severity with WARNING (≥1.5) / FAIL (≥3.0) thresholds
-- **Severity accumulation is complex:** Multiple SOFT failures must test exact boundaries (2.9 vs 3.0); single criterion failures pass below 1.5; no double-counting
-- **Crash recovery requires atomic writes:** Backups created on second save; corruption handled via restore_from_backup(); normalized_address recomputed if missing
-- **Pipeline orchestration tests:** Properties flow unchanged through filter→score chain; scoring works on both passed/failed properties; no state mutation between steps
-- **Data merge preservation critical:** CSV original fields retained after enrichment merge; fixtures enable test data reuse; address matching uses normalization for robustness
+- **Real vs Mock:** Integration tests use real repositories (CSV/JSON), services (kill-switch/scoring), but mock external APIs (GreatSchools, FEMA, WalkScore)
+- **State management validation:** Test work_items.json state transitions (pending → done/failed) through complete workflows
+- **Crash recovery coverage:** Tests verify atomic writes, backup creation, restore from backup with corrupted/missing files
+- **Error propagation:** Transient errors retry with backoff; permanent errors fail immediately; all failures logged to work_items.json
 
 ## Refs
 
-- Kill-switch severity config: `src/phx_home_analysis/services/kill_switch/constants.py:1-89`
-- KillSwitchVerdict enum: `src/phx_home_analysis/services/kill_switch/__init__.py:1-20`
-- Severity thresholds: `test_kill_switch_chain.py:15-65`
-- Atomic write patterns: `test_crash_recovery.py:217-272`
-- Pipeline integration: `test_pipeline.py:23-50`
-- Fixture data: `tests/conftest.py:1-638`
-- Test documentation: `README.md` (execution guide, severity reference)
+- Pipeline integration: `test_pipeline.py:1-50` (full workflow)
+- Kill-switch chain: `test_kill_switch_chain.py:1-100` (HARD/SOFT accumulation)
+- Crash recovery: `test_crash_recovery.py:1-80` (corruption/restore)
+- Transient retry: `test_transient_error_recovery.py:1-150` (exponential backoff, work_items tracking)
 
 ## Deps
 
 ← Imports from:
-- `src.phx_home_analysis.domain.entities` (Property, EnrichmentData)
-- `src.phx_home_analysis.services.kill_switch.filter` (KillSwitchFilter, KillSwitchVerdict)
-- `src.phx_home_analysis.services.scoring` (PropertyScorer)
-- `src.phx_home_analysis.repositories.json_repository` (JsonEnrichmentRepository)
-- `scripts.deal_sheets.data_loader` (load_ranked_csv, merge_enrichment_data)
-- Standard library: json, pathlib, tempfile, csv
+  - `src/phx_home_analysis/pipeline/` - AnalysisPipeline orchestrator
+  - `src/phx_home_analysis/services/` - Kill-switch, scoring services
+  - `data/*.json, data/*.csv` - Test data files
+  - `conftest.py` - Shared pytest fixtures
 
 → Imported by:
-- CI/CD pipeline (pytest gates on PR)
-- Manual testing before Phase 2 spawn
-- Regression testing before releases
-- Pre-commit hook validation
-
----
-
-**Focus Areas**: End-to-end workflow validation, kill-switch severity system, crash recovery with atomic writes, data integrity on corrupted files, multi-source data merge.
-
-**Test Count**: 80 tests across 5 modules (31 pipeline, 27 kill-switch, 13 crash recovery, 5 deal sheets, 4 proxy)
-
-**Execution Time**: ~0.5-1.0 seconds total
+  - CI/CD pipeline (pytest command)
+  - Manual testing before releases
+  - Regression detection on API changes

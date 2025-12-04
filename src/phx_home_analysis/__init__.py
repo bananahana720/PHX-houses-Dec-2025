@@ -46,6 +46,14 @@ from .domain import (
     Tier,
 )
 
+# Error handling
+from .errors import (
+    PermanentError,
+    TransientError,
+    is_transient_error,
+    retry_with_backoff,
+)
+
 # Pipeline
 from .pipeline import AnalysisPipeline, PipelineResult
 
@@ -168,4 +176,9 @@ __all__ = [
     # Pipeline
     "AnalysisPipeline",
     "PipelineResult",
+    # Error handling
+    "retry_with_backoff",
+    "is_transient_error",
+    "TransientError",
+    "PermanentError",
 ]
