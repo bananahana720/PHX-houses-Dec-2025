@@ -2,8 +2,9 @@
 
 > **Epic**: E1
 > **Objective**: Enable reliable data storage, configuration management, and pipeline execution with crash recovery
-> **Stories**: 6
+> **Stories**: 6 (2 completed, 4 pending)
 > **PRD Coverage**: FR7, FR8, FR34-39, FR46-51, FR56
+> **Progress**: 🟢🟢⚪⚪⚪⚪ (33%)
 
 ### Stories
 
@@ -11,23 +12,23 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | `[ ]` pending |
+| **Status** | `[x]` ✅ **COMPLETED** (2025-12-04) |
 | **Priority** | P0 |
 | **Dependencies** | None |
 | **FRs** | FR46, FR47, FR50, FR51 |
 
 **Acceptance Criteria**:
-- [ ] ConfigLoader class implemented with Pydantic validation
-- [ ] `scoring_weights.yaml` and `kill_switch.csv` templates created
-- [ ] Environment variable overrides working
-- [ ] Unit tests for valid/invalid configuration scenarios
-- [ ] Error messages include actionable guidance
+- [x] ConfigLoader class implemented with Pydantic validation
+- [x] `scoring_weights.yaml` and `kill_switch.csv` templates created
+- [x] Environment variable overrides working
+- [x] Unit tests for valid/invalid configuration scenarios
+- [x] Error messages include actionable guidance
 
 **Definition of Done**:
-- [ ] ConfigLoader in `src/phx_home_analysis/config/`
-- [ ] Pydantic BaseSettings for environment variable integration
-- [ ] Configuration schema in `src/phx_home_analysis/validation/config_schemas.py`
-- [ ] Tests pass with 80%+ coverage on config module
+- [x] ConfigLoader in `src/phx_home_analysis/config/`
+- [x] Pydantic BaseSettings for environment variable integration
+- [x] Configuration schema in `src/phx_home_analysis/validation/config_schemas.py`
+- [x] Tests pass with 80%+ coverage on config module
 
 ---
 
@@ -35,23 +36,32 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | `[ ]` pending |
+| **Status** | `[x]` ✅ **COMPLETED** (2025-12-04) |
 | **Priority** | P0 |
 | **Dependencies** | E1.S1 |
 | **FRs** | FR7 |
+| **Commit** | `d8a395c` |
 
 **Acceptance Criteria**:
-- [ ] JsonEnrichmentRepository with CRUD operations
-- [ ] Atomic write with backup-before-modify pattern
-- [ ] Address normalization and lookup (lowercase, no punctuation)
-- [ ] **CRITICAL**: enrichment_data.json is a LIST (not dict keyed by address)
-- [ ] Integration test for crash recovery scenario
+- [x] JsonEnrichmentRepository with CRUD operations
+- [x] Atomic write with backup-before-modify pattern
+- [x] Address normalization and lookup (lowercase, no punctuation)
+- [x] **CRITICAL**: enrichment_data.json is a LIST (not dict keyed by address)
+- [x] Integration test for crash recovery scenario
 
 **Definition of Done**:
-- [ ] Repository in `src/phx_home_analysis/repositories/`
-- [ ] Backup created at `enrichment_data.json.bak` before every write
-- [ ] Address normalization: `address.lower().replace(',', '').replace('.', '').strip()`
-- [ ] Schema defined in `src/phx_home_analysis/validation/schemas.py`
+- [x] Repository in `src/phx_home_analysis/repositories/`
+- [x] Backup created at `enrichment_data.json.bak` before every write
+- [x] Address normalization: `address.lower().replace(',', '').replace('.', '').strip()`
+- [x] Schema defined in `src/phx_home_analysis/validation/schemas.py`
+
+**Implementation Details**:
+- `src/phx_home_analysis/utils/address_utils.py` - NEW (normalize_address, addresses_match)
+- `src/phx_home_analysis/domain/entities.py:413` - normalized_address field added
+- `src/phx_home_analysis/repositories/json_repository.py:203+` - restore_from_backup() added
+- `tests/unit/utils/test_address_utils.py` - 23 tests
+- `tests/integration/test_crash_recovery.py` - NEW
+- 89 tests passing
 
 ---
 
