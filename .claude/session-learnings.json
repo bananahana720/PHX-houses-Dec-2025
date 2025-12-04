@@ -180,5 +180,128 @@
       "** `F821 Undefined name 'get_confidence_html'` at line 730"
     ],
     "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T13:21:30.651427+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "Fix all 12 issues identified in the code review.**"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T13:31:26.241728+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "hyphen, not underscore)."
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T13:39:22.623322+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "`docs/*architecture*/*.md` OR `docs/*architecture*.md`",
+      "`docs/*prd*/*.md` OR `docs/*prd*.md`",
+      "`docs/sprint-artifacts/story-*.md`"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T14:11:21.492866+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "[list or \"none\"]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T14:12:17.955616+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "[yes/no]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T14:17:01.102261+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\tests\\unit\\CLAUDE.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\docs\\artifacts\\SCORING_QUICK_REFERENCE.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\tests\\CLAUDE.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\tests\\integration\\CLAUDE.md"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T14:17:03.351878+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\docs\\sprint-artifacts\\epic-1-retro-2025-12-04.md"
+    ],
+    "error_patterns": [
+      "1. Read the ENTIRE file first (it's ~173 lines)"
+    ],
+    "learnings": [
+      "** Always validate retrospective claims against actual codebase state before marking as blockers."
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T14:17:38.359393+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\.claude\\CLAUDE.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\src\\phx_home_analysis\\CLAUDE.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\CLAUDE.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\src\\phx_home_analysis\\config\\CLAUDE.md"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T14:17:42.041811+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\docs\\sprint_artifacts\\sprint-status.yaml",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\docs\\artifacts\\brainstorming-2025-12-03\\SCORING_REFINEMENT_ROADMAP\\conclusion.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\docs\\artifacts\\brainstorming-2025-12-03\\BUCKETS_1_2_EXECUTIVE_SUMMARY.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\docs\\sprint-artifacts\\workflow-status.yaml",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\docs\\architecture\\phase-orchestration\\phase-3-synthesis-scoring.md"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T14:18:19.016948+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\src\\phx_home_analysis\\config\\scoring_weights.py",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\.claude\\ARCHITECTURE_QUICK_REFERENCE.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\.claude\\skills\\_shared\\scoring-tables.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\scripts\\value_spotter.py"
+    ],
+    "error_patterns": [],
+    "learnings": [
+      "The module docstring at lines 7-8 already says 605 - only the class docstring at line 19 needs fixing."
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T14:18:24.117553+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\docs\\CONFIG_EXTERNALIZATION_INDEX.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\src\\phx_home_analysis\\config\\README.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\docs\\CLAUDE.md",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\config\\README.md"
+    ],
+    "error_patterns": [],
+    "learnings": []
   }
 ]
