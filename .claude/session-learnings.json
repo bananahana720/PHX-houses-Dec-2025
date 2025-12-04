@@ -376,5 +376,51 @@
       "** Design for:"
     ],
     "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T16:30:44.508234+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "[how tokens/auth handled]",
+      "[how responses validated]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T17:49:27.082803+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "NOT Playwright (blocked by PerimeterX)"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T17:49:49.461654+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "src/phx_home_analysis/services/assessor/assessor_client.py"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T17:55:26.774500+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "src/phx_home_analysis/services/assessor/assessor_client.py"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T18:03:56.627030+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "**"
+    ]
   }
 ]

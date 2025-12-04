@@ -80,8 +80,8 @@ class PipelineStats:
         if not self.phase_durations or self.complete == 0:
             return None
 
-        # Use rolling average of last N phase durations
-        recent_durations = self.phase_durations[-20:]  # Last 20 samples
+        # Use rolling average of last 5 property durations per story requirement
+        recent_durations = self.phase_durations[-5:]
         avg_duration = mean(recent_durations)
 
         # Estimate remaining work

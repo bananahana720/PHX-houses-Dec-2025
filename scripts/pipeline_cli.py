@@ -34,13 +34,22 @@ Examples:
 
     # Skip a specific phase
     python scripts/pipeline_cli.py --all --skip-phase 1
+
+    # Dry-run mode - validate without processing
+    python scripts/pipeline_cli.py --all --dry-run
+
+    # JSON output mode
+    python scripts/pipeline_cli.py --status --json
 """
 from __future__ import annotations
 
 import asyncio
+import json
 import sys
+from collections.abc import Coroutine
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Any
 
 import typer
 from rich.console import Console
@@ -54,6 +63,51 @@ from phx_home_analysis.pipeline.progress import PipelineStats, ProgressReporter 
 
 if TYPE_CHECKING:
     pass
+
+
+# Estimated seconds per property per phase for time estimation
+# NOTE: These durations should align with Phase enum in phase_coordinator.py
+# Update these values if phase structure changes
+PHASE_DURATIONS = {
+    "county_api": 2,
+    "listing": 5,
+    "map": 3,
+    "images": 10,
+    "synthesis": 5,
+    "report": 2,
+}
+TOTAL_SECONDS_PER_PROPERTY = sum(PHASE_DURATIONS.values())
+
+
+@dataclass
+class CSVValidationError:
+    """Represents a single CSV validation error."""
+
+    row_number: int
+    field: str
+    message: str
+
+    def __str__(self) -> str:
+        """Return formatted error message with row number.
+
+        Returns:
+            String in format "Row N: message"
+        """
+        return f"Row {self.row_number}: {self.message}"
+
+
+@dataclass
+class CSVValidationResult:
+    """Result of CSV validation."""
+
+    is_valid: bool
+    valid_addresses: list[str] = field(default_factory=list)
+    errors: list[CSVValidationError] = field(default_factory=list)
+    total_rows: int = 0
+
+    @property
+    def error_count(self) -> int:
+        return len(self.errors)
 
 # Data file paths
 DATA_DIR = PROJECT_ROOT / "data"
@@ -162,7 +216,157 @@ def load_addresses_from_csv(csv_path: Path, limit: int | None = None) -> list[st
     return addresses
 
 
-def run_async(coro: asyncio.coroutines) -> None:
+def validate_csv_with_errors(csv_path: Path, limit: int | None = None) -> CSVValidationResult:
+    """Validate CSV file with detailed row-level error reporting.
+
+    Args:
+        csv_path: Path to the CSV file
+        limit: Optional limit on number of addresses to validate
+
+    Returns:
+        CSVValidationResult with validation status, valid addresses, and errors
+    """
+    import csv
+
+    result = CSVValidationResult(is_valid=True)
+
+    if not csv_path.exists():
+        result.is_valid = False
+        result.errors.append(
+            CSVValidationError(
+                row_number=0,
+                field="file",
+                message=f"CSV file not found: {csv_path}",
+            )
+        )
+        return result
+
+    try:
+        with csv_path.open(encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            headers = reader.fieldnames or []
+
+            # Check for address column
+            address_columns = ["full_address", "address", "Address", "FULL_ADDRESS"]
+            has_address_column = any(col in headers for col in address_columns)
+
+            if not has_address_column:
+                result.is_valid = False
+                result.errors.append(
+                    CSVValidationError(
+                        row_number=0,
+                        field="header",
+                        message="Missing required address column (expected: full_address, address, Address, or FULL_ADDRESS)",
+                    )
+                )
+                return result
+
+            # Excel-style row numbering: header is row 1, first data row is row 2
+            for row_idx, row in enumerate(reader, start=2):
+                result.total_rows += 1
+
+                # Try different column names for address
+                full_address = (
+                    row.get("full_address")
+                    or row.get("address")
+                    or row.get("Address")
+                    or row.get("FULL_ADDRESS")
+                )
+
+                if not full_address or not full_address.strip():
+                    result.is_valid = False
+                    result.errors.append(
+                        CSVValidationError(
+                            row_number=row_idx,
+                            field="address",
+                            message="Empty or missing address",
+                        )
+                    )
+                else:
+                    result.valid_addresses.append(full_address.strip())
+
+                if limit and len(result.valid_addresses) >= limit:
+                    break
+
+    except (csv.Error, UnicodeDecodeError) as e:
+        result.is_valid = False
+        result.errors.append(
+            CSVValidationError(
+                row_number=0,
+                field="file",
+                message=f"Error reading CSV: {e}",
+            )
+        )
+
+    return result
+
+
+def format_time_estimate(seconds: int) -> str:
+    """Format seconds into human-readable time estimate.
+
+    Args:
+        seconds: Total seconds
+
+    Returns:
+        Formatted time string (e.g., "5 minutes 30 seconds")
+    """
+    if seconds < 60:
+        return f"{seconds} seconds"
+    minutes = seconds // 60
+    remaining_seconds = seconds % 60
+    if remaining_seconds == 0:
+        return f"{minutes} minutes"
+    return f"{minutes} minutes {remaining_seconds} seconds"
+
+
+def run_dry_run(
+    csv_path: Path,
+    limit: int | None,
+    json_output: bool,
+) -> None:
+    """Execute dry-run mode: validate CSV without API calls.
+
+    Args:
+        csv_path: Path to CSV file
+        limit: Optional limit on properties
+        json_output: Output results in JSON format
+    """
+    validation = validate_csv_with_errors(csv_path, limit)
+
+    if json_output:
+        # JSON output mode
+        output = {
+            "status": "valid" if validation.is_valid else "invalid",
+            "dry_run": True,
+            "total_rows": validation.total_rows,
+            "valid_addresses": len(validation.valid_addresses),
+            "error_count": validation.error_count,
+            "errors": [str(e) for e in validation.errors],
+        }
+        if validation.is_valid:
+            estimated_seconds = len(validation.valid_addresses) * TOTAL_SECONDS_PER_PROPERTY
+            output["estimated_time_seconds"] = estimated_seconds
+            output["estimated_time_human"] = format_time_estimate(estimated_seconds)
+        print(json.dumps(output, indent=2))
+    else:
+        # Rich console output
+        if validation.is_valid:
+            console.print("\n[bold green]CSV Validation: PASSED[/bold green]")
+            console.print(f"  Valid properties: {len(validation.valid_addresses)}")
+
+            estimated_seconds = len(validation.valid_addresses) * TOTAL_SECONDS_PER_PROPERTY
+            console.print(f"  Estimated processing time: {format_time_estimate(estimated_seconds)}")
+            console.print("\n[cyan]Dry-run complete. No API calls made.[/cyan]")
+        else:
+            console.print("\n[bold red]CSV Validation: FAILED[/bold red]")
+            console.print(f"\nFound {validation.error_count} error(s):\n")
+            for error in validation.errors:
+                console.print(f"  [red]{error}[/red]")
+            console.print("\n[yellow]Processing blocked until errors are resolved.[/yellow]")
+            raise typer.Exit(code=1)
+
+
+def run_async(coro: Coroutine[Any, Any, None]) -> None:
     """Run async coroutine in event loop.
 
     Args:
@@ -228,6 +432,20 @@ def main(
             max=4,
         ),
     ] = None,
+    dry_run: Annotated[
+        bool,
+        typer.Option(
+            "--dry-run",
+            help="Validate input without making API calls",
+        ),
+    ] = False,
+    json_output: Annotated[
+        bool,
+        typer.Option(
+            "--json",
+            help="Output results in JSON format",
+        ),
+    ] = False,
 ) -> None:
     """Execute property analysis pipeline.
 
@@ -252,15 +470,22 @@ def main(
     # Validate skip_phase if provided
     skip_phases: set[int] = set()
     if skip_phase is not None:
-        skip_phase = validate_skip_phase(skip_phase)
-        skip_phases.add(skip_phase)
+        validated_phase = validate_skip_phase(skip_phase)
+        if validated_phase is not None:
+            skip_phases.add(validated_phase)
 
     # Initialize progress reporter
     reporter = ProgressReporter(console=console)
 
     # Handle --status mode
     if status:
-        show_pipeline_status(reporter)
+        show_pipeline_status(reporter, json_output=json_output)
+        return
+
+    # Handle --dry-run mode
+    if dry_run:
+        limit = 5 if test else None
+        run_dry_run(CSV_FILE, limit=limit, json_output=json_output)
         return
 
     # Handle --fresh mode confirmation
@@ -272,16 +497,20 @@ def main(
 
     if address:
         properties = [address]
-        console.print(f"[cyan]Single property mode: {address}[/cyan]")
+        if not json_output:
+            console.print(f"[cyan]Single property mode: {address}[/cyan]")
     elif test:
         properties = load_addresses_from_csv(CSV_FILE, limit=5)
-        console.print(f"[cyan]Test mode: Processing first {len(properties)} properties[/cyan]")
+        if not json_output:
+            console.print(f"[cyan]Test mode: Processing first {len(properties)} properties[/cyan]")
     elif all_properties:
         properties = load_addresses_from_csv(CSV_FILE)
-        console.print(f"[cyan]Batch mode: Processing {len(properties)} properties[/cyan]")
+        if not json_output:
+            console.print(f"[cyan]Batch mode: Processing {len(properties)} properties[/cyan]")
 
     if not properties:
-        console.print("[red]No properties to process[/red]")
+        if not json_output:
+            console.print("[red]No properties to process[/red]")
         raise typer.Exit(code=1)
 
     # Create coordinator and execute
@@ -303,18 +532,15 @@ def main(
     reporter.show_completion_summary()
 
 
-def show_pipeline_status(reporter: ProgressReporter) -> None:
+def show_pipeline_status(reporter: ProgressReporter, json_output: bool = False) -> None:
     """Display current pipeline status.
 
     Args:
         reporter: Progress reporter instance
+        json_output: Output results in JSON format
     """
-    console.print("\n[bold cyan]Pipeline Status[/bold cyan]\n")
-
     # Load work_items.json if exists
     if WORK_ITEMS_FILE.exists():
-        import json
-
         try:
             with WORK_ITEMS_FILE.open() as f:
                 work_items = json.load(f)
@@ -343,14 +569,51 @@ def show_pipeline_status(reporter: ProgressReporter) -> None:
                     stats.failed += 1
 
             reporter.stats = stats
-            reporter.show_status_table()
+
+            if json_output:
+                output = {
+                    "status": "ok",
+                    "pipeline_state": "found",
+                    "statistics": {
+                        "total": stats.total,
+                        "pending": stats.pending,
+                        "in_progress": stats.in_progress,
+                        "complete": stats.complete,
+                        "failed": stats.failed,
+                    },
+                    "tiers": {
+                        "unicorns": stats.unicorns,
+                        "contenders": stats.contenders,
+                        "passed": stats.passed,
+                    },
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                console.print("\n[bold cyan]Pipeline Status[/bold cyan]\n")
+                reporter.show_status_table()
 
         except (json.JSONDecodeError, KeyError) as e:
-            console.print(f"[red]Error reading work_items.json: {e}[/red]")
+            if json_output:
+                output = {
+                    "status": "error",
+                    "error": f"Error reading work_items.json: {e}",
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                console.print(f"[red]Error reading work_items.json: {e}[/red]")
             raise typer.Exit(code=3) from None
     else:
-        console.print("[yellow]No pipeline state found (work_items.json not found)[/yellow]")
-        console.print("Run [cyan]--all[/cyan] or [cyan]--test[/cyan] to start processing")
+        if json_output:
+            output = {
+                "status": "ok",
+                "pipeline_state": "not_found",
+                "message": "No pipeline state found (work_items.json not found)",
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            console.print("\n[bold cyan]Pipeline Status[/bold cyan]\n")
+            console.print("[yellow]No pipeline state found (work_items.json not found)[/yellow]")
+            console.print("Run [cyan]--all[/cyan] or [cyan]--test[/cyan] to start processing")
 
 
 def confirm_fresh_start() -> None:

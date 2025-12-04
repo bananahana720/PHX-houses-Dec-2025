@@ -8,23 +8,13 @@ allowed-tools: Task, Read, Glob, Grep, Bash, TodoWrite, Skill
 
 Coordinate multi-agent workflows with parallel swarm waves and sequential orchestrated waves.
 
-## Workflow Selection
-
-| Complexity | Agents | Pattern | Example |
-|------------|--------|---------|---------|
-| Simple | 2-3 | sequential | bug-fix-flow |
-| Moderate | 3-5 | mixed | tdd-red-green-blue |
-| Complex | 5+ | waves | phx-full-analysis |
-
-**Load pattern:** `Read .claude/skills/orchestration/examples/{pattern}.yaml`
-
 ## Core Principle: Main Agent Pattern
 
 ```
 You are MAIN AGENT (orchestrator). User is CO-ARCHITECT.
 
 RULES:
-  → Delegate ALL non-trivial work to sub-agents
+  → Delegate *ALL* non-trivial work to sub-agents
   → Only perform small R/W tasks yourself (~2k-3k tokens max)
   → Coordinate; don't execute heavy work
 
@@ -39,19 +29,23 @@ Task Types:
 2. **Update TODO List** - Track with TodoWrite
 3. **Begin Phased Execution** - You coordinate, sub-agents execute
 
+## Workflow Selection
+
+**Load pattern:** `Read .claude/skills/orchestration/examples/{pattern}.yaml`
+
 ## Wave Types
 
 ### Parallel Swarm Wave (Non-Destructive)
 
-Use when tasks write to **independent locations**:
+Use when tasks are for **reaserch, analysis, review, files that do not have dependency on one another**:
 - Spawn multiple agents in **single message** (parallel)
 - No shared state conflicts
 - Example: Phase 1 listing-browser + map-analyzer
 
 ```python
 # Launch in parallel (single message with multiple Task calls)
-Task(agent="listing-browser", prompt="Extract listing...")
-Task(agent="map-analyzer", prompt="Analyze location...")
+Task(agent="code-reviewer", prompt="Validate file...")
+Task(agent="code-reviewer", prompt="Analyze schema...")
 ```
 
 ### Sequential Orchestrated Wave (Destructive)
@@ -63,35 +57,57 @@ Use when tasks **modify shared state**:
 
 ```python
 # Execute sequentially (separate messages)
-result1 = Task(agent="image-assessor", prompt="...")
+result1 = Task(agent="explore", prompt="...")
 validate(result1)  # Check before next
-result2 = Task(agent="scorer", prompt="...")
+result2 = Task(agent="code-dev", prompt="...")
 ```
 
 ## Cost-Aware Model Selection
 
-| Task Type | Model | Cost/1M tokens | Use When |
-|-----------|-------|----------------|----------|
-| Structured extraction | Haiku | $0.25 in | Parsing, API calls |
-| Geographic analysis | Haiku | $0.25 in | Schools, maps |
-| Visual assessment | Sonnet | $3.00 in | Image scoring |
-| Complex reasoning | Sonnet | $3.00 in | Multi-factor decisions |
+| Model | Strengths | Use When |
+|-------|-----------|----------|
+| Haiku | Speed, cost, structured tasks | Parsing, extraction, simple lookups, high-volume parallel |
+| Sonnet | Nuance, vision, complex reasoning | Image analysis, subjective scoring, multi-factor decisions |
+| Opus | Deep expertise, long-form, planning | Architecture, novel problems, extensive research |
 
-**Decision Tree:**
+**Model Selection Heuristics:**
 ```
-Is task visual or subjective? → Sonnet
-Is task structured extraction? → Haiku
-Does task require nuance? → Sonnet
-Is task simple lookup? → Grep (no agent)
+1. Can I do this with 4-5 tool calls alone (Read/Grep/Glob)? → No agent needed
+2. Is it a well-defined, repeatable task with clear inputs/outputs? → Haiku
+3. Does it require judgment, interpretation, or ambiguity resolution? → Sonnet
+4. Is it novel, requires deep domain expertise, or extensive planning? → Opus
+
+Ask yourself:
+- "Would a checklist suffice?" → Haiku
+- "Does this need taste or judgment?" → Sonnet
+- "Am I architecting something new or complex?" → Opus
 ```
 
-## Agent Catalog (PHX Houses)
+## Agent & Workflow Catalog
 
-| Agent | Model | Phase | Purpose |
-|-------|-------|-------|---------|
-| listing-browser | Haiku | 1 | Zillow/Redfin extraction |
-| map-analyzer | Haiku | 1 | Schools, safety, orientation |
-| image-assessor | Sonnet | 2 | Interior/exterior scoring |
+### Built-in Task Agents
+| Agent Type | Model | Use When | Skills to Pass |
+|------------|-------|----------|----------------|
+| Explore | Haiku | Codebase search, file discovery | - |
+| general-purpose | Sonnet | Multi-step implementations | Relevant domain skills |
+| code-reviewer | Sonnet | PR reviews, quality checks | - |
+| debugger | Sonnet | Error investigation | - |
+
+### Custom Agents (`.claude/agents/`)
+| Agent | Model | Purpose | Skills |
+|-------|-------|---------|--------|
+| listing-browser | Haiku | Zillow/Redfin extraction | listing-extraction |
+| map-analyzer | Haiku | Schools, safety, orientation | map-analysis |
+| image-assessor | Sonnet | Interior/exterior scoring | image-assessment |
+
+### BMAD Workflows (`/bmad:bmm:workflows/*`)
+| Command | Purpose | When to Use |
+|---------|---------|-------------|
+| `/bmad:bmm:workflows:create-story` | Generate implementation-ready stories | Before sprint work |
+| `/bmad:bmm:workflows:dev-story` | Execute story with TDD | During implementation |
+| `/bmad:bmm:workflows:code-review` | Adversarial code review | After PR ready |
+| `/bmad:bmm:workflows:sprint-planning` | Generate sprint status tracking | Start of sprint |
+| `/bmad:bmm:workflows:create-tech-spec` | Technical specification | Before complex features |
 
 ## Pre-Spawn Validation (MANDATORY for Phase 2+)
 
@@ -107,7 +123,7 @@ python scripts/validate_phase_prerequisites.py \
 
 ### Single Writer Rule
 ```
-CRITICAL: Only orchestrators modify state files.
+CRITICAL: Only main agents/orchestrators modify state files.
 Sub-agents MUST return data, NOT write files.
 Orchestrator aggregates and writes atomically.
 ```
@@ -115,9 +131,12 @@ Orchestrator aggregates and writes atomically.
 ### Key State Files
 | File | Purpose |
 |------|---------|
-| `work_items.json` | Pipeline progress |
-| `enrichment_data.json` | Property data |
-| `extraction_state.json` | Image pipeline |
+| `data/work_items.json` | Pipeline progress |
+| `data/enrichment_data.json` | Property data |
+| `data/extraction_state.json` | Image pipeline |
+| `docs/bmm-workflow-status.yaml` | BMAD workflow phase tracking |
+| `docs/sprint-artifacts/sprint-status.yaml` | Sprint/epic/story progress |
+| `docs/sprint-artifacts/workflow-status.yaml` | Current workflow state |
 
 ## Error Escalation
 
