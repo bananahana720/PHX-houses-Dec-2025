@@ -37,6 +37,13 @@ class ZillowExtractor(StealthBrowserExtractor):
     nodriver for undetectable Chrome automation and curl_cffi for
     bot-resistant HTTP downloads.
 
+    SECURITY: This extractor includes multiple safeguards against search result
+    contamination (extracting images from wrong properties):
+    - Strict zpid validation in JSON extraction
+    - URL-based zpid filtering for all extracted images
+    - Page type validation before and after extraction
+    - High URL count threshold triggering re-validation
+
     Example:
         ```python
         async with ZillowExtractor() as extractor:
@@ -45,6 +52,32 @@ class ZillowExtractor(StealthBrowserExtractor):
                 image_bytes, content_type = await extractor.download_image(url)
         ```
     """
+
+    # Maximum number of images expected from a single property listing
+    # Exceeding this suggests search result contamination
+    MAX_EXPECTED_IMAGES_PER_PROPERTY = 50
+
+    # Patterns that indicate search result or carousel URLs (to be rejected)
+    SEARCH_RESULT_URL_PATTERNS = [
+        "/search/",
+        "/homes-for-sale/",
+        "searchResultsMap",
+        "carousel",
+        "similar-homes",
+        "nearby",
+        "recommendation",
+    ]
+
+    # Placeholder URL patterns indicating "No Photo Available" images
+    PLACEHOLDER_URL_PATTERNS = [
+        "no-photo",
+        "no-image",
+        "placeholder",
+        "unavailable",
+        "default-image",
+        "missing-photo",
+        "no_photo",
+    ]
 
     def __init__(
         self,
@@ -260,6 +293,190 @@ class ZillowExtractor(StealthBrowserExtractor):
             # Return empty list rather than raising - some extractions may find nothing
             return []
 
+    def _is_search_result_url(self, url: str) -> bool:
+        """Check if URL indicates search results or carousel content.
+
+        SECURITY: Detects URLs that suggest images from search results page,
+        "similar homes" carousels, or recommendation sections rather than
+        the target property's gallery.
+
+        Args:
+            url: Image URL to check
+
+        Returns:
+            True if URL appears to be from search/carousel content, False otherwise
+        """
+        url_lower = url.lower()
+        for pattern in self.SEARCH_RESULT_URL_PATTERNS:
+            if pattern in url_lower:
+                logger.debug(
+                    "%s rejecting search result URL (pattern '%s'): %s",
+                    self.name,
+                    pattern,
+                    url[:80],
+                )
+                return True
+        return False
+
+    def _is_placeholder_url(self, url: str) -> bool:
+        """Check if URL is a "No Photo Available" placeholder image.
+
+        Placeholder images are generic "no photo available" images that
+        aren't actual property photos. They have characteristic URL patterns
+        and are typically very small files.
+
+        Args:
+            url: Image URL to check
+
+        Returns:
+            True if URL appears to be a placeholder image, False otherwise
+        """
+        url_lower = url.lower()
+        for pattern in self.PLACEHOLDER_URL_PATTERNS:
+            if pattern in url_lower:
+                logger.debug(
+                    "%s rejecting placeholder URL (pattern '%s'): %s",
+                    self.name,
+                    pattern,
+                    url[:80],
+                )
+                return True
+        return False
+
+    def _validate_zpid_in_url(self, url: str, expected_zpid: str | None) -> bool:
+        """Validate that image URL is associated with the expected property zpid.
+
+        SECURITY: Zillow image URLs often contain zpid identifiers. This method
+        validates that extracted URLs belong to the target property, not
+        to other properties shown in search results or carousels.
+
+        URL patterns containing zpid:
+        - photos.zillowstatic.com/fp/...zpid_123456789...
+        - Encoded zpid in path segments
+
+        Args:
+            url: Image URL to validate
+            expected_zpid: The zpid of the target property (None if unknown)
+
+        Returns:
+            True if URL is valid for this property (or zpid unknown), False if
+            URL contains a DIFFERENT zpid indicating wrong property
+        """
+        if not expected_zpid:
+            # Cannot validate without expected zpid - allow through
+            return True
+
+        # Look for zpid patterns in URL
+        # Zillow embeds zpid in various formats in image URLs
+        zpid_patterns = [
+            rf"zpid[_\-]?{expected_zpid}",
+            rf"{expected_zpid}_zpid",
+            rf"/{expected_zpid}/",
+            rf"p_e/{expected_zpid}",  # Common Zillow photo path pattern
+        ]
+
+        url_lower = url.lower()
+
+        # Check if URL contains expected zpid
+        for pattern in zpid_patterns:
+            if re.search(pattern, url_lower):
+                logger.debug(
+                    "%s URL validated for zpid %s: %s",
+                    self.name,
+                    expected_zpid,
+                    url[:80],
+                )
+                return True
+
+        # Check if URL contains a DIFFERENT zpid (contamination indicator)
+        # Pattern: any 9-10 digit number that could be zpid
+        other_zpid_match = re.search(r"/(\d{9,10})[/_\-]", url_lower)
+        if other_zpid_match:
+            found_zpid = other_zpid_match.group(1)
+            if found_zpid != expected_zpid:
+                logger.warning(
+                    "%s URL contains different zpid %s (expected %s) - REJECTED: %s",
+                    self.name,
+                    found_zpid,
+                    expected_zpid,
+                    url[:80],
+                )
+                return False
+
+        # No zpid found in URL - allow through (some valid URLs don't have zpid)
+        return True
+
+    def _filter_urls_for_property(
+        self, urls: list[str], expected_zpid: str | None
+    ) -> list[str]:
+        """Filter extracted URLs to only include those from target property.
+
+        SECURITY: Post-extraction filter to remove contaminated URLs from
+        search results, carousels, or other properties.
+
+        Applies multiple filters:
+        1. Search result URL pattern rejection
+        2. Placeholder image detection (no photo available)
+        3. Zpid validation (if expected_zpid available)
+        4. High-quality URL check
+
+        Args:
+            urls: Raw list of extracted URLs
+            expected_zpid: The zpid of the target property
+
+        Returns:
+            Filtered list containing only valid property images
+        """
+        filtered = []
+        rejected_search = 0
+        rejected_placeholder = 0
+        rejected_zpid = 0
+        rejected_quality = 0
+
+        for url in urls:
+            # Filter 1: Reject search result patterns
+            if self._is_search_result_url(url):
+                rejected_search += 1
+                continue
+
+            # Filter 2: Reject placeholder images
+            if self._is_placeholder_url(url):
+                rejected_placeholder += 1
+                continue
+
+            # Filter 3: Validate zpid if available
+            if not self._validate_zpid_in_url(url, expected_zpid):
+                rejected_zpid += 1
+                continue
+
+            # Filter 4: Quality check
+            if not self._is_high_quality_url(url):
+                rejected_quality += 1
+                continue
+
+            filtered.append(url)
+
+        if rejected_search > 0 or rejected_zpid > 0 or rejected_placeholder > 0:
+            logger.warning(
+                "%s URL filtering: accepted=%d, rejected_search=%d, rejected_placeholder=%d, rejected_zpid=%d, rejected_quality=%d",
+                self.name,
+                len(filtered),
+                rejected_search,
+                rejected_placeholder,
+                rejected_zpid,
+                rejected_quality,
+            )
+        else:
+            logger.debug(
+                "%s URL filtering: accepted=%d, rejected_placeholder=%d, rejected_quality=%d",
+                self.name,
+                len(filtered),
+                rejected_placeholder,
+                rejected_quality,
+            )
+
+        return filtered
+
     def _is_high_quality_url(self, url: str) -> bool:
         """Check if URL points to high-quality property image.
 
@@ -343,8 +560,14 @@ class ZillowExtractor(StealthBrowserExtractor):
     async def _extract_photos_from_next_data(
         self, tab: uc.Tab, content: str, expected_zpid: str | None = None
     ) -> set[str]:
-        """Parse __NEXT_DATA__ JSON for responsivePhotos to capture full gallery."""
+        """Parse __NEXT_DATA__ JSON for responsivePhotos to capture full gallery.
+
+        SECURITY: This method now includes zpid-aware filtering to prevent
+        extracting photos from search results or "similar homes" carousels.
+        Only photos associated with the expected_zpid are extracted.
+        """
         urls: set[str] = set()
+        skipped_sections = 0
 
         data: dict | None = None
         script_json = ""
@@ -394,19 +617,65 @@ class ZillowExtractor(StealthBrowserExtractor):
             except Exception as e:
                 logger.info("%s failed to dump __NEXT_DATA__: %s", self.name, e)
 
+        # FIX: Zpid-aware traversal - only extract from sections matching our zpid
         # Traverse parsed JSON when available
         if data is not None:
-            def walk(node):
+            def walk(node: dict | list | str | int | float | bool | None, parent_zpid: str | None = None) -> None:
+                """Walk JSON tree, tracking zpid context to filter by property.
+
+                Args:
+                    node: Current JSON node
+                    parent_zpid: The zpid of the parent context (if any)
+                """
+                nonlocal skipped_sections
+
                 if isinstance(node, dict):
+                    # Check if this dict has a zpid - use it as context
+                    current_zpid = parent_zpid
+                    node_zpid = str(node.get("zpid") or node.get("id") or "")
+
+                    if node_zpid and node_zpid.isdigit() and len(node_zpid) >= 8:
+                        current_zpid = node_zpid
+
+                    # FIX: Skip responsivePhotos from non-matching zpid contexts
                     for key, value in node.items():
                         if key == "responsivePhotos" and isinstance(value, list):
+                            # Only extract if zpid matches or is unknown
+                            if expected_zpid and current_zpid and current_zpid != str(expected_zpid):
+                                skipped_sections += 1
+                                logger.debug(
+                                    "%s SKIPPING responsivePhotos from zpid %s (expected %s)",
+                                    self.name,
+                                    current_zpid,
+                                    expected_zpid,
+                                )
+                                continue
                             urls.update(self._extract_from_responsive_list(value))
-                        walk(value)
+
+                        # FIX: Skip known carousel/search result sections
+                        if key in ("searchResults", "similarHomes", "nearbyHomes",
+                                   "recommendedHomes", "otherListings", "carousel"):
+                            skipped_sections += 1
+                            logger.debug(
+                                "%s SKIPPING section '%s' (likely search/carousel)",
+                                self.name,
+                                key,
+                            )
+                            continue
+
+                        walk(value, current_zpid)
                 elif isinstance(node, list):
                     for item in node:
-                        walk(item)
+                        walk(item, parent_zpid)
 
             walk(data)
+
+            if skipped_sections > 0:
+                logger.info(
+                    "%s Skipped %d non-target sections during JSON traversal",
+                    self.name,
+                    skipped_sections,
+                )
 
         # Inspect gdpClientCache for zpid-specific responsivePhotos/homePhotos
         try:
@@ -431,10 +700,20 @@ class ZillowExtractor(StealthBrowserExtractor):
                     logger.info("%s failed to dump gdpClientCache: %s", self.name, e)
             if isinstance(gdp_cache, dict):
                 for key, value in gdp_cache.items():
-                    # Prefer entries whose key or payload references our zpid
+                    # FIX: STRICT zpid filtering - skip entries not matching our zpid
                     if expected_zpid and expected_zpid not in key:
-                        # If payload matches, we'll still collect below
-                        pass
+                        # Check if payload has matching zpid before processing
+                        if isinstance(value, dict):
+                            value_zpid = str(value.get("zpid") or value.get("id") or "")
+                            if value_zpid and value_zpid != str(expected_zpid):
+                                logger.debug(
+                                    "%s SKIPPING gdpClientCache entry with zpid %s (expected %s)",
+                                    self.name,
+                                    value_zpid,
+                                    expected_zpid,
+                                )
+                                skipped_sections += 1
+                                continue
 
                     if isinstance(value, dict):
                         value_zpid = str(value.get("zpid") or value.get("id") or "")
@@ -1816,14 +2095,27 @@ class ZillowExtractor(StealthBrowserExtractor):
                     property.zpid = expected_zpid
 
             # Extract URLs from page
-            urls = await self._extract_urls_from_page(tab, expected_zpid=expected_zpid)
+            raw_urls = await self._extract_urls_from_page(tab, expected_zpid=expected_zpid)
 
-            # FIX #4: Safety check - too many URLs suggests we're on search results
-            if len(urls) > 25:
+            # FIX: Apply comprehensive URL filtering to prevent search result contamination
+            # This filters by zpid, search result patterns, and quality
+            urls = self._filter_urls_for_property(raw_urls, expected_zpid)
+
+            logger.info(
+                "%s URL filtering: %d raw -> %d filtered (zpid=%s)",
+                self.name,
+                len(raw_urls),
+                len(urls),
+                expected_zpid or "unknown",
+            )
+
+            # FIX: Safety check - too many URLs even after filtering suggests contamination
+            if len(urls) > self.MAX_EXPECTED_IMAGES_PER_PROPERTY:
                 logger.warning(
-                    "%s Extracted %d URLs (threshold 25), re-validating page type",
+                    "%s Extracted %d URLs (threshold %d), re-validating page type",
                     self.name,
                     len(urls),
+                    self.MAX_EXPECTED_IMAGES_PER_PROPERTY,
                 )
                 if not await self._is_property_detail_page(tab):
                     logger.error(
@@ -1832,15 +2124,25 @@ class ZillowExtractor(StealthBrowserExtractor):
                     )
                     return []
 
+                # Even if page validates, cap at MAX to prevent contamination
+                logger.warning(
+                    "%s Capping URL count from %d to %d to prevent contamination",
+                    self.name,
+                    len(urls),
+                    self.MAX_EXPECTED_IMAGES_PER_PROPERTY,
+                )
+                urls = urls[: self.MAX_EXPECTED_IMAGES_PER_PROPERTY]
+
             # If we have far fewer than expected, scroll the gallery to force load and retry
             if len(urls) < 20:
                 try:
                     for _ in range(5):
                         await tab.scroll_down(800)
                         await asyncio.sleep(0.6)
-                    retry_urls = await self._extract_urls_from_page(
+                    retry_raw = await self._extract_urls_from_page(
                         tab, expected_zpid=expected_zpid
                     )
+                    retry_urls = self._filter_urls_for_property(retry_raw, expected_zpid)
                     if len(retry_urls) > len(urls):
                         urls = retry_urls
                         logger.info(
