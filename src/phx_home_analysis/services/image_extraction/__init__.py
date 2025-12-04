@@ -4,14 +4,18 @@ This module provides functionality to:
 - Extract property images from multiple sources (Zillow, Redfin, Phoenix MLS, Maricopa Assessor)
 - Deduplicate images using perceptual hashing
 - Standardize images to PNG format with consistent dimensions
+- Download and cache images with format conversion (webp/png to jpg)
 - AI-powered image categorization using Claude Vision
 - Category-based organization with symlink views
 - Track extraction progress and maintain image manifests
 - URL-level tracking for incremental extraction on re-runs
+- Cache cleanup for images older than 14 days
 - Run history logging for audit trails
 
 Main components:
 - ImageExtractionOrchestrator: Coordinates extraction across all sources
+- ImageDownloader: Downloads images with caching and format conversion (E2.S4)
+- ImageManifest: Tracks downloaded images for cache detection (E2.S4)
 - ImageDeduplicator: Detects duplicate images using pHash
 - ImageStandardizer: Converts and resizes images to standard format
 - ImageCategorizer: AI-powered image categorization (Claude Vision)
@@ -34,6 +38,15 @@ from .categorizer import (
 )
 from .category_index import CategoryIndex
 from .deduplicator import ImageDeduplicator
+from .downloader import (
+    CleanupResult,
+    DownloadResult,
+    ImageDownloader,
+    ImageManifest,
+    ImageManifestEntry,
+    download_property_images,
+    normalize_address_for_folder,
+)
 from .extraction_stats import ExtractionResult, SourceStats, StatsTracker
 from .naming import ImageName, generate_image_name, is_categorized_filename
 from .orchestrator import ImageExtractionOrchestrator
@@ -46,6 +59,14 @@ from .url_tracker import URLEntry, URLTracker
 __all__ = [
     # Orchestration
     "ImageExtractionOrchestrator",
+    # Downloading & Caching (E2.S4)
+    "ImageDownloader",
+    "ImageManifest",
+    "ImageManifestEntry",
+    "DownloadResult",
+    "CleanupResult",
+    "download_property_images",
+    "normalize_address_for_folder",
     # Categorization
     "ImageCategorizer",
     "CategorizationService",

@@ -11,7 +11,7 @@ workflow_path: ".bmad/bmm/workflows/"
 # Current Phase
 current_phase: "implementation"
 current_agent: "dev"
-last_activity: "2025-12-04T18:30:00Z"
+last_activity: "2025-12-04T19:45:00Z"
 
 # Phase 1: Analysis
 analysis:
@@ -76,10 +76,10 @@ implementation:
   sprint_status_file: "docs/sprint-artifacts/sprint-status.yaml"
   progress:
     epics_done: 1
-    stories_done: 17
+    stories_done: 18
     total_stories: 42
   last_completed:
-    story: "E2.S6 GreatSchools API School Ratings"
+    story: "E2.S2 Maricopa County Assessor API Integration"
     epic: "Epic 2: Property Data Acquisition"
     date: "2025-12-04"
   sprint_2_apis_track:
@@ -93,6 +93,10 @@ implementation:
 
 # Key Decisions Made
 decisions:
+  - date: "2025-12-04"
+    decision: "E2.S2 County Assessor API Integration completed (GREEN+BLUE TDD phases)"
+    rationale: "Added PO Box address rejection with ReDoS-safe regex. 25 live tests passing (23+2 skipped). SLA adjusted to 300s for realistic batch performance."
+
   - date: "2025-12-04"
     decision: "Sprint 2 APIs Track completed via parallel swarm orchestration"
     rationale: "E2.S3, E2.S5, E2.S6 implemented in parallel waves. 72 new tests. GoogleMapsClient, SchoolRatingsClient, UA rotation pool created."
@@ -123,14 +127,13 @@ artifacts:
 
 # Next Recommended Actions
 next_actions:
-  - action: "Complete Epic 2 remaining stories"
+  - action: "Complete Epic 2 remaining story"
     priority: "high"
     agent: "dev"
     command: "/bmad:bmm:workflows:dev-story"
     remaining_stories:
-      - "2-2-maricopa-county-assessor-api-integration"
       - "2-4-property-image-download-and-caching"
-    context: "Epic 2 at 5/7 stories (71%). E2.S2 County API and E2.S4 Image Cache remain."
+    context: "Epic 2 at 6/7 stories (86%). Only E2.S4 Image Cache remains."
 
   - action: "Run Epic 2 retrospective"
     priority: "medium"

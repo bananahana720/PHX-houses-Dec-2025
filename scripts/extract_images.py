@@ -186,6 +186,19 @@ def parse_args() -> argparse.Namespace:
         help="Reset failed jobs to pending and exit",
     )
 
+    # Cache cleanup options
+    parser.add_argument(
+        "--clean-images",
+        action="store_true",
+        help="Remove images older than 14 days from cache and exit",
+    )
+    parser.add_argument(
+        "--max-age-days",
+        type=int,
+        default=14,
+        help="Maximum age in days for --clean-images (default: 14)",
+    )
+
     return parser.parse_args()
 
 
@@ -521,6 +534,97 @@ async def run_queued_extraction(args: argparse.Namespace, logger: logging.Logger
         return 1
 
 
+async def run_cleanup(args: argparse.Namespace, logger: logging.Logger) -> int:
+    """Run cache cleanup operation.
+
+    Args:
+        args: Parsed arguments
+        logger: Logger instance
+
+    Returns:
+        Exit code (0 for success, 1 for error)
+    """
+    from phx_home_analysis.services.image_extraction.downloader import (
+        ImageDownloader,
+        ImageManifest,
+    )
+
+    output_dir = args.output_dir
+    max_age_days = args.max_age_days
+    dry_run = args.dry_run
+
+    print()
+    print("=" * 60)
+    print("Image Cache Cleanup")
+    print("=" * 60)
+    print(f"Output directory: {output_dir}")
+    print(f"Max age (days): {max_age_days}")
+    print(f"Mode: {'Dry run (preview only)' if dry_run else 'Live (will delete files)'}")
+    print("=" * 60)
+    print()
+
+    if not output_dir.exists():
+        print(f"Error: Output directory does not exist: {output_dir}", file=sys.stderr)
+        return 1
+
+    downloader = ImageDownloader(base_dir=output_dir)
+
+    total_deleted = 0
+    total_space = 0
+    properties_cleaned = 0
+
+    # Find all property folders
+    for folder in output_dir.iterdir():
+        if not folder.is_dir():
+            continue
+
+        manifest_path = folder / "images_manifest.json"
+        if not manifest_path.exists():
+            # Check for legacy manifest in metadata/image_manifest.json
+            legacy_path = output_dir / "metadata" / "image_manifest.json"
+            if not legacy_path.exists():
+                continue
+
+        # Load manifest
+        try:
+            manifest = ImageManifest.load(manifest_path, folder.name)
+        except Exception as e:
+            logger.warning(f"Failed to load manifest for {folder.name}: {e}")
+            continue
+
+        # Run cleanup
+        result = downloader.cleanup_old_images(
+            address=manifest.property_address or folder.name,
+            manifest=manifest,
+            max_age_days=max_age_days,
+            dry_run=dry_run,
+        )
+
+        if result.files_deleted > 0:
+            properties_cleaned += 1
+            total_deleted += result.files_deleted
+            total_space += result.space_reclaimed_bytes
+
+            action = "Would delete" if dry_run else "Deleted"
+            print(f"{folder.name}: {action} {result.files_deleted} files")
+
+            # Save updated manifest
+            if not dry_run:
+                manifest.save(manifest_path)
+
+    print()
+    print("=" * 60)
+    print("Cleanup Summary")
+    print("=" * 60)
+    action = "Would delete" if dry_run else "Deleted"
+    print(f"Properties affected: {properties_cleaned}")
+    print(f"Files {action.lower()}: {total_deleted}")
+    print(f"Space {'to reclaim' if dry_run else 'reclaimed'}: {total_space / 1024 / 1024:.2f} MB")
+    print("=" * 60)
+
+    return 0
+
+
 async def main() -> int:
     """Main execution function.
 
@@ -533,6 +637,10 @@ async def main() -> int:
     # Configure logging
     configure_logging(args.verbose)
     logger = logging.getLogger(__name__)
+
+    # Handle --clean-images option
+    if args.clean_images:
+        return await run_cleanup(args, logger)
 
     # Handle --show-displays option
     if args.show_displays:
