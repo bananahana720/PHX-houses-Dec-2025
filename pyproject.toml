@@ -80,9 +80,14 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short"
+addopts = "-v --tb=short -m \"not live\""
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "live: marks tests as requiring real API calls (deselect with '-m \"not live\"')",
+    "smoke: marks tests as quick smoke checks",
+    "slow: marks tests as slow running"
+]
 
 [tool.ruff]
 line-length = 100

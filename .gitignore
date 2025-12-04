@@ -1,25 +1,32 @@
+# ============================================
+# ENVIRONMENT & SECRETS
+# ============================================
 .env
-nul
-archive/
-TRASH/
+.env.*
+secrets.json
+credentials.json
 
-# Security
+# ============================================
+# SECURITY - Certificates & Keys
+# ============================================
 .pip-audit-cache/
 *.pem
 *.key
 *.cert
 *.p12
 *.pfx
-secrets.json
-credentials.json
 
-# IDE
+# ============================================
+# IDE & EDITOR
+# ============================================
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Python
+# ============================================
+# PYTHON
+# ============================================
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -29,12 +36,92 @@ build/
 .mypy_cache/
 .ruff_cache/
 
-# Test coverage
+# ============================================
+# TEST COVERAGE
+# ============================================
 .coverage
 htmlcov/
 coverage.xml
 
-# Virtual environments
+# ============================================
+# VIRTUAL ENVIRONMENTS
+# ============================================
 .venv/
 venv/
 env/
+
+# ============================================
+# CLAUDE CODE - Session Data
+# ============================================
+.claude/audio/
+.claude/logs/
+.claude/session-*.log
+.claude/session-*.json
+.claude/settings.local.json
+.claude_in_subtask.flag
+
+# ============================================
+# AGENTVIBES - Personal TTS Config
+# ============================================
+.agentvibes/
+
+# ============================================
+# BMAD - Session Context
+# ============================================
+.bmad-agent-context
+
+# ============================================
+# PLAYWRIGHT MCP - Browser Sessions
+# ============================================
+.playwright-mcp/
+
+# ============================================
+# MCP CONFIG (may contain API keys)
+# ============================================
+.mcp.json
+
+# ============================================
+# PERSONAL NOTES
+# ============================================
+*-design-brainstorming-notes.txt
+*-personal-notes.txt
+
+# ============================================
+# DATA FILES - Property Data (Personal)
+# ============================================
+data/*.json
+data/*.csv
+data/*.bak.json
+data/*.tmp
+data/api_cache/
+data/archive/
+
+# ============================================
+# REPORTS - Generated Output
+# ============================================
+reports/
+
+# ============================================
+# PROJECT TRASH & ARCHIVE
+# ============================================
+archive/
+TRASH/
+TRASH-FILES.md
+
+# ============================================
+# BACKUP & TEMPORARY FILES
+# ============================================
+*.bak
+*.bak.*
+*.orig
+*.tmp
+*.temp
+*~
+nul
+
+# ============================================
+# OS FILES
+# ============================================
+.DS_Store
+Thumbs.db
+desktop.ini

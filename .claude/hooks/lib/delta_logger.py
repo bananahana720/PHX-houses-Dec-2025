@@ -118,15 +118,42 @@ def _should_skip_logging(file_path: str | Path) -> bool:
     if "/agent-" in path_str or "\\agent-" in path_str:
         return True
 
-    # Skip other noise
+    # Skip noise directories - these don't need delta tracking
+    # Categories: caches, generated output, personal config, transient state
     skip_patterns = [
-        ".claude/audio",
-        ".claude/logs",
+        # Caches (binary/generated, no context value)
         "__pycache__",
+        ".mypy_cache",
+        ".ruff_cache",
+        ".pytest_cache",
+        ".pip-audit-cache",
         "node_modules",
-        ".git/",
+        # Build artifacts (generated)
+        "dist/",
+        "build/",
+        ".egg-info",
+        "htmlcov/",
+        # Virtual environments
         ".venv/",
         "venv/",
+        "env/",
+        # Git internals
+        ".git/",
+        # Claude Code session data (personal, transient)
+        ".claude/audio",
+        ".claude/logs",
+        # Personal config (API keys, preferences)
+        ".agentvibes/",
+        ".playwright-mcp/",
+        # Data caches and archives (stale, redundant)
+        "data/api_cache",
+        "data/archive",
+        "api_cache/",
+        # Project trash/archive (explicitly unwanted)
+        "TRASH/",
+        "archive/",
+        # Generated reports (output, not source)
+        "reports/",
     ]
     return any(pat in path_str for pat in skip_patterns)
 

@@ -70,8 +70,43 @@ def evaluate_hygiene(is_agent: bool = False) -> dict[str, str]:
             "reason": "No files modified this session. Safe to exit."
         }
 
-    # Filter out noise directories
-    excluded = {".claude/audio", ".claude/logs", "node_modules", "__pycache__", ".git", ".venv", "venv"}
+    # Filter out noise directories - these don't need CLAUDE.md tracking
+    # Categories: caches, generated output, personal config, transient state
+    excluded = {
+        # Caches (binary/generated, no context value)
+        "__pycache__",
+        ".mypy_cache",
+        ".ruff_cache",
+        ".pytest_cache",
+        ".pip-audit-cache",
+        "node_modules",
+        # Build artifacts (generated)
+        "dist",
+        "build",
+        ".egg-info",
+        "htmlcov",
+        # Virtual environments
+        ".venv",
+        "venv",
+        "env",
+        # Git internals
+        ".git",
+        # Claude Code session data (personal, transient)
+        ".claude/audio",
+        ".claude/logs",
+        # Personal config (API keys, preferences)
+        ".agentvibes",
+        ".playwright-mcp",
+        # Data caches and archives (stale, redundant)
+        "data/api_cache",
+        "data/archive",
+        "api_cache",
+        # Project trash/archive (explicitly unwanted)
+        "TRASH",
+        "archive",
+        # Generated reports (output, not source)
+        "reports",
+    }
 
     def should_exclude(d: str) -> bool:
         """Check if directory should be excluded from hygiene check."""
@@ -100,11 +135,24 @@ def evaluate_hygiene(is_agent: bool = False) -> dict[str, str]:
     missing_claude_md = [d for d in dirs_without_claude_md if d in relevant_dirs]
 
     # Check for stale CLAUDE.md files (>24h)
-    stale_dirs = []
+    stale_dirs: list[str] = []
     for dir_path in relevant_dirs:
         claude_md = Path(dir_path) / "CLAUDE.md"
         if claude_md.exists() and is_stale(claude_md, threshold_hours=24):
             stale_dirs.append(dir_path)
+
+    # Check for oversized CLAUDE.md files (>100 lines) - need distillation
+    oversized_dirs: list[tuple[str, int]] = []
+    OVERSIZED_THRESHOLD = 100
+    for dir_path in relevant_dirs:
+        claude_md = Path(dir_path) / "CLAUDE.md"
+        if claude_md.exists():
+            try:
+                line_count = sum(1 for _ in claude_md.open(encoding="utf-8"))
+                if line_count > OVERSIZED_THRESHOLD:
+                    oversized_dirs.append((dir_path, line_count))
+            except OSError:
+                pass
 
     # Build directory list for message
     dir_list = "\n".join(f"  - {d}" for d in relevant_dirs[:10])
@@ -117,18 +165,76 @@ def evaluate_hygiene(is_agent: bool = False) -> dict[str, str]:
         issues.append(f"{len(missing_claude_md)} missing CLAUDE.md")
     if stale_dirs:
         issues.append(f"{len(stale_dirs)} stale CLAUDE.md (>24h)")
+    if oversized_dirs:
+        issues.append(f"{len(oversized_dirs)} oversized CLAUDE.md (>{OVERSIZED_THRESHOLD} lines)")
 
     issues_text = f" Issues: {', '.join(issues)}." if issues else ""
 
     # Only block if there are actual issues (missing or stale CLAUDE.md)
     # Otherwise just approve with informational message to avoid infinite loops
     if issues:
+        # Build detailed lists for each issue type
+        missing_list = ""
+        if missing_claude_md:
+            missing_list = "\n**MISSING** (create new):\n" + "\n".join(f"  - `{d}`" for d in missing_claude_md[:5])
+            if len(missing_claude_md) > 5:
+                missing_list += f"\n  ... +{len(missing_claude_md) - 5} more"
+
+        stale_list = ""
+        if stale_dirs:
+            stale_list = "\n**STALE** (>24h, refresh):\n" + "\n".join(f"  - `{d}`" for d in stale_dirs[:5])
+            if len(stale_dirs) > 5:
+                stale_list += f"\n  ... +{len(stale_dirs) - 5} more"
+
+        oversized_list = ""
+        if oversized_dirs:
+            oversized_list = "\n**OVERSIZED** (>100 lines, distill):\n" + "\n".join(
+                f"  - `{d}` ({lines} lines)" for d, lines in oversized_dirs[:5]
+            )
+            if len(oversized_dirs) > 5:
+                oversized_list += f"\n  ... +{len(oversized_dirs) - 5} more"
+
+        # Build explicit Haiku instructions
+        haiku_instructions = """
+## CLAUDE.MD HYGIENE TASK
+
+Spawn `Task(model=haiku)` subagent(s) with the following instructions:
+
+### EXECUTION STEPS (Follow Exactly)
+
+1. **READ** the template: `.claude/templates/CLAUDE.md.template`
+2. **FOR EACH** directory listed below:
+   a. **Glob** `*.py` / `*.ts` / `*.md` files in that directory
+   b. **Read** 2-3 key files to understand purpose
+   c. **Create/Update** CLAUDE.md following template schema
+3. **VALIDATE** each CLAUDE.md:
+   - Line count ≤100 (if over, distill to essentials)
+   - Has frontmatter with `last_updated`, `updated_by: agent`
+   - Purpose section is 1-2 sentences max
+   - Contents table lists only key files (≤10 rows)
+   - No prose paragraphs - use bullets/tables only
+
+### TOKEN EFFICIENCY RULES
+- **Purpose**: 1-2 sentences maximum
+- **Contents**: Only files that matter for context (skip tests, __init__.py)
+- **Tasks**: Max 5 items, use priority tags `P:H|M|L`
+- **Learnings**: Max 3 key patterns/discoveries
+- **Refs**: Only cross-references essential for navigation
+- **Deps**: Import relationships that affect understanding
+
+### DISTILLATION (for oversized files)
+If CLAUDE.md >100 lines:
+1. Keep only highest-signal content
+2. Merge similar items
+3. Remove obvious/redundant info
+4. Target: 50-80 lines ideal"""
+
         return {
             "decision": "block",
             "reason": (
-                f"Session modified {len(relevant_dirs)} directories:{issues_text}\n{dir_list}\n\n"
-                "Spawn Task(model=haiku) subagent(s) to assess changes and update CLAUDE.md files "
-                "using the '.claude/templates/CLAUDE.md.template' schema."
+                f"Session modified {len(relevant_dirs)} directories.{issues_text}"
+                f"{missing_list}{stale_list}{oversized_list}"
+                f"{haiku_instructions}"
             )
         }
     else:
@@ -139,7 +245,7 @@ def evaluate_hygiene(is_agent: bool = False) -> dict[str, str]:
         }
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     # Read hook event data from stdin
     transcript_path = None

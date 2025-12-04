@@ -303,5 +303,44 @@
     ],
     "error_patterns": [],
     "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T14:42:21.751171+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [
+      "** Identify WHAT is being mocked (API calls, files, databases) and suggest live alternatives."
+    ],
+    "learnings": [
+      "<pattern_type>"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T14:42:40.601031+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [
+      "** Include line counts and categorize by test type (unit/integration/e2e)."
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T14:43:06.851083+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [
+      "true|false",
+      "** Identify what ISN'T being captured that should be (gaps)."
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T15:07:50.568359+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "bool      # Whether failure blocks pipeline"
+    ],
+    "learnings": []
   }
 ]
