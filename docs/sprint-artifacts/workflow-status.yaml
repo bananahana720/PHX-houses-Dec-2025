@@ -9,9 +9,9 @@ field_type: "real-estate-analysis"
 workflow_path: ".bmad/bmm/workflows/"
 
 # Current Phase
-current_phase: "analysis"
-current_agent: "analyst"
-last_activity: "2025-12-03T11:30:00Z"
+current_phase: "implementation"
+current_agent: "dev"
+last_activity: "2025-12-04T18:30:00Z"
 
 # Phase 1: Analysis
 analysis:
@@ -73,18 +73,34 @@ solutioning:
 # Phase 4: Implementation (tracked in sprint-status.yaml)
 implementation:
   status: "active"
-  sprint_status_file: "docs/sprint_artifacts/sprint-status.yaml"
+  sprint_status_file: "docs/sprint-artifacts/sprint-status.yaml"
   progress:
     epics_done: 1
-    stories_done: 11
+    stories_done: 17
     total_stories: 42
   last_completed:
-    story: "E1.S5 Pipeline Resume Capability"
-    epic: "Epic 1: Foundation & Data Infrastructure"
+    story: "E2.S6 GreatSchools API School Ratings"
+    epic: "Epic 2: Property Data Acquisition"
     date: "2025-12-04"
+  sprint_2_apis_track:
+    status: "completed"
+    stories:
+      - "E2.S3 Zillow/Redfin Listing Extraction"
+      - "E2.S5 Google Maps Geographic Data"
+      - "E2.S6 GreatSchools API School Ratings"
+    tests_added: 72
+    commit: "b55377f"
 
 # Key Decisions Made
 decisions:
+  - date: "2025-12-04"
+    decision: "Sprint 2 APIs Track completed via parallel swarm orchestration"
+    rationale: "E2.S3, E2.S5, E2.S6 implemented in parallel waves. 72 new tests. GoogleMapsClient, SchoolRatingsClient, UA rotation pool created."
+
+  - date: "2025-12-04"
+    decision: "E2.S1 implemented with full TDD cycle (RED->GREEN->BLUE)"
+    rationale: "Added --dry-run, --json flags and row-specific CSV validation. 37 tests passing."
+
   - date: "2025-12-03"
     decision: "Use 3-wave parallel subagent approach for brainstorming"
     rationale: "Maximize coverage while minimizing orchestrator context usage"
@@ -107,19 +123,23 @@ artifacts:
 
 # Next Recommended Actions
 next_actions:
-  - action: "Run Epic 1 retrospective"
-    priority: "high"
-    agent: "sm"
-    command: "/bmad:bmm:workflows:retrospective"
-    context: "Epic 1 complete - all 6 stories done"
-
-  - action: "Continue Epic 2 implementation"
+  - action: "Complete Epic 2 remaining stories"
     priority: "high"
     agent: "dev"
     command: "/bmad:bmm:workflows:dev-story"
-    next_story: "2-1-batch-analysis-cli-entry-point"
+    remaining_stories:
+      - "2-2-maricopa-county-assessor-api-integration"
+      - "2-4-property-image-download-and-caching"
+    context: "Epic 2 at 5/7 stories (71%). E2.S2 County API and E2.S4 Image Cache remain."
 
-  - action: "Continue Epic 3 implementation"
+  - action: "Run Epic 2 retrospective"
+    priority: "medium"
+    agent: "sm"
+    command: "/bmad:bmm:workflows:retrospective"
+    context: "Sprint 2 APIs Track complete - review parallel orchestration learnings"
+
+  - action: "Start Epic 3 Kill-Switch implementation"
     priority: "medium"
     agent: "dev"
     next_story: "3-1-hard-kill-switch-criteria-implementation"
+    context: "Can proceed in parallel with E2.S2/E2.S4 - no dependencies"
