@@ -46,9 +46,11 @@ Usage:
         print("Data quality gate passed!")
 """
 
+from .confidence_display import ConfidenceLevel, format_confidence, get_confidence_html
 from .lineage import LineageTracker
 from .metrics import QualityMetricsCalculator
 from .models import DataSource, FieldLineage, QualityScore
+from .provenance_service import ProvenanceService
 
 __all__ = [
     # Models
@@ -59,4 +61,10 @@ __all__ = [
     "LineageTracker",
     # Quality metrics
     "QualityMetricsCalculator",
+    # Provenance tracking
+    "ProvenanceService",
+    # Confidence display
+    "ConfidenceLevel",
+    "format_confidence",
+    "get_confidence_html",
 ]

@@ -337,6 +337,7 @@ class JsonEnrichmentRepository(EnrichmentRepository):
         """Convert dictionary to EnrichmentData object.
 
         Computes normalized_address if not present in data for backward compatibility.
+        Loads provenance metadata if present.
 
         Args:
             data: Dictionary from JSON.
@@ -350,7 +351,7 @@ class JsonEnrichmentRepository(EnrichmentRepository):
         # Compute normalized_address if not in data (backward compatibility)
         normalized = data.get("normalized_address") or normalize_address(full_address)
 
-        return EnrichmentData(
+        enrichment = EnrichmentData(
             full_address=full_address,
             normalized_address=normalized,
             lot_sqft=data.get('lot_sqft'),
@@ -373,10 +374,26 @@ class JsonEnrichmentRepository(EnrichmentRepository):
             hvac_age=data.get('hvac_age'),
         )
 
+        # Load provenance metadata if present
+        if '_provenance' in data:
+            for field_name, prov_data in data['_provenance'].items():
+                enrichment.set_field_provenance(
+                    field_name=field_name,
+                    source=prov_data['data_source'],
+                    confidence=prov_data['confidence'],
+                    fetched_at=prov_data['fetched_at'],
+                    agent_id=prov_data.get('agent_id'),
+                    phase=prov_data.get('phase'),
+                    derived_from=prov_data.get('derived_from', []),
+                )
+
+        return enrichment
+
     def _enrichment_to_dict(self, enrichment: EnrichmentData) -> dict:
         """Convert EnrichmentData object to dictionary for JSON serialization.
 
         Ensures normalized_address is always included in output.
+        Includes provenance metadata if present.
 
         Args:
             enrichment: EnrichmentData object.
@@ -389,7 +406,7 @@ class JsonEnrichmentRepository(EnrichmentRepository):
         # Ensure normalized_address is present
         normalized = enrichment.normalized_address or normalize_address(enrichment.full_address)
 
-        return {
+        base_dict = {
             'full_address': enrichment.full_address,
             'normalized_address': normalized,
             'lot_sqft': enrichment.lot_sqft,
@@ -411,6 +428,22 @@ class JsonEnrichmentRepository(EnrichmentRepository):
             'roof_age': enrichment.roof_age,
             'hvac_age': enrichment.hvac_age,
         }
+
+        # Add provenance metadata if present
+        if enrichment._provenance:
+            base_dict['_provenance'] = {
+                field_name: {
+                    'data_source': prov.data_source,
+                    'confidence': prov.confidence,
+                    'fetched_at': prov.fetched_at,
+                    'agent_id': prov.agent_id,
+                    'phase': prov.phase,
+                    'derived_from': prov.derived_from,
+                }
+                for field_name, prov in enrichment._provenance.items()
+            }
+
+        return base_dict
 
     def _create_default_template(self) -> None:
         """Create a default enrichment template JSON file.

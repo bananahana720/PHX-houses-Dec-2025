@@ -5,7 +5,7 @@ use throughout the application.
 """
 
 # Entities
-from .entities import EnrichmentData, Property
+from .entities import EnrichmentData, FieldProvenance, Property
 
 # Enums
 from .enums import (
@@ -29,6 +29,7 @@ __all__ = [
     # Entities
     "Property",
     "EnrichmentData",
+    "FieldProvenance",
     # Value Objects
     "Address",
     "Score",

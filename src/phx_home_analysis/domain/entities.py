@@ -11,6 +11,35 @@ from .value_objects import Address, RenovationEstimate, RiskAssessment, ScoreBre
 
 
 @dataclass
+class FieldProvenance:
+    """Provenance metadata for a single field.
+
+    Tracks the source, confidence, and timestamp of data for quality assessment
+    and lineage tracking.
+
+    Attributes:
+        data_source: Data source identifier (e.g., "assessor_api", "zillow").
+        confidence: Confidence score (0.0-1.0).
+        fetched_at: ISO 8601 timestamp when data was retrieved.
+        agent_id: Optional agent identifier that populated the field.
+        phase: Optional phase identifier (e.g., "phase0", "phase1", "phase2").
+        derived_from: List of source field names for derived values.
+    """
+
+    data_source: str
+    confidence: float
+    fetched_at: str  # ISO 8601 timestamp
+    agent_id: str | None = None
+    phase: str | None = None
+    derived_from: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        """Validate provenance metadata."""
+        if not 0.0 <= self.confidence <= 1.0:
+            raise ValueError(f"Confidence must be 0.0-1.0, got {self.confidence}")
+
+
+@dataclass
 class Property:
     """Real estate property entity with complete analysis data.
 
@@ -518,3 +547,68 @@ class EnrichmentData:
     backyard_patio_score: int | None = None
     backyard_pool_ratio: str | None = None  # balanced/pool_dominant/minimal_pool
     backyard_sun_orientation: str | None = None  # N/E/S/W
+
+    # Provenance metadata (field-level tracking)
+    _provenance: dict[str, FieldProvenance] = field(default_factory=dict)
+
+    def set_field_provenance(
+        self,
+        field_name: str,
+        source: str,
+        confidence: float,
+        fetched_at: str | None = None,
+        agent_id: str | None = None,
+        phase: str | None = None,
+        derived_from: list[str] | None = None,
+    ) -> None:
+        """Set provenance metadata for a field.
+
+        Args:
+            field_name: Name of the field.
+            source: Data source identifier (e.g., 'assessor_api', 'zillow').
+            confidence: Confidence score (0.0-1.0).
+            fetched_at: ISO 8601 timestamp (defaults to now).
+            agent_id: Optional agent identifier.
+            phase: Optional phase identifier (e.g., 'phase0', 'phase1').
+            derived_from: Source fields for derived values.
+        """
+        if fetched_at is None:
+            from datetime import datetime as dt
+
+            fetched_at = dt.now().isoformat()
+
+        self._provenance[field_name] = FieldProvenance(
+            data_source=source,
+            confidence=confidence,
+            fetched_at=fetched_at,
+            agent_id=agent_id,
+            phase=phase,
+            derived_from=derived_from or [],
+        )
+
+    def get_field_provenance(self, field_name: str) -> FieldProvenance | None:
+        """Get provenance metadata for a field.
+
+        Args:
+            field_name: Name of the field to query.
+
+        Returns:
+            FieldProvenance if set, None otherwise.
+        """
+        return self._provenance.get(field_name)
+
+    def get_low_confidence_fields(self, threshold: float = 0.80) -> list[str]:
+        """Get fields with confidence below threshold.
+
+        Args:
+            threshold: Confidence threshold (default 0.80).
+
+        Returns:
+            List of field names with confidence < threshold.
+        """
+        return [
+            field_name
+            for field_name, prov in self._provenance.items()
+            if prov.confidence < threshold
+        ]
+

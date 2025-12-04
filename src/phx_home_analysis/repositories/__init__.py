@@ -8,6 +8,7 @@ from .base import (
 )
 from .csv_repository import CsvPropertyRepository
 from .json_repository import JsonEnrichmentRepository
+from .work_items_repository import WorkItemsRepository
 
 __all__ = [
     # Abstract base classes
@@ -19,4 +20,5 @@ __all__ = [
     # Concrete implementations
     "CsvPropertyRepository",
     "JsonEnrichmentRepository",
+    "WorkItemsRepository",
 ]

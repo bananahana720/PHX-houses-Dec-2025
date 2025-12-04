@@ -31,6 +31,10 @@ class DataSource(Enum):
     HOWLOUD = "howloud"
     CENSUS = "census"
     MARICOPA_GIS = "maricopa_gis"
+    ZILLOW = "zillow"
+    REDFIN = "redfin"
+    GOOGLE_MAPS = "google_maps"
+    IMAGE_ASSESSMENT = "image_assessment"
 
     @property
     def default_confidence(self) -> float:
@@ -40,20 +44,24 @@ class DataSource(Enum):
             Float from 0.0 to 1.0 indicating typical confidence level.
         """
         confidence_map = {
-            DataSource.CSV: 0.9,  # User-provided listings, high trust
+            DataSource.CSV: 0.90,  # User-provided listings, high trust
             DataSource.ASSESSOR_API: 0.95,  # Official county records
             DataSource.WEB_SCRAPE: 0.75,  # Web data may be stale/incorrect
-            DataSource.AI_INFERENCE: 0.7,  # AI estimates have uncertainty
+            DataSource.AI_INFERENCE: 0.70,  # AI estimates have uncertainty
             DataSource.MANUAL: 0.85,  # Human inspection, subject to error
-            DataSource.DEFAULT: 0.5,  # Default/assumed values
+            DataSource.DEFAULT: 0.50,  # Default/assumed values
             DataSource.BESTPLACES: 0.80,  # Crime data aggregator
             DataSource.AREAVIBES: 0.80,  # Crime/neighborhood data
             DataSource.WALKSCORE: 0.90,  # Walk/transit scores (proprietary algorithm)
             DataSource.FEMA: 0.95,  # Official flood zone data
-            DataSource.GREATSCHOOLS: 0.85,  # School ratings
+            DataSource.GREATSCHOOLS: 0.90,  # School ratings (updated from 0.85)
             DataSource.HOWLOUD: 0.75,  # Noise score estimates
             DataSource.CENSUS: 0.95,  # Official census data
             DataSource.MARICOPA_GIS: 0.95,  # Official county GIS data
+            DataSource.ZILLOW: 0.85,  # Zillow/Redfin scraping
+            DataSource.REDFIN: 0.85,  # Zillow/Redfin scraping
+            DataSource.GOOGLE_MAPS: 0.90,  # Google Maps API
+            DataSource.IMAGE_ASSESSMENT: 0.80,  # AI image analysis
         }
         return confidence_map.get(self, 0.5)
 

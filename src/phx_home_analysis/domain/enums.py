@@ -496,3 +496,41 @@ class CrimeRiskLevel(Enum):
         if index >= 20:
             return cls.HIGH
         return cls.VERY_HIGH
+
+
+class PhaseStatus(str, Enum):
+    """Status values for pipeline phases.
+
+    Valid transitions:
+    - NEW → pending
+    - pending → in_progress | skipped
+    - in_progress → completed | failed
+    - failed → in_progress (retry)
+    - completed → (terminal)
+    - skipped → (terminal)
+    """
+
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    SKIPPED = "skipped"
+
+
+class WorkItemStatus(str, Enum):
+    """Status values for work items.
+
+    Valid transitions:
+    - NEW → pending
+    - pending → in_progress | blocked
+    - in_progress → completed | failed | blocked
+    - failed → in_progress (retry)
+    - blocked → in_progress (unblock)
+    - completed → (terminal)
+    """
+
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    BLOCKED = "blocked"
