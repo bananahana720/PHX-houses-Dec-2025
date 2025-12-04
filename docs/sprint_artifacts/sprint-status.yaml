@@ -39,7 +39,7 @@ development_status:
   2-4-property-image-download-and-caching: backlog
   2-5-google-maps-api-geographic-data: backlog
   2-6-greatschools-api-school-ratings: backlog
-  2-7-api-integration-infrastructure: backlog
+  2-7-api-integration-infrastructure: done
   epic-2-retrospective: optional
 
   # =============================================================================
@@ -143,12 +143,12 @@ summary:
   total_epics: 7
   total_stories: 42
   stories_by_status:
-    backlog: 39
+    backlog: 38
     drafted: 0
     ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 3
+    done: 4
   epics_by_status:
     backlog: 7
     contexted: 0
