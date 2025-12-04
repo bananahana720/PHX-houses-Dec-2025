@@ -18,8 +18,8 @@ development_status:
   # Stories: 6 | PRD Coverage: FR7, FR8, FR34-39, FR46-51, FR56
   # =============================================================================
   epic-1: backlog
-  1-1-configuration-system-setup: backlog
-  1-2-property-data-storage-layer: backlog
+  1-1-configuration-system-setup: done
+  1-2-property-data-storage-layer: done
   1-3-data-provenance-and-lineage-tracking: backlog
   1-4-pipeline-state-checkpointing: backlog
   1-5-pipeline-resume-capability: backlog
@@ -143,12 +143,12 @@ summary:
   total_epics: 7
   total_stories: 42
   stories_by_status:
-    backlog: 41
+    backlog: 39
     drafted: 0
     ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 1
+    done: 3
   epics_by_status:
     backlog: 7
     contexted: 0
