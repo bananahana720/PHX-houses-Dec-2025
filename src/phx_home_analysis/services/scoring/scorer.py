@@ -16,7 +16,7 @@ from .base import ScoringStrategy
 from .strategies import ALL_STRATEGIES
 
 if TYPE_CHECKING:
-    from .explanation import FullScoreExplanation, ScoringExplainer
+    from .explanation import FullScoreExplanation
 
 
 class PropertyScorer:
@@ -74,6 +74,63 @@ class PropertyScorer:
         """
         return self._thresholds
 
+    def score_location(self, property: Property) -> float:
+        """Calculate Section A (Location & Environment) score independently.
+
+        Applies only location-related scoring strategies and returns the
+        total weighted score for this section.
+
+        Args:
+            property: Property entity to score
+
+        Returns:
+            Total location score (0-250 pts)
+        """
+        location_scores = [
+            strategy.calculate_weighted_score(property)
+            for strategy in self._strategies
+            if strategy.category == "location"
+        ]
+        return sum(score.weighted_score for score in location_scores)
+
+    def score_systems(self, property: Property) -> float:
+        """Calculate Section B (Lot & Systems) score independently.
+
+        Applies only systems-related scoring strategies and returns the
+        total weighted score for this section.
+
+        Args:
+            property: Property entity to score
+
+        Returns:
+            Total systems score (0-175 pts)
+        """
+        systems_scores = [
+            strategy.calculate_weighted_score(property)
+            for strategy in self._strategies
+            if strategy.category == "systems"
+        ]
+        return sum(score.weighted_score for score in systems_scores)
+
+    def score_interior(self, property: Property) -> float:
+        """Calculate Section C (Interior & Features) score independently.
+
+        Applies only interior-related scoring strategies and returns the
+        total weighted score for this section.
+
+        Args:
+            property: Property entity to score
+
+        Returns:
+            Total interior score (0-180 pts)
+        """
+        interior_scores = [
+            strategy.calculate_weighted_score(property)
+            for strategy in self._strategies
+            if strategy.category == "interior"
+        ]
+        return sum(score.weighted_score for score in interior_scores)
+
     def score(self, property: Property) -> ScoreBreakdown:
         """Calculate complete score breakdown for a single property.
 
@@ -86,21 +143,22 @@ class PropertyScorer:
         Returns:
             ScoreBreakdown with location, systems, and interior scores
         """
-        # Calculate scores for all strategies
-        location_scores = []
-        systems_scores = []
-        interior_scores = []
-
-        for strategy in self._strategies:
-            score = strategy.calculate_weighted_score(property)
-
-            # Group by category
-            if strategy.category == "location":
-                location_scores.append(score)
-            elif strategy.category == "systems":
-                systems_scores.append(score)
-            elif strategy.category == "interior":
-                interior_scores.append(score)
+        # Calculate scores for all strategies, grouped by category
+        location_scores = [
+            strategy.calculate_weighted_score(property)
+            for strategy in self._strategies
+            if strategy.category == "location"
+        ]
+        systems_scores = [
+            strategy.calculate_weighted_score(property)
+            for strategy in self._strategies
+            if strategy.category == "systems"
+        ]
+        interior_scores = [
+            strategy.calculate_weighted_score(property)
+            for strategy in self._strategies
+            if strategy.category == "interior"
+        ]
 
         # Create and return ScoreBreakdown
         return ScoreBreakdown(

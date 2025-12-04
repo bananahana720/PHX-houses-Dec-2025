@@ -107,7 +107,7 @@ def generate_deal_sheets(base_dir: Path | None = None) -> Path:
     for _, row in df.head(3).iterrows():
         status = "PASS" if row.get(ks_field) == 'PASS' else "FAIL"
         logger.info("#%d: %s", int(row['rank']), row['full_address'])
-        logger.info("  Score: %s/600 | Status: %s", row['total_score'], status)
+        logger.info("  Score: %s/605 | Status: %s", row['total_score'], status)
         # Get price from price_num if price not available
         price = row.get('price_num') or row.get('price', 0)
         # Convert price to numeric if it's a string (e.g., "$354,000")

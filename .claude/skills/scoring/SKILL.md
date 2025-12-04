@@ -1,29 +1,29 @@
 ---
 name: scoring
-description: Calculate property scores using the 600-point weighted system (Location 230pts, Systems 180pts, Interior 190pts). Tier thresholds are UNICORN >480, CONTENDER 360-480, PASS <360. Use when scoring properties, understanding tier assignments, analyzing score breakdowns, or running the scoring pipeline.
+description: Calculate property scores using the 605-point weighted system (Location 250pts, Systems 175pts, Interior 180pts). Tier thresholds are UNICORN >=484, CONTENDER 363-483, PASS <363. Use when scoring properties, understanding tier assignments, analyzing score breakdowns, or running the scoring pipeline.
 allowed-tools: Read, Bash(python:*)
 ---
 
 # Property Scoring Skill
 
-Calculate property scores using the PHX homes 600-point weighted scoring system.
+Calculate property scores using the PHX homes 605-point weighted scoring system.
 
 ## Quick Reference
 
 | Metric | Value |
 |--------|-------|
-| **Max Score** | 600 points |
-| **Section A: Location** | 230 pts (schools, safety, orientation) |
-| **Section B: Systems** | 180 pts (roof, plumbing, cost efficiency) |
-| **Section C: Interior** | 190 pts (kitchen, master, light) |
+| **Max Score** | 605 points |
+| **Section A: Location** | 250 pts (schools, safety, orientation) |
+| **Section B: Systems** | 175 pts (roof, plumbing, cost efficiency) |
+| **Section C: Interior** | 180 pts (kitchen, master, light) |
 
 ### Tier Classification
 
 | Tier | Score | Action |
 |------|-------|--------|
-| **UNICORN** | >480 (>80%) | Schedule immediately |
-| **CONTENDER** | 360-480 (60-80%) | Strong candidate |
-| **PASS** | <360 (<60%) | Monitor for price drops |
+| **UNICORN** | >=484 (>=80%) | Schedule immediately |
+| **CONTENDER** | 363-483 (60-80%) | Strong candidate |
+| **PASS** | <363 (<60%) | Monitor for price drops |
 | **FAILED** | Any | Kill-switch fail |
 
 ## Helper Scripts
@@ -42,7 +42,7 @@ from src.phx_home_analysis.services.classification import TierClassifier
 
 scorer = PropertyScorer()
 breakdown = scorer.score(property_obj)
-print(f"Total: {breakdown.total_score}/600")
+print(f"Total: {breakdown.total_score}/605")
 
 classifier = TierClassifier()
 tier = classifier.classify(property)  # Returns Tier enum
@@ -52,9 +52,9 @@ tier = classifier.classify(property)  # Returns Tier enum
 
 ```python
 from src.phx_home_analysis.config.constants import (
-    TIER_UNICORN_MIN,      # 480
-    TIER_CONTENDER_MIN,    # 360
-    MAX_POSSIBLE_SCORE,    # 600
+    TIER_UNICORN_MIN,      # 484
+    TIER_CONTENDER_MIN,    # 363
+    MAX_POSSIBLE_SCORE,    # 605
 )
 ```
 

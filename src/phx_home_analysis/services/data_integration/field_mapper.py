@@ -44,7 +44,7 @@ CANONICAL_FIELDS = {
     "solar_lease_monthly",
     "orientation",
     "fireplace_present",
-    # Location scores (Section A - 230 pts)
+    # Location scores (Section A - 250 pts)
     "school_rating",
     "school_district",
     "safety_neighborhood_score",
@@ -54,7 +54,7 @@ CANONICAL_FIELDS = {
     "distance_to_highway_miles",
     "distance_to_park_miles",
     "parks_walkability_score",
-    # Interior scores (Section C - 190 pts)
+    # Interior scores (Section C - 180 pts)
     "kitchen_layout_score",
     "kitchen_quality_score",
     "master_suite_score",
@@ -66,7 +66,7 @@ CANONICAL_FIELDS = {
     "laundry_area_score",
     "laundry_score",
     "aesthetics_score",
-    # Systems scores (Section B - 180 pts)
+    # Systems scores (Section B - 175 pts)
     "backyard_utility_score",
     # Valuation
     "full_cash_value",

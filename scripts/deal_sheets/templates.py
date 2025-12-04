@@ -571,7 +571,7 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
         <h1>{{{{ property.full_address }}}}</h1>
         <div class="header-meta">
             <span class="price">${{{{ "{{:,.0f}}".format(property['price']) }}}}</span>
-            <span class="score">{{{{ property['total_score'] }}}}/600 pts</span>
+            <span class="score">{{{{ property['total_score'] }}}}/605 pts</span>
             <span class="tier-badge tier-{{{{ property['tier'].lower() }}}}">{{{{ property['tier'] }}}}</span>
             <span style="color: #6b7280;">Rank #{{{{ int(property['rank']) }}}}</span>
         </div>
@@ -652,7 +652,7 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
         <div class="scorecard">
             <div class="score-row">
                 <div class="score-label">Location:</div>
-                <div class="score-value">{{{{ "{{:.1f}}".format(property.score_location) }}}}/230</div>
+                <div class="score-value">{{{{ "{{:.1f}}".format(property.score_location) }}}}/250</div>
                 <div class="score-bar-container">
                     <div class="score-bar" style="width: {{{{ (property.score_location / 230 * 100)|round(1) }}}}%">
                         <span class="score-bar-percentage">{{{{ (property.score_location / 230 * 100)|round(0)|int }}}}%</span>
@@ -661,7 +661,7 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
             </div>
             <div class="score-row">
                 <div class="score-label">Systems:</div>
-                <div class="score-value">{{{{ "{{:.1f}}".format(property.score_lot_systems) }}}}/180</div>
+                <div class="score-value">{{{{ "{{:.1f}}".format(property.score_lot_systems) }}}}/175</div>
                 <div class="score-bar-container">
                     <div class="score-bar" style="width: {{{{ (property.score_lot_systems / 180 * 100)|round(1) }}}}%">
                         <span class="score-bar-percentage">{{{{ (property.score_lot_systems / 180 * 100)|round(0)|int }}}}%</span>
@@ -670,7 +670,7 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
             </div>
             <div class="score-row">
                 <div class="score-label">Interior:</div>
-                <div class="score-value">{{{{ "{{:.1f}}".format(property.score_interior) }}}}/190</div>
+                <div class="score-value">{{{{ "{{:.1f}}".format(property.score_interior) }}}}/180</div>
                 <div class="score-bar-container">
                     <div class="score-bar" style="width: {{{{ (property.score_interior / 190 * 100)|round(1) }}}}%">
                         <span class="score-bar-percentage">{{{{ (property.score_interior / 190 * 100)|round(0)|int }}}}%</span>
@@ -679,7 +679,7 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
             </div>
             <div class="score-row">
                 <div class="score-label">TOTAL:</div>
-                <div class="score-value">{{{{ property.total_score }}}}/600</div>
+                <div class="score-value">{{{{ property.total_score }}}}/605</div>
                 <div class="score-bar-container">
                     <div class="score-bar" style="width: {{{{ (property.total_score / 600 * 100)|round(1) }}}}%">
                         <span class="score-bar-percentage">{{{{ (property.total_score / 600 * 100)|round(0)|int }}}}%</span>

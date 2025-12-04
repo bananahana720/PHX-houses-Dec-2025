@@ -9,7 +9,7 @@ This module implements scoring strategies for interior features:
 - Laundry Area (20 pts)
 - Aesthetics (10 pts)
 
-Total Section C maximum: 190 points
+Total Section C maximum: 180 points
 """
 
 

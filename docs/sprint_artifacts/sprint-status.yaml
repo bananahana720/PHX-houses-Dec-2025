@@ -63,7 +63,7 @@ development_status:
   # Stories: 6 | PRD Coverage: FR15-20, FR25, FR27, FR48
   # =============================================================================
   epic-4: backlog
-  4-1-three-dimension-score-calculation: backlog
+  4-1-three-dimension-score-calculation: done
   4-2-22-strategy-scoring-implementation: backlog
   4-3-tier-classification-system: backlog
   4-4-score-breakdown-generation: backlog
@@ -143,12 +143,12 @@ summary:
   total_epics: 7
   total_stories: 42
   stories_by_status:
-    backlog: 38
+    backlog: 37
     drafted: 0
     ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 4
+    done: 5
   epics_by_status:
     backlog: 7
     contexted: 0

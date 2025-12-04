@@ -250,13 +250,13 @@ def analyze_single_property(
         if property_obj.kill_switch_passed:
             print("KILL SWITCH: PASSED")
             if property_obj.score_breakdown:
-                print(f"TOTAL SCORE: {property_obj.score_breakdown.total_score:.1f}/600")
+                print(f"TOTAL SCORE: {property_obj.score_breakdown.total_score:.1f}/605")
                 print(f"TIER: {property_obj.tier.value.upper()}")
                 print()
                 print("Score Breakdown:")
-                print(f"  Location: {property_obj.score_breakdown.location_total:.1f}/230")
-                print(f"  Systems:  {property_obj.score_breakdown.systems_total:.1f}/180")
-                print(f"  Interior: {property_obj.score_breakdown.interior_total:.1f}/190")
+                print(f"  Location: {property_obj.score_breakdown.location_total:.1f}/250")
+                print(f"  Systems:  {property_obj.score_breakdown.systems_total:.1f}/175")
+                print(f"  Interior: {property_obj.score_breakdown.interior_total:.1f}/180")
         else:
             print("KILL SWITCH: FAILED")
             print("Failure reasons:")

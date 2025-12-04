@@ -18,6 +18,7 @@ User story repository for PHX Houses Analysis Pipeline. Stores implementation-re
 | `e1-s1-configuration-system-setup.md` | Config externalization from YAML with env overrides, validation, hot-reload (P0, 8pts) |
 | `e1-s2-property-data-storage-layer.md` | JSON storage with atomic writes, address normalization, backup/restore (P0, 5pts, depends E1.S1) |
 | `e1-s6-transient-error-recovery.md` | Retry decorator with exponential backoff, error classification, work_items.json integration (P0, 5pts) |
+| `E4.S1-three-dimension-scoring.md` | Three-dimension scoring refinement: cost efficiency, systems quality, interior condition (DONE, 13pts) |
 
 ## Story Structure Pattern
 
@@ -35,6 +36,7 @@ User story repository for PHX Houses Analysis Pipeline. Stores implementation-re
 - [x] Document E1.S2 property data storage story with 10 technical tasks
 - [x] Document E1.S6 transient error recovery story with 8 technical tasks
 - [x] Add given-when-then acceptance criteria to all stories
+- [x] Create E4.S1 three-dimension scoring story (13pts) P:H
 - [ ] Link stories to implementation files with line-level precision P:H
 - [ ] Auto-generate acceptance test matrix from AC definitions P:M
 
@@ -51,6 +53,7 @@ User story repository for PHX Houses Analysis Pipeline. Stores implementation-re
 - E1.S1 config system: `e1-s1-configuration-system-setup.md:1-100` (8 technical tasks)
 - E1.S2 data storage: `e1-s2-property-data-storage-layer.md:1-150` (10 technical tasks)
 - E1.S6 error recovery: `e1-s6-transient-error-recovery.md:1-200` (8 technical tasks, 81 tests)
+- E4.S1 three-dimension scoring: `E4.S1-three-dimension-scoring.md:1-120` (DONE, 13pts)
 - Metadata example: `e1-s1-configuration-system-setup.md:1-6` (Status, Epic, Priority, Points)
 
 ## Deps

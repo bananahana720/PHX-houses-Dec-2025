@@ -905,3 +905,448 @@ class TestScoringWeights:
         """Test that pool_condition weight is 20 points (reduced from 30)."""
         weights = ScoringWeights()
         assert weights.pool_condition == 20
+
+
+# ============================================================================
+# Dimension Calculation Tests (E4.S1)
+# ============================================================================
+
+
+class TestDimensionCalculation:
+    """Test independent section (dimension) scoring methods.
+
+    These tests verify AC #1: Each dimension (A/B/C) can be calculated independently.
+    """
+
+    def test_score_location_returns_correct_total(self, sample_property):
+        """Test score_location() returns correct Location total."""
+        scorer = PropertyScorer()
+        location_score = scorer.score_location(sample_property)
+
+        # Score should be non-negative
+        assert location_score >= 0
+        # Score should not exceed section max (250 pts)
+        assert location_score <= 250
+
+        # Verify consistency with full score breakdown
+        breakdown = scorer.score(sample_property)
+        assert abs(location_score - breakdown.location_total) < 0.01
+
+    def test_score_systems_returns_correct_total(self, sample_property):
+        """Test score_systems() returns correct Systems total."""
+        scorer = PropertyScorer()
+        systems_score = scorer.score_systems(sample_property)
+
+        # Score should be non-negative
+        assert systems_score >= 0
+        # Score should not exceed section max (175 pts)
+        assert systems_score <= 175
+
+        # Verify consistency with full score breakdown
+        breakdown = scorer.score(sample_property)
+        assert abs(systems_score - breakdown.systems_total) < 0.01
+
+    def test_score_interior_returns_correct_total(self, sample_property):
+        """Test score_interior() returns correct Interior total."""
+        scorer = PropertyScorer()
+        interior_score = scorer.score_interior(sample_property)
+
+        # Score should be non-negative
+        assert interior_score >= 0
+        # Score should not exceed section max (180 pts)
+        assert interior_score <= 180
+
+        # Verify consistency with full score breakdown
+        breakdown = scorer.score(sample_property)
+        assert abs(interior_score - breakdown.interior_total) < 0.01
+
+    def test_section_scores_sum_to_total(self, sample_property):
+        """Test that section scores sum to total score."""
+        scorer = PropertyScorer()
+
+        location = scorer.score_location(sample_property)
+        systems = scorer.score_systems(sample_property)
+        interior = scorer.score_interior(sample_property)
+
+        breakdown = scorer.score(sample_property)
+
+        # Sum of sections should equal total
+        expected_total = location + systems + interior
+        assert abs(expected_total - breakdown.total_score) < 0.01
+
+    def test_section_independence_location_change(self, sample_property):
+        """Test changing location data doesn't affect other sections."""
+        scorer = PropertyScorer()
+
+        # Get baseline scores
+        original_systems = scorer.score_systems(sample_property)
+        original_interior = scorer.score_interior(sample_property)
+
+        # Modify location data
+        sample_property.school_rating = 10.0  # Max school rating
+        sample_property.orientation = Orientation.N  # Best orientation
+
+        # Other sections should be unchanged
+        new_systems = scorer.score_systems(sample_property)
+        new_interior = scorer.score_interior(sample_property)
+
+        assert abs(original_systems - new_systems) < 0.01
+        assert abs(original_interior - new_interior) < 0.01
+
+    def test_section_independence_interior_change(self, sample_property):
+        """Test changing interior data doesn't affect other sections."""
+        scorer = PropertyScorer()
+
+        # Get baseline scores
+        original_location = scorer.score_location(sample_property)
+        original_systems = scorer.score_systems(sample_property)
+
+        # Modify interior data
+        sample_property.kitchen_layout_score = 10.0
+        sample_property.master_suite_score = 10.0
+        sample_property.natural_light_score = 10.0
+
+        # Other sections should be unchanged
+        new_location = scorer.score_location(sample_property)
+        new_systems = scorer.score_systems(sample_property)
+
+        assert abs(original_location - new_location) < 0.01
+        assert abs(original_systems - new_systems) < 0.01
+
+
+class TestDimensionPercentages:
+    """Test dimension percentage calculations at boundaries.
+
+    These tests verify AC #4: Dimension percentages calculated correctly.
+    """
+
+    def test_location_percentage_at_zero(self):
+        """Test location percentage is 0% when no location scores."""
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[Score(criterion="Test", base_score=5.0, weight=100)],
+            interior_scores=[Score(criterion="Test", base_score=5.0, weight=100)],
+        )
+        assert breakdown.location_percentage == 0.0
+
+    def test_location_percentage_at_fifty_percent(self):
+        """Test location percentage at 50% (125 pts of 250)."""
+        # Create location scores totaling 125 pts (50% of 250)
+        # base_score=5.0 (50%) with total weight=250 gives 125 pts
+        breakdown = ScoreBreakdown(
+            location_scores=[Score(criterion="Test", base_score=5.0, weight=250)],
+            systems_scores=[],
+            interior_scores=[],
+        )
+        assert abs(breakdown.location_percentage - 50.0) < 0.1
+
+    def test_location_percentage_at_hundred_percent(self):
+        """Test location percentage at 100% (250 pts of 250)."""
+        # Create location scores totaling 250 pts (100% of 250)
+        # base_score=10.0 (100%) with total weight=250 gives 250 pts
+        breakdown = ScoreBreakdown(
+            location_scores=[Score(criterion="Test", base_score=10.0, weight=250)],
+            systems_scores=[],
+            interior_scores=[],
+        )
+        assert abs(breakdown.location_percentage - 100.0) < 0.1
+
+    def test_systems_percentage_at_zero(self):
+        """Test systems percentage is 0% when no systems scores."""
+        breakdown = ScoreBreakdown(
+            location_scores=[Score(criterion="Test", base_score=5.0, weight=100)],
+            systems_scores=[],
+            interior_scores=[Score(criterion="Test", base_score=5.0, weight=100)],
+        )
+        assert breakdown.systems_percentage == 0.0
+
+    def test_systems_percentage_at_fifty_percent(self):
+        """Test systems percentage at 50% (87.5 pts of 175)."""
+        # Create systems scores totaling 87.5 pts (50% of 175)
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[Score(criterion="Test", base_score=5.0, weight=175)],
+            interior_scores=[],
+        )
+        assert abs(breakdown.systems_percentage - 50.0) < 0.1
+
+    def test_systems_percentage_at_hundred_percent(self):
+        """Test systems percentage at 100% (175 pts of 175)."""
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[Score(criterion="Test", base_score=10.0, weight=175)],
+            interior_scores=[],
+        )
+        assert abs(breakdown.systems_percentage - 100.0) < 0.1
+
+    def test_interior_percentage_at_zero(self):
+        """Test interior percentage is 0% when no interior scores."""
+        breakdown = ScoreBreakdown(
+            location_scores=[Score(criterion="Test", base_score=5.0, weight=100)],
+            systems_scores=[Score(criterion="Test", base_score=5.0, weight=100)],
+            interior_scores=[],
+        )
+        assert breakdown.interior_percentage == 0.0
+
+    def test_interior_percentage_at_fifty_percent(self):
+        """Test interior percentage at 50% (90 pts of 180)."""
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[],
+            interior_scores=[Score(criterion="Test", base_score=5.0, weight=180)],
+        )
+        assert abs(breakdown.interior_percentage - 50.0) < 0.1
+
+    def test_interior_percentage_at_hundred_percent(self):
+        """Test interior percentage at 100% (180 pts of 180)."""
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[],
+            interior_scores=[Score(criterion="Test", base_score=10.0, weight=180)],
+        )
+        assert abs(breakdown.interior_percentage - 100.0) < 0.1
+
+    def test_total_percentage_at_zero(self):
+        """Test total percentage is 0% when all sections empty."""
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[],
+            interior_scores=[],
+        )
+        assert breakdown.total_percentage == 0.0
+
+    def test_total_percentage_at_fifty_percent(self):
+        """Test total percentage at 50% (302.5 pts of 605)."""
+        # 50% of 605 = 302.5 pts
+        # Split across sections: 125 + 87.5 + 90 = 302.5
+        breakdown = ScoreBreakdown(
+            location_scores=[Score(criterion="Loc", base_score=5.0, weight=250)],
+            systems_scores=[Score(criterion="Sys", base_score=5.0, weight=175)],
+            interior_scores=[Score(criterion="Int", base_score=5.0, weight=180)],
+        )
+        assert abs(breakdown.total_percentage - 50.0) < 0.1
+
+    def test_total_percentage_at_hundred_percent(self):
+        """Test total percentage at 100% (605 pts of 605)."""
+        breakdown = ScoreBreakdown(
+            location_scores=[Score(criterion="Loc", base_score=10.0, weight=250)],
+            systems_scores=[Score(criterion="Sys", base_score=10.0, weight=175)],
+            interior_scores=[Score(criterion="Int", base_score=10.0, weight=180)],
+        )
+        assert abs(breakdown.total_percentage - 100.0) < 0.1
+
+
+class TestScoreBreakdownMaxProperties:
+    """Test ScoreBreakdown section max properties.
+
+    These tests verify AC #2: ScoreBreakdown returns dimension-level breakdowns.
+    """
+
+    def test_section_a_max_is_250(self):
+        """Test section_a_max property returns 250."""
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[],
+            interior_scores=[],
+        )
+        assert breakdown.section_a_max == 250
+
+    def test_section_b_max_is_175(self):
+        """Test section_b_max property returns 175."""
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[],
+            interior_scores=[],
+        )
+        assert breakdown.section_b_max == 175
+
+    def test_section_c_max_is_180(self):
+        """Test section_c_max property returns 180."""
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[],
+            interior_scores=[],
+        )
+        assert breakdown.section_c_max == 180
+
+    def test_total_max_is_605(self):
+        """Test total_max property returns 605."""
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[],
+            interior_scores=[],
+        )
+        assert breakdown.total_max == 605
+
+    def test_max_properties_match_class_constants(self):
+        """Test max properties match class constants."""
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[],
+            interior_scores=[],
+        )
+        assert breakdown.section_a_max == ScoreBreakdown.SECTION_A_MAX
+        assert breakdown.section_b_max == ScoreBreakdown.SECTION_B_MAX
+        assert breakdown.section_c_max == ScoreBreakdown.SECTION_C_MAX
+        assert breakdown.total_max == ScoreBreakdown.TOTAL_MAX
+
+    def test_string_representation_uses_correct_maxes(self):
+        """Test __str__ shows correct section maximums."""
+        breakdown = ScoreBreakdown(
+            location_scores=[Score(criterion="Loc", base_score=5.0, weight=100)],
+            systems_scores=[Score(criterion="Sys", base_score=5.0, weight=50)],
+            interior_scores=[Score(criterion="Int", base_score=5.0, weight=60)],
+        )
+        str_repr = str(breakdown)
+        assert "/250" in str_repr  # Location max
+        assert "/175" in str_repr  # Systems max
+        assert "/180" in str_repr  # Interior max
+        assert "/605" in str_repr  # Total max
+
+
+# ============================================================================
+# 605-Point System Consistency Tests (E4.S1 Task 5)
+# ============================================================================
+
+
+class TestScoringSystemConsistency:
+    """Test 605-point scoring system consistency.
+
+    These tests prevent drift in scoring system configuration by verifying
+    that ScoringWeights and ScoreBreakdown use consistent maximums.
+    """
+
+    def test_scoring_weights_total_is_605(self):
+        """ASSERTION: ScoringWeights.total_possible_score == 605.
+
+        This is the master assertion for the 605-point system.
+        If this fails, scoring weights have drifted from specification.
+        """
+        weights = ScoringWeights()
+        assert weights.total_possible_score == 605, (
+            f"Scoring system drift detected! Expected 605, got {weights.total_possible_score}. "
+            "Section A: 250, Section B: 175, Section C: 180"
+        )
+
+    def test_section_a_max_is_250(self):
+        """ASSERTION: Section A (Location) max is 250 points."""
+        weights = ScoringWeights()
+        assert weights.section_a_max == 250, (
+            f"Section A drift! Expected 250, got {weights.section_a_max}"
+        )
+
+    def test_section_b_max_is_175(self):
+        """ASSERTION: Section B (Systems) max is 175 points."""
+        weights = ScoringWeights()
+        assert weights.section_b_max == 175, (
+            f"Section B drift! Expected 175, got {weights.section_b_max}"
+        )
+
+    def test_section_c_max_is_180(self):
+        """ASSERTION: Section C (Interior) max is 180 points."""
+        weights = ScoringWeights()
+        assert weights.section_c_max == 180, (
+            f"Section C drift! Expected 180, got {weights.section_c_max}"
+        )
+
+    def test_sections_sum_to_total(self):
+        """ASSERTION: Section A + B + C = Total (250 + 175 + 180 = 605)."""
+        weights = ScoringWeights()
+        section_sum = weights.section_a_max + weights.section_b_max + weights.section_c_max
+        assert section_sum == weights.total_possible_score, (
+            f"Sections don't sum to total! {weights.section_a_max} + "
+            f"{weights.section_b_max} + {weights.section_c_max} = {section_sum}, "
+            f"but total_possible_score = {weights.total_possible_score}"
+        )
+
+    def test_score_breakdown_matches_weights(self):
+        """ASSERTION: ScoreBreakdown constants match ScoringWeights."""
+        weights = ScoringWeights()
+        breakdown = ScoreBreakdown(
+            location_scores=[],
+            systems_scores=[],
+            interior_scores=[],
+        )
+
+        assert breakdown.SECTION_A_MAX == weights.section_a_max, (
+            "ScoreBreakdown.SECTION_A_MAX doesn't match ScoringWeights.section_a_max"
+        )
+        assert breakdown.SECTION_B_MAX == weights.section_b_max, (
+            "ScoreBreakdown.SECTION_B_MAX doesn't match ScoringWeights.section_b_max"
+        )
+        assert breakdown.SECTION_C_MAX == weights.section_c_max, (
+            "ScoreBreakdown.SECTION_C_MAX doesn't match ScoringWeights.section_c_max"
+        )
+        assert breakdown.TOTAL_MAX == weights.total_possible_score, (
+            "ScoreBreakdown.TOTAL_MAX doesn't match ScoringWeights.total_possible_score"
+        )
+
+    def test_tier_thresholds_based_on_605(self):
+        """ASSERTION: Tier thresholds are calibrated to 605-point scale.
+
+        Unicorn: >= 484 (80% of 605)
+        Contender: >= 363 (60% of 605)
+        """
+        from src.phx_home_analysis.config.scoring_weights import TierThresholds
+
+        thresholds = TierThresholds()
+        max_score = 605
+
+        # Unicorn is ~80% of max
+        expected_unicorn = max_score * 0.8  # 484
+        assert thresholds.unicorn_min == 484, (
+            f"Unicorn threshold drift! Expected 484 (80% of 605), got {thresholds.unicorn_min}"
+        )
+
+        # Contender is ~60% of max
+        expected_contender = max_score * 0.6  # 363
+        assert thresholds.contender_min == 363, (
+            f"Contender threshold drift! Expected 363 (60% of 605), got {thresholds.contender_min}"
+        )
+
+    def test_all_criteria_weights_sum_correctly(self):
+        """ASSERTION: Individual criteria weights sum to section totals."""
+        weights = ScoringWeights()
+
+        # Section A weights
+        section_a_actual = (
+            weights.school_district
+            + weights.quietness
+            + weights.crime_index
+            + weights.supermarket_proximity
+            + weights.parks_walkability
+            + weights.sun_orientation
+            + weights.flood_risk
+            + weights.walk_transit
+            + weights.air_quality
+        )
+        assert section_a_actual == weights.section_a_max, (
+            f"Section A criteria sum to {section_a_actual}, not {weights.section_a_max}"
+        )
+
+        # Section B weights
+        section_b_actual = (
+            weights.roof_condition
+            + weights.backyard_utility
+            + weights.plumbing_electrical
+            + weights.pool_condition
+            + weights.cost_efficiency
+            + weights.solar_status
+        )
+        assert section_b_actual == weights.section_b_max, (
+            f"Section B criteria sum to {section_b_actual}, not {weights.section_b_max}"
+        )
+
+        # Section C weights
+        section_c_actual = (
+            weights.kitchen_layout
+            + weights.master_suite
+            + weights.natural_light
+            + weights.high_ceilings
+            + weights.fireplace
+            + weights.laundry_area
+            + weights.aesthetics
+        )
+        assert section_c_actual == weights.section_c_max, (
+            f"Section C criteria sum to {section_c_actual}, not {weights.section_c_max}"
+        )

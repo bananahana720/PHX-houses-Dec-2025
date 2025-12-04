@@ -255,7 +255,7 @@ def generate_ranked_csv(properties: list[Property], output_path: str):
         'roof_age', 'hvac_age',
         # Section scores (for audit trail)
         'score_location', 'score_lot_systems', 'score_interior',
-        # Interior assessment scores (Section C inputs - 190 pts)
+        # Interior assessment scores (Section C inputs - 180 pts)
         'kitchen_layout_score', 'master_suite_score', 'natural_light_score',
         'high_ceilings_score', 'fireplace_present', 'laundry_area_score',
         'aesthetics_score',

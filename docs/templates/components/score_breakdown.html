@@ -8,7 +8,7 @@
 <div class="scorecard">
     <div class="score-row">
         <div class="score-label">Location:</div>
-        <div class="score-value">{{ "%.1f"|format(score_breakdown.location_total) }}/230</div>
+        <div class="score-value">{{ "%.1f"|format(score_breakdown.location_total) }}/{{ score_breakdown.section_a_max }}</div>
         <div class="score-bar-container">
             <div class="score-bar" style="width: {{ "%.1f"|format(score_breakdown.location_percentage) }}%">
                 <span class="score-bar-percentage">{{ "%.0f"|format(score_breakdown.location_percentage) }}%</span>
@@ -17,7 +17,7 @@
     </div>
     <div class="score-row">
         <div class="score-label">Systems:</div>
-        <div class="score-value">{{ "%.1f"|format(score_breakdown.systems_total) }}/180</div>
+        <div class="score-value">{{ "%.1f"|format(score_breakdown.systems_total) }}/{{ score_breakdown.section_b_max }}</div>
         <div class="score-bar-container">
             <div class="score-bar" style="width: {{ "%.1f"|format(score_breakdown.systems_percentage) }}%">
                 <span class="score-bar-percentage">{{ "%.0f"|format(score_breakdown.systems_percentage) }}%</span>
@@ -26,7 +26,7 @@
     </div>
     <div class="score-row">
         <div class="score-label">Interior:</div>
-        <div class="score-value">{{ "%.1f"|format(score_breakdown.interior_total) }}/190</div>
+        <div class="score-value">{{ "%.1f"|format(score_breakdown.interior_total) }}/{{ score_breakdown.section_c_max }}</div>
         <div class="score-bar-container">
             <div class="score-bar" style="width: {{ "%.1f"|format(score_breakdown.interior_percentage) }}%">
                 <span class="score-bar-percentage">{{ "%.0f"|format(score_breakdown.interior_percentage) }}%</span>
@@ -35,7 +35,7 @@
     </div>
     <div class="score-row total">
         <div class="score-label">TOTAL:</div>
-        <div class="score-value">{{ "%.1f"|format(score_breakdown.total_score) }}/600</div>
+        <div class="score-value">{{ "%.1f"|format(score_breakdown.total_score) }}/{{ score_breakdown.total_max }}</div>
         <div class="score-bar-container">
             <div class="score-bar" style="width: {{ "%.1f"|format(score_breakdown.total_percentage) }}%">
                 <span class="score-bar-percentage">{{ "%.0f"|format(score_breakdown.total_percentage) }}%</span>

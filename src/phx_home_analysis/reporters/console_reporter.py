@@ -181,18 +181,22 @@ class ConsoleReporter(Reporter):
 
         if self.use_color:
             print(f"{self.BOLD}#{rank} - {prop.full_address}{self.RESET}")
-            print(f"Tier: {tier_color}{tier_label}{self.RESET} | Score: {prop.total_score:.1f}/600")
+            print(f"Tier: {tier_color}{tier_label}{self.RESET} | Score: {prop.total_score:.1f}/605")
         else:
             print(f"#{rank} - {prop.full_address}")
-            print(f"Tier: {tier_label} | Score: {prop.total_score:.1f}/600")
+            print(f"Tier: {tier_label} | Score: {prop.total_score:.1f}/605")
 
         print(f"Price: {prop.price} | {prop.beds}bd/{prop.baths}ba | {prop.sqft:,} sqft")
 
         if prop.score_breakdown:
+            breakdown = prop.score_breakdown
             print(
-                f"Scores: Location {prop.score_breakdown.location_total:.1f}/230 | "
-                f"Systems {prop.score_breakdown.systems_total:.1f}/180 | "
-                f"Interior {prop.score_breakdown.interior_total:.1f}/190"
+                f"Scores: Location {breakdown.location_total:.1f}/{breakdown.section_a_max} "
+                f"({breakdown.location_percentage:.0f}%) | "
+                f"Systems {breakdown.systems_total:.1f}/{breakdown.section_b_max} "
+                f"({breakdown.systems_percentage:.0f}%) | "
+                f"Interior {breakdown.interior_total:.1f}/{breakdown.section_c_max} "
+                f"({breakdown.interior_percentage:.0f}%)"
             )
 
         # Print high risks if any

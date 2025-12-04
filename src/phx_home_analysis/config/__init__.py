@@ -12,7 +12,7 @@ New Configuration System (E1.S1):
         >>> from phx_home_analysis.config import get_config
         >>> config = get_config()
         >>> config.scoring.section_weights.location.points
-        230
+        250
 
 Legacy Support:
     The old dataclass-based configuration (AppConfig, BuyerProfile, etc.) is

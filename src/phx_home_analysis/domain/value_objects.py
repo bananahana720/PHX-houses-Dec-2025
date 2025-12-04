@@ -141,18 +141,23 @@ class ScoreBreakdown:
 
     Aggregates scores across the three main scoring sections with
     computed totals and percentages.
+
+    Section maximums (605-point system):
+        - Section A (Location & Environment): 250 pts
+        - Section B (Lot & Systems): 175 pts
+        - Section C (Interior & Features): 180 pts
     """
 
-    location_scores: list[Score]  # Section A: Location & Environment (max 230 pts)
-    systems_scores: list[Score]  # Section B: Lot & Systems (max 180 pts)
-    interior_scores: list[Score]  # Section C: Interior & Features (max 190 pts)
+    location_scores: list[Score]  # Section A: Location & Environment (max 250 pts)
+    systems_scores: list[Score]  # Section B: Lot & Systems (max 175 pts)
+    interior_scores: list[Score]  # Section C: Interior & Features (max 180 pts)
 
     @property
     def location_total(self) -> float:
         """Total score for Location & Environment section.
 
         Returns:
-            Sum of weighted scores (0-230 pts)
+            Sum of weighted scores (0-250 pts)
         """
         return sum(score.weighted_score for score in self.location_scores)
 
@@ -161,7 +166,7 @@ class ScoreBreakdown:
         """Total score for Lot & Systems section.
 
         Returns:
-            Sum of weighted scores (0-180 pts)
+            Sum of weighted scores (0-175 pts)
         """
         return sum(score.weighted_score for score in self.systems_scores)
 
@@ -170,7 +175,7 @@ class ScoreBreakdown:
         """Total score for Interior & Features section.
 
         Returns:
-            Sum of weighted scores (0-190 pts)
+            Sum of weighted scores (0-180 pts)
         """
         return sum(score.weighted_score for score in self.interior_scores)
 
@@ -179,53 +184,95 @@ class ScoreBreakdown:
         """Total weighted score across all sections.
 
         Returns:
-            Sum of all section totals (0-600 pts)
+            Sum of all section totals (0-605 pts)
         """
         return self.location_total + self.systems_total + self.interior_total
 
+    # Section maximum constants (605-point system)
+    SECTION_A_MAX: int = 250  # Location & Environment
+    SECTION_B_MAX: int = 175  # Lot & Systems
+    SECTION_C_MAX: int = 180  # Interior & Features
+    TOTAL_MAX: int = 605  # Sum of all sections
+
+    @property
+    def section_a_max(self) -> int:
+        """Maximum points for Section A: Location & Environment.
+
+        Returns:
+            250 points
+        """
+        return self.SECTION_A_MAX
+
+    @property
+    def section_b_max(self) -> int:
+        """Maximum points for Section B: Lot & Systems.
+
+        Returns:
+            175 points
+        """
+        return self.SECTION_B_MAX
+
+    @property
+    def section_c_max(self) -> int:
+        """Maximum points for Section C: Interior & Features.
+
+        Returns:
+            180 points
+        """
+        return self.SECTION_C_MAX
+
+    @property
+    def total_max(self) -> int:
+        """Maximum possible total score.
+
+        Returns:
+            605 points (250 + 175 + 180)
+        """
+        return self.TOTAL_MAX
+
     @property
     def location_percentage(self) -> float:
-        """Location section score as percentage of maximum.
+        """Location section score as percentage of maximum (250 pts).
 
         Returns:
             Percentage (0-100)
         """
-        return (self.location_total / 230) * 100
+        return (self.location_total / self.SECTION_A_MAX) * 100
 
     @property
     def systems_percentage(self) -> float:
-        """Systems section score as percentage of maximum.
+        """Systems section score as percentage of maximum (175 pts).
 
         Returns:
             Percentage (0-100)
         """
-        return (self.systems_total / 180) * 100
+        return (self.systems_total / self.SECTION_B_MAX) * 100
 
     @property
     def interior_percentage(self) -> float:
-        """Interior section score as percentage of maximum.
+        """Interior section score as percentage of maximum (180 pts).
 
         Returns:
             Percentage (0-100)
         """
-        return (self.interior_total / 190) * 100
+        return (self.interior_total / self.SECTION_C_MAX) * 100
 
     @property
     def total_percentage(self) -> float:
-        """Total score as percentage of maximum possible.
+        """Total score as percentage of maximum possible (605 pts).
 
         Returns:
             Percentage (0-100)
         """
-        return (self.total_score / 600) * 100
+        return (self.total_score / self.TOTAL_MAX) * 100
 
     def __str__(self) -> str:
         """String representation shows section totals and overall score."""
         return (
-            f"Location: {self.location_total:.1f}/230 | "
-            f"Systems: {self.systems_total:.1f}/180 | "
-            f"Interior: {self.interior_total:.1f}/190 | "
-            f"Total: {self.total_score:.1f}/600"
+            f"Location: {self.location_total:.1f}/{self.SECTION_A_MAX} | "
+            f"Systems: {self.systems_total:.1f}/{self.SECTION_B_MAX} | "
+            f"Interior: {self.interior_total:.1f}/{self.SECTION_C_MAX} | "
+            f"Total: {self.total_score:.1f}/{self.TOTAL_MAX}"
         )
 
 

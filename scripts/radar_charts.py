@@ -232,7 +232,7 @@ def print_detailed_scores(scores):
 
     for i, prop in enumerate(scores, 1):
         print(f"{i}. {prop['address']}")
-        print(f"   Price: ${prop['price']:,.0f} | Total Score: {prop['total_score']:.1f}/600")
+        print(f"   Price: ${prop['price']:,.0f} | Total Score: {prop['total_score']:.1f}/605")
         print("   Radar Dimensions:")
         for dim, score in prop['axes'].items():
             bar = '#' * int(score) + '-' * (10 - int(score))
