@@ -60,7 +60,7 @@ development_status:
   # =============================================================================
   epic-2: contexted
   2-1-batch-analysis-cli-entry-point: done
-  2-2-maricopa-county-assessor-api-integration: backlog
+  2-2-maricopa-county-assessor-api-integration: ready-for-dev
   2-3-zillow-redfin-listing-extraction: done
   2-4-property-image-download-and-caching: backlog
   2-5-google-maps-api-geographic-data: done
@@ -149,9 +149,9 @@ summary:
   total_epics: 7
   total_stories: 42
   stories_by_status:
-    backlog: 25
+    backlog: 24
     drafted: 0
-    ready-for-dev: 0
+    ready-for-dev: 1
     in-progress: 0
     review: 0
     done: 17

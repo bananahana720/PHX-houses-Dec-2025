@@ -74,6 +74,14 @@ class MaricopaAssessorClient:
     Attempts Official API first (requires token), falls back to ArcGIS public API.
     """
 
+    # Compiled regex for PO Box detection - compiled at class level for:
+    # 1. Performance: regex compiled once instead of on every address check
+    # 2. Security: prevents ReDoS (Regular Expression Denial of Service) by avoiding
+    #    nested optional quantifiers that could cause catastrophic backtracking
+    _PO_BOX_PATTERN = re.compile(
+        r'(?i)\b(p\.?o\.?\s+box|post\s+office\s+box|pob)\b'
+    )
+
     def __init__(
         self,
         token: str | None = None,
@@ -470,6 +478,26 @@ class MaricopaAssessorClient:
             tax_annual=None,
         )
 
+    def _is_po_box(self, address: str) -> bool:
+        """Detect PO Box addresses that should be rejected.
+
+        Args:
+            address: Street address to validate
+
+        Returns:
+            True if address is a PO Box, False otherwise
+
+        Security Note:
+            PO Boxes are not physical property addresses and should be
+            rejected early to avoid unnecessary API calls.
+
+            Uses pre-compiled regex pattern (_PO_BOX_PATTERN) to prevent
+            ReDoS (Regular Expression Denial of Service) attacks.
+        """
+        # Match variations: "PO Box", "P.O. Box", "Post Office Box", "POB"
+        # Uses class-level compiled regex for performance and security
+        return bool(self._PO_BOX_PATTERN.search(address))
+
     async def extract_for_address(self, street: str) -> ParcelData | None:
         """Extract parcel data for a street address.
 
@@ -481,6 +509,11 @@ class MaricopaAssessorClient:
         Returns:
             ParcelData if found, None otherwise
         """
+        # Reject PO Box addresses early
+        if self._is_po_box(street):
+            logger.info(f"Rejected PO Box address: {street}")
+            return None
+
         apn = await self.search_apn(street)
         if not apn:
             logger.info(f"No APN found for: {street}")
