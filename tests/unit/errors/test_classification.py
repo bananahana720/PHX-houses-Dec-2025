@@ -160,10 +160,21 @@ class TestGetErrorCategory:
         error = ConnectionError("Connection failed")
         assert get_error_category(error) == ErrorCategory.TRANSIENT
 
-    def test_permanent_error_category(self) -> None:
-        """Permanent errors should get PERMANENT category."""
+    def test_unknown_error_category(self) -> None:
+        """Unknown errors should get UNKNOWN category (not PERMANENT).
+
+        This tests that unclassified errors (not in TRANSIENT or PERMANENT lists)
+        get the UNKNOWN category for conservative handling.
+        """
+        # ValueError is not in TRANSIENT or PERMANENT HTTP code lists
+        # and is not a TRANSIENT_EXCEPTION_TYPE, so it should be UNKNOWN
         error = ValueError("Bad input")
-        assert get_error_category(error) == ErrorCategory.PERMANENT
+        assert get_error_category(error) == ErrorCategory.UNKNOWN
+
+    def test_runtime_error_unknown_category(self) -> None:
+        """RuntimeError should get UNKNOWN category."""
+        error = RuntimeError("Something unexpected")
+        assert get_error_category(error) == ErrorCategory.UNKNOWN
 
     def test_http_transient_error_category(self) -> None:
         """HTTP transient errors should get TRANSIENT category."""
@@ -176,6 +187,18 @@ class TestGetErrorCategory:
         error = Exception("Not found")
         error.status_code = 404  # type: ignore[attr-defined]
         assert get_error_category(error) == ErrorCategory.PERMANENT
+
+    def test_timeout_error_transient_category(self) -> None:
+        """TimeoutError should get TRANSIENT category (it's in TRANSIENT_EXCEPTION_TYPES)."""
+        error = TimeoutError("Timed out")
+        assert get_error_category(error) == ErrorCategory.TRANSIENT
+
+    def test_unclassified_http_code_unknown_category(self) -> None:
+        """HTTP codes not in TRANSIENT or PERMANENT lists should get UNKNOWN."""
+        # HTTP 418 "I'm a teapot" is not in either list
+        error = Exception("I'm a teapot")
+        error.status_code = 418  # type: ignore[attr-defined]
+        assert get_error_category(error) == ErrorCategory.UNKNOWN
 
 
 class TestFormatErrorMessage:

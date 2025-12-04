@@ -105,11 +105,28 @@ def get_error_category(error: Exception) -> ErrorCategory:
         error: The exception to classify
 
     Returns:
-        ErrorCategory enum value
+        ErrorCategory enum value (TRANSIENT, PERMANENT, or UNKNOWN)
     """
-    if is_transient_error(error):
+    # Check exception type first
+    if isinstance(error, TRANSIENT_EXCEPTION_TYPES):
         return ErrorCategory.TRANSIENT
-    return ErrorCategory.PERMANENT
+
+    # Check for HTTP status code in exception attributes
+    status_code = getattr(error, "status_code", None)
+    if status_code is None:
+        # Try httpx-style response attribute
+        response = getattr(error, "response", None)
+        if response is not None:
+            status_code = getattr(response, "status_code", None)
+
+    if status_code is not None:
+        if status_code in TRANSIENT_HTTP_CODES:
+            return ErrorCategory.TRANSIENT
+        if status_code in PERMANENT_HTTP_CODES:
+            return ErrorCategory.PERMANENT
+
+    # Unknown errors: Not in TRANSIENT or PERMANENT lists
+    return ErrorCategory.UNKNOWN
 
 
 def format_error_message(error: Exception, context: str = "") -> str:
@@ -122,9 +139,9 @@ def format_error_message(error: Exception, context: str = "") -> str:
     Returns:
         Formatted error message with suggested action
 
-    Examples:
-        >>> format_error_message(HTTPError(401), "County API call")
-        "County API call failed: Exception (HTTP 401). Action: Check API token in .env file"
+    Example:
+        >>> # format_error_message(HTTPError(401), "County API call")
+        >>> # Returns: "County API call: HTTPError (HTTP 401). Action: Check API token..."
     """
     status_code = getattr(error, "status_code", None)
     if status_code is None:

@@ -73,24 +73,25 @@ def mark_item_failed(
             item["phases"][phase]["error_category"] = category.value
 
             item["last_updated"] = datetime.now(timezone.utc).isoformat()
+
+            # Log inside loop to ensure category is in scope
+            logger.info(f"Marked {address}/{phase} as {status}")
             break
 
     if not item_found:
         logger.warning(f"Work item not found for address: {address}")
         return
 
-    # Update summary counts
+    # Update summary counts - always recalculate
     summary = data.get("summary", {})
-    if "failed" in summary or True:  # Always recalculate
-        # Recalculate failed count
-        failed_count = sum(
-            1
-            for item in data.get("work_items", [])
-            for phase_data in item.get("phases", {}).values()
-            if phase_data.get("status") == "failed"
-        )
-        summary["failed"] = failed_count
-        data["summary"] = summary
+    failed_count = sum(
+        1
+        for item in data.get("work_items", [])
+        for phase_data in item.get("phases", {}).values()
+        if phase_data.get("status") == "failed"
+    )
+    summary["failed"] = failed_count
+    data["summary"] = summary
 
     data["last_checkpoint"] = datetime.now(timezone.utc).isoformat()
 
@@ -99,10 +100,6 @@ def mark_item_failed(
     with open(temp_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
     temp_path.replace(work_items_path)
-
-    logger.info(
-        f"Marked {address}/{phase} as {'retrying' if can_retry and category == ErrorCategory.TRANSIENT else 'failed'}"
-    )
 
 
 def get_failure_summary(work_items_path: Path) -> dict[str, Any]:

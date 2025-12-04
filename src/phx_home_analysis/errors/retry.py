@@ -18,11 +18,44 @@ implemented standalone for control and testing.
 import asyncio
 import functools
 import logging
+import os
 import random
 from collections.abc import Awaitable, Callable
 from typing import ParamSpec, TypeVar
 
 from . import format_error_message, is_transient_error
+
+# Environment variable defaults (can be overridden by env vars)
+DEFAULT_MAX_RETRIES = 5
+DEFAULT_MIN_DELAY = 1.0
+DEFAULT_MAX_DELAY = 60.0
+DEFAULT_JITTER = 0.5
+
+
+def _get_env_int(name: str, default: int) -> int:
+    """Get integer from environment variable with fallback."""
+    value = os.environ.get(name)
+    if value is not None:
+        try:
+            return int(value)
+        except ValueError:
+            logging.getLogger(__name__).warning(
+                f"Invalid integer for {name}={value!r}, using default={default}"
+            )
+    return default
+
+
+def _get_env_float(name: str, default: float) -> float:
+    """Get float from environment variable with fallback."""
+    value = os.environ.get(name)
+    if value is not None:
+        try:
+            return float(value)
+        except ValueError:
+            logging.getLogger(__name__).warning(
+                f"Invalid float for {name}={value!r}, using default={default}"
+            )
+    return default
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +64,10 @@ T = TypeVar("T")
 
 
 def retry_with_backoff(
-    max_retries: int = 5,
-    min_delay: float = 1.0,
-    max_delay: float = 60.0,
-    jitter: float = 0.5,
+    max_retries: int | None = None,
+    min_delay: float | None = None,
+    max_delay: float | None = None,
+    jitter: float | None = None,
     retry_on: Callable[[Exception], bool] | None = None,
 ) -> Callable[
     [Callable[P, Awaitable[T]]], Callable[P, Awaitable[T]]
@@ -45,12 +78,22 @@ def retry_with_backoff(
     using exponential backoff with jitter to prevent thundering herd.
 
     Args:
-        max_retries: Maximum number of retry attempts (default: 5)
-        min_delay: Initial delay between retries in seconds (default: 1.0)
-        max_delay: Maximum delay cap in seconds (default: 60.0)
-        jitter: Randomization factor for delays, 0-1 (default: 0.5)
+        max_retries: Maximum number of retry attempts. Defaults to RETRY_MAX_RETRIES env var
+                     or 5 if not set.
+        min_delay: Initial delay between retries in seconds. Defaults to RETRY_MIN_DELAY
+                   env var or 1.0 if not set.
+        max_delay: Maximum delay cap in seconds. Defaults to RETRY_MAX_DELAY env var
+                   or 60.0 if not set.
+        jitter: Randomization factor for delays, 0-1. Defaults to RETRY_JITTER env var
+                or 0.5 if not set.
         retry_on: Optional custom function to determine if error is retryable.
                   Defaults to is_transient_error().
+
+    Environment Variables:
+        RETRY_MAX_RETRIES: Override default max_retries (integer)
+        RETRY_MIN_DELAY: Override default min_delay (float, seconds)
+        RETRY_MAX_DELAY: Override default max_delay (float, seconds)
+        RETRY_JITTER: Override default jitter (float, 0-1)
 
     Returns:
         Decorated function with retry logic
@@ -67,6 +110,26 @@ def retry_with_backoff(
         Attempt 4 failure: wait 8.0-12.0s
         Attempt 5 failure: wait 16.0-24.0s (capped at max_delay)
     """
+    # Resolve defaults from environment variables or hardcoded defaults
+    resolved_max_retries = (
+        max_retries
+        if max_retries is not None
+        else _get_env_int("RETRY_MAX_RETRIES", DEFAULT_MAX_RETRIES)
+    )
+    resolved_min_delay = (
+        min_delay
+        if min_delay is not None
+        else _get_env_float("RETRY_MIN_DELAY", DEFAULT_MIN_DELAY)
+    )
+    resolved_max_delay = (
+        max_delay
+        if max_delay is not None
+        else _get_env_float("RETRY_MAX_DELAY", DEFAULT_MAX_DELAY)
+    )
+    resolved_jitter = (
+        jitter if jitter is not None else _get_env_float("RETRY_JITTER", DEFAULT_JITTER)
+    )
+
     should_retry = retry_on or is_transient_error
 
     def decorator(
@@ -76,7 +139,7 @@ def retry_with_backoff(
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             last_error: Exception | None = None
 
-            for attempt in range(max_retries + 1):
+            for attempt in range(resolved_max_retries + 1):
                 try:
                     return await func(*args, **kwargs)
 
@@ -92,9 +155,9 @@ def retry_with_backoff(
                         raise
 
                     # Check if retries exhausted
-                    if attempt >= max_retries:
+                    if attempt >= resolved_max_retries:
                         logger.error(
-                            f"{func.__name__} failed after {max_retries + 1} attempts: "
+                            f"{func.__name__} failed after {resolved_max_retries + 1} attempts: "
                             f"{format_error_message(e)}"
                         )
                         raise
@@ -102,14 +165,14 @@ def retry_with_backoff(
                     # Calculate delay with exponential backoff
                     delay = calculate_backoff_delay(
                         attempt=attempt,
-                        min_delay=min_delay,
-                        max_delay=max_delay,
-                        jitter=jitter,
+                        min_delay=resolved_min_delay,
+                        max_delay=resolved_max_delay,
+                        jitter=resolved_jitter,
                     )
 
                     logger.info(
                         f"{func.__name__} transient error (attempt {attempt + 1}/"
-                        f"{max_retries + 1}), retrying in {delay:.1f}s: {type(e).__name__}"
+                        f"{resolved_max_retries + 1}), retrying in {delay:.1f}s: {type(e).__name__}"
                     )
 
                     await asyncio.sleep(delay)
@@ -159,7 +222,7 @@ def calculate_backoff_delay(
     # Add jitter to prevent thundering herd
     if jitter > 0:
         jitter_amount: float = delay * jitter * random.random()
-        delay += jitter_amount
+        delay = min(delay + jitter_amount, max_delay)
 
     return delay
 
@@ -223,7 +286,7 @@ class RetryContext:
     def get_delay(self) -> float:
         """Get the delay for the current retry attempt."""
         delay = calculate_backoff_delay(
-            attempt=self.attempt - 1,
+            attempt=max(0, self.attempt - 1),
             min_delay=self.min_delay,
             max_delay=self.max_delay,
             jitter=self.jitter,

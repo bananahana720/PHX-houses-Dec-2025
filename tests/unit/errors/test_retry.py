@@ -336,3 +336,136 @@ class TestRetryContext:
         error.status_code = 404  # type: ignore[attr-defined]
         result = ctx.handle_error(error)
         assert result is False
+
+
+class TestJitterBoundary:
+    """Tests for jitter boundary conditions."""
+
+    def test_jitter_does_not_exceed_max_delay(self) -> None:
+        """Jitter should never cause delay to exceed max_delay.
+
+        CRITICAL: When delay is at max_delay, adding jitter could exceed the cap.
+        This test verifies that the final delay is always <= max_delay.
+        """
+        # Test case where base delay is at max_delay
+        # With jitter=1.0 and random=1.0, jitter would add 100% of delay
+        # Without the fix, this would return 120.0 (60 + 60)
+        with patch("phx_home_analysis.errors.retry.random.random", return_value=1.0):
+            delay = calculate_backoff_delay(
+                attempt=10,  # High attempt to ensure base_delay > max_delay
+                min_delay=1.0,
+                max_delay=60.0,
+                jitter=1.0,  # Maximum jitter
+            )
+            assert delay <= 60.0, f"Delay {delay} exceeded max_delay 60.0"
+
+    def test_jitter_boundary_near_max(self) -> None:
+        """Verify jitter capping when delay is near max_delay."""
+        with patch("phx_home_analysis.errors.retry.random.random", return_value=1.0):
+            delay = calculate_backoff_delay(
+                attempt=5,  # 2^5 = 32, with min_delay=2.0 = 64, capped to 60
+                min_delay=2.0,
+                max_delay=60.0,
+                jitter=0.5,  # Would add 30 to 60 without cap
+            )
+            assert delay <= 60.0, f"Delay {delay} exceeded max_delay 60.0"
+
+    def test_jitter_with_max_random_value(self) -> None:
+        """Full jitter with max random should still respect max_delay."""
+        with patch("phx_home_analysis.errors.retry.random.random", return_value=1.0):
+            # Test multiple attempts to ensure cap always works
+            for attempt in range(20):
+                delay = calculate_backoff_delay(
+                    attempt=attempt,
+                    min_delay=1.0,
+                    max_delay=10.0,
+                    jitter=0.5,
+                )
+                assert delay <= 10.0, f"Attempt {attempt}: delay {delay} exceeded max 10.0"
+
+
+class TestEnvironmentVariableConfiguration:
+    """Tests for environment variable configuration of retry defaults."""
+
+    @pytest.mark.asyncio
+    async def test_env_var_max_retries(self) -> None:
+        """RETRY_MAX_RETRIES should override default max_retries."""
+        with patch.dict("os.environ", {"RETRY_MAX_RETRIES": "2"}):
+            call_count = 0
+
+            @retry_with_backoff(min_delay=0.01)  # Don't specify max_retries
+            async def func() -> str:
+                nonlocal call_count
+                call_count += 1
+                raise ConnectionError("Always fails")
+
+            with pytest.raises(ConnectionError):
+                await func()
+
+            # 2 retries + 1 initial = 3 total attempts
+            assert call_count == 3
+
+    @pytest.mark.asyncio
+    async def test_env_var_overridden_by_explicit_param(self) -> None:
+        """Explicit parameter should override environment variable."""
+        with patch.dict("os.environ", {"RETRY_MAX_RETRIES": "10"}):
+            call_count = 0
+
+            @retry_with_backoff(max_retries=1, min_delay=0.01)
+            async def func() -> str:
+                nonlocal call_count
+                call_count += 1
+                raise ConnectionError("Always fails")
+
+            with pytest.raises(ConnectionError):
+                await func()
+
+            # Explicit max_retries=1 should be used, not env var 10
+            assert call_count == 2  # 1 retry + 1 initial
+
+    def test_env_var_min_delay(self) -> None:
+        """RETRY_MIN_DELAY should be read from environment."""
+        from phx_home_analysis.errors.retry import _get_env_float
+
+        with patch.dict("os.environ", {"RETRY_MIN_DELAY": "5.0"}):
+            result = _get_env_float("RETRY_MIN_DELAY", 1.0)
+            assert result == 5.0
+
+    def test_env_var_max_delay(self) -> None:
+        """RETRY_MAX_DELAY should be read from environment."""
+        from phx_home_analysis.errors.retry import _get_env_float
+
+        with patch.dict("os.environ", {"RETRY_MAX_DELAY": "120.0"}):
+            result = _get_env_float("RETRY_MAX_DELAY", 60.0)
+            assert result == 120.0
+
+    def test_env_var_jitter(self) -> None:
+        """RETRY_JITTER should be read from environment."""
+        from phx_home_analysis.errors.retry import _get_env_float
+
+        with patch.dict("os.environ", {"RETRY_JITTER": "0.25"}):
+            result = _get_env_float("RETRY_JITTER", 0.5)
+            assert result == 0.25
+
+    def test_invalid_env_var_uses_default(self) -> None:
+        """Invalid environment variable should fall back to default."""
+        from phx_home_analysis.errors.retry import _get_env_float, _get_env_int
+
+        with patch.dict("os.environ", {"RETRY_MAX_RETRIES": "not_a_number"}):
+            result = _get_env_int("RETRY_MAX_RETRIES", 5)
+            assert result == 5
+
+        with patch.dict("os.environ", {"RETRY_MIN_DELAY": "invalid"}):
+            result = _get_env_float("RETRY_MIN_DELAY", 1.0)
+            assert result == 1.0
+
+    def test_env_var_not_set_uses_default(self) -> None:
+        """Missing environment variable should use default."""
+        from phx_home_analysis.errors.retry import _get_env_float, _get_env_int
+
+        # Ensure env vars are not set
+        with patch.dict("os.environ", {}, clear=True):
+            int_result = _get_env_int("RETRY_MAX_RETRIES", 5)
+            float_result = _get_env_float("RETRY_MIN_DELAY", 1.0)
+            assert int_result == 5
+            assert float_result == 1.0
