@@ -1,0 +1,202 @@
+# Component Age Estimation & Lifespans (Arizona-Adjusted)
+# Location: .claude/skills/inspection-standards/component-lifespans.yaml
+---
+_meta:
+  name: "Component Lifespans (Arizona Climate)"
+  what: "Equipment age estimation and replacement timing for Phoenix properties"
+  when: "Estimating remaining life, budgeting replacements, assessing photos"
+  how: "Lookup by component.type, check visual_indicators for age estimation"
+
+roof:
+  climate_adjustment: "-25% to -30% vs temperate climates"
+  materials:
+    asphalt_3tab:
+      standard_life: "20-25 years"
+      phoenix_life: "15-20 years"
+    architectural_shingle:
+      standard_life: "25-30 years"
+      phoenix_life: "20-25 years"
+    tile_clay_concrete:
+      life: "40-50 years"
+      note: "Underlayment needs replacement every 20-25 years"
+    foam_spf:
+      life: "15-20 years"
+      maintenance: "Coating every 5-7 years"
+    tpo_pvc_flat:
+      life: "15-25 years"
+      note: "White reflective performs better in AZ"
+
+  visual_age_indicators:
+    new_0_5_years:
+      - "Uniform color, no granule loss"
+      - "Sharp edges on shingles"
+      - "No thermal splitting or cupping"
+      - "Clean valleys and flashing"
+    young_5_10_years:
+      - "Slight granule loss in valleys/edges"
+      - "Minor chalking on tile"
+      - "Beginning edge curling"
+    middle_10_15_years:
+      - "Moderate granule loss, black substrate visible"
+      - "Noticeable cupping/curling"
+      - "Cracked caulk at flashing"
+    mature_15_20_years:
+      - "Extensive granule loss (>30%)"
+      - "Pronounced curling/buckling"
+      - "Visible thermal splitting"
+      - "Evidence of past repairs"
+    end_of_life_20_plus:
+      - "Widespread bare substrate"
+      - "Brittle shingles"
+      - "Multiple layers visible"
+      - "Active leaks or water staining"
+
+  replacement_costs_2025:
+    shingle_1500sqft: "$5,000-8,000"
+    shingle_2500sqft: "$8,000-12,000"
+    tile_2500sqft_new: "$12,000-18,000"
+    tile_underlayment_only: "$6,000-10,000"
+    foam_coating: "$2,000-4,000"
+    tpo_1500sqft: "$8,000-14,000"
+
+  phoenix_factors:
+    - "UV intensity accelerates aging 25-30%"
+    - "Surface temps reach 170F+"
+    - "Monsoon wind/hail July-September"
+    - "Low humidity reduces mold but increases brittleness"
+    - "Haboobs abrade granules"
+
+hvac:
+  climate_adjustment: "-33% to -40% vs temperate climates (due to runtime hours)"
+  systems:
+    air_conditioner:
+      standard_life: "15-20 years"
+      phoenix_life: "10-15 years"
+      reason: "2,000-3,000 hrs/year vs 500-1,000 elsewhere = 4x wear"
+    air_handler:
+      life: "15-20 years"
+      note: "Often replaced with compressor"
+    furnace:
+      life: "20-25 years"
+      note: "Rarely used in Phoenix, less wear"
+    evaporative_cooler:
+      life: "10-15 years"
+      note: "Common in older homes"
+    heat_pump:
+      life: "12-18 years"
+      note: "Less common in Phoenix"
+
+  visual_age_indicators:
+    new_0_3_years:
+      - "Clean, unblemished cabinet paint"
+      - "Bright copper refrigerant lines"
+      - "Manufacturer label crisp and readable"
+      - "Modern digital thermostat"
+      - "No rust, all panels intact"
+    young_3_7_years:
+      - "Light dust on coils (normal)"
+      - "Minor copper oxidation"
+      - "Cabinet paint slightly faded"
+    middle_7_12_years:
+      - "Moderate coil dirt (cleanable)"
+      - "Copper lines oxidized (greenish)"
+      - "Fan grille showing rust spots"
+      - "May have had minor repairs"
+    mature_12_15_years:
+      - "Heavy coil dirt"
+      - "Significant cabinet rust"
+      - "Compressor louder (bearing wear)"
+      - "Evidence of past repairs"
+      - "Higher electric bills"
+    end_of_life_15_plus:
+      - "Extensive rust, cabinet corrosion"
+      - "Compressor loud/grinding"
+      - "Short cycling or won't start"
+      - "Multiple service stickers"
+      - "Using R-22 refrigerant"
+
+  serial_number_decoding:
+    carrier_pacer: "XXYY (week/year) or lead letter (K=2020)"
+    trane_american_standard: "CCYYWW (country/year/week)"
+    lennox: "XXYY in first 4 digits"
+    rheem_ruud: "XXYY in positions 5-8"
+    goodman_amana: "YYMM in first 4 digits"
+    year_letters: { K: 2020, L: 2021, M: 2022, N: 2023, P: 2024 }
+
+  replacement_costs_2025:
+    ac_only_3ton_1500sqft: "$5,000-7,000"
+    ac_only_4_5ton_2500sqft: "$6,500-9,000"
+    ac_plus_handler: "$7,000-11,000"
+    full_system: "$8,000-14,000"
+    add_dual_zone: "+$2,000-4,000"
+    add_high_seer_18_plus: "+$1,500-3,000"
+
+  red_flags:
+    - "R-22 refrigerant (expensive, phased out)"
+    - "Multiple service stickers (chronic problems)"
+    - "DIY repairs visible"
+    - "Refrigerant staining (active leaks)"
+    - "Excessive rust (monsoon exposure)"
+    - "Ductwork in unconditioned attic without insulation (30% loss)"
+
+pool:
+  equipment:
+    pump:
+      life: "8-12 years"
+      note: "Variable speed lasts longer"
+    heater_gas:
+      life: "10-15 years"
+      note: "Rarely used in Phoenix heat"
+    salt_cell:
+      life: "3-5 years"
+      note: "Requires replacement"
+    filter_sand_cartridge:
+      life: "5-7 years"
+      note: "Media replacement"
+    automation_system:
+      life: "10-15 years"
+      failure_mode: "Circuit boards fail"
+
+  visual_indicators:
+    new: "Clean, modern digital displays, stainless hardware"
+    mature: "Rust on pump housing, aged pipe glue, analog controls"
+    end_of_life: "Severe rust, loud pump, cracked housings"
+
+  replacement_costs_2025:
+    pump: "$800-1,500"
+    heater: "$2,500-4,500"
+    salt_cell: "$400-800"
+    filter: "$500-1,200"
+    full_equipment_pad: "$3,000-6,000"
+
+water_heater:
+  tank:
+    standard_life: "8-12 years"
+    phoenix_life: "8-10 years"
+    reason: "Hard water accelerates failure"
+  tankless:
+    life: "15-20 years"
+    maintenance: "Descale annually in Phoenix"
+  anode_rod:
+    check_interval: "3-5 years"
+    note: "Rarely done, neglect = premature failure"
+
+  replacement_costs_2025:
+    tank_40_50_gallon: "$1,200-2,000"
+    tankless: "$2,500-4,500"
+
+replacement_urgency:
+  immediate_1_year:
+    roof: "20+ years on shingles, active leaks, severe damage"
+    hvac: "15+ years, compressor failed, R-22 with leak"
+    pool: "Pump seized, major leaks"
+  near_term_1_3_years:
+    roof: "15-20 years, >50% granule loss"
+    hvac: "12-15 years, loud compressor, $500+/year repairs"
+    pool: "Loud pump, failing automation"
+  mid_term_3_5_years:
+    roof: "10-15 years, 30-50% granule loss"
+    hvac: "10-12 years, working but inefficient"
+  serviceable_5_plus_years:
+    roof: "< 5 years or tile with recent underlayment"
+    hvac: "< 10 years, R-410A, well-maintained"

@@ -3,18 +3,25 @@
 Single source of truth for severity thresholds, weights, and criteria sets
 used by both scripts/lib/kill_switch.py and src/phx_home_analysis/services/kill_switch/.
 
-Kill Switch System (Weighted Severity Threshold):
-- HARD criteria (instant fail): beds < 4, baths < 2, HOA > $0
-- SOFT criteria (severity weighted): sewer, garage, lot_size, year_built
+Kill Switch System (All HARD Criteria):
+All 8 default criteria are HARD (instant fail). No SOFT criteria in defaults.
+
+HARD criteria:
+- NO HOA
+- NO solar lease
+- Minimum 4 bedrooms
+- Minimum 2 bathrooms
+- Minimum 1800 sqft
+- Lot size > 8000 sqft
+- City sewer only
+- Minimum 1 indoor garage
 
 Verdict Logic:
-- Any HARD failure -> FAIL (instant, severity N/A)
-- severity >= SEVERITY_FAIL_THRESHOLD -> FAIL (threshold exceeded)
-- SEVERITY_WARNING_THRESHOLD <= severity < SEVERITY_FAIL_THRESHOLD -> WARNING
-- severity < SEVERITY_WARNING_THRESHOLD -> PASS
+- Any HARD failure -> FAIL (instant)
+- All pass -> PASS
 
 See config/constants.py for detailed documentation on severity thresholds
-and weights.
+and weights (retained for backward compatibility).
 """
 
 from enum import Enum
@@ -22,10 +29,6 @@ from enum import Enum
 from ...config.constants import (
     SEVERITY_FAIL_THRESHOLD,
     SEVERITY_WARNING_THRESHOLD,
-    SEVERITY_WEIGHT_GARAGE,
-    SEVERITY_WEIGHT_LOT_SIZE,
-    SEVERITY_WEIGHT_SEWER,
-    SEVERITY_WEIGHT_YEAR_BUILT,
 )
 
 # =============================================================================
@@ -52,28 +55,19 @@ __SEVERITY_FAIL_THRESHOLD = SEVERITY_FAIL_THRESHOLD
 __SEVERITY_WARNING_THRESHOLD = SEVERITY_WARNING_THRESHOLD
 
 # =============================================================================
-# SEVERITY WEIGHTS FOR SOFT CRITERIA
+# SEVERITY WEIGHTS FOR SOFT CRITERIA (DEPRECATED)
 # =============================================================================
+# NOTE: As of Sprint 0, all default criteria are HARD (instant fail).
+# These dictionaries are retained for backward compatibility but are empty
+# since no SOFT criteria exist in the default configuration.
 
 # Severity weights for SOFT criteria (scripts/lib naming convention)
-# Used by scripts/lib/kill_switch.py
-# All weights defined in config.constants.py
-SOFT_SEVERITY_WEIGHTS: dict[str, float] = {
-    "sewer": SEVERITY_WEIGHT_SEWER,        # Septic risk - infrastructure concern
-    "garage": SEVERITY_WEIGHT_GARAGE,      # Convenience factor
-    "lot_size": SEVERITY_WEIGHT_LOT_SIZE,  # Minor preference
-    "year_built": SEVERITY_WEIGHT_YEAR_BUILT,  # New build avoidance
-}
+# EMPTY - all criteria are now HARD
+SOFT_SEVERITY_WEIGHTS: dict[str, float] = {}
 
 # Severity weights for SOFT criteria (service layer naming convention)
-# Used by src/phx_home_analysis/services/kill_switch/
-# All weights defined in config.constants.py
-SOFT_SEVERITY_WEIGHTS_SERVICE: dict[str, float] = {
-    "city_sewer": SEVERITY_WEIGHT_SEWER,       # Septic risk - infrastructure concern
-    "min_garage": SEVERITY_WEIGHT_GARAGE,      # Convenience factor
-    "lot_size": SEVERITY_WEIGHT_LOT_SIZE,      # Minor preference
-    "no_new_build": SEVERITY_WEIGHT_YEAR_BUILT,  # New build avoidance
-}
+# EMPTY - all criteria are now HARD
+SOFT_SEVERITY_WEIGHTS_SERVICE: dict[str, float] = {}
 
 # =============================================================================
 # HARD CRITERIA SETS
@@ -81,8 +75,18 @@ SOFT_SEVERITY_WEIGHTS_SERVICE: dict[str, float] = {
 
 # HARD criteria names (scripts/lib naming convention)
 # Used by scripts/lib/kill_switch.py
-HARD_CRITERIA: set[str] = {"hoa", "beds", "baths"}
+HARD_CRITERIA: set[str] = {"hoa", "beds", "baths", "sqft", "lot_size", "sewer", "garage"}
 
 # HARD criteria names (service layer naming convention)
 # Used by src/phx_home_analysis/services/kill_switch/
-HARD_CRITERIA_NAMES: set[str] = {"no_hoa", "min_bedrooms", "min_bathrooms", "no_solar_lease"}
+# All 8 default kill switches are HARD
+HARD_CRITERIA_NAMES: set[str] = {
+    "no_hoa",
+    "no_solar_lease",
+    "min_bedrooms",
+    "min_bathrooms",
+    "min_sqft",
+    "lot_size",
+    "city_sewer",
+    "min_garage",
+}

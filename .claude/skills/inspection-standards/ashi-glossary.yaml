@@ -1,0 +1,207 @@
+# ASHI Inspection Terms Glossary
+# Location: .claude/skills/inspection-standards/ashi-glossary.yaml
+---
+_meta:
+  name: "ASHI Inspection Terminology"
+  what: "Professional home inspection vocabulary and definitions"
+  when: "Documenting property conditions, writing deal sheets, communicating with inspectors"
+  how: "Lookup by category.term_name"
+
+exterior:
+  alligatoring:
+    definition: "Paint/roofing surface with pattern resembling alligator skin"
+    cause: "Weathering and deterioration"
+    severity: "cosmetic unless on roofing"
+  blistering:
+    definition: "Paint bubbles from moisture or heat trapped under surface"
+    cause: "Painting over damp surfaces, poor prep"
+    severity: "cosmetic"
+  chalking:
+    definition: "Powdery residue on painted surfaces"
+    cause: "UV degradation of paint binders"
+    severity: "normal aging, excessive = poor paint quality"
+  checking:
+    definition: "Fine cracks in wood, paint, or stucco"
+    cause: "Expansion/contraction cycles"
+    severity: "cosmetic unless deep/extensive"
+  delamination:
+    definition: "Separation of layers (plywood, OSB, paint)"
+    cause: "Moisture intrusion, poor adhesion, freeze-thaw"
+    severity: "structural concern if widespread"
+  efflorescence:
+    definition: "White crystalline salt deposits on masonry"
+    cause: "Water evaporation through masonry"
+    severity: "investigate moisture source"
+  flashing:
+    definition: "Metal strips preventing water intrusion at junctions"
+    locations: [roof_wall, chimneys, skylights]
+    severity: "critical - common leak source"
+  spalling:
+    definition: "Chipping/flaking of concrete, brick, or masonry"
+    cause: "Freeze-thaw, salt damage, reinforcement corrosion"
+    severity: "moderate to severe"
+  step_cracking:
+    definition: "Stair-step pattern cracks following mortar joints"
+    cause: "Foundation settlement or soil movement"
+    severity: "investigate foundation"
+  weep_holes:
+    definition: "Small openings at bottom of brick veneer for drainage"
+    issue: "Blockage causes moisture problems"
+    severity: "functional concern"
+
+roof:
+  buckling:
+    definition: "Distortion of roof sheathing or shingles"
+    cause: "Moisture, poor ventilation, improper installation"
+    severity: "moderate"
+  cupping:
+    definition: "Shingle edges curling upward"
+    cause: "Moisture cycling, poor ventilation"
+    remaining_life: "5-10 years"
+  curling:
+    definition: "Shingle edges curling downward"
+    cause: "Age, thermal cycling"
+    remaining_life: "3-5 years"
+  drip_edge:
+    definition: "Metal strip at roof edge directing water to gutters"
+    note: "Required by code, often missing on older roofs"
+    severity: "moderate if missing"
+  granule_loss:
+    definition: "Loss of protective mineral coating on shingles"
+    severity: "minor at edges = normal; widespread = end of life"
+  ponding:
+    definition: "Standing water on flat roofs > 48 hours after rain"
+    cause: "Structural sagging, poor drainage"
+    severity: "accelerates deterioration"
+  sagging:
+    definition: "Visible roof depression"
+    cause: "Undersized rafters, water damage, excessive load"
+    severity: "structural concern"
+  thermal_splitting:
+    definition: "Shingle cracking from extreme temperature cycles"
+    note: "Common in Arizona due to intense UV"
+    severity: "moderate"
+
+foundation:
+  differential_settlement:
+    definition: "Uneven foundation movement"
+    evidence: [door_window_issues, wall_cracks]
+    severity: "structural - engineer needed"
+  expansive_soil:
+    definition: "Clay soils that swell when wet, shrink when dry"
+    note: "Major issue in Phoenix area"
+    severity: "requires proper foundation design"
+  post_tension_cables:
+    definition: "Steel cables in concrete slab compressed after pouring"
+    warning: "NEVER CUT - common in Phoenix"
+    severity: "structural"
+  settlement:
+    definition: "Downward foundation movement"
+    severity: "cracks > 1/4 inch or active movement = engineer needed"
+  slab_on_grade:
+    definition: "Concrete slab poured at ground level"
+    note: "Standard in Phoenix, no basement/crawlspace"
+    severity: "normal construction"
+
+hvac:
+  afue:
+    definition: "Annual Fuel Utilization Efficiency"
+    ranges: { builder_grade: 80, high_efficiency: "90+" }
+    note: "Not critical in Phoenix (rare heating use)"
+  btu:
+    definition: "British Thermal Unit - heating/cooling capacity"
+    phoenix_requirement: "600-700 BTU/sqft due to extreme heat"
+  cross_contamination:
+    definition: "Mixing of supply/return or outdoor/indoor air"
+    impact: "30% efficiency loss"
+    severity: "moderate"
+  ductwork_leakage:
+    definition: "Unsealed duct joints losing conditioned air"
+    impact: "20-40% efficiency loss"
+    phoenix_note: "Major issue in 120F+ attics"
+  r22_refrigerant:
+    definition: "Old refrigerant phased out 2020"
+    cost: "$150-200/lb to refill"
+    indicator: "System ready for replacement"
+  seer:
+    definition: "Seasonal Energy Efficiency Ratio"
+    ranges: { minimum: 14, good: 16, excellent: "18+" }
+    phoenix_note: "Critical for bill management"
+  short_cycling:
+    definition: "AC running < 10 minutes per cycle"
+    cause: "Oversized unit, thermostat issues, failing components"
+    impact: "Reduces efficiency and lifespan"
+
+plumbing:
+  galvanized_pipe:
+    definition: "Zinc-coated steel pipe"
+    lifespan: "40-50 years"
+    issue: "Corrodes inside out, causes low pressure"
+    era: "Common in Phoenix 1940s-1970s"
+  orangeburg_pipe:
+    definition: "Tar paper sewer pipe"
+    era: "1940s-1970s"
+    issue: "Collapses/deteriorates, requires replacement"
+  polybutylene:
+    definition: "Gray plastic pipe (1978-1995)"
+    issue: "Class-action failure history"
+    severity: "Immediate red flag - many insurers won't cover"
+  pex:
+    definition: "Cross-linked polyethylene"
+    note: "Modern, excellent for Phoenix (no corrosion)"
+    severity: "good"
+  sewer_lateral:
+    definition: "Homeowner-owned pipe from house to main sewer"
+    repair_cost: "$3,000-15,000 if collapsed/root-invaded"
+  septic_system:
+    definition: "On-site wastewater treatment"
+    maintenance: "Pumping every 3-5 years ($300-500)"
+    failure_cost: "$10,000-30,000 replacement"
+    buyer_concern: "Many Phoenix buyers require city sewer"
+
+electrical:
+  aluminum_wiring:
+    era: "1965-1973"
+    issue: "Fire hazard at connections"
+    resolution: "Requires special devices/methods"
+    insurance: "May require inspection/remediation"
+  afci:
+    definition: "Arc Fault Circuit Interrupter"
+    purpose: "Detects arcing conditions (fire prevention)"
+    requirement: "Required in bedrooms/living areas per modern code"
+  double_tap:
+    definition: "Two wires on breaker designed for one"
+    severity: "Code violation, fire hazard"
+    common_cause: "Homes with additions"
+  federal_pacific_panel:
+    era: "1950s-1980s"
+    issue: "Breakers fail to trip, fire hazard"
+    resolution: "Replacement required by many insurers"
+  gfci:
+    definition: "Ground Fault Circuit Interrupter"
+    purpose: "Prevents electrocution"
+    requirement: "Required within 6 feet of water sources"
+  knob_and_tube:
+    era: "Pre-1940s"
+    issue: "No grounding, cloth insulation, fire hazard"
+    note: "Rare in Phoenix but requires full rewire"
+  service_size:
+    ranges: { minimum: 100, standard: 150, preferred: 200 }
+    phoenix_note: "Homes with pool typically need 200A"
+
+condition_terms:
+  as_is:
+    definition: "Sold without repairs"
+    action: "Get comprehensive inspection"
+  deferred_maintenance:
+    definition: "Needed repairs that were postponed"
+    note: "Accumulates exponentially"
+  serviceable:
+    definition: "At/near end of life but currently functional"
+    action: "Plan replacement within 1-5 years"
+  major_repair:
+    definition: "Structural or system work > $2,500"
+    requirement: "Permits and licensed contractors"
+  minor_repair:
+    definition: "Cosmetic or maintenance < $500"
+    skill_level: "DIY or handyman"

@@ -7,9 +7,6 @@ both happy path and edge cases as defined in CLAUDE.md buyer requirements.
 
 from src.phx_home_analysis.domain.enums import SewerType
 from src.phx_home_analysis.services.kill_switch import KillSwitchVerdict
-from src.phx_home_analysis.services.kill_switch.constants import (
-    SEVERITY_FAIL_THRESHOLD,
-)
 from src.phx_home_analysis.services.kill_switch.criteria import (
     CitySewerKillSwitch,
     LotSizeKillSwitch,
@@ -174,11 +171,11 @@ class TestMinGarageKillSwitch:
 
     def test_failure_message(self, sample_property):
         """Test failure message includes actual garage count."""
-        sample_property.garage_spaces = 1
-        kill_switch = MinGarageKillSwitch(min_spaces=2)
+        sample_property.garage_spaces = 0
+        kill_switch = MinGarageKillSwitch(min_spaces=1, indoor_required=True)
         message = kill_switch.failure_message(sample_property)
-        assert "1-car" in message
-        assert "2+" in message
+        assert "0 garage space(s)" in message
+        assert "1+ indoor garage" in message
 
 
 # ============================================================================
@@ -301,9 +298,9 @@ class TestLotSizeKillSwitch:
     """Test the lot size kill switch criterion."""
 
     def test_pass_with_minimum_lot(self, sample_property):
-        """Test property with exactly 7000 sqft (minimum) passes."""
-        sample_property.lot_sqft = 7000
-        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        """Test property with exactly 8001 sqft (above minimum) passes."""
+        sample_property.lot_sqft = 8001
+        kill_switch = LotSizeKillSwitch(min_sqft=8000)
         assert kill_switch.check(sample_property) is True
 
     def test_pass_with_maximum_lot(self, sample_property):
@@ -365,10 +362,11 @@ class TestLotSizeKillSwitch:
         assert "20,000" in message
 
     def test_custom_lot_size_range(self, sample_property):
-        """Test custom lot size range."""
+        """Test custom lot size with optional max."""
+        # With max specified
         kill_switch = LotSizeKillSwitch(min_sqft=5000, max_sqft=10000)
 
-        sample_property.lot_sqft = 5000
+        sample_property.lot_sqft = 5001
         assert kill_switch.check(sample_property) is True
 
         sample_property.lot_sqft = 10000
@@ -379,6 +377,14 @@ class TestLotSizeKillSwitch:
 
         sample_property.lot_sqft = 10001
         assert kill_switch.check(sample_property) is False
+
+        # Without max (None = no maximum)
+        kill_switch_no_max = LotSizeKillSwitch(min_sqft=8000)
+        sample_property.lot_sqft = 8001
+        assert kill_switch_no_max.check(sample_property) is True
+
+        sample_property.lot_sqft = 50000  # Very large lot
+        assert kill_switch_no_max.check(sample_property) is True  # No max = passes
 
 
 # ============================================================================
@@ -476,20 +482,18 @@ class TestKillSwitchFilter:
         assert failed[0].kill_switch_passed is False
         assert any("HOA" in msg for msg in failed[0].kill_switch_failures)
 
-    def test_warning_with_septic(self, sample_septic_property):
-        """Test property with septic gets WARNING verdict (SOFT criterion).
+    def test_fail_with_septic(self, sample_septic_property):
+        """Test property with septic FAILS (HARD criterion as of Sprint 0).
 
-        Septic alone has severity 2.5, which is >= 1.5 (WARNING threshold)
-        but < 3.0 (FAIL threshold), so property passes with WARNING.
+        City sewer is now a HARD criterion - septic results in instant fail.
         """
         filter_service = KillSwitchFilter()
         passed, failed = filter_service.filter_properties([sample_septic_property])
 
-        # Septic is a SOFT criterion with severity 2.5 = WARNING, not FAIL
-        # WARNING is considered "passed" for backward compatibility
-        assert len(passed) == 1
-        assert len(failed) == 0
-        assert any("Septic" in msg for msg in passed[0].kill_switch_failures)
+        # Septic is now a HARD criterion = instant FAIL
+        assert len(passed) == 0
+        assert len(failed) == 1
+        assert any("Septic" in msg or "sewer" in msg for msg in failed[0].kill_switch_failures)
 
     def test_multiple_properties_mixed(self, sample_properties):
         """Test filtering multiple properties with mixed results."""
@@ -541,7 +545,7 @@ class TestKillSwitchFilter:
             "min_bedrooms",
             "min_bathrooms",
             "lot_size",
-            "no_new_build",
+            "min_sqft",  # Added in Sprint 0
         }
         assert set(names) == expected_names
 
@@ -592,17 +596,15 @@ class TestKillSwitchEdgeCases:
     def test_lot_size_boundary_below(self, sample_property):
         """Test lot size exactly 1 sqft below minimum.
 
-        Lot size is a SOFT criterion (severity 1.0), so a single failure
-        results in PASS (1.0 < 1.5 WARNING threshold).
+        Lot size is now a HARD criterion (min 8000 sqft) - instant fail.
         """
-        sample_property.lot_sqft = 6999
+        sample_property.lot_sqft = 7999
         filter_service = KillSwitchFilter()
         passed, failed = filter_service.filter_properties([sample_property])
-        # Lot size alone (1.0) is below WARNING threshold (1.5) = PASS
-        assert len(passed) == 1
-        assert len(failed) == 0
-        # But the property has a failure recorded
-        assert any("lot" in msg.lower() for msg in passed[0].kill_switch_failures)
+        # Lot size is HARD - below minimum = instant FAIL
+        assert len(passed) == 0
+        assert len(failed) == 1
+        assert any("lot" in msg.lower() for msg in failed[0].kill_switch_failures)
 
     def test_lot_size_boundary_above(self, sample_property):
         """Test lot size exactly 1 sqft above maximum.
@@ -714,15 +716,16 @@ class TestSeverityThresholdOOP:
         assert severity == 0.0
         assert len(failures) == 0
 
-    def test_septic_alone_is_warning(self, sample_septic_property):
-        """Septic alone (2.5) should be WARNING, not FAIL."""
+    def test_septic_is_hard_fail(self, sample_septic_property):
+        """Septic now results in HARD FAIL (Sprint 0 change)."""
         filter_service = KillSwitchFilter()
         verdict, severity, failures = filter_service.evaluate_with_severity(
             sample_septic_property
         )
-        assert verdict == KillSwitchVerdict.WARNING
-        assert severity == 2.5
+        assert verdict == KillSwitchVerdict.FAIL
+        # HARD failures don't contribute to severity score
         assert len(failures) == 1
+        assert any("Septic" in msg or "sewer" in msg for msg in failures)
 
     def test_hoa_is_hard_fail(self, sample_failed_property):
         """HOA failure (HARD criterion) should result in FAIL."""
@@ -734,20 +737,19 @@ class TestSeverityThresholdOOP:
         # Severity for HARD fails doesn't contribute
         assert any("HOA" in msg for msg in failures)
 
-    def test_multiple_soft_failures_exceed_threshold(self, sample_property):
-        """Multiple SOFT failures should accumulate and exceed FAIL threshold."""
-        # Configure property to fail multiple SOFT criteria
-        sample_property.sewer_type = None  # SOFT: 2.5 (fails as unknown in OOP)
-        sample_property.year_built = 2024  # SOFT: 2.0
-        # Actually OOP is stricter - unknown sewer fails
+    def test_no_soft_failures_all_hard(self, sample_property):
+        """All criteria are HARD in Sprint 0 - no SOFT accumulation."""
+        # Configure property to fail sewer (now HARD)
+        sample_property.sewer_type = None  # HARD fail (unknown = cannot verify)
 
         filter_service = KillSwitchFilter()
         verdict, severity, failures = filter_service.evaluate_with_severity(
             sample_property
         )
-        # sewer (2.5) + year (2.0) = 4.5 >= 3.0 = FAIL
+        # All criteria are HARD - instant FAIL, no severity accumulation
         assert verdict == KillSwitchVerdict.FAIL
-        assert severity >= SEVERITY_FAIL_THRESHOLD
+        # Severity should be 0.0 since HARD failures don't contribute
+        assert severity == 0.0
 
     def test_get_hard_criteria(self):
         """get_hard_criteria should return HARD kill switches."""
@@ -759,14 +761,12 @@ class TestSeverityThresholdOOP:
         assert "min_bathrooms" in hard_names
 
     def test_get_soft_criteria(self):
-        """get_soft_criteria should return SOFT kill switches."""
+        """get_soft_criteria should return empty list (all criteria are HARD in Sprint 0)."""
         filter_service = KillSwitchFilter()
         soft = filter_service.get_soft_criteria()
-        soft_names = [ks.name for ks in soft]
-        assert "city_sewer" in soft_names
-        assert "min_garage" in soft_names
-        assert "lot_size" in soft_names
-        assert "no_new_build" in soft_names
+        # All default criteria are HARD as of Sprint 0
+        assert soft == []
+        assert len(soft) == 0
 
     def test_summary_includes_hard_and_soft_sections(self):
         """summary() should include HARD and SOFT sections."""

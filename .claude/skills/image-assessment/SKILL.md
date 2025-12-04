@@ -1,6 +1,6 @@
 ---
 name: image-assessment
-description: Visual analysis for Phase 2 interior scoring (Section C, 190 pts max).
+description: Analyze property photos for Phase 2 interior scoring (Section C, 190 pts max). Score kitchen layout, master suite, natural light, ceilings, fireplace, laundry, and aesthetics using 1-10 scale with era-adjusted baselines. Use when analyzing property images, scoring interior quality from photos, assessing room conditions, or determining UAD quality/condition ratings from visual inspection.
 allowed-tools: Read, Bash(python:*)
 ---
 

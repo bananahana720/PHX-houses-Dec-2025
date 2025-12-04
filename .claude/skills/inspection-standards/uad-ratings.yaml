@@ -1,0 +1,142 @@
+# UAD Quality & Condition Ratings Reference
+# Location: .claude/skills/inspection-standards/uad-ratings.yaml
+---
+_meta:
+  name: "UAD Quality & Condition Ratings"
+  what: "Professional appraisal terminology for property quality and condition"
+  when: "Converting internal 1-10 scores to industry-standard UAD ratings"
+  how: "Lookup by quality_ratings.<Q1-Q6> or condition_ratings.<C1-C6>"
+
+# UAD Quality Ratings (Q1-Q6) - PERMANENT characteristics
+# Quality = materials, craftsmanship, design (does NOT change with age)
+quality_ratings:
+  Q1:
+    name: "Best Quality"
+    materials: "Premium throughout"
+    workmanship: "Exceptional, museum-quality"
+    design: "Custom architectural"
+    price_percentile: 95
+    indicators: [crown_molding, coffered_ceilings, chefs_kitchen, spa_master, high_end_builtins]
+    example: "Custom estate, imported materials, professional interior design"
+
+  Q2:
+    name: "Excellent Quality"
+    materials: "High-grade (quartz, engineered hardwood)"
+    workmanship: "Superior, attention to detail"
+    design: "Upscale, thoughtful floor plan"
+    price_percentile: 85
+    indicators: [upgraded_cabinets, designer_lighting, premium_fixtures, quality_hardware]
+    example: "Production luxury home with extensive upgrades"
+
+  Q3:
+    name: "Good Quality"
+    materials: "Above-average, some upgrades"
+    workmanship: "Quality construction, well-executed"
+    design: "Attractive, semi-custom touches"
+    price_percentile: 75
+    indicators: [upgraded_counters, better_fixtures, nice_lighting]
+    example: "Builder home with $30k-50k in upgrades"
+
+  Q4:
+    name: "Average Quality"
+    materials: "Standard builder-grade"
+    workmanship: "Competent, basic finishes"
+    design: "Functional, production floor plan"
+    price_percentile: 50
+    indicators: [laminate_counters, vinyl_flooring, basic_fixtures]
+    example: "Typical tract home, no upgrades, meets code"
+
+  Q5:
+    name: "Fair Quality"
+    materials: "Economy-grade, minimal finishes"
+    workmanship: "Basic, some shortcuts"
+    design: "Utilitarian, dated styles"
+    price_percentile: 30
+    indicators: [cheap_materials, dated_colors, poor_space_planning]
+    example: "Low-cost builder or dated 1980s spec home"
+
+  Q6:
+    name: "Poor Quality"
+    materials: "Substandard, inappropriate applications"
+    workmanship: "Poor craftsmanship, visible defects"
+    design: "Dysfunctional, amateur, makeshift"
+    price_percentile: 10
+    indicators: [mismatched_materials, unfinished_work, diy_disasters]
+    example: "Handyman special, flip with corner-cutting"
+
+# UAD Condition Ratings (C1-C6) - CURRENT state
+# Condition = maintenance, wear, age (CHANGES over time)
+condition_ratings:
+  C1:
+    name: "New Construction"
+    age_range: "0-6 months"
+    characteristics: "Never occupied, pristine, all under warranty"
+    maintenance_needed: null
+    mortgage_eligibility: "Any loan type"
+
+  C2:
+    name: "Excellent Condition"
+    age_range: "< 5 years OR extensively renovated"
+    characteristics: "Minimal wear, like-new appearance, no deferred maintenance"
+    maintenance_needed: null
+    mortgage_eligibility: "Any loan type"
+
+  C3:
+    name: "Good Condition"
+    age_range: "Any age with proper upkeep"
+    characteristics: "Normal wear, everything functional, routine maintenance current"
+    maintenance_needed: "$100-500 (paint touch-ups, caulking)"
+    mortgage_eligibility: "Any loan type"
+
+  C4:
+    name: "Average Condition"
+    age_range: "Any age showing typical wear"
+    characteristics: "Everything works but showing age, cosmetic issues"
+    maintenance_needed: "$500-2,500 (repainting, worn carpet)"
+    mortgage_eligibility: "Conventional/FHA (may require repairs)"
+
+  C5:
+    name: "Fair Condition"
+    age_range: "Often 30+ years without updates"
+    characteristics: "Multiple systems near end of life, cosmetic distress"
+    maintenance_needed: "$2,500-15,000 (HVAC, roof repair, plumbing)"
+    mortgage_eligibility: "FHA requires repairs, conventional scrutiny"
+
+  C6:
+    name: "Poor Condition"
+    age_range: "Severely neglected regardless of age"
+    characteristics: "Health/safety issues, major systems failed, structural concerns"
+    maintenance_needed: "$15,000+ (foundation, re-roof, system replacements)"
+    mortgage_eligibility: "Often ineligible, requires renovation loan"
+
+# Score to UAD Mapping (for quick lookup)
+score_mapping:
+  10: { quality: "Q1-Q2", condition: "C1-C2" }
+  9:  { quality: "Q2",    condition: "C2" }
+  8:  { quality: "Q2-Q3", condition: "C2-C3" }
+  7:  { quality: "Q3",    condition: "C3" }
+  6:  { quality: "Q3-Q4", condition: "C3-C4" }
+  5:  { quality: "Q4",    condition: "C4" }
+  4:  { quality: "Q4-Q5", condition: "C4-C5" }
+  3:  { quality: "Q5",    condition: "C5" }
+  2:  { quality: "Q5-Q6", condition: "C5-C6" }
+  1:  { quality: "Q6",    condition: "C6" }
+
+# Kitchen/Bath Update Categories
+update_categories:
+  not_updated:
+    definition: "Original finishes from construction OR last update > 20 years ago"
+    value_add: 0
+  updated:
+    definition: "Improvements within last 20 years (new appliances, counters, hardware)"
+    value_add_kitchen: "$5,000-15,000"
+    value_add_bath: "$2,000-8,000"
+    sub_categories:
+      recently_updated: "0-5 years"
+      updated: "6-15 years"
+      updated_older: "16-20 years"
+  remodeled:
+    definition: "Substantial renovation (new cabinets, plumbing relocation, layout changes)"
+    value_add_kitchen: "$20,000-50,000+"
+    value_add_bath: "$10,000-25,000+"
+    permit_required: true

@@ -88,8 +88,8 @@ if mapping:
 | Agent | Required Skills |
 |-------|-----------------|
 | listing-browser | `listing-extraction`, `property-data`, `state-management` |
-| map-analyzer | `map-analysis`, `property-data`, `arizona-context-lite` |
-| image-assessor | `image-assessment`, `property-data`, `arizona-context-lite` |
+| map-analyzer | `map-analysis`, `property-data`, `arizona-context` |
+| image-assessor | `image-assessment`, `property-data`, `arizona-context` |
 
 ---
 

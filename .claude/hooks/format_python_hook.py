@@ -9,8 +9,14 @@ from pathlib import Path
 
 
 def main():
+    # Parse input with explicit JSON error handling
     try:
         data = json.load(sys.stdin)
+    except json.JSONDecodeError as e:
+        print(f"ERROR: format_python_hook: Invalid JSON input: {e}", file=sys.stderr)
+        sys.exit(0)
+
+    try:
         file_path = data.get("tool_input", {}).get("file_path", "")
 
         # Only process Python files
@@ -52,8 +58,8 @@ def main():
         sys.exit(0)
 
     except Exception as e:
-        # On any error, just allow
-        print(f"WARNING: Hook error: {e}", file=sys.stderr)
+        # Unexpected error - log with full details but don't block
+        print(f"ERROR: format_python_hook: {type(e).__name__}: {e}", file=sys.stderr)
         sys.exit(0)
 
 

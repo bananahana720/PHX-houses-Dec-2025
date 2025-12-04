@@ -191,7 +191,7 @@
       "model": "sonnet",
       "path": ".claude/agents/image-assessor.md",
       "purpose": "Visual scoring (exterior + interior)",
-      "skills": ["property-data", "state-management", "image-assessment", "arizona-context-lite", "scoring"],
+      "skills": ["property-data", "state-management", "image-assessment", "arizona-context", "scoring"],
       "tools": ["Claude Vision", "Read (images)"]
     }
   },
@@ -201,7 +201,7 @@
     "filtering": ["kill-switch", "quality-metrics"],
     "scoring": ["scoring", "cost-efficiency"],
     "extraction": ["listing-extraction", "county-assessor", "map-analysis", "image-assessment", "exterior-assessment"],
-    "domain": ["arizona-context", "arizona-context-lite", "inspection-standards"],
+    "domain": ["arizona-context", "inspection-standards"],
     "reporting": ["deal-sheets", "visualizations"],
     "standards": ["file-organization"]
   },

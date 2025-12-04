@@ -7,11 +7,11 @@ Logs all file modifications to .claude/session-delta.log for:
 - CLAUDE.md update reminders
 - Change history tracking
 
-This hook is non-blocking (always exits 0) and uses async logging
-to minimize impact on edit operations.
+Uses SYNCHRONOUS logging to ensure writes complete before hook exits.
+(Async daemon threads get killed when the hook process exits.)
 
 Exit codes:
-- 0: Always (logging is non-blocking)
+- 0: Always (logging failures are non-blocking)
 """
 
 import json
@@ -21,20 +21,23 @@ from pathlib import Path
 # Import shared utilities
 try:
     sys.path.insert(0, str(Path(__file__).parent))
-    from lib.delta_logger import check_directory_has_claude_md, log_delta_async
+    from lib.delta_logger import check_directory_has_claude_md, log_delta
 
     LIB_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     LIB_AVAILABLE = False
+    IMPORT_ERROR = str(e)
 
 # Load input from stdin
 try:
     data = json.load(sys.stdin)
 except json.JSONDecodeError:
+    print("WARN: delta_tracker_hook: Invalid JSON input", file=sys.stderr)
     sys.exit(0)
 
-# If lib not available, skip logging
+# If lib not available, log why and skip
 if not LIB_AVAILABLE:
+    print(f"WARN: delta_tracker_hook: lib unavailable: {IMPORT_ERROR}", file=sys.stderr)
     sys.exit(0)
 
 # Get file path and tool name
@@ -56,9 +59,12 @@ elif tool_name == "Edit":
 else:
     change_type = "unknown"
 
-# Log the delta asynchronously (non-blocking)
+# Log the delta SYNCHRONOUSLY (must complete before hook exits)
 try:
-    thread = log_delta_async(file_path, change_type, line_delta=None)
+    success = log_delta(file_path, change_type, line_delta=None)
+
+    if not success:
+        print(f"WARN: delta_tracker_hook: log_delta returned False for {file_path}", file=sys.stderr)
 
     # Check if directory has CLAUDE.md
     if not check_directory_has_claude_md(file_path):
@@ -80,7 +86,8 @@ try:
             )
 except Exception as e:
     # Logging failure is not critical - don't block the operation
-    print(f"DEBUG: Delta logging failed: {e}", file=sys.stderr)
+    # But DO log it for debugging
+    print(f"ERROR: delta_tracker_hook: {type(e).__name__}: {e}", file=sys.stderr)
 
 # Always allow the operation to proceed
 sys.exit(0)

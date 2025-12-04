@@ -5,6 +5,7 @@ map configuration, and Arizona-specific context.
 """
 
 import os
+import random
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
@@ -128,16 +129,17 @@ class ArizonaContext:
     This class is retained for potential future use but is currently empty
     as all active constants are now in the cost_estimation module.
     """
+
     pass
 
 
 # Common viewport sizes for randomization (resolution, usage share)
 # Based on StatCounter Global Stats 2024-2025
 VIEWPORT_SIZES = [
-    (1280, 720),   # 720p - common laptop/monitor
-    (1366, 768),   # Most common laptop resolution
-    (1440, 900),   # 16:10 laptop/monitor
-    (1536, 864),   # 1.5x scaling on 1024x576
+    (1280, 720),  # 720p - common laptop/monitor
+    (1366, 768),  # Most common laptop resolution
+    (1440, 900),  # 16:10 laptop/monitor
+    (1536, 864),  # 1.5x scaling on 1024x576
     (1920, 1080),  # 1080p - very common desktop
 ]
 

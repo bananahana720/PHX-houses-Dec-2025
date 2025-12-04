@@ -23,7 +23,8 @@
       "mcp__playwright__browser_evaluate",
       "WebFetch(domain:scrapeops.io)",
       "WebFetch(domain:scrapfly.io)",
-      "mcp__playwright__browser_install"
+      "mcp__playwright__browser_install",
+      "Skill(orchestration)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,28 @@
+# TDD RED/GREEN/BLUE Workflow
+workflow: tdd-red-green-blue
+description: TDD RED/GREEN/BLUE phase implementation
+complexity: moderate
+agents_count: 3-5
+
+phases:
+  - name: RED
+    agent: tdd-orchestrator
+    action: write_failing_test
+    validation: test_fails_for_right_reason
+
+  - name: GREEN
+    agent: general-purpose
+    action: minimal_implementation
+    validation: test_passes
+
+  - name: BLUE
+    agent: code-reviewer
+    action: refactor
+    validation: tests_still_pass + code_quality_improved
+
+  - name: validate
+    agent: test-automator
+    action: full_test_suite
+    validation: all_pass
+
+iteration: repeat_per_requirement

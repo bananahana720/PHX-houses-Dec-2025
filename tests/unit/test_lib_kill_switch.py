@@ -38,7 +38,9 @@ class Property:
     hoa_fee: float | None = None
     sewer_type: str | None = None
     garage_spaces: int | None = None
+    garage_type: str | None = None  # Added for Sprint 0 indoor garage requirement
     lot_sqft: int | None = None
+    sqft: int | None = None  # Added for Sprint 0 min sqft requirement
     year_built: int | None = None
     kill_switch_passed: bool | None = None
     kill_switch_failures: list[str] = field(default_factory=list)
@@ -109,7 +111,13 @@ class TestSewerKillSwitch:
 
 
 class TestGarageKillSwitch:
-    """Test garage kill switch logic."""
+    """Test garage kill switch logic (Sprint 0: min 1 indoor garage)."""
+
+    def test_one_car_indoor_garage_passes(self):
+        """Property with 1-car attached garage should pass (Sprint 0 min=1)."""
+        prop = Property(beds=4, baths=2, garage_spaces=1, garage_type="attached")
+        result = apply_kill_switch(prop)
+        assert "garage" not in str(result.kill_switch_failures).lower()
 
     def test_two_car_garage_passes(self):
         """Property with 2-car garage should pass."""
@@ -123,16 +131,31 @@ class TestGarageKillSwitch:
         result = apply_kill_switch(prop)
         assert "garage" not in str(result.kill_switch_failures).lower()
 
-    def test_one_car_garage_fails(self):
-        """Property with 1-car garage should fail."""
-        prop = Property(beds=4, baths=2, garage_spaces=1)
+    def test_zero_garage_fails(self):
+        """Property with 0 garage spaces should fail (HARD)."""
+        prop = Property(beds=4, baths=2, garage_spaces=0)
         result = apply_kill_switch(prop)
         failures_str = str(result.kill_switch_failures).lower()
         assert "garage" in failures_str
+        assert result.kill_switch_passed is False
+
+    def test_carport_only_fails(self):
+        """Property with carport (not indoor garage) should fail (HARD)."""
+        prop = Property(beds=4, baths=2, garage_spaces=2, garage_type="carport")
+        result = apply_kill_switch(prop)
+        failures_str = str(result.kill_switch_failures).lower()
+        assert "garage" in failures_str
+        assert result.kill_switch_passed is False
 
     def test_unknown_garage_passes(self):
         """Property with unknown garage should pass (permissive)."""
         prop = Property(beds=4, baths=2, garage_spaces=None)
+        result = apply_kill_switch(prop)
+        assert "garage" not in str(result.kill_switch_failures).lower()
+
+    def test_unknown_garage_type_passes(self):
+        """Property with spaces but unknown type should pass (permissive)."""
+        prop = Property(beds=4, baths=2, garage_spaces=1, garage_type=None)
         result = apply_kill_switch(prop)
         assert "garage" not in str(result.kill_switch_failures).lower()
 
@@ -184,39 +207,47 @@ class TestBathsKillSwitch:
 
 
 class TestLotSizeKillSwitch:
-    """Test lot size kill switch logic."""
+    """Test lot size kill switch logic (Sprint 0: min 8000, no max)."""
 
     def test_mid_range_lot_passes(self):
-        """Property with lot in range (10000 sqft) should pass."""
+        """Property with lot of 10000 sqft should pass."""
         prop = Property(beds=4, baths=2, lot_sqft=10000)
         result = apply_kill_switch(prop)
         assert "lot" not in str(result.kill_switch_failures).lower()
 
     def test_minimum_lot_passes(self):
-        """Property at minimum (7000 sqft) should pass."""
-        prop = Property(beds=4, baths=2, lot_sqft=7000)
+        """Property at minimum (8000 sqft) should pass."""
+        prop = Property(beds=4, baths=2, lot_sqft=8000)
         result = apply_kill_switch(prop)
         assert "lot" not in str(result.kill_switch_failures).lower()
 
-    def test_maximum_lot_passes(self):
-        """Property at maximum (15000 sqft) should pass."""
-        prop = Property(beds=4, baths=2, lot_sqft=15000)
+    def test_just_below_minimum_fails(self):
+        """Property at 7999 sqft should fail (HARD)."""
+        prop = Property(beds=4, baths=2, lot_sqft=7999)
+        result = apply_kill_switch(prop)
+        failures_str = str(result.kill_switch_failures).lower()
+        assert "lot" in failures_str
+        assert result.kill_switch_passed is False
+
+    def test_large_lot_passes(self):
+        """Property with large lot (20000 sqft) should pass (no max in Sprint 0)."""
+        prop = Property(beds=4, baths=2, lot_sqft=20000)
+        result = apply_kill_switch(prop)
+        assert "lot" not in str(result.kill_switch_failures).lower()
+
+    def test_very_large_lot_passes(self):
+        """Property with very large lot (1 acre = 43560 sqft) should pass (no max)."""
+        prop = Property(beds=4, baths=2, lot_sqft=43560)
         result = apply_kill_switch(prop)
         assert "lot" not in str(result.kill_switch_failures).lower()
 
     def test_small_lot_fails(self):
-        """Property with small lot (5000 sqft) should fail."""
+        """Property with small lot (5000 sqft) should fail (HARD)."""
         prop = Property(beds=4, baths=2, lot_sqft=5000)
         result = apply_kill_switch(prop)
         failures_str = str(result.kill_switch_failures).lower()
         assert "lot" in failures_str
-
-    def test_large_lot_fails(self):
-        """Property with large lot (20000 sqft) should fail."""
-        prop = Property(beds=4, baths=2, lot_sqft=20000)
-        result = apply_kill_switch(prop)
-        failures_str = str(result.kill_switch_failures).lower()
-        assert "lot" in failures_str
+        assert result.kill_switch_passed is False
 
     def test_unknown_lot_passes(self):
         """Property with unknown lot should pass (permissive)."""
@@ -226,26 +257,31 @@ class TestLotSizeKillSwitch:
 
 
 class TestYearBuiltKillSwitch:
-    """Test year built kill switch logic."""
+    """Test year built kill switch logic.
+
+    NOTE: year_built is REMOVED from Sprint 0 defaults. The check function exists
+    but is not applied by default. All year-related tests pass because there's
+    no year_built criterion in KILL_SWITCH_CRITERIA.
+    """
 
     def test_older_home_passes(self):
-        """Property built in 2000 should pass."""
+        """Property built in 2000 should pass (no year_built check in defaults)."""
         prop = Property(beds=4, baths=2, year_built=2000)
         result = apply_kill_switch(prop)
         assert "year" not in str(result.kill_switch_failures).lower()
 
     def test_2023_home_passes(self):
-        """Property built in 2023 should pass (at boundary)."""
+        """Property built in 2023 should pass (no year_built check in defaults)."""
         prop = Property(beds=4, baths=2, year_built=2023)
         result = apply_kill_switch(prop)
         assert "year" not in str(result.kill_switch_failures).lower()
 
-    def test_new_build_fails(self):
-        """Property built in current year should fail."""
+    def test_new_build_passes(self):
+        """Property built in current year should pass (no year_built check in Sprint 0)."""
         prop = Property(beds=4, baths=2, year_built=datetime.now().year)
         result = apply_kill_switch(prop)
-        failures_str = str(result.kill_switch_failures).lower()
-        assert "year" in failures_str or "new" in failures_str
+        # year_built removed from defaults, so new builds pass
+        assert "year" not in str(result.kill_switch_failures).lower()
 
     def test_unknown_year_passes(self):
         """Property with unknown year should pass (permissive)."""
@@ -255,18 +291,20 @@ class TestYearBuiltKillSwitch:
 
 
 class TestFullPropertyEvaluation:
-    """Test complete property evaluation scenarios."""
+    """Test complete property evaluation scenarios (Sprint 0: 7 HARD criteria)."""
 
     def test_perfect_property_passes(self):
-        """Property meeting all criteria should pass."""
+        """Property meeting all 7 criteria should pass."""
         prop = Property(
             beds=4,
             baths=2,
             hoa_fee=0,
             sewer_type="city",
             garage_spaces=2,
+            garage_type="attached",
             lot_sqft=10000,
-            year_built=2010,
+            sqft=2000,
+            year_built=2010,  # Not checked in Sprint 0
         )
         result = apply_kill_switch(prop)
         assert result.kill_switch_passed is True
@@ -275,17 +313,34 @@ class TestFullPropertyEvaluation:
     def test_multiple_failures(self):
         """Property failing multiple criteria should list all failures."""
         prop = Property(
-            beds=3,  # Fails
-            baths=1,  # Fails
-            hoa_fee=100,  # Fails
-            sewer_type="septic",  # Fails
-            garage_spaces=1,  # Fails
-            lot_sqft=5000,  # Fails
-            year_built=datetime.now().year,  # Fails
+            beds=3,  # Fails (HARD)
+            baths=1,  # Fails (HARD)
+            hoa_fee=100,  # Fails (HARD)
+            sewer_type="septic",  # Fails (HARD)
+            garage_spaces=0,  # Fails (HARD)
+            lot_sqft=5000,  # Fails (HARD)
+            sqft=1500,  # Fails (HARD)
+            year_built=datetime.now().year,  # NOT checked in Sprint 0 defaults
         )
         result = apply_kill_switch(prop)
         assert result.kill_switch_passed is False
+        # 7 failures: beds, baths, hoa, sewer, garage, lot, sqft (no year_built)
         assert len(result.kill_switch_failures) == 7
+
+    def test_single_hard_failure_fails(self):
+        """Property with single HARD failure should fail (no severity threshold)."""
+        prop = Property(
+            beds=4,
+            baths=2,
+            hoa_fee=100,  # Only failure - HARD
+            sewer_type="city",
+            garage_spaces=2,
+            lot_sqft=10000,
+            sqft=2000,
+        )
+        result = apply_kill_switch(prop)
+        assert result.kill_switch_passed is False
+        assert len(result.kill_switch_failures) == 1
 
 
 class TestEvaluateKillSwitches:
@@ -367,7 +422,7 @@ class TestEvaluateKillSwitchesForDisplay:
 
 
 class TestGetKillSwitchSummary:
-    """Test the summary function."""
+    """Test the summary function (Sprint 0: 7 HARD criteria)."""
 
     def test_returns_string(self):
         """Should return a string summary."""
@@ -375,7 +430,7 @@ class TestGetKillSwitchSummary:
         assert isinstance(summary, str)
 
     def test_contains_all_criteria(self):
-        """Summary should mention all criteria."""
+        """Summary should mention all 7 criteria (no year_built in Sprint 0)."""
         summary = get_kill_switch_summary().lower()
         assert "hoa" in summary
         assert "sewer" in summary
@@ -383,7 +438,9 @@ class TestGetKillSwitchSummary:
         assert "beds" in summary or "bedroom" in summary
         assert "baths" in summary or "bathroom" in summary
         assert "lot" in summary
-        assert "year" in summary or "build" in summary
+        assert "1800" in summary or "sqft" in summary  # Min sqft (Sprint 0)
+        # year_built removed from Sprint 0 defaults
+        # Note: Summary may still mention "new builds" in deprecation notice
 
 
 # =============================================================================
@@ -392,23 +449,31 @@ class TestGetKillSwitchSummary:
 
 
 class TestSeverityThresholdConstants:
-    """Test that severity constants are properly defined."""
+    """Test that severity constants are properly defined (Sprint 0: ALL HARD)."""
 
     def test_hard_criteria_defined(self):
-        """HARD_CRITERIA should contain hoa, beds, baths."""
+        """HARD_CRITERIA should contain all 7 criteria (Sprint 0)."""
         assert "hoa" in HARD_CRITERIA
         assert "beds" in HARD_CRITERIA
         assert "baths" in HARD_CRITERIA
+        assert "sqft" in HARD_CRITERIA
+        assert "lot_size" in HARD_CRITERIA
+        assert "sewer" in HARD_CRITERIA
+        assert "garage" in HARD_CRITERIA
+        # All 7 criteria are HARD
+        assert len(HARD_CRITERIA) == 7
 
-    def test_soft_criteria_weights_defined(self):
-        """SOFT_SEVERITY_WEIGHTS should have correct weights."""
-        assert SOFT_SEVERITY_WEIGHTS["sewer"] == 2.5
-        assert SOFT_SEVERITY_WEIGHTS["garage"] == 1.5
-        assert SOFT_SEVERITY_WEIGHTS["lot_size"] == 1.0
-        assert SOFT_SEVERITY_WEIGHTS["year_built"] == 2.0
+    def test_soft_criteria_weights_empty(self):
+        """SOFT_SEVERITY_WEIGHTS should be empty (all criteria are HARD in Sprint 0)."""
+        assert len(SOFT_SEVERITY_WEIGHTS) == 0
+        # Deprecated weights no longer exist
+        assert "sewer" not in SOFT_SEVERITY_WEIGHTS
+        assert "garage" not in SOFT_SEVERITY_WEIGHTS
+        assert "lot_size" not in SOFT_SEVERITY_WEIGHTS
+        assert "year_built" not in SOFT_SEVERITY_WEIGHTS
 
     def test_thresholds_defined(self):
-        """Threshold constants should be correctly defined."""
+        """Threshold constants should be correctly defined (retained for backward compat)."""
         assert SEVERITY_FAIL_THRESHOLD == 3.0
         assert SEVERITY_WARNING_THRESHOLD == 1.5
 
@@ -424,74 +489,67 @@ class TestKillSwitchVerdictEnum:
 
 
 class TestSeverityThreshold:
-    """Test severity threshold calculations with different property configurations."""
+    """Test kill-switch evaluation with Sprint 0 ALL HARD architecture.
 
-    def test_septic_alone_is_warning(self):
-        """Septic (2.5) < 3.0 threshold = WARNING."""
+    NOTE: In Sprint 0, ALL criteria are HARD (instant fail). There are no SOFT
+    criteria, so severity is always 0.0. Tests validate HARD behavior.
+    """
+
+    def test_septic_is_hard_fail(self):
+        """Septic is now HARD FAIL in Sprint 0 (was SOFT WARNING)."""
         prop = Property(
             beds=4,
             baths=2,
             hoa_fee=0,
-            sewer_type="septic",  # SOFT: 2.5
+            sewer_type="septic",  # HARD FAIL
             garage_spaces=2,
             lot_sqft=10000,
+            sqft=2000,
             year_built=2010,
-        )
-        verdict, severity, failures, results = evaluate_kill_switches(prop)
-        assert verdict == KillSwitchVerdict.WARNING
-        assert severity == 2.5
-        assert len(failures) == 1
-
-    def test_septic_plus_new_build_is_fail(self):
-        """Septic (2.5) + Year (2.0) = 4.5 >= 3.0 = FAIL."""
-        prop = Property(
-            beds=4,
-            baths=2,
-            hoa_fee=0,
-            sewer_type="septic",  # SOFT: 2.5
-            garage_spaces=2,
-            lot_sqft=10000,
-            year_built=datetime.now().year,  # SOFT: 2.0
         )
         verdict, severity, failures, results = evaluate_kill_switches(prop)
         assert verdict == KillSwitchVerdict.FAIL
-        assert severity == 4.5
-        assert len(failures) == 2
+        assert severity == 0.0  # No SOFT severity, all HARD
+        assert len(failures) == 1
+        assert "sewer" in failures[0].lower()
 
-    def test_small_lot_alone_is_pass(self):
-        """Lot (1.0) < 1.5 warning threshold = PASS."""
+    def test_small_lot_is_hard_fail(self):
+        """Small lot (below 8000) is now HARD FAIL (was SOFT PASS)."""
         prop = Property(
             beds=4,
             baths=2,
             hoa_fee=0,
             sewer_type="city",
             garage_spaces=2,
-            lot_sqft=5000,  # SOFT: 1.0 (too small)
+            lot_sqft=5000,  # HARD FAIL (below 8000)
+            sqft=2000,
             year_built=2010,
         )
         verdict, severity, failures, results = evaluate_kill_switches(prop)
-        assert verdict == KillSwitchVerdict.PASS
-        assert severity == 1.0
+        assert verdict == KillSwitchVerdict.FAIL
+        assert severity == 0.0  # No SOFT severity
         assert len(failures) == 1
+        assert "lot" in failures[0].lower()
 
-    def test_garage_plus_lot_is_warning(self):
-        """Garage (1.5) + Lot (1.0) = 2.5 = WARNING."""
+    def test_zero_garage_is_hard_fail(self):
+        """Zero garage spaces is HARD FAIL (min is 1 in Sprint 0)."""
         prop = Property(
             beds=4,
             baths=2,
             hoa_fee=0,
             sewer_type="city",
-            garage_spaces=1,  # SOFT: 1.5
-            lot_sqft=5000,  # SOFT: 1.0 (too small)
+            garage_spaces=0,  # HARD FAIL
+            lot_sqft=10000,
+            sqft=2000,
             year_built=2010,
         )
         verdict, severity, failures, results = evaluate_kill_switches(prop)
-        assert verdict == KillSwitchVerdict.WARNING
-        assert severity == 2.5
-        assert len(failures) == 2
+        assert verdict == KillSwitchVerdict.FAIL
+        assert severity == 0.0
+        assert len(failures) == 1
 
     def test_hoa_is_hard_fail(self):
-        """HOA > $0 = instant FAIL, no severity calc for HARD criteria."""
+        """HOA > $0 = instant FAIL."""
         prop = Property(
             beds=4,
             baths=2,
@@ -499,18 +557,17 @@ class TestSeverityThreshold:
             sewer_type="city",
             garage_spaces=2,
             lot_sqft=10000,
+            sqft=2000,
             year_built=2010,
         )
         verdict, severity, failures, results = evaluate_kill_switches(prop)
         assert verdict == KillSwitchVerdict.FAIL
-        # Severity should still be 0 since no SOFT criteria failed
-        assert severity == 0.0
-        # But we should have 1 failure from HOA
+        assert severity == 0.0  # All HARD, no severity
         assert len(failures) == 1
         assert "hoa" in failures[0].lower()
 
     def test_beds_is_hard_fail(self):
-        """Beds < 4 = instant FAIL, no severity calc for HARD criteria."""
+        """Beds < 4 = instant FAIL."""
         prop = Property(
             beds=3,  # HARD FAIL
             baths=2,
@@ -518,6 +575,7 @@ class TestSeverityThreshold:
             sewer_type="city",
             garage_spaces=2,
             lot_sqft=10000,
+            sqft=2000,
             year_built=2010,
         )
         verdict, severity, failures, results = evaluate_kill_switches(prop)
@@ -526,7 +584,7 @@ class TestSeverityThreshold:
         assert len(failures) == 1
 
     def test_baths_is_hard_fail(self):
-        """Baths < 2 = instant FAIL, no severity calc for HARD criteria."""
+        """Baths < 2 = instant FAIL."""
         prop = Property(
             beds=4,
             baths=1.5,  # HARD FAIL
@@ -534,6 +592,7 @@ class TestSeverityThreshold:
             sewer_type="city",
             garage_spaces=2,
             lot_sqft=10000,
+            sqft=2000,
             year_built=2010,
         )
         verdict, severity, failures, results = evaluate_kill_switches(prop)
@@ -541,39 +600,42 @@ class TestSeverityThreshold:
         assert severity == 0.0
         assert len(failures) == 1
 
-    def test_hard_fail_plus_soft_failures_still_hard_fail(self):
-        """HARD fail takes precedence, but SOFT severity still calculated."""
-        prop = Property(
-            beds=3,  # HARD FAIL
-            baths=2,
-            hoa_fee=0,
-            sewer_type="septic",  # SOFT: 2.5
-            garage_spaces=1,  # SOFT: 1.5
-            lot_sqft=10000,
-            year_built=2010,
-        )
-        verdict, severity, failures, results = evaluate_kill_switches(prop)
-        assert verdict == KillSwitchVerdict.FAIL
-        # SOFT severity is still calculated
-        assert severity == 4.0  # 2.5 + 1.5
-        # 3 failures total
-        assert len(failures) == 3
-
-    def test_all_soft_failures_is_fail(self):
-        """All SOFT criteria failing = 7.0 severity = FAIL."""
+    def test_sqft_is_hard_fail(self):
+        """Sqft < 1800 = instant FAIL (new Sprint 0 criterion)."""
         prop = Property(
             beds=4,
             baths=2,
             hoa_fee=0,
-            sewer_type="septic",  # SOFT: 2.5
-            garage_spaces=1,  # SOFT: 1.5
-            lot_sqft=5000,  # SOFT: 1.0 (too small)
-            year_built=datetime.now().year,  # SOFT: 2.0
+            sewer_type="city",
+            garage_spaces=2,
+            lot_sqft=10000,
+            sqft=1500,  # HARD FAIL (below 1800)
+            year_built=2010,
         )
         verdict, severity, failures, results = evaluate_kill_switches(prop)
         assert verdict == KillSwitchVerdict.FAIL
-        assert severity == 7.0
-        assert len(failures) == 4
+        assert severity == 0.0
+        assert len(failures) == 1
+        assert "sqft" in failures[0].lower()
+
+    def test_multiple_hard_failures(self):
+        """Multiple HARD failures all recorded, severity still 0."""
+        prop = Property(
+            beds=3,  # HARD FAIL
+            baths=2,
+            hoa_fee=0,
+            sewer_type="septic",  # HARD FAIL
+            garage_spaces=0,  # HARD FAIL
+            lot_sqft=5000,  # HARD FAIL
+            sqft=1500,  # HARD FAIL
+            year_built=2010,
+        )
+        verdict, severity, failures, results = evaluate_kill_switches(prop)
+        assert verdict == KillSwitchVerdict.FAIL
+        # All HARD, no SOFT severity
+        assert severity == 0.0
+        # 5 HARD failures
+        assert len(failures) == 5
 
     def test_perfect_property_is_pass(self):
         """Property passing all criteria has PASS verdict and 0 severity."""
@@ -583,7 +645,9 @@ class TestSeverityThreshold:
             hoa_fee=0,
             sewer_type="city",
             garage_spaces=2,
+            garage_type="attached",
             lot_sqft=10000,
+            sqft=2000,
             year_built=2010,
         )
         verdict, severity, failures, results = evaluate_kill_switches(prop)
@@ -593,7 +657,7 @@ class TestSeverityThreshold:
 
 
 class TestKillSwitchResultFields:
-    """Test that KillSwitchResult has the new severity fields."""
+    """Test that KillSwitchResult has the severity fields (Sprint 0: all HARD)."""
 
     def test_result_has_is_hard_field(self):
         """KillSwitchResult should have is_hard field."""
@@ -605,18 +669,19 @@ class TestKillSwitchResultFields:
         assert hoa_result.is_hard is True
 
     def test_result_has_severity_weight_field(self):
-        """KillSwitchResult should have severity_weight field."""
+        """KillSwitchResult should have severity_weight field (0 for HARD)."""
         prop = Property(
             beds=4,
             baths=2,
             hoa_fee=0,
-            sewer_type="septic",  # SOFT failure
+            sewer_type="septic",  # HARD failure in Sprint 0
         )
         verdict, severity, failures, results = evaluate_kill_switches(prop)
 
         sewer_result = next(r for r in results if r.name == "sewer")
         assert hasattr(sewer_result, "severity_weight")
-        assert sewer_result.severity_weight == 2.5
+        # All criteria are HARD in Sprint 0, so severity_weight is 0
+        assert sewer_result.severity_weight == 0.0
 
     def test_passed_criteria_have_zero_severity_weight(self):
         """Passed criteria should have severity_weight of 0."""
@@ -634,23 +699,23 @@ class TestKillSwitchResultFields:
 
 
 class TestApplyKillSwitchSeverity:
-    """Test that apply_kill_switch works with severity system."""
+    """Test that apply_kill_switch works with Sprint 0 ALL HARD system."""
 
-    def test_apply_sets_passed_for_warning(self):
-        """WARNING verdict should set kill_switch_passed = True."""
+    def test_apply_sets_passed_for_pass(self):
+        """PASS verdict should set kill_switch_passed = True."""
         prop = Property(
             beds=4,
             baths=2,
             hoa_fee=0,
-            sewer_type="septic",  # WARNING (2.5)
+            sewer_type="city",
             garage_spaces=2,
             lot_sqft=10000,
+            sqft=2000,
             year_built=2010,
         )
         result = apply_kill_switch(prop)
-        # WARNING is still "passed" for backward compatibility
         assert result.kill_switch_passed is True
-        assert len(result.kill_switch_failures) == 1
+        assert len(result.kill_switch_failures) == 0
 
     def test_apply_sets_failed_for_hard_fail(self):
         """HARD FAIL should set kill_switch_passed = False."""
@@ -661,26 +726,29 @@ class TestApplyKillSwitchSeverity:
             sewer_type="city",
             garage_spaces=2,
             lot_sqft=10000,
+            sqft=2000,
             year_built=2010,
         )
         result = apply_kill_switch(prop)
         assert result.kill_switch_passed is False
         assert len(result.kill_switch_failures) == 1
 
-    def test_apply_sets_failed_for_severity_threshold(self):
-        """Severity >= 3.0 should set kill_switch_passed = False."""
+    def test_apply_sets_failed_for_any_hard_failure(self):
+        """Any HARD failure should set kill_switch_passed = False (no severity in Sprint 0)."""
         prop = Property(
             beds=4,
             baths=2,
             hoa_fee=0,
-            sewer_type="septic",  # 2.5
+            sewer_type="septic",  # HARD FAIL (was SOFT in old system)
             garage_spaces=2,
             lot_sqft=10000,
-            year_built=datetime.now().year,  # 2.0 -> total 4.5
+            sqft=2000,
+            year_built=datetime.now().year,  # NOT checked in Sprint 0
         )
         result = apply_kill_switch(prop)
+        # Septic is HARD fail in Sprint 0
         assert result.kill_switch_passed is False
-        assert len(result.kill_switch_failures) == 2
+        assert len(result.kill_switch_failures) == 1  # Only sewer fails
 
 
 class TestEvaluateKillSwitchesForDisplaySeverity:
@@ -700,16 +768,18 @@ class TestEvaluateKillSwitchesForDisplaySeverity:
         assert "severity_score" in results["_summary"]
 
     def test_display_summary_has_correct_verdict(self):
-        """Display summary should have correct verdict."""
+        """Display summary should have correct verdict (FAIL for septic in Sprint 0)."""
         prop = Property(
             beds=4,
             baths=2,
             hoa_fee=0,
-            sewer_type="septic",  # 2.5 -> WARNING
+            sewer_type="septic",  # HARD FAIL in Sprint 0 (was WARNING)
         )
         results = evaluate_kill_switches_for_display(prop)
-        assert results["_summary"]["verdict"] == "WARNING"
-        assert results["_summary"]["severity_score"] == 2.5
+        # Septic is now HARD FAIL, not WARNING
+        assert results["_summary"]["verdict"] == "FAIL"
+        # Severity is 0 since sewer is HARD, not SOFT
+        assert results["_summary"]["severity_score"] == 0.0
 
     def test_display_criteria_have_is_hard_field(self):
         """Display criteria should have is_hard field."""

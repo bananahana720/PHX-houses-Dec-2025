@@ -44,6 +44,10 @@ dependencies = [
     "livereload>=2.7.0",
     # Configuration file parsing
     "pyyaml>=6.0.0",
+    # Configuration management with env overrides
+    "pydantic-settings>=2.8.0",
+    # Hot-reload file watching
+    "watchfiles>=1.0.0",
 ]
 
 [project.optional-dependencies]

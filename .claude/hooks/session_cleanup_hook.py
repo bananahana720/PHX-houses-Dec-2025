@@ -22,8 +22,9 @@ try:
     from lib.delta_logger import archive_session_log, clear_session_log
 
     LIB_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     LIB_AVAILABLE = False
+    IMPORT_ERROR = str(e)
 
 # Configuration
 MAX_LOG_SIZE_MB = 1
@@ -74,11 +75,13 @@ def archive_logs() -> str | None:
         Path to archived file, or None
     """
     if not LIB_AVAILABLE:
+        print(f"WARN: session_cleanup_hook: skipping log archive (lib unavailable: {IMPORT_ERROR})", file=sys.stderr)
         return None
 
     try:
         return archive_session_log()
-    except Exception:
+    except Exception as e:
+        print(f"WARN: session_cleanup_hook: archive failed: {type(e).__name__}: {e}", file=sys.stderr)
         return None
 
 

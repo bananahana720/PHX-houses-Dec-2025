@@ -1,0 +1,54 @@
+# PHX Houses Full Analysis Pipeline
+workflow: phx-full-analysis
+description: Complete PHX property analysis pipeline
+complexity: complex
+agents_count: 5+
+
+waves:
+  - wave: 0
+    name: county_data
+    type: sequential_orchestrated
+    agents: [county-assessor-script]
+    validation: lot_sqft + year_built present
+
+  - wave: 1
+    name: phase1_parallel
+    type: parallel_swarm
+    agents: [listing-browser, map-analyzer]
+    validation: images_downloaded + orientation_scored
+
+  - wave: 2a
+    name: exterior_assessment
+    type: sequential_orchestrated
+    agents: [image-assessor:exterior]
+    prereq: validate_phase_prerequisites.py
+    validation: exterior_scores_present
+
+  - wave: 2b
+    name: interior_assessment
+    type: sequential_orchestrated
+    agents: [image-assessor:interior]
+    prereq: wave_2a_complete
+    validation: interior_scores_present
+
+  - wave: 3
+    name: synthesis
+    type: main_agent
+    action: scoring + tier_assignment
+    validation: tier_assigned
+
+  - wave: 4
+    name: reporting
+    type: main_agent
+    action: deal_sheet_generation
+    output: reports/deal-sheet.md
+
+state_files:
+  - data/work_items.json
+  - data/enrichment_data.json
+  - data/extraction_state.json
+
+error_escalation:
+  - on_kill_switch_fail: skip_remaining_phases
+  - on_image_error: retry_once_then_manual
+  - on_api_error: fallback_to_csv

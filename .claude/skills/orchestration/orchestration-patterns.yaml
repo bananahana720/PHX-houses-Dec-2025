@@ -1,0 +1,574 @@
+# Orchestration Patterns Reference
+# Location: .claude/skills/orchestration/orchestration-patterns.yaml
+---
+_meta:
+  name: "Multi-Agent Orchestration Patterns"
+  what: "Comprehensive complexity tiers, wave patterns, agent catalog, cost-aware model selection, error escalation, and state management rules"
+  when: "Designing orchestration flows, spawning agents, managing phased execution, selecting models, handling errors, managing state"
+  how: "Lookup by section: complexity_tiers, wave_types, agent_catalog, model_selection, error_escalation, state_management"
+
+# =============================================================================
+# SECTION 1: Complexity Tiers
+# =============================================================================
+complexity_tiers:
+  simple:
+    description: "Single-file or localized changes, 2-3 agents max"
+    agent_count: "2-3"
+    pattern_type: "sequential"
+    example_workflows: ["bug-fix-flow", "doc-update", "single-file-refactor"]
+    typical_duration: "5-15 minutes"
+    decision_criteria:
+      - "Task scope is well-defined and bounded"
+      - "No multi-phase dependencies"
+      - "Can complete without exploring unknown scope"
+
+  moderate:
+    description: "Multi-file features, 3-5 agents, mixed waves"
+    agent_count: "3-5"
+    pattern_type: "mixed (sequential + parallel)"
+    example_workflows: ["tdd-red-green-blue", "feature-impl", "multi-file-refactor"]
+    typical_duration: "15-45 minutes"
+    decision_criteria:
+      - "Requires multiple files but scope is known"
+      - "Some phases can run in parallel"
+      - "May need validation between phases"
+
+  complex:
+    description: "Full pipelines, 5+ agents, multi-wave coordination"
+    agent_count: "5+"
+    pattern_type: "waves (parallel swarm + sequential orchestrated)"
+    example_workflows: ["phx-full-analysis", "end-to-end-pipeline", "batch-processing"]
+    typical_duration: "45+ minutes"
+    decision_criteria:
+      - "Multi-phase with dependencies between phases"
+      - "Requires both parallel and sequential execution"
+      - "State management across multiple agents"
+
+# =============================================================================
+# SECTION 2: Wave Type Definitions
+# =============================================================================
+wave_types:
+  parallel_swarm:
+    description: "Non-destructive tasks running simultaneously"
+    when_to_use: "Tasks write to independent locations with no shared state conflicts"
+    characteristics:
+      - "No shared write targets"
+      - "Independent data sources"
+      - "Can fail independently without blocking others"
+      - "Orchestrator aggregates results and writes atomically"
+
+    launch_pattern: "Single message with multiple Task calls"
+
+    post_wave_action: |
+      1. Wait for all agents to complete
+      2. Aggregate results from all agents
+      3. Validate aggregated data
+      4. Write atomically to state files (single writer)
+
+    example:
+      name: "Phase 1 Extraction"
+      agents: ["listing-browser", "map-analyzer"]
+      code: |
+        # Launch in parallel (single message)
+        Task(agent="listing-browser", prompt="Extract listing...")
+        Task(agent="map-analyzer", prompt="Analyze location...")
+        # Orchestrator then aggregates and writes
+
+      avoid: "Spawning agents in separate messages (forces sequential execution)"
+
+  sequential_orchestrated:
+    description: "Destructive or dependent tasks in strict order"
+    when_to_use: "Tasks modify shared state OR depend on previous phase output"
+    characteristics:
+      - "Shared state modifications"
+      - "Phase dependencies (Phase N requires Phase N-1)"
+      - "Validation required between steps"
+      - "Single writer enforced per phase"
+
+    launch_pattern: "Separate messages, validate between steps"
+
+    validation_pattern: |
+      1. Execute Phase N
+      2. Validate Phase N output (scripts/validate_phase_prerequisites.py)
+      3. Checkpoint state
+      4. Proceed to Phase N+1 only if validation passes
+
+    example:
+      name: "Full Property Pipeline"
+      phases:
+        - phase: 0
+          type: "script"
+          command: "python scripts/extract_county_data.py"
+          validates: "County data exists for property"
+
+        - phase: 1
+          type: "parallel_swarm"
+          agents: ["listing-browser", "map-analyzer"]
+          validates: "Phase 1 fields populated"
+
+        - phase: 2
+          type: "agent"
+          agent: "image-assessor"
+          requires: ["phase1_complete", "images_exist"]
+          validate_before: "python scripts/validate_phase_prerequisites.py --phase phase2_images"
+          validates: "Interior/exterior scores present"
+
+        - phase: 3
+          type: "script"
+          command: "python scripts/phx_home_analyzer.py"
+          validates: "Total score calculated"
+
+        - phase: 4
+          type: "script"
+          command: "python -m scripts.deal_sheets"
+          validates: "Deal sheet generated"
+
+# =============================================================================
+# SECTION 3: Agent Catalog
+# =============================================================================
+agent_catalog:
+  phx_houses_agents:
+    listing-browser:
+      model: "Haiku"
+      phase: 1
+      purpose: "Zillow/Redfin extraction via stealth browser"
+      input: "Property address"
+      output: "Listing data (price, HOA, images, description)"
+      skills: ["property-data", "state-management", "listing-extraction", "kill-switch"]
+      avg_tokens: 5000
+      avg_cost_usd: 0.002
+      wave_type: "parallel_swarm"
+
+    map-analyzer:
+      model: "Haiku"
+      phase: 1
+      purpose: "Geographic analysis (schools, safety, orientation)"
+      input: "Property address, lat/lon"
+      output: "School ratings, crime stats, sun orientation, proximity scores"
+      skills: ["property-data", "state-management", "map-analysis", "arizona-context", "scoring"]
+      avg_tokens: 6000
+      avg_cost_usd: 0.003
+      wave_type: "parallel_swarm"
+
+    image-assessor:
+      model: "Sonnet"
+      phase: 2
+      purpose: "Visual scoring of interior/exterior from photos"
+      input: "Property images directory"
+      output: "Section C scores (190 pts), UAD ratings, component age estimates"
+      skills: ["property-data", "state-management", "image-assessment", "arizona-context", "scoring"]
+      avg_tokens: 25000
+      avg_cost_usd: 0.075
+      wave_type: "sequential_orchestrated"
+      prerequisites: ["phase1_complete", "images_downloaded"]
+      validation_script: "scripts/validate_phase_prerequisites.py"
+
+  model_tiers:
+    haiku:
+      model_id: "claude-haiku-3-5-20241022"
+      input_per_million: 0.25
+      output_per_million: 1.25
+      typical_task_cost: 0.001
+      strengths: ["Fast execution", "Cost-effective", "Structured extraction", "API calls"]
+      use_for: ["extraction", "parsing", "geographic_lookup", "api_calls", "data_transformation"]
+      avoid_for: ["visual_assessment", "subjective_judgment", "complex_multi-factor_reasoning"]
+
+    sonnet:
+      model_id: "claude-sonnet-4-5-20250929"
+      input_per_million: 3.00
+      output_per_million: 15.00
+      typical_task_cost: 0.015
+      strengths: ["Visual reasoning", "Subjective assessment", "Complex reasoning", "Nuanced judgment"]
+      use_for: ["visual_assessment", "subjective_scoring", "complex_reasoning", "multi-factor_decisions"]
+      avoid_for: ["simple_lookups", "structured_extraction", "api_calls"]
+
+# =============================================================================
+# SECTION 4: Cost-Aware Model Selection Guide
+# =============================================================================
+model_selection:
+  decision_tree:
+    - condition: "Single field lookup"
+      action: "Use Grep/Read directly (no agent)"
+      reason: "10x faster and cheaper than agent spawn"
+      example: "Finding HOA fee from enrichment_data.json"
+      cost: "$0"
+
+    - condition: "Structured data extraction from known source"
+      action: "Use Haiku agent"
+      reason: "Cost-effective for parsing tasks"
+      example: "Extracting listing data from Zillow"
+      cost: "~$0.002 per property"
+
+    - condition: "Visual or subjective assessment"
+      action: "Use Sonnet agent"
+      reason: "Higher quality for nuanced judgment"
+      example: "Scoring interior photos"
+      cost: "~$0.075 per property"
+
+    - condition: "Multi-step exploration with unknown scope"
+      action: "Use Task with appropriate model"
+      reason: "Agent can adapt to discovered information"
+      example: "Researching school districts"
+      cost: "Variable based on model"
+
+    - condition: "Existing script handles the task"
+      action: "Call script via Bash"
+      reason: "Reuse tested logic, no LLM cost"
+      example: "python scripts/extract_county_data.py"
+      cost: "$0"
+
+  cost_optimization_rules:
+    - rule: "Prefer scripts over agents when logic is deterministic"
+      example: "Use extract_county_data.py instead of spawning agent for API calls"
+
+    - rule: "Batch similar tasks to same agent to preserve context"
+      example: "Process all images in single image-assessor session, not one per image"
+
+    - rule: "Use Haiku by default, upgrade to Sonnet only when necessary"
+      triggers: ["visual_analysis", "subjective_scoring", "complex_multi-factor_reasoning"]
+
+    - rule: "Avoid agent spawn for simple lookups"
+      threshold: "If task can complete in <100 tokens, use Grep/Read"
+
+  cost_examples:
+    single_property_full_pipeline:
+      phase_0_county: "$0 (script)"
+      phase_1_listing_browser: "$0.002 (Haiku)"
+      phase_1_map_analyzer: "$0.003 (Haiku)"
+      phase_2_image_assessor: "$0.075 (Sonnet)"
+      phase_3_scoring: "$0 (script)"
+      phase_4_deal_sheet: "$0 (script)"
+      total: "$0.080 per property"
+
+    batch_100_properties:
+      estimated_total: "$8.00"
+      breakdown:
+        listing_extraction: "$0.20 (100 x $0.002)"
+        map_analysis: "$0.30 (100 x $0.003)"
+        image_assessment: "$7.50 (100 x $0.075)"
+
+# =============================================================================
+# SECTION 5: Error Escalation Matrix
+# =============================================================================
+error_escalation:
+  levels:
+    level_1_transient:
+      severity: "Low"
+      condition: "Transient error, retry_count < 3"
+      action: "Automatic retry with exponential backoff"
+      backoff_seconds: [2, 4, 8, 16]
+      user_notification: "No (silent retry)"
+      examples:
+        - "Network timeout"
+        - "Rate limit 429"
+        - "Temporary API unavailable"
+
+    level_2_alternate_source:
+      severity: "Medium"
+      condition: "Primary source blocked, alternates available"
+      action: "Try alternate source"
+      user_notification: "Log fallback (non-blocking)"
+      examples:
+        - "Zillow PerimeterX block → try Redfin"
+        - "Google Maps API quota → try OpenStreetMap"
+        - "Primary school API down → use cached data"
+
+    level_3_non_critical:
+      severity: "Medium-High"
+      condition: "Non-critical phase fails, can proceed with degraded data"
+      action: "Skip phase and continue with defaults"
+      user_notification: "Warning logged"
+      examples:
+        - "Map data missing → use default safety score"
+        - "School ratings unavailable → score as neutral"
+        - "Orientation calculation fails → skip sun orientation points"
+
+    level_4_critical:
+      severity: "High"
+      condition: "Critical failure or all retries exhausted"
+      action: "STOP - Escalate to user for decision"
+      user_notification: "Block and request decision"
+      format: |
+        ERROR ESCALATION - LEVEL 4
+        ==========================
+        Property: {address}
+        Phase: {phase_name} (Phase {phase_number})
+        Error Type: {error_type}
+        Error Message: {error_message}
+        Retry Count: {retry_count}/{max_retries}
+
+        Impact: {impact_description}
+
+        Options:
+        (A) Retry with different approach [{approach_description}]
+        (B) Skip this property and continue batch
+        (C) Abort entire batch
+        (D) Manual intervention [{manual_steps}]
+
+        Recommend: {recommended_option}
+      examples:
+        - "County assessor API authentication fails (no lot_sqft, year_built)"
+        - "All image extraction attempts blocked (cannot run Phase 2)"
+        - "enrichment_data.json corrupted (data integrity risk)"
+        - "Kill-switch criteria change detected (scoring recalculation required)"
+
+  thresholds:
+    max_retries: 3
+    timeout_minutes: 10
+    consecutive_same_error_limit: 3
+    critical_field_missing_threshold: "Fail if >2 kill-switch fields missing"
+
+  decision_matrix:
+    # When to escalate vs retry vs skip
+    - error_type: "API authentication failure"
+      level: 4
+      reason: "Cannot proceed without credentials"
+
+    - error_type: "Network timeout"
+      level: 1
+      reason: "Likely transient"
+
+    - error_type: "Bot detection (PerimeterX, Cloudflare)"
+      level: 2
+      reason: "Try alternate source or stealth method"
+
+    - error_type: "Missing images"
+      level: 3
+      reason: "Phase 2 skippable, can score based on Phase 1 data"
+
+    - error_type: "Data corruption (JSON parse error)"
+      level: 4
+      reason: "Data integrity risk - stop the line"
+
+    - error_type: "Kill-switch threshold change"
+      level: 4
+      reason: "Scoring recalculation required - stop the line"
+
+# =============================================================================
+# SECTION 6: State Management Rules
+# =============================================================================
+state_management:
+  single_writer_pattern:
+    rule: "CRITICAL - Only orchestrators modify state files. Sub-agents MUST return data, NOT write files."
+    enforcement:
+      - "Orchestrator aggregates results from all agents"
+      - "Orchestrator validates aggregated data"
+      - "Orchestrator writes atomically to state files"
+      - "Sub-agents receive read-only access patterns"
+
+    violation_detection:
+      - "Check agent logs for Write/Edit tool usage on state files"
+      - "Validate state file timestamps (should only change after orchestrator writes)"
+      - "Use file locking to prevent concurrent writes"
+
+  state_files:
+    work_items:
+      path: "data/work_items.json"
+      purpose: "Pipeline progress tracking"
+      lock_required: true
+      writer: "orchestrator only"
+      readers: ["all agents"]
+      schema_fields: ["address", "status", "phase", "last_updated", "errors"]
+
+    enrichment_data:
+      path: "data/enrichment_data.json"
+      purpose: "Property data accumulation"
+      lock_required: true
+      writer: "orchestrator only"
+      readers: ["all agents"]
+      schema_fields: ["address", "phase0_county", "phase1_listing", "phase1_map", "phase2_images", "scores"]
+
+    extraction_state:
+      path: "data/property_images/metadata/extraction_state.json"
+      purpose: "Image pipeline state"
+      lock_required: true
+      writer: "orchestrator only"
+      readers: ["listing-browser", "image-assessor"]
+      schema_fields: ["address", "download_status", "image_count", "errors"]
+
+  atomic_update_pattern:
+    steps:
+      1: "Read current state file"
+      2: "Create backup with timestamp (.bak.{timestamp})"
+      3: "Apply updates to in-memory structure"
+      4: "Validate updated structure against schema"
+      5: "Write to temporary file (.tmp)"
+      6: "Atomic rename .tmp to actual filename"
+      7: "Delete backup if write successful"
+
+    code_example: |
+      # Python atomic write pattern
+      import json
+      from pathlib import Path
+      from datetime import datetime
+
+      def atomic_write(filepath: Path, data: dict):
+          backup = filepath.with_suffix(f".bak.{datetime.now().timestamp()}")
+          temp = filepath.with_suffix(".tmp")
+
+          # Backup existing
+          if filepath.exists():
+              filepath.rename(backup)
+
+          try:
+              # Write to temp
+              temp.write_text(json.dumps(data, indent=2))
+              # Atomic rename
+              temp.rename(filepath)
+              # Clean backup
+              if backup.exists():
+                  backup.unlink()
+          except Exception as e:
+              # Restore backup on failure
+              if backup.exists():
+                  backup.rename(filepath)
+              raise
+
+  crash_recovery:
+    detection:
+      - "Load work_items.json at session start"
+      - "Find records with status=in_progress AND last_updated > 10 minutes ago"
+      - "These are orphaned tasks from crashed sessions"
+
+    recovery_steps:
+      1: "Reset orphaned tasks to status=pending"
+      2: "Log recovery action with timestamp"
+      3: "Resume from last successful checkpoint"
+      4: "Validate state file integrity before proceeding"
+
+    prevention:
+      - "Update work_items.json immediately after phase completion"
+      - "Use status transitions: pending → in_progress → completed|failed"
+      - "Set last_updated timestamp on every state change"
+      - "Checkpoint after each wave (parallel or sequential)"
+
+# =============================================================================
+# SECTION 7: Templates
+# =============================================================================
+templates:
+  orchestration_plan:
+    description: "High-level plan template for multi-agent workflows"
+    format: |
+      ORCHESTRATION PLAN: {task_name}
+      ================================
+
+      Phase 0: Data Gathering
+        [ ] Load state files (work_items.json, enrichment_data.json)
+        [ ] Identify properties to process
+        [ ] Verify prerequisites (API tokens, scripts)
+
+      Phase 1: Parallel Extraction Wave
+        [ ] Spawn agents in parallel (single message):
+            - {agent_1_name} ({model_tier})
+            - {agent_2_name} ({model_tier})
+        [ ] Wait for all agents to complete
+        [ ] Aggregate results
+        [ ] Validate aggregated data
+        [ ] Write atomically to state files
+
+      Phase 2: Sequential Assessment Wave
+        [ ] Validate prerequisites: {validation_script}
+        [ ] Spawn {agent_name} ({model_tier})
+        [ ] Checkpoint state
+        [ ] Repeat for each sequential phase
+
+      Phase 3-4: Synthesis & Reporting
+        [ ] Run scoring pipeline: {scoring_script}
+        [ ] Generate reports: {report_script}
+        [ ] Update final state
+
+      Estimated Cost: ${total_estimated_cost}
+      Estimated Duration: {estimated_duration} minutes
+
+  agent_spawn:
+    description: "Standard template for spawning sub-agents"
+    format: |
+      You are {agent_name} for PHX Houses pipeline.
+
+      **Target Property:** {address}
+      **Phase:** {phase_number} - {phase_description}
+      **Prerequisites Verified:** {prereqs_verified}
+      **Skills to Load:** {skills_list}
+      **Output Budget:** max {max_tokens} tokens
+
+      **Context:**
+      {property_context}
+
+      **Task:**
+      {specific_task_description}
+
+      **Return Format (JSON):**
+      ```json
+      {
+        "status": "success|partial|failed",
+        "data": {
+          // Phase-specific data structure
+        },
+        "metadata": {
+          "execution_time_seconds": 0,
+          "tokens_used": 0
+        },
+        "errors": []
+      }
+      ```
+
+      **CRITICAL RULES:**
+      - DO NOT write to state files (read-only access)
+      - Return data to orchestrator for aggregation
+      - Include errors array even if empty
+
+      **Pre-Work:** Read .claude/AGENT_BRIEFING.md
+
+  progress_report:
+    description: "Batch processing progress report"
+    format: |
+      BATCH PROGRESS REPORT
+      =====================
+      Session ID: {session_id}
+      Started: {start_timestamp}
+      Elapsed: {elapsed_time}
+
+      Progress: {completed}/{total} properties ({pct}%)
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      Status Breakdown:
+        ✓ Completed: {completed}
+        ⧗ In Progress: {in_progress}
+        ○ Pending: {pending}
+        ✗ Failed: {failed}
+
+      Tier Distribution (completed only):
+        🦄 Unicorns (>480):   {unicorns} ({unicorn_pct}%)
+        🎯 Contenders (360+): {contenders} ({contender_pct}%)
+        ✓ Pass (<360):        {pass} ({pass_pct}%)
+
+      Errors: {error_count} total
+        Level 1 (transient): {level_1_errors}
+        Level 2 (fallback):  {level_2_errors}
+        Level 3 (skipped):   {level_3_errors}
+        Level 4 (critical):  {level_4_errors}
+
+      Cost Summary:
+        Total: ${total_cost}
+        Per Property Avg: ${avg_cost_per_property}
+
+      Next Steps:
+      {next_steps_list}
+
+  wave_summary:
+    description: "Summary after completing a wave (parallel or sequential)"
+    format: |
+      WAVE COMPLETE: {wave_name}
+      ==========================
+      Type: {wave_type}
+      Duration: {duration_seconds}s
+
+      Agents: {agent_list}
+      Results:
+      {agent_results_summary}
+
+      State Updated:
+      - work_items.json: {work_items_changes}
+      - enrichment_data.json: {enrichment_changes}
+
+      Next: {next_wave_or_complete}

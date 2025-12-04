@@ -1,0 +1,56 @@
+SESSION SUMMARY - tests/unit/ Directory Updates
+=================================================
+
+Session Date: 2025-12-03
+Agent: Claude (Sonnet 4.5 - Sprint 0 schema test fixtures)
+Modified Directory: C:\Users\Andrew\.vscode\PHX-houses-Dec-2025\tests\unit
+
+FILES MODIFIED/CREATED:
+----------------------
+1. test_config_schemas.py (23,948 bytes)
+   - Fixed all 48 failing tests
+   - Updated 6 fixtures to Sprint 0 schemas (605-point system)
+   - Updated 12 test assertion methods
+   - All tests passing (0.08s execution)
+
+2. CLAUDE.md (7,165 bytes)
+   - Comprehensive documentation created/updated
+   - Complete Sprint 0 changes documented
+   - Learnings section added
+   - Task checklist completed
+
+PURPOSE UPDATES:
+---------------
+- Updated to reflect 605-point system validation (was 600-point)
+- Documents Pydantic schema validation for Sprint 0 architecture
+- Tests validate all-HARD kill-switch criteria (8 fields)
+
+NEW FILES DOCUMENTED:
+--------------------
+test_config_schemas.py changes:
+- 48 tests validating configuration schemas
+- Fixture updates: valid_location_criteria (9 fields, 250 pts)
+- Fixture updates: valid_systems_criteria (6 fields, 175 pts)
+- Fixture updates: valid_interior_criteria (7 fields, 180 pts)
+- Fixture updates: valid_section_weights (605 pts total)
+- Fixture updates: valid_tier_thresholds (Unicorn: 484, Contender: 363)
+- Fixture updates: valid_hard_criteria (8 HARD fields)
+
+LEARNINGS:
+----------
+1. Fixture maintenance: Schema changes require cascading updates across 6 fixtures
+2. Point calculations: Total points (605) and weights (1.0) validated by SectionWeightsSchema
+3. Field additions: LocationCriteriaSchema gained 4 new fields (crime_index, flood_risk, walk_transit, air_quality)
+4. SystemsCriteriaSchema: Added solar_status field for solar panel ownership tracking
+5. HardCriteriaSchema: Expanded from 3 to 8 fields (all HARD criteria, no SOFT)
+6. Test naming: Max score constraints renamed from 600 → 605 in test names
+7. Assertion updates: 12 test methods required value updates (points, thresholds, field names)
+8. Backwards compatibility: Fixture changes maintain test structure while updating values
+
+TASK STATUS:
+-----------
+✅ COMPLETED: Update TestRealConfigFiles for 605-point system
+✅ COMPLETED: Update test_kill_switch.py for all-HARD criteria (2025-12-03)
+✅ COMPLETED: Update test_config_schemas.py fixtures for 605-point system (2025-12-03)
+
+ALL TASKS COMPLETE - Session ready to close

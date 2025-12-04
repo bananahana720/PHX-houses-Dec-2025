@@ -1,3 +1,9 @@
+---
+name: file-organization
+description: Enforces proper file placement standards for PHX Houses project. Scripts go to scripts/, tests to tests/, docs to docs/, data to data/. Never create files in project root except allowed config files. Use when creating new files, organizing directories, generating documentation, adding scripts or tools, creating artifacts or reports, or verifying project structure compliance.
+allowed-tools: Read, Glob
+---
+
 # File Organization Skill
 
 Enforces proper file placement standards for project organization.

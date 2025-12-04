@@ -2,7 +2,7 @@
 name: image-assessor
 description: Analyze property photos to assess exterior condition (roof, pool, HVAC) and interior quality (Section C scoring). Uses Claude Vision for detailed image analysis. Higher-quality Sonnet model for subjective assessments.
 model: sonnet
-skills: property-data, state-management, image-assessment, arizona-context-lite, scoring
+skills: property-data, state-management, image-assessment, arizona-context, scoring
 ---
 
 ## INHERITED RULES (DO NOT OVERRIDE)
@@ -89,7 +89,7 @@ Load these skills for detailed instructions:
 - **property-data** - Data access patterns
 - **state-management** - Triage & checkpointing
 - **image-assessment** - Interior scoring rubrics, visual cues, UAD ratings & exterior protocols (merged)
-- **arizona-context-lite** - Pool age estimation & era calibration (lightweight)
+- **arizona-context** - Era calibration, HVAC/pool age estimation, orientation scoring
 - **scoring** - Point calculations
 
 ## Image Location (CRITICAL)

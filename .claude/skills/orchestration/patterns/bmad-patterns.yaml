@@ -1,0 +1,90 @@
+# BMAD Method Orchestration Patterns
+# Full integration with /bmad workflows
+
+workflows:
+  workflow-init:
+    description: Initialize new BMM project
+    command: /bmad:bmm:workflows:workflow-init
+    phases:
+      - determine_level: [greenfield, brownfield]
+      - determine_type: [full_product, feature, library]
+      - create_tracking: workflow-status.yaml
+    agents: [bmad-master]
+    output: docs/bmad/workflow-status.yaml
+    use_when: Starting new project with BMAD
+
+  epic-creation:
+    description: Transform PRD + Architecture into epics/stories
+    command: /bmad:bmm:workflows:create-epics-and-stories
+    prereqs: [prd_complete, architecture_complete]
+    phases:
+      - analyze_requirements: extract from PRD
+      - map_to_architecture: align with tech decisions
+      - break_into_epics: group by user value
+      - generate_stories: detailed acceptance criteria
+    agents: [pm, architect, analyst]
+    output: docs/epics/*.md
+    use_when: PRD and architecture done, ready for implementation planning
+
+  story-development:
+    description: Create and implement single story
+    commands:
+      - /bmad:bmm:workflows:create-story
+      - /bmad:bmm:workflows:dev-story
+    phases:
+      - create: extract from epic, add context
+      - implement: execute tasks per acceptance criteria
+      - validate: tests pass, code quality
+      - update: mark story complete
+    agents: [dev, tea]
+    output: story file + implementation
+    use_when: Working through sprint backlog
+
+  code-review:
+    description: Adversarial senior developer review
+    command: /bmad:bmm:workflows:code-review
+    mode: adversarial
+    min_issues: 3
+    max_issues: 10
+    checks:
+      - code_quality
+      - test_coverage
+      - architecture_compliance
+      - security
+      - performance
+    agents: [code-reviewer]
+    output: review_findings + auto-fixes
+    use_when: After implementation, before merge
+
+  quick-dev:
+    description: Flexible development without full ceremony
+    command: /bmad:bmm:workflows:quick-dev
+    modes:
+      - tech_spec: follow existing spec
+      - direct: implement from instructions
+      - optional_planning: plan if complex
+    agents: [dev]
+    output: implementation
+    use_when: Small changes, bug fixes, simple features
+
+  retrospective:
+    description: Post-epic review and lessons learned
+    command: /bmad:bmm:workflows:retrospective
+    phases:
+      - review_success: what went well
+      - extract_lessons: what to improve
+      - check_new_info: impact on next epic
+    agents: [sm, tea]
+    output: retrospective notes
+    use_when: After epic completion
+
+agent_mapping:
+  analyst: requirements, gap analysis
+  architect: technical design, ADRs
+  pm: product decisions, prioritization
+  dev: implementation, coding
+  tea: testing, quality assurance
+  sm: process, retrospectives
+  ux-designer: wireframes, user flows
+  tech-writer: documentation
+  bmad-master: orchestration, menu system

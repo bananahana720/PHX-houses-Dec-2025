@@ -4,8 +4,8 @@ This module defines the weighted scoring system used to rank properties that
 pass all kill-switch criteria. Properties are scored across three categories:
 Location & Environment, Lot & Systems, and Interior & Features.
 
-Total possible score: 600 points
-Note: Section A totals 250 points (not 150) based on specified individual weights.
+Total possible score: 605 points
+Section breakdown: A=250pts, B=175pts, C=180pts
 """
 
 from dataclasses import dataclass
@@ -283,7 +283,7 @@ class ScoringWeights:
         """Calculate total possible score from all weights.
 
         Returns:
-            Sum of all scoring weights (should be 600)
+            Sum of all scoring weights (should be 605)
         """
         return (
             # Section A: Location & Environment
@@ -363,29 +363,29 @@ class TierThresholds:
     - Contender: Strong properties worth serious consideration
     - Pass: Properties that meet minimum criteria but lack standout features
 
-    Thresholds are calibrated to the 600-point scoring scale
-    (Section A: 230 pts, Section B: 180 pts, Section C: 190 pts).
+    Thresholds are calibrated to the 605-point scoring scale
+    (Section A: 250 pts, Section B: 175 pts, Section C: 180 pts).
 
     Attributes:
-        unicorn_min: Minimum score for Unicorn tier (>480 points, 80% of max)
-        contender_min: Minimum score for Contender tier (360-480 points, 60-80% of max)
-        pass_max: Maximum score for Pass tier (<360 points, <60% of max)
+        unicorn_min: Minimum score for Unicorn tier (>=484 points, 80% of max)
+        contender_min: Minimum score for Contender tier (363-483 points, 60-80% of max)
+        pass_max: Maximum score for Pass tier (<363 points, <60% of max)
     """
 
-    unicorn_min: int = 480  # Exceptional - immediate action (80%+ of 600)
-    contender_min: int = 360  # Strong - serious consideration (60-80% of 600)
-    pass_max: int = 359  # Meets minimums but unremarkable (<60% of 600)
+    unicorn_min: int = 484  # Exceptional - immediate action (80%+ of 605)
+    contender_min: int = 363  # Strong - serious consideration (60-80% of 605)
+    pass_max: int = 362  # Meets minimums but unremarkable (<60% of 605)
 
     def classify(self, score: float) -> str:
         """Classify a property based on its total score.
 
         Args:
-            score: Total weighted score (0-600)
+            score: Total weighted score (0-605)
 
         Returns:
             Tier classification: "Unicorn", "Contender", or "Pass"
         """
-        if score > self.unicorn_min:
+        if score >= self.unicorn_min:
             return "Unicorn"
         elif score >= self.contender_min:
             return "Contender"

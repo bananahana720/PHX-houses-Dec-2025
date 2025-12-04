@@ -69,7 +69,7 @@ def _count_file_lines(file_path: str | Path) -> int | None:
         return None
 
 
-def _write_log_entry(entry: dict) -> bool:
+def _write_log_entry(entry: dict, debug: bool = False) -> bool:
     """
     Write a log entry to the session delta log.
 
@@ -77,12 +77,18 @@ def _write_log_entry(entry: dict) -> bool:
 
     Args:
         entry: Dictionary to write as JSON
+        debug: If True, print errors to stderr
 
     Returns:
         True if write succeeded, False otherwise
     """
+    import sys
+
     try:
         log_path = _get_log_path()
+
+        if debug:
+            print(f"DEBUG: delta_logger: writing to {log_path}", file=sys.stderr)
 
         # Ensure parent directory exists
         log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -92,8 +98,37 @@ def _write_log_entry(entry: dict) -> bool:
                 f.write(json.dumps(entry) + "\n")
 
         return True
-    except Exception:
+    except Exception as e:
+        if debug:
+            print(f"ERROR: delta_logger._write_log_entry: {type(e).__name__}: {e}", file=sys.stderr)
         return False
+
+
+def _should_skip_logging(file_path: str | Path) -> bool:
+    """
+    Check if file should be skipped from delta logging.
+
+    Skips agent session directories and other noise.
+    """
+    path_str = str(file_path)
+
+    # Skip agent session directories (subagent transcripts)
+    if "/.claude/projects/" in path_str or "\\.claude\\projects\\" in path_str:
+        return True
+    if "/agent-" in path_str or "\\agent-" in path_str:
+        return True
+
+    # Skip other noise
+    skip_patterns = [
+        ".claude/audio",
+        ".claude/logs",
+        "__pycache__",
+        "node_modules",
+        ".git/",
+        ".venv/",
+        "venv/",
+    ]
+    return any(pat in path_str for pat in skip_patterns)
 
 
 def log_delta(
@@ -101,6 +136,7 @@ def log_delta(
     change_type: str,
     line_delta: int | None = None,
     previous_line_count: int | None = None,
+    debug: bool = False,
 ) -> bool:
     """
     Log a file change to the session delta log (synchronous).
@@ -110,10 +146,23 @@ def log_delta(
         change_type: Type of change ("create", "modify", "delete")
         line_delta: Change in line count (optional)
         previous_line_count: Line count before change (for delta calculation)
+        debug: If True, print errors to stderr
 
     Returns:
         True if logging succeeded, False otherwise
     """
+    import os
+    import sys
+
+    # Enable debug via environment variable
+    debug = debug or os.environ.get("CLAUDE_DELTA_DEBUG", "").lower() in ("1", "true")
+
+    # Skip agent session directories and other noise
+    if _should_skip_logging(file_path):
+        if debug:
+            print(f"DEBUG: delta_logger: skipping {file_path} (filtered)", file=sys.stderr)
+        return True
+
     try:
         path = Path(file_path)
 
@@ -133,8 +182,10 @@ def log_delta(
             "directory": str(path.parent),
         }
 
-        return _write_log_entry(entry)
-    except Exception:
+        return _write_log_entry(entry, debug=debug)
+    except Exception as e:
+        if debug:
+            print(f"ERROR: delta_logger.log_delta: {type(e).__name__}: {e}", file=sys.stderr)
         return False
 
 

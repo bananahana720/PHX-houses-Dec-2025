@@ -1,0 +1,37 @@
+# Simple Bug Fix Workflow (2-3 agents, linear)
+workflow: bug-fix-flow
+description: Research-resolution-review-validation-integration-regression
+complexity: simple
+agents_count: 3-4
+wave_type: sequential_orchestrated
+
+phases:
+  - name: research
+    agent: Explore (quick)
+    output: root_cause_hypothesis
+
+  - name: resolution
+    agent: general-purpose
+    skills: [debugging-toolkit:debugger]
+    output: fix_applied
+
+  - name: review
+    agent: code-reviewer
+    output: review_passed
+
+  - name: validation
+    agent: test-automator
+    output: tests_pass
+
+  - name: integration
+    main_agent: true
+    action: commit + merge
+
+  - name: regression
+    agent: test-automator
+    output: full_suite_pass
+
+validation_gates:
+  - after_resolution: tests_compile
+  - after_review: no_critical_issues
+  - after_validation: all_tests_pass

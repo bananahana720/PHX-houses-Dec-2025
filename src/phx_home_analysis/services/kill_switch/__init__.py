@@ -1,17 +1,22 @@
 """Kill Switch Filter service for PHX Home Analysis.
 
-This module provides automated filtering for property listings using a weighted
-severity threshold system.
+This module provides automated filtering for property listings.
 
-Kill Switch System (Weighted Severity Threshold):
-- HARD criteria (instant fail): beds < 4, baths < 2, HOA > $0
-- SOFT criteria (severity weighted): sewer, garage, lot_size, year_built
+All 8 default criteria are HARD (instant fail). No SOFT criteria in defaults.
+
+HARD criteria:
+- NO HOA
+- NO solar lease
+- Minimum 4 bedrooms
+- Minimum 2 bathrooms
+- Minimum 1800 sqft
+- Lot size > 8000 sqft
+- City sewer only
+- Minimum 1 indoor garage
 
 Verdict Logic:
-- Any HARD failure -> FAIL (instant, severity N/A)
-- severity >= 3.0 -> FAIL (threshold exceeded)
-- 1.5 <= severity < 3.0 -> WARNING (approaching limit)
-- severity < 1.5 -> PASS
+- Any HARD failure -> FAIL (instant)
+- All pass -> PASS
 
 Usage:
     from phx_home_analysis.services.kill_switch import KillSwitchFilter, KillSwitchVerdict
@@ -37,11 +42,12 @@ from .criteria import (
     MinBathroomsKillSwitch,
     MinBedroomsKillSwitch,
     MinGarageKillSwitch,
+    MinSqftKillSwitch,
     NoHoaKillSwitch,
     NoNewBuildKillSwitch,
     NoSolarLeaseKillSwitch,
 )
-from .explanation import CriterionResult, VerdictExplanation, VerdictExplainer
+from .explanation import CriterionResult, VerdictExplainer, VerdictExplanation
 from .filter import KillSwitchFilter
 
 __all__ = [
@@ -60,6 +66,7 @@ __all__ = [
     "MinGarageKillSwitch",
     "MinBedroomsKillSwitch",
     "MinBathroomsKillSwitch",
+    "MinSqftKillSwitch",
     "LotSizeKillSwitch",
     "NoNewBuildKillSwitch",
     "NoSolarLeaseKillSwitch",

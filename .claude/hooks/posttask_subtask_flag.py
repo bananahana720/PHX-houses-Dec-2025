@@ -160,8 +160,8 @@ def capture_learnings(data: dict) -> None:
             _save_learnings(learnings_data)
 
     except Exception as e:
-        # Non-critical - don't fail the hook
-        print(f"DEBUG: Learnings capture failed: {e}", file=sys.stderr)
+        # Non-critical - don't fail the hook, but warn for visibility
+        print(f"WARN: posttask_subtask_flag: Learnings capture failed: {type(e).__name__}: {e}", file=sys.stderr)
 
 
 # Load input from stdin

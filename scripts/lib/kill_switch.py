@@ -12,15 +12,24 @@ Single source of truth for kill-switch criteria used by:
 - scripts/deal_sheets.py
 - Other analysis scripts
 
-Kill Switch System (Weighted Severity Threshold):
-- HARD criteria (instant fail): beds < 4, baths < 2, HOA > $0
-- SOFT criteria (severity weighted): sewer, garage, lot_size, year_built
+Kill Switch System (All HARD Criteria - Sprint 0 Architecture):
+All 8 default criteria are HARD (instant fail). No SOFT criteria in defaults.
+
+HARD criteria:
+- NO HOA (hoa_fee must be $0)
+- Minimum 4 bedrooms
+- Minimum 2 bathrooms
+- Minimum 1800 sqft
+- Lot size >= 8000 sqft
+- City sewer only (no septic)
+- Minimum 1 indoor garage
 
 Verdict Logic:
-- Any HARD failure -> FAIL (instant, severity N/A)
-- severity >= 3.0 -> FAIL (threshold exceeded)
-- 1.5 <= severity < 3.0 -> WARNING (approaching limit)
-- severity < 1.5 -> PASS
+- Any HARD failure -> FAIL (instant)
+- All pass -> PASS
+
+Note: SOFT severity weights are deprecated and empty. The WARNING verdict
+is retained for backward compatibility but not used in default configuration.
 
 Usage with Property dataclass:
     from scripts.lib import apply_kill_switch
@@ -78,8 +87,10 @@ class PropertyLike(Protocol):
     hoa_fee: int | float | None
     sewer_type: str | None
     garage_spaces: int | None
+    garage_type: str | None  # "attached", "detached", None for indoor check
     beds: int
     baths: float
+    sqft: int | None  # Interior square footage
     lot_sqft: int | None
     year_built: int | None
 
@@ -134,17 +145,27 @@ def _check_sewer(value: Any) -> tuple[bool, str]:
     return False, str(value).capitalize()
 
 
-def _check_garage(value: Any) -> tuple[bool, str]:
-    """Check garage requirement: Minimum 2-car garage.
+def _check_garage(value: Any, garage_type: Any = None) -> tuple[bool, str]:
+    """Check garage requirement: Minimum 1 indoor garage space.
 
-    Note: None/unknown passes with warning (cannot verify).
+    Per Sprint 0 ARCH-01: min_spaces=1, indoor_required=True.
+    Indoor = attached or detached (not carport, not None).
+
+    Note: None/unknown spaces passes with warning (cannot verify).
     """
     if _is_none_or_nan(value):
         return True, "Unknown"
     spaces = int(value) if value else 0
-    if spaces >= 2:
-        return True, f"{spaces}-car"
-    return False, f"{spaces}-car"
+    if spaces < 1:
+        return False, f"{spaces}-car"
+    # Check indoor requirement
+    if garage_type is not None and not _is_none_or_nan(garage_type):
+        garage_type_str = str(garage_type).lower()
+        is_indoor = garage_type_str in ("attached", "detached")
+        if not is_indoor:
+            return False, f"{spaces}-car ({garage_type_str}, not indoor)"
+    # Passed: at least 1 space, indoor or unknown type
+    return True, f"{spaces}-car"
 
 
 def _check_beds(value: Any) -> tuple[bool, str]:
@@ -163,19 +184,34 @@ def _check_baths(value: Any) -> tuple[bool, str]:
     return False, f"{baths} baths"
 
 
-def _check_lot_size(value: Any) -> tuple[bool, str]:
-    """Check lot size requirement: 7,000-15,000 sqft.
+def _check_sqft(value: Any) -> tuple[bool, str]:
+    """Check interior sqft requirement: Minimum 1800 sqft.
+
+    Per Sprint 0 ARCH-04: min_sqft=1800 (HARD).
 
     Note: None/unknown passes with warning (cannot verify).
     """
     if _is_none_or_nan(value):
         return True, "Unknown"
     sqft = int(value) if value else 0
-    if 7000 <= sqft <= 15000:
+    if sqft >= 1800:
         return True, f"{sqft:,} sqft"
-    if sqft < 7000:
-        return False, f"{sqft:,} sqft (too small)"
-    return False, f"{sqft:,} sqft (too large)"
+    return False, f"{sqft:,} sqft (need 1800+)"
+
+
+def _check_lot_size(value: Any) -> tuple[bool, str]:
+    """Check lot size requirement: Minimum 8,000 sqft.
+
+    Per Sprint 0 ARCH-03: min_sqft=8000, max_sqft=None (no upper limit).
+
+    Note: None/unknown passes with warning (cannot verify).
+    """
+    if _is_none_or_nan(value):
+        return True, "Unknown"
+    sqft = int(value) if value else 0
+    if sqft >= 8000:
+        return True, f"{sqft:,} sqft"
+    return False, f"{sqft:,} sqft (need 8000+)"
 
 
 def _check_year_built(value: Any) -> tuple[bool, str]:
@@ -193,7 +229,8 @@ def _check_year_built(value: Any) -> tuple[bool, str]:
 
 
 # Central criteria definition - single source of truth
-# is_hard: True = instant fail (HARD), False = contributes to severity (SOFT)
+# Sprint 0 Architecture: ALL criteria are HARD (instant fail)
+# No SOFT criteria in default configuration
 KILL_SWITCH_CRITERIA = {
     "hoa": {
         "field": "hoa_fee",
@@ -201,20 +238,6 @@ KILL_SWITCH_CRITERIA = {
         "description": "NO HOA fees allowed",
         "requirement": "Must be $0/month or None",
         "is_hard": True,  # HARD: Buyer is firm on NO HOA
-    },
-    "sewer": {
-        "field": "sewer_type",
-        "check": _check_sewer,
-        "description": "City sewer required",
-        "requirement": "No septic systems",
-        "is_hard": False,  # SOFT: Infrastructure risk (weight 2.5)
-    },
-    "garage": {
-        "field": "garage_spaces",
-        "check": _check_garage,
-        "description": "Minimum 2-car garage",
-        "requirement": "At least 2 garage spaces",
-        "is_hard": False,  # SOFT: Convenience factor (weight 1.5)
     },
     "beds": {
         "field": "beds",
@@ -230,21 +253,46 @@ KILL_SWITCH_CRITERIA = {
         "requirement": "At least 2 bathrooms",
         "is_hard": True,  # HARD: Core space requirement
     },
+    "sqft": {
+        "field": "sqft",
+        "check": _check_sqft,
+        "description": "Minimum 1800 sqft",
+        "requirement": "At least 1800 interior square feet",
+        "is_hard": True,  # HARD: Core space requirement (ARCH-04)
+    },
     "lot_size": {
         "field": "lot_sqft",
         "check": _check_lot_size,
-        "description": "Lot size 7,000-15,000 sqft",
-        "requirement": "Between 7,000 and 15,000 square feet",
-        "is_hard": False,  # SOFT: Minor preference (weight 1.0)
+        "description": "Lot size >= 8,000 sqft",
+        "requirement": "At least 8,000 square feet lot",
+        "is_hard": True,  # HARD: Lot requirement (ARCH-03)
     },
-    "year_built": {
-        "field": "year_built",
-        "check": _check_year_built,
-        "description": f"No new builds (< {datetime.now().year})",
-        "requirement": f"Built before {datetime.now().year}",
-        "is_hard": False,  # SOFT: New build avoidance (weight 2.0)
+    "sewer": {
+        "field": "sewer_type",
+        "check": _check_sewer,
+        "description": "City sewer required",
+        "requirement": "No septic systems",
+        "is_hard": True,  # HARD: Infrastructure requirement (ARCH-02)
+    },
+    "garage": {
+        "field": "garage_spaces",
+        "check": _check_garage,
+        "description": "Minimum 1 indoor garage",
+        "requirement": "At least 1 indoor (attached/detached) garage space",
+        "is_hard": True,  # HARD: Garage requirement (ARCH-01)
     },
 }
+
+# year_built criterion is NOT included in defaults per Sprint 0.
+# The _check_year_built function is retained for custom configurations.
+# To use it, add to KILL_SWITCH_CRITERIA:
+#   "year_built": {
+#       "field": "year_built",
+#       "check": _check_year_built,
+#       "description": f"No new builds (< {datetime.now().year})",
+#       "requirement": f"Built before {datetime.now().year}",
+#       "is_hard": True,
+#   }
 
 
 # =============================================================================
@@ -322,8 +370,16 @@ def evaluate_kill_switches(
         else:
             value = getattr(data, field_name, None)
 
-        # Evaluate criterion
-        passed, actual_str = criteria["check"](value)
+        # Special handling for garage - needs garage_type for indoor check
+        if name == "garage":
+            if isinstance(data, dict):
+                garage_type = data.get("garage_type")
+            else:
+                garage_type = getattr(data, "garage_type", None)
+            passed, actual_str = criteria["check"](value, garage_type)
+        else:
+            # Evaluate criterion
+            passed, actual_str = criteria["check"](value)
 
         # Calculate severity weight for this criterion
         criterion_weight = 0.0
@@ -424,33 +480,23 @@ def get_kill_switch_summary() -> str:
     """Get human-readable summary of all kill switch criteria.
 
     Returns:
-        Multi-line string describing all criteria with severity info
+        Multi-line string describing all criteria (all HARD per Sprint 0)
     """
     lines = [
-        "Kill Switch Criteria (Severity Threshold System):",
+        "Kill Switch Criteria (All HARD - Sprint 0 Architecture):",
         "",
         "HARD Criteria (instant fail):"
     ]
 
-    # List HARD criteria
+    # List all HARD criteria (all criteria are HARD in Sprint 0)
     for _name, criteria in KILL_SWITCH_CRITERIA.items():
-        if criteria.get("is_hard", False):
-            lines.append(f"  - {criteria['description']}")
-            lines.append(f"    Requirement: {criteria['requirement']}")
+        lines.append(f"  - {criteria['description']}")
+        lines.append(f"    Requirement: {criteria['requirement']}")
 
     lines.append("")
-    lines.append("SOFT Criteria (severity weighted):")
-
-    # List SOFT criteria with weights
-    for name, criteria in KILL_SWITCH_CRITERIA.items():
-        if not criteria.get("is_hard", False):
-            weight = SOFT_SEVERITY_WEIGHTS.get(name, 0.0)
-            lines.append(f"  - {criteria['description']} (weight: {weight})")
-            lines.append(f"    Requirement: {criteria['requirement']}")
-
+    lines.append("Verdict: Any HARD failure -> FAIL, All pass -> PASS")
     lines.append("")
-    lines.append(f"Thresholds: FAIL >= {SEVERITY_FAIL_THRESHOLD}, "
-                 f"WARNING >= {SEVERITY_WARNING_THRESHOLD}")
+    lines.append("Note: SOFT severity weights are deprecated (empty dict).")
     return "\n".join(lines)
 
 
@@ -484,7 +530,7 @@ def evaluate_kill_switches_for_display(
     Compatible with pandas DataFrame rows and rendering use cases.
     Returns results with color coding for UI display.
 
-    Now includes severity information for SOFT criteria.
+    Note: All criteria are now HARD per Sprint 0 architecture.
 
     Args:
         data: Property data as dict or object with attributes
@@ -523,11 +569,22 @@ def evaluate_kill_switches_for_display(
         else:
             value = getattr(data, field_name, None)
 
+        # Get garage_type for garage check
+        garage_type = None
+        if name == "garage":
+            if isinstance(data, dict):
+                garage_type = data.get("garage_type")
+            else:
+                garage_type = getattr(data, "garage_type", None)
+
         # Check if value is missing/unknown
         if _is_none_or_nan(value):
             # Unknown/missing data - mark as yellow warning
             # Note: Some criteria pass with unknown values (permissive)
-            passed, actual_str = criteria["check"](value)
+            if name == "garage":
+                passed, actual_str = criteria["check"](value, garage_type)
+            else:
+                passed, actual_str = criteria["check"](value)
             if passed:
                 color = "yellow"  # Passed but uncertain
                 label = "UNKNOWN"
@@ -535,7 +592,10 @@ def evaluate_kill_switches_for_display(
                 color = "red"
                 label = "HARD FAIL" if is_hard else "FAIL"
         else:
-            passed, actual_str = criteria["check"](value)
+            if name == "garage":
+                passed, actual_str = criteria["check"](value, garage_type)
+            else:
+                passed, actual_str = criteria["check"](value)
             if passed:
                 color = "green"
                 label = "PASS"
@@ -575,12 +635,12 @@ def evaluate_kill_switches_for_display(
 # Display name mapping for deal sheets (Title Case)
 KILL_SWITCH_DISPLAY_NAMES = {
     "hoa": "HOA",
-    "sewer": "Sewer",
-    "garage": "Garage",
     "beds": "Beds",
     "baths": "Baths",
+    "sqft": "Sqft",
     "lot_size": "Lot Size",
-    "year_built": "Year Built",
+    "sewer": "Sewer",
+    "garage": "Garage",
 }
 
 
@@ -607,6 +667,25 @@ class KillSwitchFilter:
         # Evaluate property
         verdict, severity, failures, results = filter.evaluate(property_data)
     """
+
+    # Instance variable type annotations
+    config_path: str | None
+    hoa_fee_max: int
+    min_beds: int
+    min_baths: int
+    min_sqft: int
+    min_lot_sqft: int
+    max_lot_sqft: int | None
+    required_sewer: str
+    min_garage: int
+    garage_indoor_required: bool
+    sewer_severity: float
+    garage_severity: float
+    lot_severity: float
+    max_year_built: int | None
+    year_severity: float
+    severity_fail_threshold: float
+    severity_warning_threshold: float
 
     def __init__(self, config_path: str | None = None):
         """Initialize filter with optional YAML config.
@@ -641,7 +720,7 @@ class KillSwitchFilter:
             with open(config_file) as f:
                 config = yaml.safe_load(f)
         except yaml.YAMLError as e:
-            raise ValueError(f"Failed to parse YAML config: {e}")
+            raise ValueError(f"Failed to parse YAML config: {e}") from e
 
         # Load hard criteria
         hard = config.get('hard_criteria', {})
@@ -683,24 +762,28 @@ class KillSwitchFilter:
         self.severity_warning_threshold = thresholds.get('severity_warning', 1.5)
 
     def _use_defaults(self) -> None:
-        """Use hardcoded default criteria values."""
-        # Hard criteria
+        """Use hardcoded default criteria values (all HARD per Sprint 0)."""
+        # All criteria are HARD (instant fail)
         self.hoa_fee_max = 0
         self.min_beds = 4
         self.min_baths = 2
+        self.min_sqft = 1800  # ARCH-04
+        self.min_lot_sqft = 8000  # ARCH-03 (no max)
+        self.max_lot_sqft = None  # No upper limit
+        self.required_sewer = 'city'  # ARCH-02
+        self.min_garage = 1  # ARCH-01
+        self.garage_indoor_required = True  # ARCH-01
 
-        # Soft criteria
-        self.required_sewer = 'city'
-        self.sewer_severity = 2.5
-        self.max_year_built = datetime.now().year
-        self.year_severity = 2.0
-        self.min_garage = 2
-        self.garage_severity = 1.5
-        self.min_lot_sqft = 7000
-        self.max_lot_sqft = 15000
-        self.lot_severity = 1.0
+        # Deprecated: SOFT severity weights (all criteria now HARD)
+        self.sewer_severity = 0.0  # Deprecated
+        self.garage_severity = 0.0  # Deprecated
+        self.lot_severity = 0.0  # Deprecated
 
-        # Thresholds
+        # year_built removed from defaults (class retained for custom use)
+        self.max_year_built = None
+        self.year_severity = 0.0  # Deprecated
+
+        # Thresholds (retained for backward compatibility)
         self.severity_fail_threshold = 3.0
         self.severity_warning_threshold = 1.5
 
@@ -726,29 +809,32 @@ class KillSwitchFilter:
         """Get human-readable summary of configured criteria.
 
         Returns:
-            Multi-line string describing all criteria and thresholds
+            Multi-line string describing all criteria (all HARD per Sprint 0)
         """
+        lot_desc = f"{self.min_lot_sqft:,}+ sqft"
+        if self.max_lot_sqft:
+            lot_desc = f"{self.min_lot_sqft:,}-{self.max_lot_sqft:,} sqft"
+
+        indoor_note = " (indoor required)" if getattr(self, 'garage_indoor_required', False) else ""
+
         lines = [
-            "Kill Switch Criteria (Configured):",
+            "Kill Switch Criteria (All HARD - Sprint 0):",
             "",
             "HARD Criteria (instant fail):",
             f"  - HOA fee: Must be ${self.hoa_fee_max}/month or None",
             f"  - Bedrooms: Minimum {self.min_beds} bedrooms",
             f"  - Bathrooms: Minimum {self.min_baths} bathrooms",
+            f"  - Sqft: Minimum {getattr(self, 'min_sqft', 1800):,} sqft",
+            f"  - Lot size: {lot_desc}",
+            f"  - Sewer: Must be {self.required_sewer}",
+            f"  - Garage: Minimum {self.min_garage} space(s){indoor_note}",
             "",
-            "SOFT Criteria (severity weighted):",
-            f"  - Sewer: Must be {self.required_sewer} (severity: {self.sewer_severity})",
-            f"  - Year built: Before {self.max_year_built} (severity: {self.year_severity})",
-            f"  - Garage: Minimum {self.min_garage} spaces (severity: {self.garage_severity})",
-            f"  - Lot size: {self.min_lot_sqft:,}-{self.max_lot_sqft:,} sqft (severity: {self.lot_severity})",
-            "",
-            f"Thresholds: FAIL >= {self.severity_fail_threshold}, "
-            f"WARNING >= {self.severity_warning_threshold}",
+            "Verdict: Any HARD failure -> FAIL, All pass -> PASS",
         ]
 
         if self.config_path:
             lines.insert(1, f"Config source: {self.config_path}")
         else:
-            lines.insert(1, "Config source: Hardcoded defaults")
+            lines.insert(1, "Config source: Sprint 0 defaults")
 
         return "\n".join(lines)

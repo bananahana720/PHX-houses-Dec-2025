@@ -2,6 +2,9 @@
 """
 Unified Bash hook that combines all bash command safety checks.
 This ensures that if ANY check wants to block, the command is blocked.
+
+Each check module is imported with error handling so a single broken
+module doesn't disable all safety checks.
 """
 import json
 import os
@@ -10,13 +13,31 @@ import sys
 # Add hooks directory to Python path so we can import the other modules
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Import check functions from other hooks
-from bash_grep_check import check_grep_usage
-from env_file_protection_hook import check_env_file_access
-from git_add_block_hook import check_git_add_command
-from git_checkout_safety_hook import check_git_checkout_command
-from git_commit_block_hook import check_git_commit_command
-from rm_block_hook import check_rm_command
+# Import check functions from other hooks with graceful degradation
+# If a module fails to import, log the error and use a no-op function
+
+
+def _noop_check(command: str) -> tuple[bool, str | None]:
+    """No-op check function used when a module fails to import."""
+    return (False, None)
+
+
+def _safe_import(module_name: str, func_name: str):
+    """Safely import a check function, returning noop on failure."""
+    try:
+        module = __import__(module_name)
+        return getattr(module, func_name)
+    except (ImportError, SyntaxError, AttributeError) as e:
+        print(f"ERROR: bash_hook: Failed to import {func_name} from {module_name}: {e}", file=sys.stderr)
+        return _noop_check
+
+
+check_grep_usage = _safe_import("bash_grep_check", "check_grep_usage")
+check_env_file_access = _safe_import("env_file_protection_hook", "check_env_file_access")
+check_git_add_command = _safe_import("git_add_block_hook", "check_git_add_command")
+check_git_checkout_command = _safe_import("git_checkout_safety_hook", "check_git_checkout_command")
+check_git_commit_command = _safe_import("git_commit_block_hook", "check_git_commit_command")
+check_rm_command = _safe_import("rm_block_hook", "check_rm_command")
 
 
 def main():

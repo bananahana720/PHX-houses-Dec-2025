@@ -112,9 +112,9 @@
       {
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Evaluate session context hygiene before allowing exit.\n\nReview the session transcript for:\n1. Which directories had files modified (Edit/Write calls)?\n2. Do those directories have updated CLAUDE.md files?\n3. Are pending tasks documented?\n4. Were any key learnings/discoveries captured?\n\nBased on your evaluation:\n\nIf ALL hygiene criteria are met:\n{\"decision\": \"approve\", \"systemMessage\": \"Context hygiene complete. Safe to exit.\"}\n\nIf ANY criteria are NOT met:\n{\"decision\": \"block\", \"systemMessage\": \"Context hygiene incomplete. Spawn a Task(model=haiku) subagent to: 1) Update CLAUDE.md in modified directories, 2) Document pending tasks, 3) Capture session learnings before exiting.\"}",
-            "timeout": 30
+            "type": "command",
+            "command": "python .claude/hooks/stop_hygiene_hook.py",
+            "timeout": 5000
           }
         ]
       }
@@ -123,9 +123,9 @@
       {
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Evaluate subagent context hygiene before allowing exit.\n\nReview the subagent work for:\n1. Which directories had files modified?\n2. Were CLAUDE.md files updated for modified directories?\n3. Are findings documented?\n\nIf ALL criteria met: {\"decision\": \"approve\", \"systemMessage\": \"Subagent hygiene complete.\"}\nIf ANY criteria NOT met: {\"decision\": \"block\", \"systemMessage\": \"Update CLAUDE.md in modified directories before completing.\"}",
-            "timeout": 30
+            "type": "command",
+            "command": "python .claude/hooks/stop_hygiene_hook.py",
+            "timeout": 5000
           }
         ]
       }

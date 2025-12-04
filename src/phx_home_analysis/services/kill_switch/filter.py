@@ -1,18 +1,20 @@
 """Kill Switch Filter orchestrator for property evaluation.
 
 This module provides the KillSwitchFilter class that coordinates multiple
-kill switch criteria to evaluate properties using a weighted severity threshold
-system.
+kill switch criteria to evaluate properties.
 
-Severity Threshold System:
-- HARD criteria (instant fail): beds < 4, baths < 2, HOA > $0, solar lease
-- SOFT criteria (severity weighted): sewer, garage, lot_size, year_built
+All 8 Default Criteria are HARD (instant fail):
+1. NO HOA (hoa_fee must be 0 or None)
+2. Minimum 4 bedrooms
+3. Minimum 2 bathrooms
+4. Minimum 1800 sqft living space
+5. Lot size > 8000 sqft (no maximum)
+6. City sewer (no septic systems)
+7. Minimum 1 indoor garage space
 
 Verdict Logic:
-- Any HARD failure -> FAIL (instant, severity N/A)
-- severity >= 3.0 -> FAIL (threshold exceeded)
-- 1.5 <= severity < 3.0 -> WARNING (approaching limit)
-- severity < 1.5 -> PASS
+- Any HARD failure -> FAIL (instant)
+- All pass -> PASS
 """
 
 from typing import TYPE_CHECKING
@@ -29,8 +31,8 @@ from .criteria import (
     MinBathroomsKillSwitch,
     MinBedroomsKillSwitch,
     MinGarageKillSwitch,
+    MinSqftKillSwitch,
     NoHoaKillSwitch,
-    NoNewBuildKillSwitch,
     NoSolarLeaseKillSwitch,
 )
 from .explanation import CriterionResult, VerdictExplainer, VerdictExplanation
@@ -42,20 +44,20 @@ if TYPE_CHECKING:
 class KillSwitchFilter:
     """Orchestrator for evaluating properties against kill switch criteria.
 
-    Uses weighted severity threshold system:
-    - HARD criteria cause instant FAIL
-    - SOFT criteria accumulate severity scores
-    - Verdict determined by severity thresholds
+    All 8 default criteria are HARD (instant fail). No SOFT criteria or
+    severity accumulation in the default configuration.
 
-    Default kill switches match buyer requirements from CLAUDE.md:
-    - NO HOA (HARD)
-    - NO solar lease (HARD)
-    - Minimum 4 bedrooms (HARD)
-    - Minimum 2 bathrooms (HARD)
-    - City sewer only (SOFT, weight=2.5)
-    - Minimum 2-car garage (SOFT, weight=1.5)
-    - Lot size 7,000-15,000 sqft (SOFT, weight=1.0)
-    - No new builds (pre-2024) (SOFT, weight=2.0)
+    Default kill switches match buyer requirements:
+    1. NO HOA (HARD)
+    2. Minimum 4 bedrooms (HARD)
+    3. Minimum 2 bathrooms (HARD)
+    4. Minimum 1800 sqft living space (HARD)
+    5. Lot size > 8000 sqft (HARD)
+    6. City sewer only (HARD)
+    7. Minimum 1 indoor garage space (HARD)
+
+    Note: NoSolarLeaseKillSwitch is also included (HARD) but listed separately
+    as it's a financial liability check.
 
     Usage:
         filter_service = KillSwitchFilter()
@@ -74,7 +76,7 @@ class KillSwitchFilter:
 
         Args:
             kill_switches: List of KillSwitch instances to apply. If None,
-                uses all default kill switches from CLAUDE.md buyer criteria.
+                uses all default kill switches (8 HARD criteria).
         """
         if kill_switches is None:
             # Use all default kill switches from buyer requirements
@@ -87,20 +89,30 @@ class KillSwitchFilter:
 
     @staticmethod
     def _get_default_kill_switches() -> list[KillSwitch]:
-        """Get default kill switches matching CLAUDE.md buyer requirements.
+        """Get default kill switches matching buyer requirements.
+
+        All 8 criteria are HARD (instant fail):
+        - NO HOA
+        - NO solar lease
+        - Minimum 4 bedrooms
+        - Minimum 2 bathrooms
+        - Minimum 1800 sqft
+        - Lot size > 8000 sqft
+        - City sewer only
+        - Minimum 1 indoor garage
 
         Returns:
-            List of all default KillSwitch instances
+            List of all default KillSwitch instances (8 HARD criteria)
         """
         return [
             NoHoaKillSwitch(),
             NoSolarLeaseKillSwitch(),
-            CitySewerKillSwitch(),
-            MinGarageKillSwitch(min_spaces=2),
             MinBedroomsKillSwitch(min_beds=4),
             MinBathroomsKillSwitch(min_baths=2.0),
-            LotSizeKillSwitch(min_sqft=7000, max_sqft=15000),
-            NoNewBuildKillSwitch(max_year=2023),
+            MinSqftKillSwitch(min_sqft=1800),
+            LotSizeKillSwitch(min_sqft=8000),
+            CitySewerKillSwitch(),
+            MinGarageKillSwitch(min_spaces=1, indoor_required=True),
         ]
 
     def _calculate_verdict(
@@ -212,7 +224,6 @@ class KillSwitchFilter:
         explanation = self._explainer.explain(verdict, criterion_results)
 
         return verdict, severity_score, failures, explanation
-
 
     def evaluate(self, property: "Property") -> tuple[bool, list[str]]:
         """Evaluate single property against all kill switches.

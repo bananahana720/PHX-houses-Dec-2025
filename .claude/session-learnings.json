@@ -1,0 +1,97 @@
+[
+  {
+    "timestamp": "2025-12-04T02:18:45.179511+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "1. List all SKILL.md files with their full paths"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T02:21:57.115607+00:00",
+    "subagent_type": "Plan",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "**"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T02:22:47.392030+00:00",
+    "subagent_type": "Plan",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "**"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T03:16:24.991338+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "Epic mentions `kill_switch.csv` but project uses `buyer_criteria.yaml` - use YAML format"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T03:27:19.145028+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "Invalid configuration in config/scoring_weights.yaml:29",
+      "Must be positive integer (1-1000)"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T03:47:21.296742+00:00",
+    "subagent_type": "debugging-toolkit:debugger",
+    "file_references": [],
+    "error_patterns": [
+      "return False` without logging"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T04:35:26.105288+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:\\Users\\Andrew\\.vscode",
+      "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\.claude",
+      "c:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\.claude",
+      "c:\\Users\\Andrew\\.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T04:56:05.997821+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "1. List all skill directories and their SKILL.md files"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T05:32:47.336432+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "retry_once_then_manual",
+      "fallback_to_csv"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T05:34:47.944602+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "** `Read .claude/skills/orchestration/examples/{pattern}.yaml`"
+    ]
+  }
+]

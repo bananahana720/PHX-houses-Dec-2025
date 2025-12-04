@@ -1,16 +1,20 @@
 """Concrete kill switch implementations for PHX Home Analysis buyer criteria.
 
-This module implements all kill switches based on the buyer requirements
-documented in CLAUDE.md:
+This module implements all kill switches based on the buyer requirements.
+All 8 default criteria are HARD (instant fail):
 
-Kill Switches (Must Pass All):
-- NO HOA (hoa_fee must be 0 or None)
-- City sewer (no septic systems)
-- Minimum 2-car garage
-- Minimum 4 bedrooms
-- Minimum 2 bathrooms
-- Lot size: 7,000-15,000 sqft
-- No new builds (year_built < current year)
+Kill Switches (Must Pass All - HARD):
+1. NO HOA (hoa_fee must be 0 or None)
+2. NO Solar Lease (no leased solar panels)
+3. Minimum 4 bedrooms
+4. Minimum 2 bathrooms
+5. Minimum 1800 sqft living space
+6. Lot size > 8000 sqft (no maximum)
+7. City sewer (no septic systems)
+8. Minimum 1 indoor garage space (attached/direct access)
+
+Optional criterion (not in defaults):
+- No new builds (year_built < current year) - NoNewBuildKillSwitch
 
 Each kill switch handles missing/None data gracefully and provides detailed
 failure messages explaining why a property was rejected.
@@ -89,6 +93,11 @@ class CitySewerKillSwitch(KillSwitch):
         """Human-readable requirement description."""
         return "City sewer required (no septic systems)"
 
+    @property
+    def is_hard(self) -> bool:
+        """This is a HARD criterion (instant fail)."""
+        return True
+
     def check(self, property: "Property") -> bool:
         """Test if property has city sewer.
 
@@ -120,19 +129,22 @@ class CitySewerKillSwitch(KillSwitch):
 
 
 class MinGarageKillSwitch(KillSwitch):
-    """Kill switch: Property must have minimum 2-car garage.
+    """Kill switch: Property must have minimum 1 indoor garage space.
 
-    Buyer requirement is at least 2 garage spaces. Properties with less than
-    2 garage spaces are automatically rejected.
+    Buyer requirement is at least 1 indoor garage space (attached/direct access).
+    Properties without indoor garage are automatically rejected. Detached garages
+    and carports do not count toward indoor garage requirement.
     """
 
-    def __init__(self, min_spaces: int = 2):
+    def __init__(self, min_spaces: int = 1, indoor_required: bool = True):
         """Initialize garage kill switch with minimum space requirement.
 
         Args:
-            min_spaces: Minimum number of garage spaces required (default: 2)
+            min_spaces: Minimum number of garage spaces required (default: 1)
+            indoor_required: Whether garage must be indoor/attached (default: True)
         """
         self._min_spaces = min_spaces
+        self._indoor_required = indoor_required
 
     @property
     def name(self) -> str:
@@ -142,7 +154,14 @@ class MinGarageKillSwitch(KillSwitch):
     @property
     def description(self) -> str:
         """Human-readable requirement description."""
-        return f"Minimum {self._min_spaces}-car garage required"
+        if self._indoor_required:
+            return f"Minimum {self._min_spaces} indoor garage space(s) required"
+        return f"Minimum {self._min_spaces} garage space(s) required"
+
+    @property
+    def is_hard(self) -> bool:
+        """This is a HARD criterion (instant fail)."""
+        return True
 
     def check(self, property: "Property") -> bool:
         """Test if property has minimum garage spaces.
@@ -151,12 +170,28 @@ class MinGarageKillSwitch(KillSwitch):
             property: Property to evaluate
 
         Returns:
-            True if garage_spaces >= min_spaces, False otherwise
+            True if garage_spaces >= min_spaces (and indoor if required), False otherwise
         """
         # None or missing garage data fails (cannot verify requirement)
         if property.garage_spaces is None:
             return False
-        return property.garage_spaces >= self._min_spaces
+
+        # Check minimum spaces
+        if property.garage_spaces < self._min_spaces:
+            return False
+
+        # If indoor required, check indoor_garage field (if available)
+        if self._indoor_required:
+            # Check if property has indoor_garage field
+            indoor_garage = getattr(property, "indoor_garage", None)
+            if indoor_garage is None:
+                # Field not available - assume garage is indoor if garage_spaces >= 1
+                # This is a reasonable default for listings (most 1+ car garages are attached)
+                return property.garage_spaces >= self._min_spaces
+            # Field available - check it
+            return indoor_garage is True
+
+        return True
 
     def failure_message(self, property: "Property") -> str:
         """Generate specific failure message with garage count.
@@ -168,8 +203,25 @@ class MinGarageKillSwitch(KillSwitch):
             Detailed failure message including actual garage spaces
         """
         if property.garage_spaces is None:
-            return f"Garage spaces unknown (buyer requires {self._min_spaces}+ car garage)"
-        return f"Only {property.garage_spaces}-car garage (buyer requires {self._min_spaces}+)"
+            if self._indoor_required:
+                return f"Garage spaces unknown (buyer requires {self._min_spaces}+ indoor garage)"
+            return f"Garage spaces unknown (buyer requires {self._min_spaces}+ garage spaces)"
+
+        # Check if failure is due to indoor requirement
+        indoor_garage = getattr(property, "indoor_garage", None)
+        if self._indoor_required and indoor_garage is False:
+            return (
+                f"No indoor garage (has {property.garage_spaces} spaces but detached/carport only, "
+                f"buyer requires {self._min_spaces}+ indoor garage)"
+            )
+
+        # Failure due to insufficient spaces
+        if self._indoor_required:
+            return (
+                f"Only {property.garage_spaces} garage space(s) "
+                f"(buyer requires {self._min_spaces}+ indoor garage)"
+            )
+        return f"Only {property.garage_spaces} garage space(s) (buyer requires {self._min_spaces}+)"
 
 
 class MinBedroomsKillSwitch(KillSwitch):
@@ -280,20 +332,79 @@ class MinBathroomsKillSwitch(KillSwitch):
         return f"Only {property.baths} bathrooms (buyer requires {self._min_baths}+)"
 
 
-class LotSizeKillSwitch(KillSwitch):
-    """Kill switch: Property lot must be within 7,000-15,000 sqft range.
+class MinSqftKillSwitch(KillSwitch):
+    """Kill switch: Property must have minimum square footage.
 
-    Buyer requirement is lot size between 7,000 and 15,000 square feet.
-    Properties outside this range (too small or too large) are automatically
-    rejected.
+    Buyer requirement is at least 1800 sqft of living space. Properties
+    with less square footage are automatically rejected.
     """
 
-    def __init__(self, min_sqft: int = 7000, max_sqft: int = 15000):
-        """Initialize lot size kill switch with range.
+    def __init__(self, min_sqft: int = 1800):
+        """Initialize sqft kill switch with minimum requirement.
 
         Args:
-            min_sqft: Minimum lot size in square feet (default: 7000)
-            max_sqft: Maximum lot size in square feet (default: 15000)
+            min_sqft: Minimum square feet required (default: 1800)
+        """
+        self._min_sqft = min_sqft
+
+    @property
+    def name(self) -> str:
+        """Kill switch identifier."""
+        return "min_sqft"
+
+    @property
+    def description(self) -> str:
+        """Human-readable requirement description."""
+        return f"Minimum {self._min_sqft:,} sqft required"
+
+    @property
+    def is_hard(self) -> bool:
+        """This is a HARD criterion (instant fail)."""
+        return True
+
+    def check(self, property: "Property") -> bool:
+        """Test if property has minimum square footage.
+
+        Args:
+            property: Property to evaluate
+
+        Returns:
+            True if sqft > min_sqft, False otherwise
+        """
+        # sqft is required field in Property, should never be None
+        # But handle defensively
+        if property.sqft is None:
+            return False
+        return property.sqft > self._min_sqft
+
+    def failure_message(self, property: "Property") -> str:
+        """Generate specific failure message with sqft.
+
+        Args:
+            property: Property that failed
+
+        Returns:
+            Detailed failure message including actual sqft
+        """
+        if property.sqft is None:
+            return f"Square footage unknown (buyer requires {self._min_sqft:,}+ sqft)"
+        return f"Only {property.sqft:,} sqft (buyer requires >{self._min_sqft:,} sqft)"
+
+
+class LotSizeKillSwitch(KillSwitch):
+    """Kill switch: Property lot must be at least 8,000 sqft.
+
+    Buyer requirement is lot size greater than 8,000 square feet.
+    Properties with smaller lots are automatically rejected.
+    No maximum lot size (larger lots are acceptable in Phoenix market).
+    """
+
+    def __init__(self, min_sqft: int = 8000, max_sqft: int | None = None):
+        """Initialize lot size kill switch with minimum threshold.
+
+        Args:
+            min_sqft: Minimum lot size in square feet (default: 8000)
+            max_sqft: Maximum lot size (optional, default: None = no max)
         """
         self._min_sqft = min_sqft
         self._max_sqft = max_sqft
@@ -306,21 +417,30 @@ class LotSizeKillSwitch(KillSwitch):
     @property
     def description(self) -> str:
         """Human-readable requirement description."""
-        return f"Lot size must be {self._min_sqft:,}-{self._max_sqft:,} sqft"
+        if self._max_sqft is not None:
+            return f"Lot size must be {self._min_sqft:,}-{self._max_sqft:,} sqft"
+        return f"Lot size must be >{self._min_sqft:,} sqft"
+
+    @property
+    def is_hard(self) -> bool:
+        """This is a HARD criterion (instant fail)."""
+        return True
 
     def check(self, property: "Property") -> bool:
-        """Test if property lot size is within acceptable range.
+        """Test if property lot size meets minimum requirement.
 
         Args:
             property: Property to evaluate
 
         Returns:
-            True if min_sqft <= lot_sqft <= max_sqft, False otherwise
+            True if lot_sqft > min_sqft (and < max_sqft if max set), False otherwise
         """
         # None or missing lot size fails (cannot verify requirement)
         if property.lot_sqft is None:
             return False
-        return self._min_sqft <= property.lot_sqft <= self._max_sqft
+        if self._max_sqft is not None:
+            return property.lot_sqft > self._min_sqft and property.lot_sqft <= self._max_sqft
+        return property.lot_sqft > self._min_sqft
 
     def failure_message(self, property: "Property") -> str:
         """Generate specific failure message with lot size.
@@ -332,20 +452,23 @@ class LotSizeKillSwitch(KillSwitch):
             Detailed failure message including actual lot size
         """
         if property.lot_sqft is None:
-            return (
-                f"Lot size unknown (buyer requires "
-                f"{self._min_sqft:,}-{self._max_sqft:,} sqft)"
-            )
-        elif property.lot_sqft < self._min_sqft:
+            if self._max_sqft is not None:
+                return (
+                    f"Lot size unknown (buyer requires {self._min_sqft:,}-{self._max_sqft:,} sqft)"
+                )
+            return f"Lot size unknown (buyer requires >{self._min_sqft:,} sqft)"
+        elif property.lot_sqft <= self._min_sqft:
             return (
                 f"Lot too small: {property.lot_sqft:,} sqft "
-                f"(buyer requires {self._min_sqft:,}+ sqft)"
+                f"(buyer requires >{self._min_sqft:,} sqft)"
             )
-        else:  # lot_sqft > max_sqft
+        elif self._max_sqft is not None and property.lot_sqft > self._max_sqft:
             return (
                 f"Lot too large: {property.lot_sqft:,} sqft "
                 f"(buyer requires max {self._max_sqft:,} sqft)"
             )
+        # Should not reach here if check() returned False
+        return f"Failed kill switch: {self.description}"
 
 
 class NoNewBuildKillSwitch(KillSwitch):
@@ -362,6 +485,7 @@ class NoNewBuildKillSwitch(KillSwitch):
             max_year: Maximum year_built allowed (default: current year - 1)
         """
         from datetime import datetime
+
         self._max_year = max_year if max_year is not None else datetime.now().year - 1
 
     @property
@@ -398,13 +522,8 @@ class NoNewBuildKillSwitch(KillSwitch):
             Detailed failure message including actual year built
         """
         if property.year_built is None:
-            return (
-                f"Year built unknown (buyer requires pre-{self._max_year + 1} construction)"
-            )
-        return (
-            f"New build: {property.year_built} "
-            f"(buyer requires {self._max_year} or earlier)"
-        )
+            return f"Year built unknown (buyer requires pre-{self._max_year + 1} construction)"
+        return f"New build: {property.year_built} (buyer requires {self._max_year} or earlier)"
 
 
 class NoSolarLeaseKillSwitch(KillSwitch):
@@ -440,14 +559,14 @@ class NoSolarLeaseKillSwitch(KillSwitch):
             True if solar_status is not LEASED, False if LEASED
         """
         # Check solar_status field if exists
-        solar_status = getattr(property, 'solar_status', None)
+        solar_status = getattr(property, "solar_status", None)
         if solar_status is None:
             return True  # Unknown = pass (don't fail on missing data)
 
         # Leased solar is a HARD fail
         if isinstance(solar_status, str):
             return solar_status.lower() != "leased"
-        return solar_status != SolarStatus.LEASED
+        return bool(solar_status != SolarStatus.LEASED)
 
     def failure_message(self, property: "Property") -> str:
         """Generate specific failure message for solar lease.

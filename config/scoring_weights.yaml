@@ -9,53 +9,58 @@
 
 value_zones:
   sweet_spot:
-    min_score: 365              # Minimum score to be considered "high value"
+    min_score: 363              # Minimum score to be considered "high value" (Contender threshold)
     max_price: 550000           # Maximum price to be considered "affordable"
     label: "Value Sweet Spot"   # Display label for analysis
-    description: "High-quality properties (score > 365) at affordable prices (< $550k)"
+    description: "High-quality properties (score > 363) at affordable prices (< $550k)"
 
   # Premium tier for reference (not currently used in visualization)
   premium:
-    min_score: 480              # Unicorn-tier threshold
+    min_score: 484              # Unicorn-tier threshold (80% of 605)
     max_price: null             # No upper price limit for premium properties
     label: "Unicorn Territory"
-    description: "Top-tier properties scoring above 480 points"
+    description: "Top-tier properties scoring above 484 points"
 
 # =============================================================================
-# SCORING SECTION WEIGHTS (600 pts total)
+# SCORING SECTION WEIGHTS (605 pts total)
 # =============================================================================
-# Each section's point allocation within the 600-point scoring system
+# Each section's point allocation within the 605-point scoring system
+# Section A: 250 pts, Section B: 175 pts, Section C: 180 pts
 
 section_weights:
   location:           # Section A: Location factors
-    points: 230
-    weight: 0.3833    # 230/600
+    points: 250
+    weight: 0.4132    # 250/605
     criteria:
-      school: 50
-      quietness: 40
-      safety: 50
-      supermarket: 30
-      parks: 30
-      sun_orientation: 30
+      school: 42
+      quietness: 30
+      crime_index: 47
+      supermarket: 23
+      parks: 23
+      sun_orientation: 25
+      flood_risk: 23
+      walk_transit: 22
+      air_quality: 15
 
   systems:            # Section B: Lot and Systems
-    points: 180
-    weight: 0.3000    # 180/600
+    points: 175
+    weight: 0.2893    # 175/605
     criteria:
-      roof: 50
-      backyard: 40
-      plumbing: 40
+      roof: 45
+      backyard: 35
+      plumbing: 35
       pool: 20
-      cost_efficiency: 30
+      cost_efficiency: 35
+      solar_status: 5
 
   interior:           # Section C: Interior
-    points: 190
-    weight: 0.3167    # 190/600
+    points: 180
+    weight: 0.2975    # 180/605
     criteria:
       kitchen: 40
-      master_bedroom: 40
+      master_bedroom: 35
       light: 30
-      ceilings: 30
+      ceilings: 25
       fireplace: 20
       laundry: 20
       aesthetics: 10
@@ -63,23 +68,23 @@ section_weights:
 # =============================================================================
 # TIER THRESHOLDS
 # =============================================================================
-# Classification tiers based on total_score (out of 600 points)
+# Classification tiers based on total_score (out of 605 points)
 
 tier_thresholds:
   unicorn:
-    min_score: 480    # Exceptional properties
+    min_score: 484    # Exceptional properties (80% of 605)
     label: "Unicorn"
-    description: "Exceptional properties (480+ pts)"
+    description: "Exceptional properties (484+ pts)"
 
   contender:
-    min_score: 360    # Good properties worth considering
+    min_score: 363    # Good properties worth considering (60% of 605)
     label: "Contender"
-    description: "Strong properties (360-480 pts)"
+    description: "Strong properties (363-483 pts)"
 
   pass:
     min_score: 0      # Minimum passing score
     label: "Pass"
-    description: "Acceptable properties (0-360 pts)"
+    description: "Acceptable properties (0-362 pts)"
 
 # =============================================================================
 # DEFAULTS (for backward compatibility)
@@ -87,5 +92,5 @@ tier_thresholds:
 # These values are used if specific config sections are missing
 
 defaults:
-  value_zone_min_score: 365
+  value_zone_min_score: 363
   value_zone_max_price: 550000

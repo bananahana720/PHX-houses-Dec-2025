@@ -1,0 +1,49 @@
+# SDLC Orchestration Patterns
+# General software development lifecycle patterns
+
+patterns:
+  waterfall:
+    description: Traditional sequential development
+    phases: [requirements, design, implement, test, deploy]
+    wave_type: sequential_orchestrated
+    use_when: Fixed requirements, regulated industries
+
+  agile-sprint:
+    description: Iterative development with sprints
+    phases: [planning, development, review, retrospective]
+    wave_type: mixed
+    iterations: true
+    sprint_length: 2_weeks
+    use_when: Evolving requirements, frequent feedback
+
+  devops-cicd:
+    description: Continuous integration and deployment
+    phases: [commit, build, test, deploy, monitor]
+    wave_type: automated_sequential
+    automation: [github-actions, docker]
+    use_when: Rapid deployment, automated testing
+
+  incident-response:
+    description: Production incident handling
+    phases: [detect, triage, fix, validate, postmortem]
+    wave_type: sequential_orchestrated
+    escalation: [warn, page, escalate]
+    use_when: Production issues, outages
+
+  feature-development:
+    description: New feature implementation
+    phases: [design, implement, test, review, integrate]
+    wave_type: mixed
+    agents:
+      design: architect-review
+      implement: general-purpose
+      test: test-automator
+      review: code-reviewer
+    use_when: New features, enhancements
+
+agent_selection:
+  exploration: Explore (quick|medium|thorough)
+  implementation: general-purpose
+  testing: test-automator, tdd-orchestrator
+  review: code-reviewer, architect-review
+  debugging: debugger, error-detective
