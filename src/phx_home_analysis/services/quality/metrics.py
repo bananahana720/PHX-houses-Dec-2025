@@ -5,9 +5,12 @@ data completeness and confidence levels across property records.
 """
 
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .models import QualityScore
+
+if TYPE_CHECKING:
+    from ...domain import EnrichmentData
 
 logger = logging.getLogger(__name__)
 
@@ -266,3 +269,59 @@ class QualityMetricsCalculator:
             suggestions.append("Data quality is excellent - no improvements needed")
 
         return suggestions
+
+
+def calculate_property_quality(enrichment: "EnrichmentData") -> QualityScore:
+    """Calculate quality score for a property from EnrichmentData.
+
+    This is a convenience function that extracts property data and field
+    confidences from an EnrichmentData entity and calculates quality metrics.
+
+    Formula:
+        overall_score = (completeness * 0.60) + (high_confidence_pct * 0.40)
+
+    Where:
+        - completeness = percentage of non-null required fields
+        - high_confidence_pct = percentage of fields with confidence >= 0.80
+
+    Args:
+        enrichment: EnrichmentData entity with field values and provenance.
+
+    Returns:
+        QualityScore with completeness, high_confidence_pct, and overall_score.
+
+    Example:
+        >>> enrichment = EnrichmentData(
+        ...     full_address="123 Main St",
+        ...     lot_sqft=9500,
+        ...     year_built=2010,
+        ...     garage_spaces=2,
+        ... )
+        >>> enrichment.set_field_provenance("lot_sqft", "assessor_api", 0.95)
+        >>> score = calculate_property_quality(enrichment)
+        >>> print(f"Quality: {score.overall_score:.1%}")
+    """
+    # Extract property data from enrichment fields
+    property_data = {
+        "address": enrichment.full_address,
+        "beds": None,  # Not in EnrichmentData
+        "baths": None,  # Not in EnrichmentData
+        "sqft": None,   # Not in EnrichmentData
+        "price": None,  # Not in EnrichmentData
+        "lot_sqft": enrichment.lot_sqft,
+        "year_built": enrichment.year_built,
+        "garage_spaces": enrichment.garage_spaces,
+        "sewer_type": enrichment.sewer_type,
+    }
+
+    # Extract field confidences from provenance data
+    field_confidences = {}
+    for field_name, provenance in enrichment._provenance.items():
+        field_confidences[field_name] = provenance.confidence
+
+    # Use the calculator to compute quality score
+    calculator = QualityMetricsCalculator()
+    return calculator.calculate(
+        property_data=property_data,
+        field_confidences=field_confidences,
+    )

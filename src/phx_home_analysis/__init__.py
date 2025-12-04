@@ -35,6 +35,7 @@ from .domain import (
     Address,
     EnrichmentData,
     Orientation,
+    PhaseStatus,
     Property,
     RenovationEstimate,
     RiskAssessment,
@@ -44,6 +45,7 @@ from .domain import (
     SewerType,
     SolarStatus,
     Tier,
+    WorkItemStatus,
 )
 
 # Error handling
@@ -65,6 +67,7 @@ from .repositories import (
     EnrichmentRepository,
     JsonEnrichmentRepository,
     PropertyRepository,
+    WorkItemsRepository,
 )
 
 # Services - Kill Switch
@@ -132,6 +135,8 @@ __all__ = [
     "SolarStatus",
     "SewerType",
     "Orientation",
+    "PhaseStatus",
+    "WorkItemStatus",
     # Repositories
     "PropertyRepository",
     "EnrichmentRepository",
@@ -139,6 +144,7 @@ __all__ = [
     "DataSaveError",
     "CsvPropertyRepository",
     "JsonEnrichmentRepository",
+    "WorkItemsRepository",
     # Services - Kill Switch
     "KillSwitch",
     "KillSwitchFilter",

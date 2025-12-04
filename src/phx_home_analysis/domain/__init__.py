@@ -10,10 +10,12 @@ from .entities import EnrichmentData, FieldProvenance, Property
 # Enums
 from .enums import (
     Orientation,
+    PhaseStatus,
     RiskLevel,
     SewerType,
     SolarStatus,
     Tier,
+    WorkItemStatus,
 )
 
 # Value Objects
@@ -42,4 +44,6 @@ __all__ = [
     "SolarStatus",
     "SewerType",
     "Orientation",
+    "PhaseStatus",
+    "WorkItemStatus",
 ]

@@ -79,6 +79,34 @@ p, h1, h2, h3, h4, h5, h6, span, div {
 .status-red { background: #ef4444; color: white; }
 .status-yellow { background: #f59e0b; color: white; }
 
+/* Confidence Badges */
+.confidence-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.confidence-green {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.confidence-yellow {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.confidence-red {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
 /* Header Styles */
 .header {
     border-bottom: 3px solid #2563eb;
@@ -1045,6 +1073,14 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
                 <div class="metric-note">Insurance: {{{{ property.flood_insurance_required or 'Unknown' }}}}</div>
             </div>
             <div class="metric">
+                <div class="metric-label">Safety Score</div>
+                <div class="metric-value">
+                    {{{{ property.safety_neighborhood_score or 'N/A' }}}}/100
+                    {{{{ confidence_badges.safety_neighborhood_score|safe }}}}
+                </div>
+                <div class="metric-note">Higher = Safer</div>
+            </div>
+            <div class="metric">
                 <div class="metric-label">Violent Crime Index</div>
                 <div class="metric-value">{{{{ property.violent_crime_index or 'N/A' }}}}/100</div>
                 <div class="metric-note">Higher = Safer</div>
@@ -1122,12 +1158,50 @@ DEAL_SHEET_TEMPLATE = f"""<!DOCTYPE html>
                 <div class="metric-value">{{{{ "{{:,}}".format(int(property.sqft)) }}}} sqft</div>
             </div>
             <div class="metric">
+                <div class="metric-label">Lot Size</div>
+                <div class="metric-value">
+                    {{{{ "{{:,}}".format(int(property.lot_sqft)) if property.lot_sqft else 'N/A' }}}} sqft
+                    {{{{ confidence_badges.lot_sqft|safe }}}}
+                </div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Year Built</div>
+                <div class="metric-value">
+                    {{{{ int(property.year_built) if property.year_built else 'N/A' }}}}
+                    {{{{ confidence_badges.year_built|safe }}}}
+                </div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Garage Spaces</div>
+                <div class="metric-value">
+                    {{{{ int(property.garage_spaces) if property.garage_spaces else 'N/A' }}}}
+                    {{{{ confidence_badges.garage_spaces|safe }}}}
+                </div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">HOA Fee</div>
+                <div class="metric-value">
+                    ${{{{ "{{:,}}".format(int(property.hoa_fee)) if property.hoa_fee else '0' }}}}/mo
+                    {{{{ confidence_badges.hoa_fee|safe }}}}
+                </div>
+            </div>
+            <div class="metric">
                 <div class="metric-label">Commute Time</div>
                 <div class="metric-value">{{{{ int(property.commute_minutes) }}}} min</div>
             </div>
             <div class="metric">
                 <div class="metric-label">School Rating</div>
-                <div class="metric-value">{{{{ property.school_rating }}}}/10</div>
+                <div class="metric-value">
+                    {{{{ property.school_rating }}}}/10
+                    {{{{ confidence_badges.school_rating|safe }}}}
+                </div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Sun Orientation</div>
+                <div class="metric-value">
+                    {{{{ property.orientation or 'N/A' }}}}
+                    {{{{ confidence_badges.orientation|safe }}}}
+                </div>
             </div>
             <div class="metric">
                 <div class="metric-label">Property Tax</div>

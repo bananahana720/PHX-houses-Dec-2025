@@ -48,7 +48,7 @@ Usage:
 
 from .confidence_display import ConfidenceLevel, format_confidence, get_confidence_html
 from .lineage import LineageTracker
-from .metrics import QualityMetricsCalculator
+from .metrics import QualityMetricsCalculator, calculate_property_quality
 from .models import DataSource, FieldLineage, QualityScore
 from .provenance_service import ProvenanceService
 
@@ -61,6 +61,7 @@ __all__ = [
     "LineageTracker",
     # Quality metrics
     "QualityMetricsCalculator",
+    "calculate_property_quality",
     # Provenance tracking
     "ProvenanceService",
     # Confidence display

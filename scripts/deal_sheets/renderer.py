@@ -31,6 +31,7 @@ from src.phx_home_analysis.services.cost_estimation.rates import (
     MORTGAGE_RATE_30YR,
     POOL_TOTAL_MONTHLY,
 )
+from src.phx_home_analysis.services.quality.confidence_display import get_confidence_html
 
 from .templates import DEAL_SHEET_TEMPLATE, INDEX_TEMPLATE
 from .utils import extract_features, slugify
@@ -41,6 +42,8 @@ logger = logging.getLogger(__name__)
 ADDRESS_FOLDER_LOOKUP_PATH = Path("data/property_images/metadata/address_folder_lookup.json")
 # Base path for processed images (relative to deal sheet output)
 IMAGES_BASE_PATH = Path("../../data/property_images/processed")
+# Path to field lineage data
+FIELD_LINEAGE_PATH = Path("data/field_lineage.json")
 
 
 @lru_cache(maxsize=1)
@@ -62,6 +65,48 @@ def _load_address_folder_lookup() -> dict[str, str]:
         return data.get("mappings", {})
     except (json.JSONDecodeError, OSError):
         return {}
+
+
+@lru_cache(maxsize=1)
+def _load_field_lineage() -> dict[str, dict[str, dict]]:
+    """Load the field lineage JSON, with thread-safe caching.
+
+    Returns:
+        Dict mapping property_id -> field_name -> lineage_data
+        Returns empty dict if file doesn't exist or can't be loaded.
+    """
+    if not FIELD_LINEAGE_PATH.exists():
+        return {}
+
+    try:
+        with open(FIELD_LINEAGE_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def get_field_confidence(full_address: str, field_name: str) -> float | None:
+    """Get confidence score for a specific field of a property.
+
+    Args:
+        full_address: Full property address
+        field_name: Name of the field to get confidence for
+
+    Returns:
+        Confidence score (0.0-1.0) or None if not available
+    """
+    import hashlib
+
+    # Calculate property hash from address (same as lineage tracker)
+    # Use first 8 characters of SHA256 hash
+    property_hash = hashlib.sha256(full_address.encode()).hexdigest()[:8]
+
+    # Load field lineage data
+    lineage = _load_field_lineage()
+    property_lineage = lineage.get(property_hash, {})
+    field_lineage = property_lineage.get(field_name, {})
+
+    return field_lineage.get("confidence")
 
 
 def get_property_images(full_address: str, max_images: int = 12) -> list[dict[str, str]]:
@@ -668,6 +713,25 @@ def generate_deal_sheet(row: pd.Series, output_dir: Path) -> str:
     # Generate tour checklist from kill-switch warnings and property data
     tour_checklist = generate_tour_checklist(kill_switches, row_dict)
 
+    # Build confidence badges for key fields
+    confidence_badges = {}
+    key_fields = [
+        "lot_sqft",
+        "year_built",
+        "hoa_fee",
+        "garage_spaces",
+        "school_rating",
+        "orientation",
+        "safety_neighborhood_score",
+    ]
+
+    for field in key_fields:
+        confidence = get_field_confidence(full_address, field)
+        if confidence is not None:
+            confidence_badges[field] = get_confidence_html(confidence)
+        else:
+            confidence_badges[field] = ""
+
     # Render template
     template = Template(DEAL_SHEET_TEMPLATE)
     html = template.render(
@@ -682,6 +746,7 @@ def generate_deal_sheet(row: pd.Series, output_dir: Path) -> str:
         monthly_cost=monthly_cost,  # For budget warning badge
         property_images=property_images,  # Image gallery data
         tour_checklist=tour_checklist,  # Tour checklist items
+        confidence_badges=confidence_badges,  # Confidence badges for key fields
         int=int,  # Make int() available in template
     )
 
