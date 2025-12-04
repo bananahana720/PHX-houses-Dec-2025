@@ -11,7 +11,7 @@ workflow_path: ".bmad/bmm/workflows/"
 # Current Phase
 current_phase: "implementation"
 current_agent: "dev"
-last_activity: "2025-12-04T19:45:00Z"
+last_activity: "2025-12-04T21:30:00Z"
 
 # Phase 1: Analysis
 analysis:
@@ -75,11 +75,11 @@ implementation:
   status: "active"
   sprint_status_file: "docs/sprint-artifacts/sprint-status.yaml"
   progress:
-    epics_done: 1
-    stories_done: 18
+    epics_done: 2
+    stories_done: 19
     total_stories: 42
   last_completed:
-    story: "E2.S2 Maricopa County Assessor API Integration"
+    story: "E2.S4 Property Image Download and Caching"
     epic: "Epic 2: Property Data Acquisition"
     date: "2025-12-04"
   sprint_2_apis_track:
@@ -93,6 +93,10 @@ implementation:
 
 # Key Decisions Made
 decisions:
+  - date: "2025-12-04"
+    decision: "E2.S4 Property Image Download and Caching completed (GREEN+BLUE TDD phases)"
+    rationale: "ImageDownloader with async httpx + semaphore (max 5), webp/png→jpg conversion, manifest tracking, --clean-images CLI flag. 29 tests. Epic 2 complete (7/7 stories)."
+
   - date: "2025-12-04"
     decision: "E2.S2 County Assessor API Integration completed (GREEN+BLUE TDD phases)"
     rationale: "Added PO Box address rejection with ReDoS-safe regex. 25 live tests passing (23+2 skipped). SLA adjusted to 300s for realistic batch performance."
@@ -127,22 +131,21 @@ artifacts:
 
 # Next Recommended Actions
 next_actions:
-  - action: "Complete Epic 2 remaining story"
+  - action: "Run Epic 2 retrospective"
+    priority: "high"
+    agent: "sm"
+    command: "/bmad:bmm:workflows:retrospective"
+    context: "Epic 2 complete (7/7 stories) - review orchestration learnings before moving on"
+
+  - action: "Start Epic 3 Kill-Switch implementation"
     priority: "high"
     agent: "dev"
     command: "/bmad:bmm:workflows:dev-story"
-    remaining_stories:
-      - "2-4-property-image-download-and-caching"
-    context: "Epic 2 at 6/7 stories (86%). Only E2.S4 Image Cache remains."
-
-  - action: "Run Epic 2 retrospective"
-    priority: "medium"
-    agent: "sm"
-    command: "/bmad:bmm:workflows:retrospective"
-    context: "Sprint 2 APIs Track complete - review parallel orchestration learnings"
-
-  - action: "Start Epic 3 Kill-Switch implementation"
-    priority: "medium"
-    agent: "dev"
     next_story: "3-1-hard-kill-switch-criteria-implementation"
-    context: "Can proceed in parallel with E2.S2/E2.S4 - no dependencies"
+    context: "Epic 3 is next priority - kill-switch filtering system"
+
+  - action: "Context Epic 4 Scoring Engine"
+    priority: "medium"
+    agent: "pm"
+    command: "/bmad:bmm:workflows:create-story"
+    context: "Epic 4 has 1 story done (4-1), 5 remaining. Can start in parallel with Epic 3."
