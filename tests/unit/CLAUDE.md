@@ -49,7 +49,7 @@ Comprehensive unit tests for PHX Home Analysis pipeline covering domain models, 
 - `TestEnrichmentDataEntity` - EnrichmentData mirror structure
 - `TestAddressValueObject` - Immutable Address with formatting
 - `TestScoreValueObject` - Score validation and weighted calculation
-- `TestScoreBreakdownValueObject` - 600-point section aggregation
+- `TestScoreBreakdownValueObject` - 605-point section aggregation
 - `TestTierEnum` - Tier classification colors, labels, from_score()
 - `TestOrientationEnum` - Arizona-specific cooling costs, base_score
 - `TestEnums` - SolarStatus, SewerType, RiskLevel, ImageStatus
@@ -77,14 +77,14 @@ Comprehensive unit tests for PHX Home Analysis pipeline covering domain models, 
 - Boundary testing: 6999 vs 7000 sqft, 2023 vs 2024, 1.9 vs 2.0 baths, $0 vs $1 HOA
 
 ### Scoring Tests (test_scorer.py)
-**Focus:** Property scoring system, 600-point allocation, tier classification
+**Focus:** Property scoring system, 605-point allocation, tier classification
 
 **Test Classes (8):**
 - `TestPropertyScorer` - Main scorer orchestration
 - `TestLocationScoring` - School district, quietness, crime, grocery, parks, orientation, flood, walk score
 - `TestSystemsScoring` - Roof, plumbing, pool, backyard, cost efficiency
 - `TestInteriorScoring` - Kitchen, master suite, light, ceilings, fireplace, laundry, aesthetics
-- `TestScoreBreakdown` - Section totals and 600-point total
+- `TestScoreBreakdown` - Section totals and 605-point total
 - `TestTierClassification` - Unicorn (>480), Contender (360-480), Pass (<360), Failed
 - `TestComputedScores` - Price per sqft, quality metrics
 
@@ -110,7 +110,7 @@ Comprehensive unit tests for PHX Home Analysis pipeline covering domain models, 
 **Focus:** Pydantic schemas, YAML loading, validation, environment overrides
 
 **Test Classes (22):**
-- `TestScoringWeightsSchema` - 600-point system validation
+- `TestScoringWeightsSchema` - 605-point system validation
 - `TestBuyerCriteriaSchema` - Buyer profile constraints
 - `TestKillSwitchCriteriaSchema` - HARD/SOFT criteria weights
 - `TestAppConfigSchema` - Full app configuration

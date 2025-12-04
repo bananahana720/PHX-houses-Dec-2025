@@ -7,13 +7,13 @@ flags: []
 # config
 
 ## Purpose
-Configuration module for PHX home analysis pipeline. Provides scoring weights (600-point system), kill-switch buyer criteria, file paths, Arizona-specific context, and YAML-based configuration loading with backward compatibility.
+Configuration module for PHX home analysis pipeline. Provides scoring weights (605-point system), kill-switch buyer criteria, file paths, Arizona-specific context, and YAML-based configuration loading with backward compatibility.
 
 ## Contents
 | Path | Purpose |
 |------|---------|
 | `__init__.py` | Package exports; docstring shows 250pts Location section (updated) |
-| `scoring_weights.py` | 600-point system definition (Section A: 230, B: 180, C: 190) |
+| `scoring_weights.py` | 605-point system definition (Section A: 250, B: 175, C: 180) |
 | `constants.py` | Kill-switch thresholds, file paths, buyer profile constants |
 | `settings.py` | Dataclasses: `AppConfig`, `BuyerProfile`, `ProjectPaths`, `ArizonaContext` |
 | `loader.py` | ConfigLoader for YAML-based configuration; `get_config()` singleton |

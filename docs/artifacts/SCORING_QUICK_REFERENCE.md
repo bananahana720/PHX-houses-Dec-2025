@@ -13,7 +13,7 @@
 | PASS | <360 (<60%) | Monitor for price drops |
 | FAILED | Any | Kill-switch fail - Disqualified |
 
-**Total: 600 points across 3 sections**
+**Total: 605 points across 3 sections**
 
 ---
 

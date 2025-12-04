@@ -156,7 +156,7 @@ zone = config['value_zones'][zone_name]
 ```yaml
 min_score: 365
   - Properties scoring ABOVE 365 are considered "high value"
-  - Based on 600-point scoring system
+  - Based on 605-point scoring system
   - Approximately top 30-40% of PASS properties
 
 max_price: 550000

@@ -30,7 +30,7 @@ This directory contains Claude Code configuration: agents, skills, commands, and
     ├── property-data/     # Data access patterns
     ├── state-management/  # Checkpoints & recovery
     ├── kill-switch/       # Buyer criteria validation
-    ├── scoring/           # 600-point scoring system
+    ├── scoring/           # 605-point scoring system
     ├── county-assessor/   # Maricopa County API
     ├── arizona-context/   # AZ-specific factors
     ├── listing-extraction/# Browser automation
@@ -69,7 +69,7 @@ Load skills as needed: property-data, scoring, deal-sheets
 | property-data | Load/query/update property data | Any property data access |
 | state-management | Checkpointing & crash recovery | Multi-phase workflows |
 | kill-switch | Buyer criteria validation | Filtering properties |
-| scoring | 600-point scoring system | Calculating scores/tiers |
+| scoring | 605-point scoring system | Calculating scores/tiers |
 | county-assessor | Maricopa County API | Phase 0 data extraction |
 | arizona-context | AZ-specific: solar, pool, HVAC | AZ property evaluation |
 | listing-extraction | Zillow/Redfin automation | Phase 1 listing data |

@@ -158,7 +158,7 @@ python scripts/validate_phase_prerequisites.py \
 | **property-data** | Load/query/update enrichment_data.json | Read, Write, Bash(python:*), Grep |
 | **state-management** | Track progress across phases | Bash(python:*) |
 | **kill-switch** | Evaluate buyer criteria (HOA, beds, baths) | None (pure logic) |
-| **scoring** | Calculate 600-point score | None (pure logic) |
+| **scoring** | Calculate 605-point score | None (pure logic) |
 | **county-assessor** | Extract lot_sqft, year_built | Bash(python:*), WebSearch |
 | **listing-extraction** | Extract images from Zillow/Redfin | Bash(python:*) |
 | **map-analysis** | Get schools, safety, orientation | Bash(python:*), WebSearch, Playwright |

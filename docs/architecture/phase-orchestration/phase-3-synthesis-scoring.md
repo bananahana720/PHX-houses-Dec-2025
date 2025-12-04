@@ -24,13 +24,13 @@ python scripts/analyze.py
 ```
 
 **Scoring Components:**
-- **PropertyScorer**: 600-point weighted scoring (Location, Systems, Interior)
+- **PropertyScorer**: 605-point weighted scoring (Location, Systems, Interior)
 - **CostEfficiencyScorer**: Evaluates monthly_cost vs quality score ratio
   - Uses `monthly_cost` from Phase 0.5
   - Flags properties exceeding $4k/month budget
   - Identifies value opportunities (high score, low cost)
 
-**Tier Assignment** (600-point scale):
+**Tier Assignment** (605-point scale):
 - UNICORN: >480 pts (80%+)
 - CONTENDER: 360-480 pts (60-80%)
 - PASS: <360 pts (<60%)

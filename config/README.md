@@ -21,8 +21,8 @@ Scoring system configuration and value zone definitions.
 - **value_zones:** Score/price zones for identifying value opportunities
   - sweet_spot: High-quality properties at affordable prices (score > 365, price < $550k)
   - premium: Top-tier properties (score > 480)
-- **section_weights:** Point allocation for 600-point scoring system
-  - Location (230 pts), Systems (180 pts), Interior (190 pts)
+- **section_weights:** Point allocation for 605-point scoring system
+  - Location (250 pts), Systems (175 pts), Interior (180 pts)
 - **tier_thresholds:** Property classification tiers
 - **defaults:** Fallback values for backward compatibility
 

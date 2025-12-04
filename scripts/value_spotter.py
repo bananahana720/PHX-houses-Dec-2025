@@ -224,7 +224,7 @@ fig.update_layout(
         "x": 0.5,
         "xanchor": 'center'
     },
-    xaxis_title="Total Score (Max 600 points)",
+    xaxis_title="Total Score (Max 605 points)",
     yaxis_title="Price ($)",
     hovermode='closest',
     width=1200,

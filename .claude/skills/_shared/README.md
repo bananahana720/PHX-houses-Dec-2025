@@ -10,7 +10,7 @@ This directory contains shared resources used across multiple skills, preventing
 **Purpose:** Canonical source for all scoring system information
 
 **Contains:**
-- Complete 600-point scoring system (Sections A, B, C)
+- Complete 605-point scoring system (Sections A, B, C)
 - Tier classification thresholds (UNICORN/CONTENDER/PASS/FAILED)
 - All scoring rubrics with 1-10 scales
 - Kill-switch criteria (7 hard filters)

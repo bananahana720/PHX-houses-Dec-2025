@@ -16,11 +16,11 @@ Last updated: 2025-12-01
 
 | Metric | Value |
 |--------|-------|
-| **Maximum Score** | 600 points |
+| **Maximum Score** | 605 points |
 | **Sections** | 3 (A, B, C) |
-| **Section A: Location** | 230 pts |
-| **Section B: Lot/Systems** | 180 pts |
-| **Section C: Interior** | 190 pts |
+| **Section A: Location** | 250 pts |
+| **Section B: Lot/Systems** | 175 pts |
+| **Section C: Interior** | 180 pts |
 | **Tier Thresholds** | 480 / 360 |
 | **Kill-Switch Criteria** | 3 HARD + 4 SOFT |
 
@@ -37,7 +37,7 @@ Last updated: 2025-12-01
 
 ---
 
-## Section A: Location (230 pts max)
+## Section A: Location (250 pts max)
 
 **Definition:** Property location quality based on schools, noise, safety, amenities, and sun orientation.
 
@@ -71,7 +71,7 @@ Critical for Arizona due to extreme heat exposure affecting cooling costs.
 
 ---
 
-## Section B: Lot/Systems (180 pts max)
+## Section B: Lot/Systems (175 pts max)
 
 **Definition:** Property systems condition and lot quality based on roof age, lot size, plumbing era, pool condition, and cost efficiency.
 
@@ -150,7 +150,7 @@ Evaluates price relative to property value, market conditions, and comparable sa
 
 ---
 
-## Section C: Interior (190 pts max)
+## Section C: Interior (180 pts max)
 
 **Definition:** Interior quality based on visual assessment of kitchen, master, natural light, ceilings, fireplace, laundry, and overall aesthetics.
 
@@ -361,7 +361,7 @@ When data is missing from all sources, use these defaults for **non-critical** c
 ```
 Property: 123 Main St, Phoenix, AZ 85001
 
-SECTION A: LOCATION (230 max)
+SECTION A: LOCATION (250 max)
   School Rating:    7/10 × 5 = 35 pts
   Quietness:        6/10 × 4 = 24 pts
   Safety:           8/10 × 5 = 40 pts
@@ -371,7 +371,7 @@ SECTION A: LOCATION (230 max)
   ────────────────────────────────────
   Section A Total: 168/230 pts
 
-SECTION B: LOT/SYSTEMS (180 max)
+SECTION B: LOT/SYSTEMS (175 max)
   Roof (8 yrs):     6/10 × 5 = 30 pts
   Backyard:         7/10 × 4 = 28 pts
   Plumbing (2005):  8/10 × 4 = 32 pts
@@ -380,7 +380,7 @@ SECTION B: LOT/SYSTEMS (180 max)
   ────────────────────────────────────
   Section B Total: 131/180 pts
 
-SECTION C: INTERIOR (190 max)
+SECTION C: INTERIOR (180 max)
   Kitchen:          7/10 × 4 = 28 pts
   Master Suite:     8/10 × 4 = 32 pts
   Natural Light:    6/10 × 3 = 18 pts
@@ -391,8 +391,8 @@ SECTION C: INTERIOR (190 max)
   ────────────────────────────────────
   Section C Total: 125/190 pts
 
-GRAND TOTAL: 168 + 131 + 125 = 424/600 pts
-Percentage: 424 / 600 = 71%
+GRAND TOTAL: 168 + 131 + 125 = 424/605 pts
+Percentage: 424 / 605 = 70%
 Tier: CONTENDER (360-480)
 ```
 
@@ -471,7 +471,7 @@ After calculating scores, verify with these checks:
 
 2. OVERALL TOTAL
    ✓ Section A + Section B + Section C = Total?
-   ✓ Total ≤ 600?
+   ✓ Total ≤ 605?
 
 3. MAXIMUM BOUNDS
    ✓ Section A: School≤50, Quietness≤40, Safety≤50, Grocery≤30, Parks≤30, Orientation≤30
@@ -502,10 +502,10 @@ Other skill files should reference this file rather than duplicating tables:
 See `.claude/skills/_shared/scoring-tables.md` for complete scoring tables, definitions, rubrics, and calculation formulas.
 
 Quick reference:
-- Section A: 230 pts (Location: schools, quietness, safety, grocery, parks, orientation)
-- Section B: 180 pts (Lot/Systems: roof, backyard, plumbing, pool, cost efficiency)
-- Section C: 190 pts (Interior: kitchen, master, light, ceilings, fireplace, laundry, aesthetics)
-- Total: 600 pts
+- Section A: 250 pts (Location: schools, quietness, safety, grocery, parks, orientation)
+- Section B: 175 pts (Lot/Systems: roof, backyard, plumbing, pool, cost efficiency)
+- Section C: 180 pts (Interior: kitchen, master, light, ceilings, fireplace, laundry, aesthetics)
+- Total: 605 pts
 - Tiers: UNICORN (>480), CONTENDER (360-480), PASS (<360), FAILED (kill-switch)
 - Kill-Switches: 3 HARD (instant fail) + 4 SOFT (severity-weighted)
 ```

@@ -16,7 +16,7 @@ class ScoringWeights:
     """Weighted scoring system for property evaluation.
 
     Properties are scored across three major categories with a maximum
-    possible score of 600 points. Only properties that pass all kill-switch
+    possible score of 605 points. Only properties that pass all kill-switch
     criteria in BuyerProfile are scored.
 
     SECTION A: LOCATION & ENVIRONMENT (250 pts max)

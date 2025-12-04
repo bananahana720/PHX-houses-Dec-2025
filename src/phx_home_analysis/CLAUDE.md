@@ -8,13 +8,13 @@ flags: []
 
 ## Purpose
 
-Core analysis library for Phoenix home evaluation. Implements domain-driven architecture with scoring logic (600-point system), kill-switch filtering, data persistence, and orchestration for the PHX Houses pipeline.
+Core analysis library for Phoenix home evaluation. Implements domain-driven architecture with scoring logic (605-point system), kill-switch filtering, data persistence, and orchestration for the PHX Houses pipeline.
 
 ## Module Structure
 
 | Module | Purpose | Key Exports |
 |--------|---------|-------------|
-| `config/` | Application configuration, scoring weights (230+180+190=600pts), buyer profile | `AppConfig`, `ScoringWeights`, `TierThresholds` |
+| `config/` | Application configuration, scoring weights (250+175+180=605pts), buyer profile | `AppConfig`, `ScoringWeights`, `TierThresholds` |
 | `domain/` | Domain entities, value objects, enums | `Property`, `EnrichmentData`, `Score`, `Tier`, `Orientation` |
 | `repositories/` | Data persistence layer - CSV and JSON | `PropertyRepository`, `JsonEnrichmentRepository` |
 | `services/` | Business logic: kill-switch, scoring, enrichment | `KillSwitchFilter`, `PropertyScorer`, `ClassificationService` |
@@ -25,11 +25,11 @@ Core analysis library for Phoenix home evaluation. Implements domain-driven arch
 | `errors/` | Error classification, retry logic, pipeline integration | `is_transient_error()`, `@retry_with_backoff`, `mark_item_failed()` |
 | `utils/` | Shared utilities: file ops, address normalization | `atomic_json_save()`, `normalize_address()` |
 
-## Scoring System (600 Points)
+## Scoring System (605 Points)
 
-**Section A: Location & Environment (230pts)** - GreatSchools, crime, walk score, orientation, flood risk
-**Section B: Systems (180pts)** - Roof, plumbing/electrical, pool, cost efficiency, backyard
-**Section C: Interior (190pts)** - Kitchen, master suite, natural light, ceilings, fireplace, laundry, aesthetics
+**Section A: Location & Environment (250pts)** - GreatSchools, crime, walk score, orientation, flood risk
+**Section B: Systems (175pts)** - Roof, plumbing/electrical, pool, cost efficiency, backyard
+**Section C: Interior (180pts)** - Kitchen, master suite, natural light, ceilings, fireplace, laundry, aesthetics
 
 **Tier Thresholds:**
 - Unicorn: >480pts (80%+)
@@ -38,9 +38,8 @@ Core analysis library for Phoenix home evaluation. Implements domain-driven arch
 
 ## Kill-Switch Architecture
 
-**HARD Criteria (Instant Fail):** HOA fee > $0, beds < 4, baths < 2
-**SOFT Criteria (Severity):** Sewer (2.5), year (2.0), garage (1.5), lot (1.0)
-**Verdict:** HARD fail OR severity ≥3.0 → FAIL | 1.5-3.0 → WARNING | <1.5 → PASS
+**All 8 criteria are HARD (instant fail):** HOA=$0, beds≥4, baths≥2, sqft>1800, lot>8k, garage≥1, sewer=city, year≤2024
+**Verdict:** FAIL if any criterion is not met
 
 ## Package Exports
 
@@ -57,7 +56,7 @@ Core analysis library for Phoenix home evaluation. Implements domain-driven arch
 | File | Lines | Purpose |
 |------|-------|---------|
 | `__init__.py` | 185 | Package exports and version |
-| `config/scoring_weights.py` | 366 | 600-point system definition |
+| `config/scoring_weights.py` | 366 | 605-point system definition |
 | `domain/entities.py` | ~500 | Property, EnrichmentData dataclasses |
 | `services/kill_switch/` | ~300 | Kill-switch criteria implementations |
 | `services/scoring/` | ~800 | Scoring strategies (18 total) |
@@ -68,8 +67,8 @@ Core analysis library for Phoenix home evaluation. Implements domain-driven arch
 ## Tasks
 
 - [x] Document module structure and exports (10 modules)
-- [x] Update 600-point scoring system documentation
-- [x] Document kill-switch HARD/SOFT criteria architecture
+- [x] Update 605-point scoring system documentation
+- [x] Document kill-switch 8 HARD criteria architecture
 - [x] Add error handling module (errors/) to structure
 - [x] Map all domain entities and value objects
 - [ ] Create examples for custom scorer extension P:M
@@ -77,7 +76,7 @@ Core analysis library for Phoenix home evaluation. Implements domain-driven arch
 
 ## Learnings
 
-- **600-point confirmed:** Location 230 + Systems 180 + Interior 190 = 600 (not 605)
+- **605-point confirmed:** Location 250 + Systems 175 + Interior 180 = 605
 - **Error module new:** `errors/` module (classify/retry/pipeline) newly added for E1.S6
 - **18 scoring strategies:** 7 Location + 4 Systems + 7 Interior strategies composable via `PropertyScorer`
 - **Atomic architecture:** Repository pattern decouples data access; services use dependency injection; pipeline orchestrates composition

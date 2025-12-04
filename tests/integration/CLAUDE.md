@@ -41,7 +41,7 @@ Integration test suite validating multi-component workflows end-to-end. Tests ve
 - Property with all enrichment data passes kill-switch and scores >0
 - Properties with missing optional fields handled gracefully
 - Kill-switch filter separates pass/fail properties correctly
-- Scoring produces results in expected range (0-600 points)
+- Scoring produces results in expected range (0-605 points)
 - CSV export preserves data and ranks by score
 
 **Fixtures Used:** sample_property, sample_unicorn_property, sample_failed_property, sample_property_minimal

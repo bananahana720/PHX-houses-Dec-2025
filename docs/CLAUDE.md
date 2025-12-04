@@ -113,7 +113,7 @@ docs/
 Architecture design documents and system diagrams.
 
 **Contents:**
-- `scoring-improvement-architecture.md` - Scoring system redesign (600-point system, kill-switches, cost efficiency)
+- `scoring-improvement-architecture.md` - Scoring system redesign (605-point system, kill-switches, cost efficiency)
 
 ### specs/
 

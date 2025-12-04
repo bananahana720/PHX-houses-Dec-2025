@@ -10,7 +10,7 @@
 
 The PHX Houses project is a **first-time home buyer analysis platform for Maricopa County, AZ**. It combines:
 - Kill-switch filtering (hard/soft criteria)
-- 600-point weighted scoring (location, systems, interior)
+- 605-point weighted scoring (location, systems, interior)
 - Tier classification (Unicorn/Contender/Pass)
 - Property ranking and decision support
 
@@ -30,7 +30,7 @@ The PHX Houses project is a **first-time home buyer analysis platform for Marico
 - Example: Sewer (2.5) + Year Built (2.0) = 4.5 severity → FAIL (exceeds 3.0 threshold)
 - **Quality**: Excellent clarity, transparent failure reporting
 
-**2. 600-Point Scoring** (95% COMPLETE)
+**2. 605-Point Scoring** (95% COMPLETE)
 - 18 sub-criteria across 3 sections
 - Section A (Location): 250 pts - Schools, safety, quietness, amenities, orientation, flood, transit
 - Section B (Systems): 170 pts - Roof, backyard, plumbing/electrical, pool, cost efficiency
@@ -328,7 +328,7 @@ Current: Properties scored but no explanation of WHY score is 415 vs 380
 
 ## CONCLUSION
 
-The PHX Houses project has a **solid, well-architected foundation** for first-time home buyer decision support. The kill-switch system is clear. The 600-point scoring covers major buyer decision factors. Arizona-specific modeling is thoughtful.
+The PHX Houses project has a **solid, well-architected foundation** for first-time home buyer decision support. The kill-switch system is clear. The 605-point scoring covers major buyer decision factors. Arizona-specific modeling is thoughtful.
 
 **The path to 95%+ vision alignment is clear**:
 1. Add flexibility to kill-switch (CRITICAL tier not HARD tier)

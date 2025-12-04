@@ -295,10 +295,10 @@ Tests validate exact boundary conditions:
 
 ## Scoring System Testing
 
-### Scoring Structure (600 points max)
-- **Location:** 230 points (School: 50, Safety: 50, Quietness: 50, Grocery: 40, etc.)
-- **Systems:** 180 points (Roof: 50, Plumbing: 40, Backyard: 40, Pool: 30, etc.)
-- **Interior:** 190 points (Kitchen: 40, Master: 40, Light: 30, Ceilings: 30, etc.)
+### Scoring Structure (605 points max)
+- **Location:** 250 points (School: 42, Safety: 47, Quietness: 30, Grocery: 23, Parks: 23, Orientation: 25, Flood: 23, Transit: 22, Air: 15)
+- **Systems:** 175 points (Roof: 45, Backyard: 35, Plumbing: 35, Pool: 20, Cost: 35, Solar: 5)
+- **Interior:** 180 points (Kitchen: 40, Master: 35, Light: 30, Ceilings: 25, Fireplace: 20, Laundry: 20, Aesthetics: 10)
 
 ### Tier Classification
 - **Unicorn:** >480 points (80%+ of max)

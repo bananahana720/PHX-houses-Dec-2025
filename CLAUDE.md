@@ -145,8 +145,8 @@ tests/
 ### What This Project Does
 
 Evaluates Phoenix residential properties against strict buyer criteria:
-- **Kill-switches**: Hard fails (HOA, beds, baths) + soft severity threshold (≥3.0 = fail)
-- **Scoring**: 600 pts max across Location (230), Systems (180), Interior (190)
+- **Kill-switches**: 8 HARD criteria (instant fail): HOA=$0, beds≥4, baths≥2, sqft>1800, lot>8k, garage≥1, sewer=city, year≤2024
+- **Scoring**: 605 pts max across Location (250), Systems (175), Interior (180)
 - **Tiers**: Unicorn (>480), Contender (360-480), Pass (<360)
 
 ### Where Things Live
@@ -198,17 +198,18 @@ Phase 4: Reports → deal sheets, visualizations
 
 ### Kill-Switch Criteria
 
-| Type | Criterion | Requirement | Severity |
-|------|-----------|-------------|----------|
-| HARD | HOA | Must be $0 | instant |
-| HARD | Beds | ≥4 | instant |
-| HARD | Baths | ≥2 | instant |
-| SOFT | Sewer | City | 2.5 |
-| SOFT | Year | <2024 | 2.0 |
-| SOFT | Garage | ≥2 spaces | 1.5 |
-| SOFT | Lot | 7k-15k sqft | 1.0 |
+| Type | Criterion | Requirement | Effect |
+|------|-----------|-------------|--------|
+| HARD | HOA | Must be $0 | instant fail |
+| HARD | Beds | ≥4 | instant fail |
+| HARD | Baths | ≥2 | instant fail |
+| HARD | Sqft | >1800 | instant fail |
+| HARD | Lot | >8000 sqft | instant fail |
+| HARD | Garage | ≥1 space | instant fail |
+| HARD | Sewer | City | instant fail |
+| HARD | Year | ≤2024 (no new builds) | instant fail |
 
-**Verdict**: FAIL if HARD fails OR severity ≥3.0 | WARNING if 1.5-3.0 | PASS if <1.5
+**Verdict**: FAIL if any HARD criterion is not met
 
 ### Arizona Specifics
 

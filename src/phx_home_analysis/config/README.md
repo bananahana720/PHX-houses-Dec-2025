@@ -8,7 +8,7 @@ The `config` module centralizes all configuration and constants for the PHX Home
 **Master constants file** containing all magic numbers and configuration values used throughout the system.
 
 #### Structure
-- Scoring thresholds (600-point system)
+- Scoring thresholds (605-point system)
 - Kill-switch severity weights and thresholds
 - Confidence and quality metrics
 - Arizona-specific rates and constants
@@ -33,8 +33,8 @@ if score > TIER_UNICORN_MIN:
 
 #### Key Constants by Category
 
-**Scoring System (600 points)**
-- `MAX_POSSIBLE_SCORE`: 600
+**Scoring System (605 points)**
+- `MAX_POSSIBLE_SCORE`: 605
 - `TIER_UNICORN_MIN`: 480 (>80%)
 - `TIER_CONTENDER_MIN`: 360 (60-80%)
 - `TIER_PASS_MAX`: 359 (<60%)
@@ -116,7 +116,7 @@ output_file = config.paths.output_csv
 ```
 
 ### `scoring_weights.py`
-**Scoring system configuration** (600-point breakdown).
+**Scoring system configuration** (605-point breakdown).
 
 #### Key Classes
 
@@ -137,7 +137,7 @@ Defines tier classification boundaries:
 from phx_home_analysis.config.scoring_weights import ScoringWeights, TierThresholds
 
 weights = ScoringWeights()
-print(weights.total_possible_score)  # 600
+print(weights.total_possible_score)  # 605
 print(weights.section_a_max)          # 230
 print(weights.section_b_max)          # 180
 print(weights.section_c_max)          # 190
@@ -266,7 +266,7 @@ When adding new configuration values:
 The constants module includes built-in validation:
 
 ```python
-# Ensures 600-point system remains consistent
+# Ensures 605-point system remains consistent
 assert SCORE_SECTION_A_TOTAL + SCORE_SECTION_B_TOTAL + SCORE_SECTION_C_TOTAL == MAX_POSSIBLE_SCORE
 ```
 
