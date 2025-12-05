@@ -6,6 +6,7 @@ from .base import (
     EnrichmentRepository,
     PropertyRepository,
 )
+from .cached_manager import CachedDataManager
 from .csv_repository import CsvPropertyRepository
 from .json_repository import JsonEnrichmentRepository
 from .work_items_repository import WorkItemsRepository
@@ -21,4 +22,5 @@ __all__ = [
     "CsvPropertyRepository",
     "JsonEnrichmentRepository",
     "WorkItemsRepository",
+    "CachedDataManager",
 ]

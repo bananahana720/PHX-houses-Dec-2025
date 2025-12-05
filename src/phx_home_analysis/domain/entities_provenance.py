@@ -1,5 +1,12 @@
 """Provenance methods for EnrichmentData - to be merged into entities.py"""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .value_objects import FieldProvenance
+
 # These methods should be added to the EnrichmentData class in entities.py
 
 # First, add this field to EnrichmentData:

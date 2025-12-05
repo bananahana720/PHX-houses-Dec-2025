@@ -586,5 +586,154 @@
     ],
     "error_patterns": [],
     "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T15:38:11.968762+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "/c/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:05:50.229545+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:09:57.842609+00:00",
+    "subagent_type": "debugging-toolkit:debugger",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [
+      "`ValueError: Template directory not found`",
+      "Template directory not found`"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:14:38.982671+00:00",
+    "subagent_type": "debugging-toolkit:debugger",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:20:16.281747+00:00",
+    "subagent_type": "code-refactoring:code-reviewer",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:24:11.914293+00:00",
+    "subagent_type": "code-refactoring:code-reviewer",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:27:38.485027+00:00",
+    "subagent_type": "code-refactoring:code-reviewer",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [
+      "urls is Sequence"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:29:28.141869+00:00",
+    "subagent_type": "code-refactoring:code-reviewer",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:40:43.560366+00:00",
+    "subagent_type": "unit-testing:test-automator",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:41:10.955834+00:00",
+    "subagent_type": "unit-testing:test-automator",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:49:36.775430+00:00",
+    "subagent_type": "unit-testing:test-automator",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:56:46.795641+00:00",
+    "subagent_type": "code-refactoring:legacy-modernizer",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T16:58:32.454444+00:00",
+    "subagent_type": "code-refactoring:legacy-modernizer",
+    "file_references": [
+      "C:/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T17:48:48.593026+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "\"...\""
+    ]
+  },
+  {
+    "timestamp": "2025-12-05T18:08:27.931249+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "A `_safe_extract()` helper was just added around line 1230"
+    ]
+  },
+  {
+    "timestamp": "2025-12-05T19:50:06.347616+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "enrichment_data.json is a LIST (not dict). Normalized addresses via `normalize_address()` cached in `normalized_address` field. Atomic writes use temp file + rename. Backups with timestamp before each write. Restore via `restore_from_backup()`."
+    ],
+    "learnings": []
   }
 ]

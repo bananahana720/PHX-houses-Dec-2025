@@ -113,6 +113,36 @@ class KillSwitch(ABC):
         """
         pass
 
+    def _format_failure_message(
+        self,
+        field_value: any,
+        unknown_message: str,
+        known_template: str,
+    ) -> str:
+        """Format failure message with None handling.
+
+        Template method for subclasses to simplify failure message generation
+        when the only variation is None vs known value formatting.
+
+        Args:
+            field_value: The actual value (may be None)
+            unknown_message: Message when value is None
+            known_template: Format string for known values (uses {value} placeholder)
+
+        Returns:
+            Formatted failure message
+
+        Example:
+            return self._format_failure_message(
+                property.beds,
+                "Bedroom count unknown (buyer requires 4+)",
+                "Only {value} bedrooms (buyer requires 4+)",
+            )
+        """
+        if field_value is None:
+            return unknown_message
+        return known_template.format(value=field_value)
+
     def failure_message(self, property: "Property") -> str:
         """Generate custom failure message for this property.
 

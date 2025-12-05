@@ -16,7 +16,7 @@ from .base import ScoringStrategy
 from .strategies import ALL_STRATEGIES
 
 if TYPE_CHECKING:
-    from .explanation import FullScoreExplanation
+    from .explanation import FullScoreExplanation, ScoringExplainer
 
 
 class PropertyScorer:
@@ -55,6 +55,9 @@ class PropertyScorer:
             self._strategies = [strategy_class(self._weights) for strategy_class in ALL_STRATEGIES]  # type: ignore[abstract]
         else:
             self._strategies = strategies
+
+        # Cache for ScoringExplainer instance (lazily initialized)
+        self._explainer: Any = None  # type: ScoringExplainer | None
 
     @property
     def weights(self) -> ScoringWeights:
@@ -221,6 +224,27 @@ class PropertyScorer:
                 return strategy
         return None
 
+    def _get_explainer(self) -> ScoringExplainer:  # type: ignore[name-defined]
+        """Get or create cached ScoringExplainer instance.
+
+        Lazily initializes the explainer on first call and reuses it for
+        subsequent calls. This avoids creating a new explainer instance
+        for each property in batch operations.
+
+        Returns:
+            Cached ScoringExplainer instance configured with this scorer's
+            weights and thresholds.
+        """
+        if self._explainer is None:
+            # Import here to avoid circular dependency
+            from .explanation import ScoringExplainer
+
+            self._explainer = ScoringExplainer(
+                weights=self._weights,
+                thresholds=self._thresholds,
+            )
+        return self._explainer  # type: ignore[return-value]
+
     def explain_score(
         self,
         property: Property,
@@ -246,18 +270,12 @@ class PropertyScorer:
             >>> print(explanation.to_text())  # Markdown output
             >>> print(explanation.to_dict())  # JSON-serializable dict
         """
-        # Import here to avoid circular dependency
-        from .explanation import ScoringExplainer
-
         # Calculate breakdown if not provided
         if breakdown is None:
             breakdown = self.score(property)
 
-        # Create explainer with same weights and thresholds
-        explainer = ScoringExplainer(
-            weights=self._weights,
-            thresholds=self._thresholds,
-        )
+        # Use cached explainer instance
+        explainer = self._get_explainer()
 
         return explainer.explain(property, breakdown)
 

@@ -445,24 +445,22 @@ class ConfigLoader:
         ]
 
         logger.info("Starting config file watcher...")
-        print("Watching configuration files for changes:")
+        logger.info("Watching configuration files for changes:")
         for path in watch_paths:
-            print(f"  - {path}")
-        print("Press Ctrl+C to stop.\n")
+            logger.info(f"  - {path}")
+        logger.info("Press Ctrl+C to stop.\n")
 
         for changes in watchfiles_watch(*watch_paths):
             changed_files = [str(change[1]) for change in changes]
             logger.info(f"Config file(s) changed: {changed_files}")
-            print(f"\nConfig file changed: {changed_files}")
+            logger.info(f"\nConfig file changed: {changed_files}")
 
             try:
                 config = self.load()
                 callback(config)
-                print("[OK] Configuration reloaded successfully")
-                logger.info("Configuration reloaded successfully")
+                logger.info("[OK] Configuration reloaded successfully")
             except (ConfigurationError, FileNotFoundError, yaml.YAMLError) as e:
-                print(f"[ERROR] Configuration reload failed:\n{e}")
-                logger.error(f"Configuration reload failed: {e}")
+                logger.error(f"[ERROR] Configuration reload failed:\n{e}")
 
 
 # =============================================================================

@@ -142,6 +142,7 @@ class AnalysisPipeline:
         scorer: PropertyScorer | None = None,
         tier_classifier: TierClassifier | None = None,
         property_analyzer: PropertyAnalyzer | None = None,
+        cached_data_manager: "CachedDataManager | None" = None,  # noqa: F821
     ) -> None:
         """Initialize pipeline with configuration and services.
 
@@ -157,6 +158,7 @@ class AnalysisPipeline:
             scorer: Property scoring service. If None, creates default scorer.
             tier_classifier: Tier classification service. If None, creates default classifier.
             property_analyzer: Single property analyzer. If None, creates default analyzer.
+            cached_data_manager: Cached data manager. If None, creates default with enrichment_repo.
         """
         # Load or use provided config
         self._config = config or AppConfig.default()
@@ -169,6 +171,13 @@ class AnalysisPipeline:
 
         self._enrichment_repo = enrichment_repo or JsonEnrichmentRepository(
             json_file_path=self._config.paths.enrichment_json
+        )
+
+        # Initialize cached data manager for efficient enrichment data access
+        # Import here to avoid circular dependency issues
+        from ..repositories.cached_manager import CachedDataManager as CachedDataManagerImpl
+        self._cached_data_manager = cached_data_manager or CachedDataManagerImpl(
+            self._enrichment_repo
         )
 
         # Initialize core services
@@ -228,9 +237,9 @@ class AnalysisPipeline:
         properties = self._property_repo.load_all()
         logger.info(f"Loaded {len(properties)} properties from CSV")
 
-        # Stage 2: Load enrichment data from JSON
+        # Stage 2: Load enrichment data from JSON (using cache)
         logger.info("Stage 2/8: Loading enrichment data from JSON...")
-        enrichment_data = self._enrichment_repo.load_all()
+        enrichment_data = self._cached_data_manager.get_all()
         logger.info(f"Loaded enrichment data for {len(enrichment_data)} properties")
 
         # Stage 3: Merge enrichment into properties
@@ -264,6 +273,10 @@ class AnalysisPipeline:
         self._save_results(all_ranked, failed_properties)
         logger.info(f"Results saved to {self._config.paths.output_csv}")
 
+        # Save enrichment data if cache has changes
+        if self._cached_data_manager.save_if_dirty():
+            logger.info("Saved enrichment data changes to JSON")
+
         # Calculate execution time
         execution_time = time.time() - start_time
         logger.info(f"Pipeline completed in {execution_time:.2f} seconds")
@@ -296,9 +309,9 @@ class AnalysisPipeline:
         """
         logger.info(f"Analyzing single property: {full_address}")
 
-        # Load all properties and enrichment data
+        # Load all properties and enrichment data (using cache)
         properties = self._property_repo.load_all()
-        enrichment_data = self._enrichment_repo.load_all()
+        enrichment_data = self._cached_data_manager.get_all()
 
         # Delegate to property analyzer
         return self._property_analyzer.find_and_analyze(

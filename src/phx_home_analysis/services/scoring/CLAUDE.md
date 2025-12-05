@@ -1,6 +1,6 @@
 ---
-last_updated: 2025-12-04
-updated_by: main
+last_updated: 2025-12-05
+updated_by: agent
 staleness_hours: 24
 flags: []
 ---
@@ -8,7 +8,7 @@ flags: []
 
 ## Purpose
 
-Property scoring service implementing the 605-point weighted system. Orchestrates scoring strategies across three dimensions (Location 230pts, Systems 180pts, Interior 195pts) and assigns tier classifications (Unicorn, Contender, Pass).
+Property scoring service implementing the 605-point weighted system. Orchestrates scoring strategies across three dimensions (Location 250pts, Systems 175pts, Interior 180pts) and assigns tier classifications (Unicorn, Contender, Pass).
 
 ## Contents
 

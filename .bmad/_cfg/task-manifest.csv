@@ -1,4 +1,5 @@
 name,displayName,description,module,path,standalone
+"CLAUDE","CLAUDE","","core",".bmad/core/tasks/CLAUDE.md","false"
 "advanced-elicitation","Advanced Elicitation","When called from workflow","core",".bmad/core/tasks/advanced-elicitation.xml","true"
 "index-docs","Index Docs","Generates or updates an index.md of all documents in the specified directory","core",".bmad/core/tasks/index-docs.xml","true"
 "validate-workflow","Validate Workflow Output","Run a checklist against a document with thorough analysis and produce a validation report","core",".bmad/core/tasks/validate-workflow.xml","false"

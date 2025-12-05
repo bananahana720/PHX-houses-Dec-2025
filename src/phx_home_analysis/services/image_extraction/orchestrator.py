@@ -337,6 +337,15 @@ class ImageExtractionOrchestrator:
         # Run ID for audit trail (8-char identifier)
         self.run_id: str = str(uuid4())[:8]
 
+        # Statistics accumulator for O(1) get_statistics()
+        # Populated during extraction, reset on clear_state()
+        self._stats_accumulator = {
+            "total_images": 0,
+            "by_source": defaultdict(int),
+            "by_property": defaultdict(int),
+            "extraction_errors": 0,
+        }
+
     def _load_manifest(self) -> dict[str, list[dict]]:
         """Load image manifest from disk.
 
@@ -1181,6 +1190,8 @@ class ImageExtractionOrchestrator:
                             result.failed_downloads += 1
                             prop_changes.errors += 1
                             prop_changes.error_messages.append(f"Hash failed: {url}")
+                            # Update statistics accumulator
+                            self._stats_accumulator["extraction_errors"] += 1
                             continue
 
                         # Check for duplicate
@@ -1212,6 +1223,8 @@ class ImageExtractionOrchestrator:
                             result.failed_downloads += 1
                             prop_changes.errors += 1
                             prop_changes.error_messages.append(f"Standardize failed: {url}")
+                            # Update statistics accumulator
+                            self._stats_accumulator["extraction_errors"] += 1
                             continue
 
                         # Use content hash as image ID for deterministic storage
@@ -1293,6 +1306,11 @@ class ImageExtractionOrchestrator:
                         result.total_images += 1
                         result.unique_images += 1
 
+                        # Update statistics accumulator (O(1))
+                        self._stats_accumulator["total_images"] += 1
+                        self._stats_accumulator["by_source"][extractor.source.value] += 1
+                        self._stats_accumulator["by_property"][property.full_address] += 1
+
                         logger.debug(f"Saved new image: {content_hash}.png")
 
                         # Rate limiting
@@ -1309,6 +1327,8 @@ class ImageExtractionOrchestrator:
                         result.failed_downloads += 1
                         prop_changes.errors += 1
                         prop_changes.error_messages.append(f"Download failed: {url}")
+                        # Update statistics accumulator
+                        self._stats_accumulator["extraction_errors"] += 1
 
                     except Exception as e:
                         error_msg = f"Unexpected error processing {url}: {e}"
@@ -1321,6 +1341,8 @@ class ImageExtractionOrchestrator:
                         result.failed_downloads += 1
                         prop_changes.errors += 1
                         prop_changes.error_messages.append(f"Error: {url}: {e}")
+                        # Update statistics accumulator
+                        self._stats_accumulator["extraction_errors"] += 1
 
                 source_stats.properties_processed += 1
 
@@ -1489,8 +1511,38 @@ class ImageExtractionOrchestrator:
     def get_statistics(self) -> dict:
         """Get comprehensive statistics about extracted images.
 
+        Performance: O(1) when stats are pre-computed during extraction.
+        Falls back to O(n*m) computation from manifest for backward compatibility.
+
         Returns:
             Dict with extraction statistics
+        """
+        # If stats accumulated during extraction, use pre-computed values (O(1))
+        if self._stats_accumulator["total_images"] > 0:
+            return {
+                "total_properties": len(self._stats_accumulator["by_property"]),
+                "total_images": self._stats_accumulator["total_images"],
+                "images_by_source": dict(self._stats_accumulator["by_source"]),
+                "extraction_errors": self._stats_accumulator["extraction_errors"],
+                "completed_properties": len(self.state.completed_properties),
+                "failed_properties": len(self.state.failed_properties),
+                "stale_properties": len(self.state.get_stale_properties()),
+                "url_tracker_stats": self.url_tracker.get_stats(),
+                "deduplication_stats": self.deduplicator.get_stats(),
+                "last_updated": self.state.last_updated,
+                "stats_source": "pre-computed",  # Indicator for debugging
+            }
+
+        # Fallback: compute from manifest (for backward compatibility)
+        return self._compute_statistics_from_manifest()
+
+    def _compute_statistics_from_manifest(self) -> dict:
+        """Compute statistics from manifest (O(n*m) - fallback method).
+
+        Used when stats accumulator is empty (e.g., after restart without extraction).
+
+        Returns:
+            Dict with extraction statistics computed from manifest
         """
         total_images = sum(len(images) for images in self.manifest.values())
 
@@ -1504,12 +1556,14 @@ class ImageExtractionOrchestrator:
             "total_properties": len(self.manifest),
             "total_images": total_images,
             "images_by_source": by_source,
+            "extraction_errors": 0,  # Not tracked in manifest
             "completed_properties": len(self.state.completed_properties),
             "failed_properties": len(self.state.failed_properties),
             "stale_properties": len(self.state.get_stale_properties()),
             "url_tracker_stats": self.url_tracker.get_stats(),
             "deduplication_stats": self.deduplicator.get_stats(),
             "last_updated": self.state.last_updated,
+            "stats_source": "manifest",  # Indicator for debugging
         }
 
     def clear_state(self) -> None:
@@ -1519,4 +1573,13 @@ class ImageExtractionOrchestrator:
         """
         self.state = ExtractionState()
         self._save_state()
+
+        # Reset statistics accumulator
+        self._stats_accumulator = {
+            "total_images": 0,
+            "by_source": defaultdict(int),
+            "by_property": defaultdict(int),
+            "extraction_errors": 0,
+        }
+
         logger.info("Cleared extraction state")

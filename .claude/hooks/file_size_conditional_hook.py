@@ -142,20 +142,26 @@ if file_path and os.path.exists(file_path):
 
     line_count = _get_line_count(file_path)
 
+    # Determine if this is a full file read (no limit specified)
+    is_full_read = limit == 0 or limit is None
+
     # Compute effective number of lines to be read
-    if limit > 0:
+    if limit and limit > 0:
         effective_lines = min(limit, max(0, line_count - offset))
     else:
         effective_lines = max(0, line_count - offset)
 
-    if is_main_agent and line_count > 750:
-        error_msg = f"""File has {line_count} lines (threshold: 750).
+    # Only block if: main agent + full file read + file > 750 lines
+    if is_main_agent and is_full_read and line_count > 750:
+        error_msg = f"""File has {line_count} lines (threshold: 750) and this is a full file read.
 
-Please utilize ripgrep (rg), Grep (capital G*), or delegate the analysis to a SUB-AGENT using your Task tool
-to avoid bloating your context with the file content.
+Please either:
+1. Use offset/limit parameters to read specific sections (e.g., offset=0, limit=500)
+2. Use Grep tool or ripgrep (rg) to search for specific patterns
+3. Delegate to a subagent: Task tool with subagent_type=Explore
 
-Example:
-    Use the Task tool with subagent_type=Explore to analyze {file_path}
+Example partial read:
+    Read file_path="{file_path}" offset=0 limit=500
 """
         print(error_msg, file=sys.stderr)
         sys.exit(2)

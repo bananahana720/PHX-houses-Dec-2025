@@ -200,38 +200,140 @@ def evaluate_hygiene(is_agent: bool = False) -> dict[str, str]:
 
         # Build explicit Haiku instructions
         haiku_instructions = """
-## CLAUDE.MD HYGIENE TASK
+            You are an AI orchestrator responsible for coordinating the creation and maintenance of CLAUDE.md documentation files across a codebase. You will simulate multiple sub-agents, each processing one directory to create or update its CLAUDE.md file.
 
-Spawn `Task(model=haiku)` subagent(s) with the following instructions:
+            Here are the directories you need to process:
 
-### EXECUTION STEPS (Follow Exactly)
+            <directories_to_process>
+            {{DIRECTORIES_TO_PROCESS}}
+            </directories_to_process>
 
-1. **READ** the template: `.claude/templates/CLAUDE.md.template`
-2. **FOR EACH** directory listed below:
-   a. **Glob** `*.py` / `*.ts` / `*.md` files in that directory
-   b. **Read** 2-3 key files to understand purpose
-   c. **Create/Update** CLAUDE.md following template schema
-3. **VALIDATE** each CLAUDE.md:
-   - Line count ≤100 (if over, distill to essentials)
-   - Has frontmatter with `last_updated`, `updated_by: agent`
-   - Purpose section is 1-2 sentences max
-   - Contents table lists only key files (≤10 rows)
-   - No prose paragraphs - use bullets/tables only
+            Here are the file extensions to analyze in each directory:
 
-### TOKEN EFFICIENCY RULES
-- **Purpose**: 1-2 sentences maximum
-- **Contents**: Only files that matter for context (skip tests, __init__.py)
-- **Tasks**: Max 5 items, use priority tags `P:H|M|L`
-- **Learnings**: Max 3 key patterns/discoveries
-- **Refs**: Only cross-references essential for navigation
-- **Deps**: Import relationships that affect understanding
+            <file_extensions>
+            {{FILE_EXTENSIONS}}
+            </file_extensions>
 
-### DISTILLATION (for oversized files)
-If CLAUDE.md >100 lines:
-1. Keep only highest-signal content
-2. Merge similar items
-3. Remove obvious/redundant info
-4. Target: 50-80 lines ideal"""
+            Here is the model type being used:
+
+            <model_type>
+            {{MODEL_TYPE}}
+            </model_type>
+
+            ## Your Task
+
+            You will coordinate multiple sub-agents to process each directory listed above. Follow these rules:
+            - Assign exactly ONE agent to each directory (create a 1:1 mapping)
+            - Batch agents into groups of 5 for resource efficiency
+            - Process batches sequentially
+
+            ## Agent Instructions
+
+            Each agent you simulate will follow this workflow:
+
+            **Step 1: Select Template**
+            - For project root directories: read `claude.md.project-root.template`
+            - For sub-directories: read `.claude/templates/CLAUDE.md.template`
+
+            **Step 2: Analyze Directory**
+            - Glob all files matching the specified file extensions
+            - Read 2-3 representative files to understand the directory's purpose
+            - Identify how this directory fits into the larger codebase
+
+            **Step 3: Generate CLAUDE.md**
+
+            Create a CLAUDE.md file with these sections:
+
+            - **Frontmatter**: Include `last_updated` timestamp and `updated_by: agent`
+            - **Purpose**: 1-2 sentences maximum describing the directory's function
+            - **Contents Table**: List up to 10 key files only
+            - **Common Commands**: Relevant bash commands for this directory
+            - **Core Files**: Important files and utility functions
+            - **Code Style**: Guidelines specific to this directory
+            - **Testing**: How to run tests for code in this directory
+            - **Repository Etiquette**: Branch naming conventions, merge vs. rebase preferences
+            - **Warnings**: Unexpected behaviors or gotchas
+            - **Critical Context**: Other important information
+
+            **Formatting Rules:**
+            - Use bullets and tables ONLY (no prose paragraphs)
+            - Keep information concise and scannable
+            - Focus on high-signal, non-obvious information
+            - Eliminate redundancy and obvious details
+
+            **Step 4: Validate**
+
+            Check that the CLAUDE.md meets ALL criteria:
+            - ≤100 lines total
+            - Frontmatter includes `last_updated` and `updated_by: agent`
+            - Purpose is 1-2 sentences maximum
+            - Contents table lists ≤10 key files
+            - Uses only bullets and tables (no prose paragraphs)
+
+            **Step 5: Distill if Necessary**
+
+            If the file exceeds 100 lines:
+            - Reduce to 50-80 lines
+            - Keep only the highest-signal content
+            - Merge similar items
+            - Remove obvious or redundant information
+            - Preserve: non-obvious details, error-prevention info, time-saving tips
+
+            ## Your Process
+
+            Work through this task inside a thinking block with two subsections:
+
+            **In `<planning>` tags:**
+            1. List every directory from the input explicitly
+            2. Assign exactly one agent to each directory
+            3. Group agents into batches of 5
+            4. Define the execution order
+
+            It's OK for this section to be quite long if there are many directories.
+
+            **In `<execution_log>` tags:**
+            For each agent, document the following in detail:
+            - Which directory it's processing
+            - Which template it used
+            - List the specific files it globbed (not just the count)
+            - List the 2-3 representative files it selected to read
+            - Quote key code patterns, imports, or structural elements observed in those files
+            - Based on those observations, state the directory's purpose (1-2 sentences)
+            - Count the total lines in the generated CLAUDE.md explicitly
+            - Validate each criterion individually:
+            * Check: Is it ≤100 lines? (state the actual line count)
+            * Check: Does frontmatter include `last_updated` and `updated_by: agent`?
+            * Check: Is Purpose 1-2 sentences maximum?
+            * Check: Does Contents table list ≤10 key files?
+            * Check: Uses only bullets and tables (no prose paragraphs)?
+            * Check: Is content concise with no redundancy and only high-signal information?
+            - Overall validation result: PASSED or FAILED (with specific failures noted)
+            - If distillation was needed: list what specific content was removed/merged, and state the final line count
+
+            It's OK for this section to be quite long since you're processing multiple directories with detailed validation steps.
+
+            The execution log ensures thoroughness but will not appear in your final output.
+
+            **After your thinking block**, provide a summary in `<summary>` tags with:
+            - Total directories processed
+            - Number of files created vs. updated
+            - List of directories that required distillation (if any)
+            - Any issues encountered and their resolutions
+
+            ## Output Example
+
+            Your final output structure should look like this:
+
+            <summary>
+            Processed 8 directories total
+            - Created: 5 new CLAUDE.md files
+            - Updated: 3 existing CLAUDE.md files
+            - Distilled: 1 file (/src/legacy - reduced from 127 lines to 68 lines)
+            - All files validated successfully
+            - No issues encountered
+            </summary>
+
+            Your final output should contain ONLY the summary in the format shown above. Do not duplicate or repeat any of the planning or execution log details that you worked through in your thinking block."""
 
         return {
             "decision": "block",

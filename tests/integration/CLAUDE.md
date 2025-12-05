@@ -1,232 +1,57 @@
 ---
-last_updated: 2025-12-04
-updated_by: Claude Code (Haiku)
+last_updated: 2025-12-05T18:00:00Z
+updated_by: agent
 staleness_hours: 24
-flags: []
 ---
-
 # tests/integration
 
 ## Purpose
-
-Integration test suite validating multi-component workflows end-to-end. Tests verify complete pipeline execution from data loading through scoring, kill-switch filtering, error recovery, and report generation without mocking internal services.
+Integration tests validating multi-component workflows end-to-end: pipeline execution, kill-switch filtering, error recovery, cache integration, and report generation.
 
 ## Contents
+| File | Tests | Focus |
+|------|-------|-------|
+| `test_pipeline.py` | 31 | Full pipeline: load → enrich → filter → score → report |
+| `test_kill_switch_chain.py` | 27 | HARD/SOFT severity accumulation, thresholds |
+| `test_api_client_integration.py` | 18 | HTTP client: caching, retries, auth |
+| `test_cached_data_integration.py` | 12 | CachedDataManager pipeline integration |
+| `test_transient_error_recovery.py` | 11 | Exponential backoff, work_items tracking |
+| `test_resume_workflow.py` | 9 | Pipeline resume, stale detection, fresh start |
+| `test_crash_recovery.py` | 8 | Atomic writes, backup/restore, corruption |
+| `test_deal_sheets_simple.py` | 5 | HTML report generation |
+| `test_checkpoint_workflow.py` | 5 | State persistence and recovery |
+| `test_proxy_extension.py` | 4 | Stealth browser proxy config |
 
-| Test File | Purpose | Test Count |
-|-----------|---------|-----------|
-| `test_pipeline.py` | Complete AnalysisPipeline workflow: load → enrich → filter → score → report | 31 tests |
-| `test_kill_switch_chain.py` | Kill-switch filter chain with HARD/SOFT criteria accumulation | 26 tests |
-| `test_api_client_integration.py` | HTTP client integration with caching, retries, authentication | 18 tests |
-| `test_transient_error_recovery.py` | Transient error retry logic with exponential backoff, work_items tracking | 11 tests |
-| `test_resume_workflow.py` | Pipeline resume workflow: interruptions, backups, staleness, duplicates | 9 tests |
-| `test_pipeline_integration.py` | Pipeline orchestration and progress tracking | 9 tests |
-| `test_crash_recovery.py` | Crash recovery: corrupt JSON, missing files, backup restore | 8 tests |
-| `test_deal_sheets_simple.py` | Deal sheet HTML generation from scored properties | 5 tests |
-| `test_checkpoint_workflow.py` | Checkpoint workflow for state persistence and recovery | 5 tests |
-| `test_proxy_extension.py` | Proxy extension for stealth browser image extraction | 4 tests |
+## Commands
+```bash
+pytest tests/integration/ -v              # All integration tests
+pytest tests/integration/ -k "pipeline"   # Pipeline tests only
+pytest tests/integration/ -k "kill_switch" # Kill-switch tests
+pytest tests/integration/ --tb=short -x   # Stop on first failure
+```
 
-## Key Test Scenarios
+## Key Patterns
+- **Real vs Mock**: Uses real repositories (CSV/JSON), mocks external APIs (GreatSchools, FEMA)
+- **Fixtures**: `sample_property`, `sample_unicorn_property`, `sample_failed_property`, `sample_property_minimal`
+- **State validation**: Tests work_items.json transitions (pending → done/failed)
+- **Atomic writes**: Backup creation, restore from corruption, timestamped naming
 
-### test_pipeline.py (31 tests)
-**Focus:** Complete end-to-end workflow validation
-
-**Test Classes:**
-- `TestFullPipeline` - Full pipeline with complete data (kill-switch → score)
-- `TestPipelineWithIncompleteData` - Incomplete/missing field handling
-- `TestMixedPropertyBatches` - Mixed pass/fail/unicorn properties
-- `TestCsvExport` - Ranked CSV output with correct column ordering
-
-**Key Scenarios:**
-- Property with all enrichment data passes kill-switch and scores >0
-- Properties with missing optional fields handled gracefully
-- Kill-switch filter separates pass/fail properties correctly
-- Scoring produces results in expected range (0-605 points)
-- CSV export preserves data and ranks by score
-
-**Fixtures Used:** sample_property, sample_unicorn_property, sample_failed_property, sample_property_minimal
-
-### test_kill_switch_chain.py (27 tests)
-**Focus:** Kill-switch severity system validation (HARD vs SOFT criteria, accumulation, thresholds)
-
-**Test Classes:**
-- `TestHardCriteria` - HOA, min bedrooms, min bathrooms (instant fail)
-- `TestSoftCriteriaAccumulation` - Sewer (2.5), year (2.0), garage (1.5), lot (1.0)
-- `TestSeverityThresholds` - Verdict rules (FAIL ≥3.0, WARNING ≥1.5, PASS <1.5)
-- `TestBoundaryConditions` - Exact threshold validation (2.9 vs 3.0)
-
-**Kill-Switch Criteria Reference:**
-- **HARD (instant fail):** HOA > $0, beds < 4, baths < 2.0
-- **SOFT (severity accumulation):**
-  - City sewer (not septic): 2.5
-  - Year built < 2024: 2.0
-  - Garage spaces < 2: 1.5
-  - Lot size not 7k-15k sqft: 1.0
-
-**Severity Verdict Logic:**
-- **FAIL:** Any HARD fail OR total severity ≥ 3.0
-- **WARNING:** Total severity 1.5-3.0
-- **PASS:** Total severity < 1.5
-
-**Key Test Patterns:**
-- Single HARD failure → FAIL (no accumulation)
-- Multiple SOFT failures accumulate (2.5 + 1.5 = 4.0 → FAIL)
-- Boundary testing: 2.9 severity → PASS, 3.0 severity → FAIL
-- Property with 3 SOFT failures (sewer 2.5 + year 2.0 + garage 1.5 = 6.0) → FAIL
-
-### test_crash_recovery.py (13 tests)
-**Focus:** Data integrity and atomic write validation
-
-**Test Classes:**
-- `TestAtomicWrites` - Write-to-temp + atomic rename prevents corruption
-- `TestBackupCreation` - Backup created before write with timestamp
-- `TestBackupRestore` - Restore from backup on corruption/missing file
-- `TestNormalizedAddressRecovery` - Recompute normalized_address if missing
-
-**Atomic Write Pattern:**
-1. Write data to temp file (enrichment_data.json.tmp)
-2. Atomic rename temp → target (Path.replace() on Windows, rename on POSIX)
-3. On crash: Either old file intact or new file complete (never partial)
-
-**Backup Features:**
-- Auto-created before write (if create_backup=True)
-- Timestamped filename: `enrichment_data.20251203_143000.bak.json`
-- Multiple versions per file possible
-- restore_from_backup() finds most recent valid backup
-
-**Key Scenarios:**
-- Create new file and save (no pre-existing backup)
-- Second save creates backup of first (timestamp differs)
-- Corrupted file detected and backed up
-- restore_from_backup() restores most recent backup
-- Missing normalized_address computed and reapplied on load
-
-### test_resume_workflow.py (9 tests - E1.S5)
-**Focus:** Pipeline resume workflow and state recovery on interruption
-
-**Test Classes:**
-- `TestResumeWorkflowIntegration` - Complete resume scenarios
-
-**Test Methods:**
-- `test_resume_after_interruption()` - Resume after simulated interruption (3 properties, 1 complete, 1 in-progress)
-- `test_fresh_start_preserves_backup()` - Fresh start creates timestamped backup, new session_id
-- `test_stale_item_recovery()` - Automatic reset of in_progress items after 30+ minutes
-- `test_no_duplicate_processing()` - Completed items excluded from pending on resume
-- `test_corrupt_state_error_handling()` - StateValidationError for corrupt JSON with recovery suggestion
-- `test_resume_summary_statistics()` - Accurate counts: total, pending, completed, session_id
-- `test_estimate_data_loss()` - Calculates completed items lost on fresh start
-- `test_fresh_flag_prevents_resume()` - Fresh flag overrides existing state
-- `test_version_mismatch_error()` - StateValidationError for incompatible schema versions
-
-**Key Patterns:**
-- State checkpoints: phase_start, phase_complete track progress atomically
-- Stale detection: Items in_progress >30 min auto-reset to pending
-- Backup management: Timestamped backups before fresh start prevent data loss
-- Data loss estimation: count_completed_items() before fresh start decision
-- Error recovery: StateValidationError.suggestion includes --fresh flag for recovery
-
-**Integration Points:**
-- WorkItemsRepository - State persistence and recovery
-- ResumePipeline - Resume logic, validation, summary generation
-
-### test_deal_sheets_simple.py (5 tests)
-**Focus:** Data loading and enrichment merge validation
-
-**Test Functions:**
-- Load CSV listings (phx_homes.csv format)
-- Load JSON enrichment (enrichment_data.json format)
-- Merge enrichment into properties (field preservation)
-- CSV column ordering (address → listing → county → features → scores → analysis)
-- Data type conversions and None handling
-
-**Data Merge Pattern:**
-1. Load CSV properties (full_address as key)
-2. Load JSON enrichment (indexed by address)
-3. Match properties to enrichment by normalized address
-4. Merge enrichment fields into Property entity
-5. Verify original CSV fields retained after merge
-
-## Test Architecture & Patterns
-
-### Fixture-Based Test Data
-- `sample_property` - Standard 4bd/2ba, passes kill-switches
-- `sample_unicorn_property` - High-scoring 5bd/3.5ba
-- `sample_failed_property` - HOA $200/mo (fails kill-switch)
-- `sample_property_minimal` - Minimal data (all None optionals)
-- `sample_properties` - Collection of 6 varied properties
-
-### Arrange-Act-Assert Pattern
-All tests follow clear structure:
-1. **Arrange:** Set up test data (property, enrichment, repositories)
-2. **Act:** Execute code being tested (filter, score, save/load)
-3. **Assert:** Verify results match expected (verdict, score range, field values)
-
-### Error Handling Testing
-- Invalid JSON format → DataLoadError with clear message
-- Missing CSV columns → DataLoadError
-- File not found → Creates template or raises error
-- Type coercion failures → ValueError with context
-
-## Test Organization
-
-**Fixtures:** Shared fixtures in conftest.py (properties, enrichment data, temp files)
-**Parametrization:** Tests use `@pytest.mark.parametrize` for multi-scenario coverage
-**Async Tests:** Async tests decorated with `@pytest.mark.asyncio`
-**Mocking:** External APIs mocked (GreatSchools, WalkScore, FEMA); internal services real
-
-### test_pipeline_integration.py (NEW - E5.S1)
-**Focus:** Pipeline orchestration integration (PhaseCoordinator + ProgressReporter)
-
-**Test Coverage:**
-- Phase execution and sequencing validation
-- Progress tracking across batch operations
-- State file integration (work_items.json updates)
-- Multi-property batch processing (5-100 properties)
-- Error recovery and retry logic
-- CLI command execution end-to-end
-
-**Estimated Tests:** ~20 integration tests validating orchestration
+## Severity System (Kill-Switch)
+| Verdict | Condition |
+|---------|-----------|
+| FAIL | Any HARD fail OR total severity ≥ 3.0 |
+| WARNING | Severity 1.5 - 3.0 |
+| PASS | Severity < 1.5 |
 
 ## Tasks
-
-- [x] Document integration test structure and test files
-- [x] Map test organization: fixtures, parametrization, async patterns
-- [x] Extract test counts per file (126 total integration tests)
-- [x] Document error recovery test scenarios (crash recovery, transient retry)
-- [x] Add test_pipeline_integration.py for E5.S1 orchestration
-- [x] Add test_resume_workflow.py for E1.S5 resume workflow (9 tests)
-- [ ] Add performance benchmarks for large batches P:M
-- [ ] Implement CI/CD gates for integration test coverage P:H
+- [ ] Add performance benchmarks for large batches `P:M`
+- [ ] CI/CD gates for integration test coverage `P:H`
 
 ## Learnings
-
-- **Real vs Mock:** Integration tests use real repositories (CSV/JSON), services (kill-switch/scoring), but mock external APIs (GreatSchools, FEMA, WalkScore)
-- **State management validation:** Test work_items.json state transitions (pending → done/failed) through complete workflows
-- **Crash recovery coverage:** Tests verify atomic writes, backup creation, restore from backup with corrupted/missing files
-- **Error propagation:** Transient errors retry with backoff; permanent errors fail immediately; all failures logged to work_items.json
-- **Resume patterns:** Pipeline resume requires checkpoint tracking (phase_start/complete), stale item detection (>30 min), and data loss estimation before fresh start
-- **State validation:** StateValidationError must include recovery suggestions (--fresh flag) for corrupted state or version mismatches
-- **Atomicity:** Backup creation and timestamped naming prevent data loss on interruptions; fresh start shows data loss estimate
-
-## Refs
-
-- Pipeline integration: `test_pipeline.py:1-50` (full workflow)
-- Kill-switch chain: `test_kill_switch_chain.py:1-100` (HARD/SOFT accumulation)
-- Resume workflow: `test_resume_workflow.py:1-80` (interruption recovery, fresh start)
-- Crash recovery: `test_crash_recovery.py:1-80` (corruption/restore)
-- Transient retry: `test_transient_error_recovery.py:1-150` (exponential backoff, work_items tracking)
+- Boundary testing critical: 2.9 → PASS, 3.0 → FAIL
+- Stale detection: Items in_progress >30 min auto-reset
+- Atomic writes prevent corruption on crash
 
 ## Deps
-
-← Imports from:
-  - `src/phx_home_analysis/pipeline/` - AnalysisPipeline orchestrator, ResumePipeline
-  - `src/phx_home_analysis/services/` - Kill-switch, scoring services
-  - `src/phx_home_analysis/repositories/` - WorkItemsRepository state management
-  - `data/*.json, data/*.csv` - Test data files
-  - `conftest.py` - Shared pytest fixtures
-
-→ Imported by:
-  - CI/CD pipeline (pytest command)
-  - Manual testing before releases
-  - Regression detection on API changes
-  - Resume workflow validation before production deployment
+← `src/phx_home_analysis/pipeline/`, `services/`, `repositories/`, `conftest.py`
+→ CI/CD pipeline, pre-merge validation

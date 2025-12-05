@@ -30,7 +30,28 @@ class EnrichmentMerger:
     - Merge HOA and tax information
     - Merge location data (school ratings, distances, commute)
     - Merge Arizona-specific features (solar, pool, HVAC, roof age)
+
+    Performance:
+    - Uses class-level caches for enum conversions to avoid repeated string processing
+    - O(1) dict lookup instead of iteration with try/except for each property
     """
+
+    def __init__(self) -> None:
+        """Initialize enum conversion caches for optimal performance.
+
+        Pre-populates caches with all valid lowercase enum values to eliminate
+        repeated string processing and exception handling in hot paths.
+        """
+        # Build enum caches from all valid members (lowercase keys)
+        self._sewer_cache: dict[str, SewerType] = {
+            member.value.lower(): member for member in SewerType
+        }
+        self._orientation_cache: dict[str, Orientation] = {
+            member.value.lower(): member for member in Orientation
+        }
+        self._solar_cache: dict[str, SolarStatus] = {
+            member.value.lower(): member for member in SolarStatus
+        }
 
     def merge(self, property_obj: Property, enrichment: EnrichmentData) -> Property:
         """Merge enrichment data into a single property.
@@ -118,7 +139,10 @@ class EnrichmentMerger:
         return properties
 
     def _convert_to_sewer_type(self, value: str | SewerType) -> SewerType:
-        """Convert string or enum to SewerType enum.
+        """Convert string or enum to SewerType enum using cached lookups.
+
+        Uses O(1) dict lookup from pre-populated cache to avoid repeated
+        string processing and exception handling.
 
         Args:
             value: String value or SewerType enum
@@ -129,14 +153,23 @@ class EnrichmentMerger:
         if isinstance(value, SewerType):
             return value
 
-        try:
-            return SewerType(value.lower())
-        except (ValueError, AttributeError):
-            logger.warning(f"Invalid sewer_type value: {value}, using UNKNOWN")
+        if not value:
+            logger.warning("Empty sewer_type value, using UNKNOWN")
             return SewerType.UNKNOWN
 
+        key = value.lower()
+        if key in self._sewer_cache:
+            return self._sewer_cache[key]
+
+        # Unknown value - not in cache
+        logger.warning(f"Invalid sewer_type value: {value}, using UNKNOWN")
+        return SewerType.UNKNOWN
+
     def _convert_to_orientation(self, value: str | Orientation) -> Orientation | None:
-        """Convert string or enum to Orientation enum.
+        """Convert string or enum to Orientation enum using cached lookups.
+
+        Uses O(1) dict lookup from pre-populated cache to avoid repeated
+        string processing and exception handling.
 
         Args:
             value: String value or Orientation enum
@@ -147,14 +180,23 @@ class EnrichmentMerger:
         if isinstance(value, Orientation):
             return value
 
-        try:
-            return Orientation(value.lower())
-        except (ValueError, AttributeError):
-            logger.warning(f"Invalid orientation value: {value}, using None")
+        if not value:
+            logger.warning("Empty orientation value, using None")
             return None
 
+        key = value.lower()
+        if key in self._orientation_cache:
+            return self._orientation_cache[key]
+
+        # Unknown value - not in cache
+        logger.warning(f"Invalid orientation value: {value}, using None")
+        return None
+
     def _convert_to_solar_status(self, value: str | SolarStatus) -> SolarStatus | None:
-        """Convert string or enum to SolarStatus enum.
+        """Convert string or enum to SolarStatus enum using cached lookups.
+
+        Uses O(1) dict lookup from pre-populated cache to avoid repeated
+        string processing and exception handling.
 
         Args:
             value: String value or SolarStatus enum
@@ -165,8 +207,14 @@ class EnrichmentMerger:
         if isinstance(value, SolarStatus):
             return value
 
-        try:
-            return SolarStatus(value.lower())
-        except (ValueError, AttributeError):
-            logger.warning(f"Invalid solar_status value: {value}, using None")
+        if not value:
+            logger.warning("Empty solar_status value, using None")
             return None
+
+        key = value.lower()
+        if key in self._solar_cache:
+            return self._solar_cache[key]
+
+        # Unknown value - not in cache
+        logger.warning(f"Invalid solar_status value: {value}, using None")
+        return None

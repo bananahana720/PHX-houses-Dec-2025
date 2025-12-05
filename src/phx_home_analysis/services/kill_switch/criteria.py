@@ -277,9 +277,11 @@ class MinBedroomsKillSwitch(KillSwitch):
         Returns:
             Detailed failure message including actual bedroom count
         """
-        if property.beds is None:
-            return f"Bedroom count unknown (buyer requires {self._min_beds}+)"
-        return f"Only {property.beds} bedrooms (buyer requires {self._min_beds}+)"
+        return self._format_failure_message(
+            property.beds,
+            f"Bedroom count unknown (buyer requires {self._min_beds}+)",
+            f"Only {{value}} bedrooms (buyer requires {self._min_beds}+)",
+        )
 
 
 class MinBathroomsKillSwitch(KillSwitch):
@@ -331,9 +333,11 @@ class MinBathroomsKillSwitch(KillSwitch):
         Returns:
             Detailed failure message including actual bathroom count
         """
-        if property.baths is None:
-            return f"Bathroom count unknown (buyer requires {self._min_baths}+)"
-        return f"Only {property.baths} bathrooms (buyer requires {self._min_baths}+)"
+        return self._format_failure_message(
+            property.baths,
+            f"Bathroom count unknown (buyer requires {self._min_baths}+)",
+            f"Only {{value}} bathrooms (buyer requires {self._min_baths}+)",
+        )
 
 
 class MinSqftKillSwitch(KillSwitch):
@@ -390,9 +394,11 @@ class MinSqftKillSwitch(KillSwitch):
         Returns:
             Detailed failure message including actual sqft
         """
-        if property.sqft is None:
-            return f"Square footage unknown (buyer requires {self._min_sqft:,}+ sqft)"
-        return f"Only {property.sqft:,} sqft (buyer requires >{self._min_sqft:,} sqft)"
+        return self._format_failure_message(
+            property.sqft,
+            f"Square footage unknown (buyer requires {self._min_sqft:,}+ sqft)",
+            f"Only {{value:,}} sqft (buyer requires >{self._min_sqft:,} sqft)",
+        )
 
 
 class LotSizeKillSwitch(KillSwitch):
@@ -525,9 +531,11 @@ class NoNewBuildKillSwitch(KillSwitch):
         Returns:
             Detailed failure message including actual year built
         """
-        if property.year_built is None:
-            return f"Year built unknown (buyer requires pre-{self._max_year + 1} construction)"
-        return f"New build: {property.year_built} (buyer requires {self._max_year} or earlier)"
+        return self._format_failure_message(
+            property.year_built,
+            f"Year built unknown (buyer requires pre-{self._max_year + 1} construction)",
+            f"New build: {{value}} (buyer requires {self._max_year} or earlier)",
+        )
 
 
 class NoSolarLeaseKillSwitch(KillSwitch):

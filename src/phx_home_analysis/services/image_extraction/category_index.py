@@ -60,6 +60,9 @@ class CategoryIndex:
         self._by_location: dict[str, list[str]] = defaultdict(list)
         self._by_subject: dict[str, list[str]] = defaultdict(list)
 
+        # Reverse index for O(1) image lookups: image_id -> set of (location, subject, property_hash) tuples
+        self._image_to_categories: dict[str, set[tuple[str, str, str]]] = {}
+
         # Metadata tracking
         self._image_metadata: dict[str, dict] = {}
         self._last_updated: str | None = None
@@ -104,6 +107,9 @@ class CategoryIndex:
             self._image_metadata = data.get("image_metadata", {})
             self._last_updated = data.get("last_updated")
 
+            # Rebuild reverse index from metadata
+            self._rebuild_reverse_index()
+
             logger.info(
                 f"Loaded category index: {len(self._image_metadata)} images, "
                 f"{len(self._by_property)} properties"
@@ -111,6 +117,22 @@ class CategoryIndex:
 
         except (OSError, json.JSONDecodeError) as e:
             logger.warning(f"Failed to load category index: {e}")
+
+    def _rebuild_reverse_index(self) -> None:
+        """Rebuild reverse index from metadata.
+
+        Called after loading from disk or when reverse index needs regeneration.
+        """
+        self._image_to_categories = {}
+        for image_id, meta in self._image_metadata.items():
+            location = meta.get("location")
+            subject = meta.get("subject")
+            property_hash = meta.get("property_hash")
+
+            if location and subject and property_hash:
+                if image_id not in self._image_to_categories:
+                    self._image_to_categories[image_id] = set()
+                self._image_to_categories[image_id].add((location, subject, property_hash))
 
     def save(self) -> None:
         """Persist index to disk."""
@@ -188,6 +210,11 @@ class CategoryIndex:
         if image_id not in self._by_subject[subject]:
             self._by_subject[subject].append(image_id)
 
+        # Add to reverse index
+        if image_id not in self._image_to_categories:
+            self._image_to_categories[image_id] = set()
+        self._image_to_categories[image_id].add((location, subject, property_hash))
+
         # Store metadata
         self._image_metadata[image_id] = {
             "property_hash": property_hash,
@@ -242,28 +269,37 @@ class CategoryIndex:
         Returns:
             True if removed, False if not found
         """
-        if image_id not in self._image_metadata:
+        # Use reverse index for O(1) lookup
+        if image_id not in self._image_to_categories:
             return False
 
-        meta = self._image_metadata[image_id]
-        location = meta["location"]
-        subject = meta["subject"]
-        property_hash = meta["property_hash"]
+        # Get all categories this image belongs to
+        categories = self._image_to_categories[image_id]
 
-        # Remove from all indexes
-        if image_id in self._categories.get(location, {}).get(subject, []):
-            self._categories[location][subject].remove(image_id)
+        # Remove from all forward indexes using reverse index data
+        for location, subject, property_hash in categories:
+            # Remove from primary index
+            if image_id in self._categories.get(location, {}).get(subject, []):
+                self._categories[location][subject].remove(image_id)
 
-        if image_id in self._by_property.get(property_hash, {}).get(location, {}).get(subject, []):
-            self._by_property[property_hash][location][subject].remove(image_id)
+            # Remove from property index
+            if image_id in self._by_property.get(property_hash, {}).get(location, {}).get(subject, []):
+                self._by_property[property_hash][location][subject].remove(image_id)
 
-        if image_id in self._by_location.get(location, []):
-            self._by_location[location].remove(image_id)
+            # Remove from flat indexes
+            if image_id in self._by_location.get(location, []):
+                self._by_location[location].remove(image_id)
 
-        if image_id in self._by_subject.get(subject, []):
-            self._by_subject[subject].remove(image_id)
+            if image_id in self._by_subject.get(subject, []):
+                self._by_subject[subject].remove(image_id)
 
-        del self._image_metadata[image_id]
+        # Clear reverse index entry
+        del self._image_to_categories[image_id]
+
+        # Clear metadata
+        if image_id in self._image_metadata:
+            del self._image_metadata[image_id]
+
         return True
 
     def get_by_category(
@@ -448,7 +484,7 @@ class CategoryIndex:
             yield image_id, metadata
 
     def has_image(self, image_id: str) -> bool:
-        """Check if image is in index.
+        """Check if image is in index (O(1) lookup).
 
         Args:
             image_id: Image identifier to check
@@ -456,7 +492,19 @@ class CategoryIndex:
         Returns:
             True if image exists in index
         """
-        return image_id in self._image_metadata
+        return image_id in self._image_to_categories
+
+    def get_image_categories(self, image_id: str) -> set[tuple[str, str, str]]:
+        """Get all categories for an image (O(1) lookup).
+
+        Args:
+            image_id: Image identifier
+
+        Returns:
+            Set of (location, subject, property_hash) tuples.
+            Empty set if image not found.
+        """
+        return self._image_to_categories.get(image_id, set()).copy()
 
     def clear(self) -> None:
         """Clear all data from index."""
@@ -464,6 +512,7 @@ class CategoryIndex:
         self._by_property = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
         self._by_location = defaultdict(list)
         self._by_subject = defaultdict(list)
+        self._image_to_categories = {}
         self._image_metadata = {}
         self._last_updated = None
         logger.info("Cleared category index")
@@ -473,5 +522,5 @@ class CategoryIndex:
         return len(self._image_metadata)
 
     def __contains__(self, image_id: str) -> bool:
-        """Check if image is in index."""
-        return image_id in self._image_metadata
+        """Check if image is in index (O(1) lookup)."""
+        return image_id in self._image_to_categories

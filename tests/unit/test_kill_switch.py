@@ -797,3 +797,125 @@ class TestSeverityThresholdOOP:
         assert "HARD" in summary
         assert "SOFT" in summary
         assert "severity" in summary.lower() or "weight" in summary.lower()
+
+
+# ============================================================================
+# Severity Boundary Condition Tests (Wave 3)
+# ============================================================================
+
+# Document threshold constants for clarity
+WARNING_THRESHOLD = 1.5  # Severity >= 1.5 triggers WARNING
+FAIL_THRESHOLD = 3.0     # Severity >= 3.0 triggers FAIL
+
+
+class TestSeverityBoundaryConditions:
+    """Test exact boundary conditions for severity thresholds.
+
+    Validates that the severity thresholds (WARNING at 1.5, FAIL at 3.0)
+    are applied with exact precision at boundaries.
+
+    SOFT criteria severity weights:
+    - city_sewer: 2.5 (septic or unknown)
+    - no_new_build: 2.0 (year_built >= 2024)
+    - min_garage: 1.5 (garage_spaces < 2)
+    - lot_size: 1.0 (lot_sqft outside 7k-15k range)
+    """
+
+    def test_severity_1_49_is_pass(self, sample_property):
+        """Severity 1.49 should PASS (below WARNING threshold).
+
+        Use combination: min_garage (1.5) - 0.01 buffer
+        Since we can't create exactly 1.49 with discrete weights,
+        we test 1.0 (lot_size) which is < 1.5 threshold.
+        """
+        # Fail only lot_size (1.0 severity) - below WARNING threshold
+        sample_property.lot_sqft = 6999  # Too small (severity 1.0)
+
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_property)
+
+        assert verdict == KillSwitchVerdict.PASS
+        assert severity == 1.0
+        assert len(failures) == 1
+
+    def test_severity_1_50_is_warning(self, sample_property):
+        """Severity 1.50 should be WARNING (at threshold).
+
+        Use min_garage criterion: garage_spaces < 2 = severity 1.5
+        """
+        # Fail only min_garage (1.5 severity) - exactly at WARNING threshold
+        sample_property.garage_spaces = 1  # Insufficient (severity 1.5)
+
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_property)
+
+        assert verdict == KillSwitchVerdict.WARNING
+        assert severity == 1.5
+        assert len(failures) == 1
+
+    def test_severity_1_51_is_warning(self, sample_property):
+        """Severity 1.51 should be WARNING (above threshold).
+
+        Use combination: min_garage (1.5) + small fraction
+        Since we can't create exactly 1.51 with discrete weights,
+        we test 2.5 (lot_size 1.0 + garage 1.5) which is > 1.5 but < 3.0.
+        """
+        # Fail lot_size (1.0) + min_garage (1.5) = 2.5 severity
+        sample_property.lot_sqft = 6999  # Too small (severity 1.0)
+        sample_property.garage_spaces = 1  # Insufficient (severity 1.5)
+
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_property)
+
+        assert verdict == KillSwitchVerdict.WARNING
+        assert severity == 2.5
+        assert len(failures) == 2
+
+    def test_severity_2_99_is_warning(self, sample_property):
+        """Severity 2.99 should be WARNING (below FAIL threshold).
+
+        Use combination: no_new_build (2.0) + lot_size (1.0) = 3.0
+        Since we can't create exactly 2.99 with discrete weights,
+        we test 2.5 (city_sewer alone) which is < 3.0 threshold.
+        """
+        # Fail only city_sewer (2.5 severity) - below FAIL threshold
+        sample_property.sewer_type = SewerType.SEPTIC  # Severity 2.5
+
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_property)
+
+        assert verdict == KillSwitchVerdict.WARNING
+        assert severity == 2.5
+        assert len(failures) == 1
+
+    def test_severity_3_00_is_fail(self, sample_property):
+        """Severity 3.00 should FAIL (at threshold).
+
+        Use combination: no_new_build (2.0) + lot_size (1.0) = 3.0
+        """
+        # Fail no_new_build (2.0) + lot_size (1.0) = 3.0 severity
+        sample_property.year_built = 2024  # New build (severity 2.0)
+        sample_property.lot_sqft = 6999  # Too small (severity 1.0)
+
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_property)
+
+        assert verdict == KillSwitchVerdict.FAIL
+        assert severity == 3.0
+        assert len(failures) == 2
+
+    def test_severity_3_01_is_fail(self, sample_property):
+        """Severity 3.01 should FAIL (above threshold).
+
+        Use combination: no_new_build (2.0) + min_garage (1.5) = 3.5
+        """
+        # Fail no_new_build (2.0) + min_garage (1.5) = 3.5 severity
+        sample_property.year_built = 2024  # New build (severity 2.0)
+        sample_property.garage_spaces = 1  # Insufficient (severity 1.5)
+
+        filter_service = KillSwitchFilter()
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_property)
+
+        assert verdict == KillSwitchVerdict.FAIL
+        assert severity == 3.5
+        assert len(failures) == 2

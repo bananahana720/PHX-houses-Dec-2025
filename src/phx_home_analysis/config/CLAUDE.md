@@ -1,6 +1,6 @@
 ---
-last_updated: 2025-12-04
-updated_by: main
+last_updated: 2025-12-05
+updated_by: agent
 staleness_hours: 24
 flags: []
 ---

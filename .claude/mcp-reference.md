@@ -1,8 +1,90 @@
-# Playwright MCP Commands Reference
+# MCP Commands Reference
 
-Quick reference for Playwright Model Context Protocol (MCP) commands.
+Quick reference for Model Context Protocol (MCP) commands.
 
-## Browser Navigation
+---
+
+## Context7 - Library Documentation
+
+Context7 provides up-to-date documentation and code examples for any library.
+
+### Commands
+
+```python
+mcp__context7__resolve-library-id(libraryName)     # Find library ID by name
+mcp__context7__get-library-docs(                   # Fetch documentation
+    context7CompatibleLibraryID,                   # Required: "/org/project" format
+    topic="hooks",                                 # Optional: focus area
+    mode="code",                                   # "code" (default) or "info"
+    page=1                                         # Pagination (1-10)
+)
+```
+
+### Workflow
+
+**Step 1: Resolve library ID (REQUIRED unless user provides ID)**
+```python
+mcp__context7__resolve-library-id(libraryName="pydantic")
+# Returns: /pydantic/pydantic
+```
+
+**Step 2: Fetch documentation**
+```python
+mcp__context7__get-library-docs(
+    context7CompatibleLibraryID="/pydantic/pydantic",
+    topic="validators",
+    mode="code"
+)
+```
+
+### Mode Selection
+
+| Mode | Use For |
+|------|---------|
+| `code` | API references, code examples, implementation patterns |
+| `info` | Conceptual guides, architecture, narrative explanations |
+
+### Examples
+
+```python
+# Python libraries
+mcp__context7__resolve-library-id(libraryName="fastapi")
+mcp__context7__get-library-docs(context7CompatibleLibraryID="/fastapi/fastapi", topic="dependencies")
+
+# JavaScript/TypeScript
+mcp__context7__resolve-library-id(libraryName="react")
+mcp__context7__get-library-docs(context7CompatibleLibraryID="/facebook/react", topic="hooks", mode="code")
+
+# Database
+mcp__context7__resolve-library-id(libraryName="sqlalchemy")
+mcp__context7__get-library-docs(context7CompatibleLibraryID="/sqlalchemy/sqlalchemy", topic="async")
+```
+
+### Best Practices
+
+1. **Always resolve first** - Call `resolve-library-id` before `get-library-docs` unless user provides exact ID
+2. **Use specific topics** - Narrow results with `topic` parameter (e.g., "routing", "middleware", "validation")
+3. **Paginate for more** - If context insufficient, try `page=2`, `page=3`, etc.
+4. **Choose mode wisely** - Use `code` for implementation, `info` for understanding concepts
+
+---
+
+## Fetch - Web Content Retrieval
+
+```python
+mcp__fetch__fetch(
+    url,                    # Required: URL to fetch
+    max_length=5000,        # Max characters (default: 5000, max: 1000000)
+    start_index=0,          # Character offset for pagination
+    raw=False               # True for raw HTML, False for markdown
+)
+```
+
+---
+
+## Playwright - Browser Automation
+
+### Browser Navigation
 
 ```python
 mcp__playwright__browser_navigate(url)              # Navigate to URL
@@ -11,7 +93,7 @@ mcp__playwright__browser_close()                    # Close browser
 mcp__playwright__browser_resize(width, height)      # Resize window
 ```
 
-## Page Interaction
+### Page Interaction
 
 ```python
 mcp__playwright__browser_click(element, ref)                     # Click element
@@ -22,7 +104,7 @@ mcp__playwright__browser_select_option(element, ref, values)     # Select dropdo
 mcp__playwright__browser_drag(startElement, startRef, endElement, endRef)  # Drag and drop
 ```
 
-## Page State Inspection
+### Page State Inspection
 
 ```python
 mcp__playwright__browser_snapshot()                  # Get accessibility tree (PREFERRED)
@@ -33,7 +115,7 @@ mcp__playwright__browser_network_requests()          # Get network activity
 
 **Note:** Use `browser_snapshot()` for actions, not screenshots. Screenshots are for visual inspection only.
 
-## Tab Management
+### Tab Management
 
 ```python
 mcp__playwright__browser_tabs(action="list")         # List all tabs
@@ -42,7 +124,7 @@ mcp__playwright__browser_tabs(action="select", index=N)  # Switch to tab N
 mcp__playwright__browser_tabs(action="close")        # Close current tab
 ```
 
-## Forms and Input
+### Forms and Input
 
 ```python
 mcp__playwright__browser_fill_form(fields)           # Fill multiple form fields
@@ -58,7 +140,7 @@ fields = [
 ]
 ```
 
-## Waiting and Timing
+### Waiting and Timing
 
 ```python
 mcp__playwright__browser_wait_for(time=N)            # Wait N seconds
@@ -66,7 +148,7 @@ mcp__playwright__browser_wait_for(text="...")        # Wait for text to appear
 mcp__playwright__browser_wait_for(textGone="...")    # Wait for text to disappear
 ```
 
-## Advanced
+### Advanced
 
 ```python
 mcp__playwright__browser_evaluate(function)          # Run JavaScript
@@ -83,14 +165,14 @@ mcp__playwright__browser_evaluate(function="() => { return document.title; }")
 mcp__playwright__browser_run_code(code="await page.locator('#submit-btn').click();")
 ```
 
-## Installation
+### Installation
 
 If you get an error about browser not being installed:
 ```python
 mcp__playwright__browser_install()
 ```
 
-## MCP Configuration
+### MCP Configuration
 
 **Location:** `.mcp.json` - MCP server must be restarted after config changes.
 
@@ -107,9 +189,9 @@ mcp__playwright__browser_install()
 
 **Note:** Stealth browsers (nodriver, curl_cffi) used instead for Zillow/Redfin PerimeterX bypass.
 
-## Browser URL Patterns
+### Browser URL Patterns
 
-### Maricopa County Assessor
+#### Maricopa County Assessor
 ```
 # Search by address
 https://mcassessor.maricopa.gov/mcs/?q={address}
@@ -124,18 +206,18 @@ https://mcassessor.maricopa.gov/sketch/{apn}/view/1/
 http://maps.mcassessor.maricopa.gov/?esearch={apn}&slayer=0&exprnum=0
 ```
 
-### Google Maps
+#### Google Maps
 ```
 https://www.google.com/maps/search/{address}
 https://www.google.com/maps/@{lat},{lng},20z/data=!3m1!1e3  # Satellite
 ```
 
-### GreatSchools
+#### GreatSchools
 ```
 https://www.greatschools.org/search/search.page?q={address}
 ```
 
-## Best Practices
+### Best Practices
 
 1. Use `browser_snapshot()` before interactions (get element refs from accessibility tree)
 2. Use `browser_wait_for()` for dynamic content

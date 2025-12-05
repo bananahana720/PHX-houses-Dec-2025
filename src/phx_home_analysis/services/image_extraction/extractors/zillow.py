@@ -915,7 +915,7 @@ class ZillowExtractor(StealthBrowserExtractor):
         except json.JSONDecodeError:
             try:
                 from typing import cast
-                return cast(list[Any] | None, json.loads(array_str.replace("\/", "/")))
+                return cast(list[Any] | None, json.loads(array_str.replace(r"\/", "/")))
             except json.JSONDecodeError:
                 return None
 
@@ -1227,26 +1227,69 @@ class ZillowExtractor(StealthBrowserExtractor):
 
         return None
 
-    def _extract_property_details(self, content: str) -> dict:
-        """Extract core property details from page content.
+    def _safe_extract(
+        self,
+        html: str,
+        field_name: str,
+        patterns: list[str],
+        parser: Any = str,
+        result: dict[str, Any] | None = None,
+    ) -> Any | None:
+        """Extract field value using regex patterns with fallback chain.
 
-        Extracts:
-        - beds (bedrooms count)
-        - baths (bathrooms count)
-        - sqft (interior square footage)
-        - lot_sqft (lot size)
-        - year_built
-        - property_type (Single Family, Townhouse, etc.)
-        - garage_spaces
-        - parking_spaces
-        - pool (boolean)
-        - stories (number of floors)
-        - list_price
+        Args:
+            html: HTML content to search
+            field_name: Name of field (for logging)
+            patterns: List of regex patterns to try in order
+            parser: Function to parse matched value (default: str)
+            result: Optional dict to check if field already set
 
         Returns:
-            Dictionary with extracted property details (None for missing fields)
+            Parsed value if found, None otherwise
         """
-        result: dict = {
+        # Skip if field already set in result dict
+        if result is not None and result.get(field_name) is not None:
+            return result[field_name]
+
+        # Try each pattern in order
+        for pattern in patterns:
+            match = re.search(pattern, html)
+            if match:
+                try:
+                    # Apply parser to extracted value
+                    value = parser(match.group(1))
+                    logger.debug(
+                        "%s extracted %s=%s using pattern: %s",
+                        self.name,
+                        field_name,
+                        value,
+                        pattern[:50],
+                    )
+                    return value
+                except (ValueError, TypeError) as e:
+                    logger.debug(
+                        "%s failed to parse %s value '%s': %s",
+                        self.name,
+                        field_name,
+                        match.group(1),
+                        e,
+                    )
+                    continue
+
+        # No pattern matched
+        logger.debug("%s could not extract %s from content", self.name, field_name)
+        return None
+
+    def _extract_from_json_ld(self, html: str) -> dict[str, Any]:
+        """Extract property details from JSON-LD structured data.
+
+        Args:
+            html: HTML content containing JSON-LD script tags
+
+        Returns:
+            Dict with extracted fields (beds, baths, sqft, etc.)
+        """
+        result: dict[str, Any] = {
             "beds": None,
             "baths": None,
             "sqft": None,
@@ -1260,18 +1303,15 @@ class ZillowExtractor(StealthBrowserExtractor):
             "list_price": None,
         }
 
-        # Try JSON-LD structured data first (most reliable)
-        # Zillow embeds property data in script tags with application/ld+json
+        # Search for JSON-LD structured data in script tags
         json_ld_match = re.search(
             r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>',
-            content,
+            html,
             re.DOTALL | re.IGNORECASE,
         )
 
         if json_ld_match:
             try:
-                import json
-
                 json_data = json.loads(json_ld_match.group(1))
 
                 # Beds (numberOfRooms, numberOfBedrooms)
@@ -1296,54 +1336,101 @@ class ZillowExtractor(StealthBrowserExtractor):
                 if "price" in json_data:
                     result["list_price"] = int(json_data["price"])
 
+                logger.debug("%s JSON-LD extraction successful", self.name)
+
             except (json.JSONDecodeError, ValueError, KeyError) as e:
                 logger.debug("%s JSON-LD parsing partial failure: %s", self.name, e)
 
-        # Fallback to regex patterns for fields not found in JSON-LD
-        content_lower = content.lower()
+        return result
+
+    def _extract_from_regex_fallback(
+        self,
+        html: str,
+        result: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Extract property details using regex patterns as fallback.
+
+        Only fills fields that are still None in result dict.
+
+        Args:
+            html: HTML content to search
+            result: Existing result dict (may have values from JSON-LD)
+
+        Returns:
+            Updated result dict with fallback extractions
+        """
+        content_lower = html.lower()
+
+        # Define parsers for field value conversion
+        def parse_int(val: str) -> int:
+            """Parse integer, removing commas."""
+            return int(val.replace(",", ""))
+
+        def parse_float(val: str) -> float:
+            """Parse float, removing commas."""
+            return float(val.replace(",", ""))
+
+        def parse_acres_to_sqft(val: str) -> int:
+            """Parse acres and convert to sqft."""
+            return int(float(val) * 43560)
 
         # Beds - patterns: "4 bd", "4 beds", "Bedrooms: 4"
-        if result["beds"] is None:
-            match = re.search(r"(\d+)\s*(?:bd|beds?|bedrooms?)[:\s]", content_lower)
-            if match:
-                result["beds"] = int(match.group(1))
+        beds = self._safe_extract(
+            content_lower,
+            "beds",
+            [r"(\d+)\s*(?:bd|beds?|bedrooms?)[:\s]"],
+            parser=int,
+            result=result,
+        )
+        if beds is not None:
+            result["beds"] = beds
 
         # Baths - patterns: "2 ba", "2.5 baths", "Bathrooms: 2"
-        if result["baths"] is None:
-            match = re.search(r"(\d+(?:\.\d+)?)\s*(?:ba|baths?|bathrooms?)[:\s]", content_lower)
-            if match:
-                result["baths"] = float(match.group(1))
+        baths = self._safe_extract(
+            content_lower,
+            "baths",
+            [r"(\d+(?:\.\d+)?)\s*(?:ba|baths?|bathrooms?)[:\s]"],
+            parser=float,
+            result=result,
+        )
+        if baths is not None:
+            result["baths"] = baths
 
         # Sqft - patterns: "2,400 sqft", "2400 square feet"
-        if result["sqft"] is None:
-            match = re.search(r"([\d,]+)\s*(?:sqft|square\s*(?:feet|ft))", content_lower)
-            if match:
-                try:
-                    result["sqft"] = int(match.group(1).replace(",", ""))
-                except ValueError:
-                    pass
+        sqft = self._safe_extract(
+            content_lower,
+            "sqft",
+            [r"([\d,]+)\s*(?:sqft|square\s*(?:feet|ft))"],
+            parser=parse_int,
+            result=result,
+        )
+        if sqft is not None:
+            result["sqft"] = sqft
 
         # Lot size - patterns: "7,500 sqft lot", "0.17 acres"
-        match = re.search(r"([\d,]+)\s*sqft\s*lot", content_lower)
-        if match:
-            try:
-                result["lot_sqft"] = int(match.group(1).replace(",", ""))
-            except ValueError:
-                pass
-        else:
-            # Convert acres to sqft (1 acre = 43,560 sqft)
-            match = re.search(r"([\d.]+)\s*acres?", content_lower)
-            if match:
-                try:
-                    acres = float(match.group(1))
-                    result["lot_sqft"] = int(acres * 43560)
-                except ValueError:
-                    pass
+        lot_sqft = self._safe_extract(
+            content_lower,
+            "lot_sqft",
+            [
+                r"([\d,]+)\s*sqft\s*lot",  # Direct sqft
+                r"([\d.]+)\s*acres?",  # Acres (converted to sqft)
+            ],
+            parser=lambda v: parse_int(v) if "," in v else parse_acres_to_sqft(v),
+            result=result,
+        )
+        if lot_sqft is not None:
+            result["lot_sqft"] = lot_sqft
 
         # Year built - patterns: "Built in 2020", "Year built: 2020"
-        match = re.search(r"(?:built\s*in|year\s*built)[:\s]*(\d{4})", content_lower)
-        if match:
-            result["year_built"] = int(match.group(1))
+        year_built = self._safe_extract(
+            content_lower,
+            "year_built",
+            [r"(?:built\s*in|year\s*built)[:\s]*(\d{4})"],
+            parser=int,
+            result=result,
+        )
+        if year_built is not None:
+            result["year_built"] = year_built
 
         # Property type - patterns: "Single Family", "Townhouse", "Condo"
         type_patterns = [
@@ -1360,18 +1447,29 @@ class ZillowExtractor(StealthBrowserExtractor):
                 break
 
         # Garage spaces - patterns: "2 car garage", "Garage spaces: 2"
-        match = re.search(r"(\d+)[\s-]?car\s*garage", content_lower)
-        if match:
-            result["garage_spaces"] = int(match.group(1))
-        else:
-            match = re.search(r"garage[:\s]*(\d+)", content_lower)
-            if match:
-                result["garage_spaces"] = int(match.group(1))
+        garage_spaces = self._safe_extract(
+            content_lower,
+            "garage_spaces",
+            [
+                r"(\d+)[\s-]?car\s*garage",  # "2 car garage"
+                r"garage[:\s]*(\d+)",  # "Garage: 2"
+            ],
+            parser=int,
+            result=result,
+        )
+        if garage_spaces is not None:
+            result["garage_spaces"] = garage_spaces
 
         # Parking spaces - patterns: "Parking: 3 spaces"
-        match = re.search(r"parking[:\s]*(\d+)", content_lower)
-        if match:
-            result["parking_spaces"] = int(match.group(1))
+        parking_spaces = self._safe_extract(
+            content_lower,
+            "parking_spaces",
+            [r"parking[:\s]*(\d+)"],
+            parser=int,
+            result=result,
+        )
+        if parking_spaces is not None:
+            result["parking_spaces"] = parking_spaces
 
         # Pool - detect presence
         if "pool" in content_lower or "swimming pool" in content_lower:
@@ -1399,6 +1497,33 @@ class ZillowExtractor(StealthBrowserExtractor):
                         result["list_price"] = price
                 except ValueError:
                     pass
+
+        return result
+
+    def _extract_property_details(self, content: str) -> dict:
+        """Extract core property details from page content.
+
+        Extracts:
+        - beds (bedrooms count)
+        - baths (bathrooms count)
+        - sqft (interior square footage)
+        - lot_sqft (lot size)
+        - year_built
+        - property_type (Single Family, Townhouse, etc.)
+        - garage_spaces
+        - parking_spaces
+        - pool (boolean)
+        - stories (number of floors)
+        - list_price
+
+        Returns:
+            Dictionary with extracted property details (None for missing fields)
+        """
+        # Try JSON-LD first (most reliable)
+        result = self._extract_from_json_ld(content)
+
+        # Fill gaps with regex fallback
+        result = self._extract_from_regex_fallback(content, result)
 
         return result
 
@@ -2256,7 +2381,7 @@ class ZillowExtractor(StealthBrowserExtractor):
             if not expected_zpid:
                 expected_zpid = await self._extract_zpid_from_url(tab)
                 if expected_zpid:
-                    setattr(property, "zpid", expected_zpid)
+                    property.zpid = expected_zpid
 
             # Extract URLs from page (this may also extract zpid from JSON)
             raw_urls = await self._extract_urls_from_page(tab, expected_zpid=expected_zpid)

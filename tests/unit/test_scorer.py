@@ -1350,3 +1350,133 @@ class TestScoringSystemConsistency:
         assert section_c_actual == weights.section_c_max, (
             f"Section C criteria sum to {section_c_actual}, not {weights.section_c_max}"
         )
+
+
+# ============================================================================
+# Scoring Weights Validation Tests (TDD Blue Phase)
+# ============================================================================
+
+
+class TestScoringWeightsValidation:
+    """Validate scoring weights match documentation and sum correctly.
+
+    These tests serve as regression detection for the 605-point scoring system.
+    If any weight changes, these tests will fail and force explicit acknowledgment
+    of the change.
+
+    Weight Breakdown (605 pts total):
+    - Section A (Location & Environment): 250 pts
+        school_district=42, quietness=30, crime_index=47, supermarket_proximity=23,
+        parks_walkability=23, sun_orientation=25, flood_risk=23, walk_transit=22,
+        air_quality=15
+    - Section B (Systems): 175 pts
+        roof_condition=45, backyard_utility=35, plumbing_electrical=35,
+        pool_condition=20, cost_efficiency=35, solar_status=5
+    - Section C (Interior & Features): 180 pts
+        kitchen_layout=40, master_suite=35, natural_light=30, high_ceilings=25,
+        fireplace=20, laundry_area=20, aesthetics=10
+    """
+
+    def test_total_points_equals_605(self):
+        """All scoring weights should sum to 605 points.
+
+        This is the master assertion for the 605-point system.
+        """
+        weights = ScoringWeights()
+        total = (
+            weights.section_a_max  # 250
+            + weights.section_b_max  # 175
+            + weights.section_c_max  # 180
+        )
+        assert total == 605, f"Expected 605, got {total}"
+        assert weights.total_possible_score == 605
+
+    def test_location_weights_sum_to_250(self):
+        """Location dimension weights should sum to 250."""
+        weights = ScoringWeights()
+        location_total = (
+            weights.school_district  # 42
+            + weights.quietness  # 30
+            + weights.crime_index  # 47
+            + weights.supermarket_proximity  # 23
+            + weights.parks_walkability  # 23
+            + weights.sun_orientation  # 25
+            + weights.flood_risk  # 23
+            + weights.walk_transit  # 22
+            + weights.air_quality  # 15
+        )
+        assert location_total == 250, f"Location weights sum to {location_total}, not 250"
+        assert weights.section_a_max == 250
+
+    def test_systems_weights_sum_to_175(self):
+        """Systems dimension weights should sum to 175."""
+        weights = ScoringWeights()
+        systems_total = (
+            weights.roof_condition  # 45
+            + weights.backyard_utility  # 35
+            + weights.plumbing_electrical  # 35
+            + weights.pool_condition  # 20
+            + weights.cost_efficiency  # 35
+            + weights.solar_status  # 5
+        )
+        assert systems_total == 175, f"Systems weights sum to {systems_total}, not 175"
+        assert weights.section_b_max == 175
+
+    def test_interior_weights_sum_to_180(self):
+        """Interior dimension weights should sum to 180."""
+        weights = ScoringWeights()
+        interior_total = (
+            weights.kitchen_layout  # 40
+            + weights.master_suite  # 35
+            + weights.natural_light  # 30
+            + weights.high_ceilings  # 25
+            + weights.fireplace  # 20
+            + weights.laundry_area  # 20
+            + weights.aesthetics  # 10
+        )
+        assert interior_total == 180, f"Interior weights sum to {interior_total}, not 180"
+        assert weights.section_c_max == 180
+
+    @pytest.mark.parametrize(
+        "field,expected_weight",
+        [
+            # Section A: Location & Environment (250 pts)
+            ("school_district", 42),
+            ("quietness", 30),
+            ("crime_index", 47),
+            ("supermarket_proximity", 23),
+            ("parks_walkability", 23),
+            ("sun_orientation", 25),
+            ("flood_risk", 23),
+            ("walk_transit", 22),
+            ("air_quality", 15),
+            # Section B: Systems (175 pts)
+            ("roof_condition", 45),
+            ("backyard_utility", 35),
+            ("plumbing_electrical", 35),
+            ("pool_condition", 20),
+            ("cost_efficiency", 35),
+            ("solar_status", 5),
+            # Section C: Interior & Features (180 pts)
+            ("kitchen_layout", 40),
+            ("master_suite", 35),
+            ("natural_light", 30),
+            ("high_ceilings", 25),
+            ("fireplace", 20),
+            ("laundry_area", 20),
+            ("aesthetics", 10),
+        ],
+    )
+    def test_individual_weight_values(self, field, expected_weight):
+        """Each weight should match documented value.
+
+        This parameterized test ensures all 22 weight fields maintain their
+        documented values. Any change to weights will fail this test and
+        require explicit acknowledgment.
+        """
+        weights = ScoringWeights()
+        actual_weight = getattr(weights, field)
+        assert actual_weight == expected_weight, (
+            f"{field} weight changed! Expected {expected_weight}, got {actual_weight}. "
+            "Update documentation if this change is intentional."
+        )

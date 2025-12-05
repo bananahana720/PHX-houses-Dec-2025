@@ -1,7 +1,7 @@
 # BMAD Workflow Status
 # Tracks progress through BMM methodology phases
 
-generated: "2025-12-03T11:30:00Z"
+generated: "2025-12-05T15:00:00Z"
 project: "PHX-houses-Dec-2025"
 project_type: "brownfield"
 selected_track: "analysis-first"
@@ -11,7 +11,7 @@ workflow_path: ".bmad/bmm/workflows/"
 # Current Phase
 current_phase: "implementation"
 current_agent: "dev"
-last_activity: "2025-12-04T21:45:00Z"
+last_activity: "2025-12-05T12:00:00Z"
 
 # Phase 1: Analysis
 analysis:
@@ -41,34 +41,54 @@ analysis:
     output: null
     notes: "Brownfield documentation available"
 
-# Phase 2: Planning (not started)
+# Phase 2: Planning (COMPLETED)
 planning:
   prd:
-    status: "pending"
-    output: null
+    status: "completed"
+    output: "docs/prd/"
     requires: ["product_brief"]
+    artifacts:
+      - "docs/prd/functional-requirements.md"
+      - "docs/prd/non-functional-requirements.md"
+      - "docs/prd/cli-multi-agent-data-pipeline-specific-requirements.md"
+      - "docs/prd/implementation-status.md"
+    completed_at: "2025-12-03"
 
   ux_design:
-    status: "conditional"
+    status: "not_applicable"
     condition: "if_has_ui"
     output: null
+    notes: "CLI-only project, no UI components"
 
   architecture:
-    status: "pending"
-    output: null
+    status: "completed"
+    output: "docs/architecture.md"
     requires: ["prd"]
+    completed_at: "2025-12-05"
 
-# Phase 3: Solutioning (not started)
+# Phase 3: Solutioning (COMPLETED)
 solutioning:
   epics_stories:
-    status: "pending"
-    output: null
+    status: "completed"
+    output: "docs/epics/"
     requires: ["architecture"]
+    artifacts:
+      - "docs/epics/epic-1-foundation-data-infrastructure.md"
+      - "docs/epics/epic-2-property-data-acquisition.md"
+      - "docs/epics/epic-3-kill-switch-filtering-system.md"
+      - "docs/epics/epic-4-property-scoring-engine.md"
+      - "docs/epics/epic-5-multi-agent-pipeline-orchestration.md"
+      - "docs/epics/epic-6-visual-analysis-risk-intelligence.md"
+      - "docs/epics/epic-7-deal-sheet-generation-reports.md"
+    stories_count: 42
+    completed_at: "2025-12-03"
 
   tech_specs:
-    status: "pending"
-    output: null
+    status: "completed"
+    output: "docs/sprint-artifacts/stories/"
     requires: ["epics_stories"]
+    stories_defined: 42
+    completed_at: "2025-12-05"
 
 # Phase 4: Implementation (tracked in sprint-status.yaml)
 implementation:
@@ -81,7 +101,18 @@ implementation:
   last_completed:
     story: "E2.S4 Property Image Download and Caching"
     epic: "Epic 2: Property Data Acquisition"
-    date: "2025-12-04"
+    date: "2025-12-05"
+    completion_notes: |
+      Comprehensive implementation with 9 critical bug fixes:
+      1. Content-addressed storage: processed/{hash[:8]}/{hash}.png
+      2. Lineage tracking: property_hash, created_by_run_id, content_hash
+      3. --force flag for re-extraction
+      4. Data quality validators (validators.py, reconciliation.py)
+      5. File locking (file_lock.py)
+      6. Pydantic v2 schemas (image_schemas.py)
+      7. 25 tests passing
+      8. Fixed shared manifest race condition
+      9. Fixed dual folder naming systems
   sprint_2_apis_track:
     status: "completed"
     stories:
@@ -93,6 +124,37 @@ implementation:
 
 # Key Decisions Made
 decisions:
+  - date: "2025-12-05"
+    decision: "E2.S4 Property Image Download and Caching COMPLETED (GREEN+BLUE TDD phases)"
+    rationale: |
+      Deliverables:
+      1. Content-addressed storage: processed/{hash[:8]}/{hash}.png
+      2. Lineage tracking: property_hash, created_by_run_id, content_hash fields
+      3. --force flag for re-extraction
+      4. Data quality validators: validators.py (manifest integrity, orphan detection)
+      5. Reconciliation tools: reconciliation.py (sync checks)
+      6. File locking: file_lock.py (concurrent write safety)
+      7. Pydantic v2 schemas: image_schemas.py (validation)
+      8. 25 tests passing (all image extraction tests GREEN)
+
+      Critical bugs fixed (9):
+      1. Shared manifest race condition → Run-specific manifests
+      2. Dual folder naming systems → Single content_hash system
+      3. Missing property_hash in manifest → Added lineage field
+      4. Address mismatch in entries → Fixed normalization
+      5. No run isolation → Added run_id to all operations
+      6. UUID non-determinism → Switched to stable content_hash
+      7. Concurrent race conditions → Added file locking
+      8. Stale lookup data → Atomic manifest updates
+      9. Missing lineage fields → Complete provenance tracking
+
+      Files created/modified:
+      - NEW: src/phx_home_analysis/services/image_extraction/file_lock.py
+      - NEW: src/phx_home_analysis/services/image_extraction/validators.py
+      - NEW: src/phx_home_analysis/services/image_extraction/reconciliation.py
+      - NEW: src/phx_home_analysis/validation/image_schemas.py
+      - MODIFIED: orchestrator.py, url_tracker.py, value_objects.py
+
   - date: "2025-12-04"
     decision: "Live extraction validation revealed critical issues"
     rationale: |

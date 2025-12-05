@@ -29,5 +29,5 @@
     "deny": [],
     "ask": []
   },
-  "outputStyle": "Strict Concise v3.0"
+  "outputStyle": "strict-concise-v3"
 }
