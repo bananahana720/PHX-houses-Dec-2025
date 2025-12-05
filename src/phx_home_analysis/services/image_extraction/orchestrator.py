@@ -853,8 +853,16 @@ class ImageExtractionOrchestrator:
                 # Download and process each image
                 for url in urls:
                     try:
-                        # Download
-                        image_data, content_type = await extractor.download_image(url)
+                        # Check if this is a local file path (screenshots)
+                        if url.startswith(('data/', './', '/', 'C:', 'D:')) or (not url.startswith('http') and os.path.exists(url)):
+                            # Local file - read directly instead of downloading
+                            with open(url, 'rb') as f:
+                                image_data = f.read()
+                            content_type = 'image/png'
+                            logger.debug(f"Read local screenshot: {url}")
+                        else:
+                            # Download from URL
+                            image_data, content_type = await extractor.download_image(url)
 
                         # Compute hash
                         try:
@@ -1168,8 +1176,16 @@ class ImageExtractionOrchestrator:
                                 logger.debug(f"Re-checking stale URL: {url[:60]}...")
                             # For "new" or "content_changed", proceed with download
 
-                        # Download
-                        image_data, content_type = await extractor.download_image(url)
+                        # Check if this is a local file path (screenshots)
+                        if url.startswith(('data/', './', '/', 'C:', 'D:')) or (not url.startswith('http') and os.path.exists(url)):
+                            # Local file - read directly instead of downloading
+                            with open(url, 'rb') as f:
+                                image_data = f.read()
+                            content_type = 'image/png'
+                            logger.debug(f"Read local screenshot: {url}")
+                        else:
+                            # Download from URL
+                            image_data, content_type = await extractor.download_image(url)
 
                         # Compute content hash for URL tracking
                         content_hash = hashlib.md5(image_data).hexdigest()

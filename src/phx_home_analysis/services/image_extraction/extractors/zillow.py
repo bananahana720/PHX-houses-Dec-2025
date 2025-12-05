@@ -1066,6 +1066,72 @@ class ZillowExtractor(StealthBrowserExtractor):
         return None
 
     # =========================================================================
+    # Task 1b: Discover ZPID from Address (Story E2.R1 Enhancement)
+    # =========================================================================
+
+    async def _discover_zpid_from_address(
+        self, property: Property, tab: uc.Tab
+    ) -> str | None:
+        """Discover zpid by navigating to Zillow with address search.
+
+        When no zpid or listing_url is available, this method:
+        1. Navigates to Zillow direct URL with address slug
+        2. Extracts zpid from resulting page URL or __NEXT_DATA__
+
+        Args:
+            property: Property with full_address
+            tab: Browser tab to use
+
+        Returns:
+            zpid string if discovered, None otherwise
+        """
+        logger.info("%s discovering zpid from address: %s", self.name, property.full_address)
+
+        try:
+            # Build address-based URL (same as _build_search_url but simpler)
+            address_slug = property.full_address.lower()
+            address_slug = address_slug.replace(",", "").replace(".", "")
+            address_slug = "-".join(address_slug.split())
+            direct_url = f"{self.source.base_url}/homes/{address_slug}_rb/"
+
+            logger.info("%s navigating to: %s", self.name, direct_url)
+            await tab.get(direct_url)
+            await self._human_delay()
+
+            # Check for CAPTCHA first
+            if await self._check_for_captcha(tab):
+                logger.warning("%s CAPTCHA detected during zpid discovery", self.name)
+                return None
+
+            # Try to extract zpid from current URL
+            current_url = str(tab.url) if hasattr(tab, "url") else ""
+            zpid = self._extract_zpid_from_listing_url(current_url)
+            if zpid:
+                logger.info("%s discovered zpid %s from URL: %s", self.name, zpid, current_url)
+                return zpid
+
+            # Try to extract from __NEXT_DATA__
+            try:
+                next_data_script = await tab.query_selector("script#__NEXT_DATA__")
+                if next_data_script:
+                    json_content = await tab.evaluate(
+                        "(el) => el.textContent", next_data_script
+                    )
+                    zpid = self._extract_zpid_from_json(json_content)
+                    if zpid:
+                        logger.info("%s discovered zpid %s from __NEXT_DATA__", self.name, zpid)
+                        return zpid
+            except Exception as e:
+                logger.debug("%s failed to extract __NEXT_DATA__: %s", self.name, e)
+
+            logger.warning("%s could not discover zpid from address", self.name)
+            return None
+
+        except Exception as e:
+            logger.warning("%s zpid discovery failed: %s", self.name, e)
+            return None
+
+    # =========================================================================
     # Task 2: Gallery URL Builder and Navigation (Story E2.R1)
     # =========================================================================
 
@@ -1195,13 +1261,35 @@ class ZillowExtractor(StealthBrowserExtractor):
 
         logger.info("%s starting screenshot capture (max=%d)", self.name, max_images)
 
+        import os
+
+        # First, try to click on hero image to open gallery lightbox
+        try:
+            hero = await tab.query_selector("img[src*='photos.zillowstatic.com']")
+            if hero:
+                logger.info("%s clicking hero image to open gallery", self.name)
+                await hero.click()
+                await asyncio.sleep(1.5)  # Wait for gallery to open
+        except Exception as e:
+            logger.warning("%s could not click hero image: %s", self.name, e)
+
         for i in range(max_images):
             try:
-                # Capture screenshot
-                screenshot_bytes = await tab.screenshot()
-                if not screenshot_bytes:
+                # Capture screenshot using nodriver API (saves to temp file)
+                temp_path = await tab.save_screenshot(format="png")
+                if not temp_path or not os.path.exists(temp_path):
                     logger.warning("%s empty screenshot at frame %d", self.name, i)
                     break
+
+                # Read bytes from temp file
+                with open(temp_path, "rb") as f:
+                    screenshot_bytes = f.read()
+
+                # Clean up temp file
+                try:
+                    os.unlink(temp_path)
+                except Exception:
+                    pass
 
                 # Compute content hash
                 content_hash = hashlib.md5(screenshot_bytes).hexdigest()
@@ -1220,9 +1308,19 @@ class ZillowExtractor(StealthBrowserExtractor):
                 screenshots.append(path)
                 prev_hash = content_hash
 
-                # Advance gallery (P0-2 FIX: correct nodriver API method)
-                await tab.press("ArrowRight")
-                await asyncio.sleep(0.3)
+                # Advance gallery using click or JS (nodriver has no keyboard API)
+                try:
+                    # Try clicking the next button
+                    next_btn = await tab.query_selector("[aria-label*='next' i], [aria-label*='Next' i], .photo-carousel-next, button[data-testid='media-next']")
+                    if next_btn:
+                        await next_btn.click()
+                    else:
+                        # Fallback: trigger keyboard event via JS
+                        await tab.evaluate("document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight', code: 'ArrowRight', keyCode: 39, bubbles: true}))")
+                except Exception as nav_e:
+                    logger.debug("%s gallery navigation error: %s", self.name, nav_e)
+
+                await asyncio.sleep(0.5)  # Wait for gallery transition
 
             except Exception as e:
                 logger.warning("%s screenshot capture error at frame %d: %s", self.name, i, e)
@@ -2786,14 +2884,33 @@ class ZillowExtractor(StealthBrowserExtractor):
             urls: list[str] = []
 
             # ===================================================================
-            # FALLBACK CHAIN (P0-1 FIX - E2.R1)
+            # ZPID DISCOVERY (E2.R1 Enhancement)
+            # If no zpid available, discover it from address navigation
+            # ===================================================================
+            if not zpid:
+                logger.info(
+                    "%s no zpid available, attempting discovery from address",
+                    self.name,
+                )
+                zpid = await self._discover_zpid_from_address(property, tab)
+                if zpid:
+                    property.zpid = zpid
+                    logger.info(
+                        "%s discovered and cached zpid=%s",
+                        self.name,
+                        zpid,
+                    )
+
+            # ===================================================================
+            # SCREENSHOT-ONLY MODE (E2.R1 Contamination Fix)
+            # Screenshots capture exactly what's in gallery - no URL contamination
             # ===================================================================
 
-            # 1. Try zpid-direct gallery navigation (bypasses CAPTCHA)
+            # 1. Try zpid-direct gallery navigation + SCREENSHOT CAPTURE (primary)
             if zpid:
                 try:
                     logger.info(
-                        "%s attempting zpid-direct gallery navigation for zpid=%s",
+                        "%s attempting zpid-direct SCREENSHOT mode for zpid=%s",
                         self.name,
                         zpid,
                     )
@@ -2801,44 +2918,19 @@ class ZillowExtractor(StealthBrowserExtractor):
                         property, tab
                     )
                     if gallery_success:
-                        # Extract URLs from gallery page
-                        raw_urls = await self._extract_urls_from_page(
-                            tab, expected_zpid=zpid
-                        )
-                        urls = self._filter_urls_for_property(raw_urls, zpid)
-                        if urls:
-                            extraction_method = "zpid-direct"
+                        # SCREENSHOT-ONLY: Capture gallery images directly
+                        # This avoids carousel/similar-homes contamination
+                        screenshot_paths = await self._capture_gallery_screenshots(tab)
+                        if screenshot_paths:
+                            urls = screenshot_paths
+                            extraction_method = "screenshot"
                             logger.info(
-                                "%s zpid-direct succeeded: %d URLs",
+                                "%s screenshot capture succeeded: %d images",
                                 self.name,
                                 len(urls),
                             )
                 except Exception as e:
-                    logger.warning("%s zpid-direct failed: %s", self.name, e)
-
-            # 2. Screenshot fallback (if zpid-direct failed/blocked)
-            if not urls and zpid:
-                try:
-                    logger.info(
-                        "%s attempting screenshot fallback for zpid=%s",
-                        self.name,
-                        zpid,
-                    )
-                    # Navigate to gallery if not already there
-                    if not await self._is_gallery_page(tab):
-                        await self._navigate_to_gallery_direct(property, tab)
-
-                    screenshot_paths = await self._capture_gallery_screenshots(tab)
-                    if screenshot_paths:
-                        urls = screenshot_paths
-                        extraction_method = "screenshot"
-                        logger.info(
-                            "%s screenshot fallback succeeded: %d screenshots",
-                            self.name,
-                            len(urls),
-                        )
-                except Exception as e:
-                    logger.warning("%s screenshot fallback failed: %s", self.name, e)
+                    logger.warning("%s zpid-direct screenshot failed: %s", self.name, e)
 
             # 3. Google Images fallback (last resort)
             if not urls:
