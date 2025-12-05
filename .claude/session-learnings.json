@@ -524,5 +524,67 @@
     "learnings": [
       "**"
     ]
+  },
+  {
+    "timestamp": "2025-12-05T00:08:33.185421+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "%s\", self.name, selector, e)",
+      "%s\", self.name, selector, e)"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T00:14:10.085480+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "%s\", self.name, e)",
+      "%s\", self.name, e)"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T02:07:00.082420+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "Implement 5 fixes for zpid extraction failure causing image contamination in zillow.py.",
+      "Declining image extraction - zpid unknown, contamination risk\","
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T14:18:36.260580+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "# Lock exists - check if stale",
+      "{e}\")",
+      "pass"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T14:29:55.116311+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "If addresses don't match",
+      "If path doesn't contain content hash",
+      "If file doesn't exist or is too small",
+      "If hashes don't match"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T15:05:21.218786+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [
+      "/c/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
   }
 ]

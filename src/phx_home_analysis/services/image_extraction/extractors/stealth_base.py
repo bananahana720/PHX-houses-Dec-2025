@@ -2,6 +2,24 @@
 
 This module provides a base class for Zillow and Redfin extractors that need
 to bypass PerimeterX and other anti-bot systems using stealth techniques.
+
+Key Features:
+    - Bezier curve mouse movement for natural human-like trajectories
+    - 2-layer CAPTCHA solving with page refresh detection
+    - Shadow DOM traversal via CDP for PerimeterX iframe detection
+    - Micro-movement hand tremor simulation during button holds
+
+Example:
+    class ZillowExtractor(StealthBrowserExtractor):
+        @property
+        def source(self) -> ImageSource:
+            return ImageSource.ZILLOW
+
+        def _build_search_url(self, property: Property) -> str:
+            return f"https://zillow.com/homes/{property.full_address}"
+
+        async def _extract_urls_from_page(self, tab: uc.Tab) -> list[str]:
+            return await self._extract_zillow_image_urls(tab)
 """
 
 import asyncio
@@ -32,21 +50,51 @@ class StealthBrowserExtractor(ImageExtractor):
     - Subclasses implement _build_search_url() and _extract_urls_from_page()
     - Base class handles navigation, CAPTCHA detection/solving, and delays
 
-    Example:
-        ```python
-        class ZillowExtractor(StealthBrowserExtractor):
-            @property
-            def source(self) -> ImageSource:
-                return ImageSource.ZILLOW
-
-            def _build_search_url(self, property: Property) -> str:
-                return f"https://zillow.com/homes/{property.full_address}"
-
-            async def _extract_urls_from_page(self, tab: uc.Tab) -> list[str]:
-                # Extract image URLs from page
-                return urls
-        ```
+    Class Constants:
+        CAPTCHA_SOLVE_WAIT_SECONDS: Seconds to wait after solve attempt for page change
+        CAPTCHA_RETRY_AFTER_SECONDS: Seconds to suggest waiting before retry
+        PAGE_CONTENT_CHANGE_THRESHOLD: Ratio of content change indicating refresh
+        LARGE_PAGE_CONTENT_THRESHOLD: Bytes indicating page has real content
+        DEFAULT_VIEWPORT_CENTER: Default center coordinates for 1280x720 viewport
+        BEZIER_CURVE_STEPS_RANGE: Min/max steps for mouse curve movement
+        BEZIER_CONTROL_POINT_VARIANCE: Pixel variance for curve control points
+        MOUSE_JITTER_PIXELS: Maximum pixels for hand tremor simulation
+        MOUSE_MOVE_DELAY_RANGE: Min/max seconds between curve points
+        REFRESH_CHECK_INTERVAL_SECONDS: Interval for checking page refresh during hold
     """
+
+    # CAPTCHA solving timing constants
+    CAPTCHA_SOLVE_WAIT_SECONDS: float = 3.0
+    CAPTCHA_RETRY_AFTER_SECONDS: int = 300  # 5 minutes
+
+    # Page content analysis thresholds
+    PAGE_CONTENT_CHANGE_THRESHOLD: float = 0.5  # 50% change = refresh
+    LARGE_PAGE_CONTENT_THRESHOLD: int = 70000  # bytes
+
+    # Default viewport center (for 1280x720)
+    DEFAULT_VIEWPORT_CENTER: tuple[int, int] = (640, 360)
+
+    # Bezier curve mouse movement parameters
+    BEZIER_CURVE_STEPS_RANGE: tuple[int, int] = (15, 25)
+    BEZIER_CONTROL_POINT_VARIANCE: int = 50  # pixels
+    BEZIER_CONTROL_POINT_1_RANGE: tuple[float, float] = (0.2, 0.4)
+    BEZIER_CONTROL_POINT_2_RANGE: tuple[float, float] = (0.6, 0.8)
+
+    # Mouse movement timing
+    MOUSE_MOVE_DELAY_RANGE: tuple[float, float] = (0.01, 0.03)
+    MOUSE_POST_MOVE_DELAY_RANGE: tuple[float, float] = (0.1, 0.2)
+    MOUSE_FINAL_OFFSET_PIXELS: int = 3  # Final position variance
+
+    # Hand tremor simulation
+    MOUSE_JITTER_PIXELS: int = 2
+    MICRO_MOVEMENT_INTERVAL_RANGE: tuple[float, float] = (0.1, 0.3)
+
+    # Page refresh detection
+    REFRESH_CHECK_INTERVAL_SECONDS: float = 0.25
+
+    # Progressive backoff multipliers for retry attempts
+    BACKOFF_MULTIPLIER_MIN: float = 5.0
+    BACKOFF_MULTIPLIER_MAX: float = 10.0
 
     def __init__(
         self,
@@ -183,7 +231,7 @@ class StealthBrowserExtractor(ImageExtractor):
                     raise SourceUnavailableError(
                         self.source,
                         "CAPTCHA detected and solving failed",
-                        retry_after=300,  # 5 minutes
+                        retry_after=self.CAPTCHA_RETRY_AFTER_SECONDS,
                     )
 
                 logger.info(
@@ -278,7 +326,7 @@ class StealthBrowserExtractor(ImageExtractor):
 
         except Exception as e:
             logger.error("%s navigation failed: %s", self.name, e)
-            raise ExtractionError(f"Navigation failed for {url}: {e}")
+            raise ExtractionError(f"Navigation failed for {url}: {e}") from e
 
     async def _check_for_captcha(self, tab: uc.Tab) -> bool:
         """Check if CAPTCHA is blocking the page (enhanced detection).
@@ -319,11 +367,10 @@ class StealthBrowserExtractor(ImageExtractor):
             )
 
             # Strategy 3: Enhanced page size heuristic
-            # Adjust threshold based on content analysis
             # Small pages (<30KB) are likely CAPTCHA interstitials
             # Medium pages (30-70KB) need deeper inspection
-            # Large pages (>70KB) likely have property content
-            if content_length > 70000:
+            # Large pages (>70KB) likely have real property content
+            if content_length > self.LARGE_PAGE_CONTENT_THRESHOLD:
                 # Large page - check for property indicators
                 property_indicators = [
                     "zillowstatic.com",
@@ -391,16 +438,30 @@ class StealthBrowserExtractor(ImageExtractor):
     async def _human_mouse_move_bezier(
         self, tab: uc.Tab, target_x: int, target_y: int
     ) -> None:
-        """Move mouse using Bezier curve for natural trajectory.
+        """Move mouse using cubic Bezier curve for natural human-like trajectory.
 
-        Implements cubic Bezier curve movement with randomized control points
-        to simulate natural human mouse movement patterns. This is more sophisticated
-        than the linear movement in BrowserPool.human_mouse_move().
+        Implements parametric cubic Bezier curve movement with randomized control
+        points to simulate natural human mouse movement patterns. More sophisticated
+        than linear interpolation, this approach:
+
+        - Varies speed along the path (slower at endpoints, faster in middle)
+        - Adds random curvature via control point variance
+        - Includes small final position jitter to avoid exact pixel targeting
+        - Uses timing delays between points for realistic movement speed
+
+        The cubic Bezier formula used:
+            B(t) = (1-t)^3 * P0 + 3(1-t)^2 * t * P1 + 3(1-t) * t^2 * P2 + t^3 * P3
+
+        Where P0=start, P3=target, and P1/P2 are randomized control points.
 
         Args:
-            tab: Browser tab to move mouse in
-            target_x: Target X coordinate
-            target_y: Target Y coordinate
+            tab: Browser tab to execute mouse movement in.
+            target_x: Target X coordinate in viewport pixels.
+            target_y: Target Y coordinate in viewport pixels.
+
+        Note:
+            Falls back to direct mouse_move on any error to ensure the mouse
+            reaches the target even if smooth movement fails.
         """
         logger.debug(
             "%s Bezier mouse move to: (%d, %d)", self.name, target_x, target_y
@@ -412,17 +473,29 @@ class StealthBrowserExtractor(ImageExtractor):
             start_y = self.config.viewport_height // 2
 
             # Generate random control points for cubic Bezier curve
-            # Control point 1: between start and target, with random offset
-            cp1_x = start_x + int((target_x - start_x) * random.uniform(0.2, 0.4))
-            cp1_y = start_y + int((target_y - start_y) * random.uniform(0.2, 0.4))
-            cp1_x += random.randint(-50, 50)  # Add random variation
-            cp1_y += random.randint(-50, 50)
+            variance = self.BEZIER_CONTROL_POINT_VARIANCE
+            cp1_range = self.BEZIER_CONTROL_POINT_1_RANGE
+            cp2_range = self.BEZIER_CONTROL_POINT_2_RANGE
 
-            # Control point 2: between start and target, with random offset
-            cp2_x = start_x + int((target_x - start_x) * random.uniform(0.6, 0.8))
-            cp2_y = start_y + int((target_y - start_y) * random.uniform(0.6, 0.8))
-            cp2_x += random.randint(-50, 50)  # Add random variation
-            cp2_y += random.randint(-50, 50)
+            # Control point 1: early in path with random offset
+            cp1_x = start_x + int(
+                (target_x - start_x) * random.uniform(*cp1_range)
+            )
+            cp1_y = start_y + int(
+                (target_y - start_y) * random.uniform(*cp1_range)
+            )
+            cp1_x += random.randint(-variance, variance)
+            cp1_y += random.randint(-variance, variance)
+
+            # Control point 2: later in path with random offset
+            cp2_x = start_x + int(
+                (target_x - start_x) * random.uniform(*cp2_range)
+            )
+            cp2_y = start_y + int(
+                (target_y - start_y) * random.uniform(*cp2_range)
+            )
+            cp2_x += random.randint(-variance, variance)
+            cp2_y += random.randint(-variance, variance)
 
             logger.debug(
                 "%s Bezier control points: CP1=(%d,%d), CP2=(%d,%d)",
@@ -434,14 +507,14 @@ class StealthBrowserExtractor(ImageExtractor):
             )
 
             # Generate points along Bezier curve
-            # Use 15-25 steps for smooth movement
-            num_steps = random.randint(15, 25)
-            points = []
+            steps_range = self.BEZIER_CURVE_STEPS_RANGE
+            num_steps = random.randint(*steps_range)
+            points: list[tuple[int, int]] = []
 
             for i in range(num_steps + 1):
                 t = i / num_steps
 
-                # Cubic Bezier formula: B(t) = (1-t)³P₀ + 3(1-t)²tP₁ + 3(1-t)t²P₂ + t³P₃
+                # Cubic Bezier formula
                 x = int(
                     (1 - t) ** 3 * start_x
                     + 3 * (1 - t) ** 2 * t * cp1_x
@@ -458,38 +531,42 @@ class StealthBrowserExtractor(ImageExtractor):
                 points.append((x, y))
 
             # Move mouse along curve with small delays
+            delay_range = self.MOUSE_MOVE_DELAY_RANGE
             for x, y in points:
                 try:
                     await tab.mouse_move(x, y)
-                    # Vary speed along path (faster in middle, slower at ends)
-                    delay = random.uniform(0.01, 0.03)
+                    delay = random.uniform(*delay_range)
                     await asyncio.sleep(delay)
                 except AttributeError:
-                    # Fallback if mouse_move not available
-                    logger.debug("%s mouse_move not available, using direct movement", self.name)
+                    logger.debug(
+                        "%s mouse_move not available, using direct movement",
+                        self.name,
+                    )
                     break
 
-            # Final position with small random offset (±3 pixels)
-            final_x = target_x + random.randint(-3, 3)
-            final_y = target_y + random.randint(-3, 3)
+            # Final position with small random offset to avoid exact targeting
+            offset = self.MOUSE_FINAL_OFFSET_PIXELS
+            final_x = target_x + random.randint(-offset, offset)
+            final_y = target_y + random.randint(-offset, offset)
 
             try:
                 await tab.mouse_move(final_x, final_y)
             except AttributeError:
                 pass
 
-            # Small pause after movement
-            await asyncio.sleep(random.uniform(0.1, 0.2))
+            # Small pause after movement completes
+            post_delay_range = self.MOUSE_POST_MOVE_DELAY_RANGE
+            await asyncio.sleep(random.uniform(*post_delay_range))
 
             logger.debug("%s Bezier mouse move complete", self.name)
 
         except Exception as e:
             logger.warning(
-                "%s error during Bezier mouse movement: %s, falling back to direct move",
+                "%s error during Bezier mouse movement: %s, falling back to direct",
                 self.name,
                 e,
             )
-            # Fallback to simple movement
+            # Fallback to simple direct movement
             try:
                 await tab.mouse_move(target_x, target_y)
             except Exception:
@@ -503,30 +580,40 @@ class StealthBrowserExtractor(ImageExtractor):
     ) -> bool:
         """Detect if page has refreshed during CAPTCHA hold.
 
-        PerimeterX uses a 2-layer CAPTCHA: first hold is interrupted by page refresh
-        after ~1-2 seconds, then second hold succeeds after ~4-5 seconds.
+        PerimeterX uses a 2-layer CAPTCHA system where the first press-and-hold
+        is interrupted by a page refresh after approximately 1-2 seconds. The
+        second attempt after refresh succeeds with a longer 4-5 second hold.
 
-        Detection signals:
-        1. URL changed (navigation occurred)
-        2. Content length drastically different (>50% change)
-        3. Page content contains refresh indicators
+        This method is called periodically during the button hold to detect
+        when the first layer's refresh occurs, allowing the solver to abort
+        and retry with the correct (longer) hold duration.
+
+        Detection Signals:
+            1. URL changed - Navigation event occurred during hold
+            2. Content length changed >50% - Page DOM was replaced
+            3. Content unavailable - Tab is mid-navigation
 
         Args:
-            tab: Browser tab being monitored
-            initial_url: URL captured before hold started
-            initial_content_length: Content length before hold
+            tab: Browser tab being monitored for refresh signals.
+            initial_url: URL captured before hold started, used for comparison.
+            initial_content_length: Page content length in bytes before hold.
 
         Returns:
-            True if page refresh detected, False otherwise
+            True if page refresh was detected (abort hold and retry).
+            False if page appears stable (continue holding).
+
+        Note:
+            On any exception, returns True (assumes refresh) as the safer option
+            to avoid holding on a refreshed page with reset CAPTCHA state.
         """
         try:
-            # Check 1: URL changed
-            current_url = tab.target.url if hasattr(tab, 'target') else str(tab.url)
+            # Signal 1: URL navigation occurred
+            current_url = tab.target.url if hasattr(tab, "target") else str(tab.url)
             if current_url != initial_url:
                 logger.debug("%s page refresh detected: URL changed", self.name)
                 return True
 
-            # Check 2: Content length drastically changed
+            # Signal 2: Content length drastically changed
             try:
                 content = await tab.get_content()
                 current_length = len(content) if content else 0
@@ -536,15 +623,15 @@ class StealthBrowserExtractor(ImageExtractor):
                         abs(current_length - initial_content_length)
                         / initial_content_length
                     )
-                    if change_ratio > 0.5:  # >50% change indicates refresh
+                    if change_ratio > self.PAGE_CONTENT_CHANGE_THRESHOLD:
                         logger.debug(
                             "%s page refresh detected: content length changed %.0f%%",
                             self.name,
-                            change_ratio * 100
+                            change_ratio * 100,
                         )
                         return True
             except Exception:
-                # If we can't get content, page may be refreshing
+                # Signal 3: Content unavailable during navigation
                 logger.debug("%s page refresh detected: content unavailable", self.name)
                 return True
 
@@ -552,26 +639,140 @@ class StealthBrowserExtractor(ImageExtractor):
 
         except Exception as e:
             logger.warning("%s error checking for page refresh: %s", self.name, e)
-            return True  # Assume refresh on error (safer)
+            return True  # Assume refresh on error (safer default)
 
-    async def _attempt_captcha_solve(self, tab: uc.Tab, attempt_number: int = 1) -> bool:
-        """Solve Press & Hold CAPTCHA (Phase 1 enhanced + refresh detection).
+    async def _find_captcha_button_via_cdp(self, tab: uc.Tab) -> tuple[int, int] | None:
+        """Find CAPTCHA button center coordinates using CDP JavaScript evaluation.
 
-        Enhanced strategy (Phase 1 + Step 3):
-        1. Find button element with "px-captcha" class or "Press & Hold" text
-        2. Get element position
-        3. Move mouse with Bezier curve for natural trajectory
-        4. Mouse down with micro-movements during hold (hand tremor simulation)
-        5. Detect page refresh during hold and abort if detected
-        6. Mouse up and verify CAPTCHA is gone
-        7. 2-layer hold duration: shorter for first attempt, longer for retries
+        PerimeterX embeds its CAPTCHA button inside a shadow DOM within an iframe,
+        which prevents standard CSS selectors from accessing it. This method uses
+        Chrome DevTools Protocol (CDP) to execute JavaScript that traverses the
+        shadow DOM and calculates the button's viewport coordinates.
+
+        The JavaScript IIFE:
+            1. Finds the #px-captcha container element
+            2. Accesses its shadowRoot (or falls back to direct iframe)
+            3. Locates the verification iframe within
+            4. Returns bounding rect center coordinates
 
         Args:
-            tab: Browser tab with CAPTCHA
-            attempt_number: Attempt number (1=first, 2+=retry after refresh)
+            tab: Browser tab containing the CAPTCHA page.
 
         Returns:
-            True if CAPTCHA solved, False if refresh detected or solve failed
+            Tuple of (x, y) center coordinates for mouse click target.
+            None if CAPTCHA button could not be located.
+
+        Note:
+            This is the primary detection method. Falls back to CSS selector
+            scanning in _attempt_captcha_solve() if CDP detection fails.
+        """
+        try:
+            # JavaScript to find the CAPTCHA iframe and return its center coordinates
+            js_code = '''
+            (function() {
+                // Find the px-captcha container
+                var container = document.querySelector('#px-captcha');
+                if (!container) {
+                    console.log('No #px-captcha container found');
+                    return null;
+                }
+
+                // Access shadow root
+                var shadowRoot = container.shadowRoot;
+                if (!shadowRoot) {
+                    // Fallback: maybe there's a direct iframe child (non-shadow)
+                    var directIframe = container.querySelector('iframe[title*="verification"], iframe[title*="Human"]');
+                    if (directIframe) {
+                        var rect = directIframe.getBoundingClientRect();
+                        if (rect.width > 0 && rect.height > 0) {
+                            return {
+                                x: Math.round(rect.left + rect.width / 2),
+                                y: Math.round(rect.top + rect.height / 2),
+                                width: rect.width,
+                                height: rect.height,
+                                source: 'direct-iframe'
+                            };
+                        }
+                    }
+                    console.log('No shadow root on #px-captcha');
+                    return null;
+                }
+
+                // Find iframe inside shadow root
+                var iframe = shadowRoot.querySelector('iframe[title*="verification"], iframe[title*="Human"], iframe');
+                if (!iframe) {
+                    console.log('No iframe found in shadow root');
+                    return null;
+                }
+
+                // Get bounding rect from main document perspective
+                var rect = iframe.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) {
+                    console.log('Iframe has zero dimensions');
+                    return null;
+                }
+
+                return {
+                    x: Math.round(rect.left + rect.width / 2),
+                    y: Math.round(rect.top + rect.height / 2),
+                    width: rect.width,
+                    height: rect.height,
+                    source: 'shadow-iframe'
+                };
+            })();
+            '''
+
+            # Execute JavaScript and get result
+            result = await tab.evaluate(js_code)
+
+            if result and isinstance(result, dict) and 'x' in result and 'y' in result:
+                x, y = result['x'], result['y']
+                source = result.get('source', 'unknown')
+                logger.info(
+                    "%s found CAPTCHA button via CDP at (%d, %d), size: %dx%d, source: %s",
+                    self.name, x, y, result.get('width', 0), result.get('height', 0), source
+                )
+                return (x, y)
+
+            logger.debug("%s CDP evaluate returned no valid coordinates: %s", self.name, result)
+            return None
+
+        except Exception as e:
+            logger.warning("%s CDP evaluate failed: %s", self.name, e)
+            return None
+
+    async def _attempt_captcha_solve(self, tab: uc.Tab, attempt_number: int = 1) -> bool:
+        """Solve PerimeterX Press & Hold CAPTCHA with 2-layer timing and refresh detection.
+
+        This method implements the complete CAPTCHA solving strategy for PerimeterX's
+        "Press & Hold" challenge. PerimeterX uses a 2-layer system where:
+        - First attempt is interrupted by page refresh after ~1-2 seconds
+        - Second attempt after refresh succeeds with longer ~4-5 second hold
+
+        Solving Strategy:
+            1. Locate button via CDP shadow DOM traversal (primary) or CSS selectors (fallback)
+            2. Move mouse to button using Bezier curve for natural trajectory
+            3. Press and hold with micro-movements simulating hand tremor
+            4. Monitor for page refresh during hold (abort if detected)
+            5. Release and verify CAPTCHA challenge is resolved
+
+        Hold Duration Logic:
+            - attempt_number=1: Short hold (config.captcha_initial_hold_min/max)
+              Expected to be interrupted by page refresh
+            - attempt_number>=2: Long hold (config.captcha_retry_hold_min/max)
+              Full solve duration after refresh has occurred
+
+        Args:
+            tab: Browser tab containing the CAPTCHA challenge page.
+            attempt_number: Which attempt this is (1=first/short, 2+=retry/long).
+
+        Returns:
+            True if CAPTCHA was solved and page content is now accessible.
+            False if refresh was detected mid-hold or CAPTCHA still present after attempt.
+
+        Note:
+            This method is called by _attempt_captcha_solve_v2() which handles
+            the retry loop and progressive backoff between attempts.
         """
         logger.info(
             "%s attempting CAPTCHA solve (attempt %d, Phase 1 enhanced + refresh detection)",
@@ -580,108 +781,168 @@ class StealthBrowserExtractor(ImageExtractor):
         )
 
         try:
-            # Try locating CAPTCHA inside its iframe overlay first
+            # Step 0: Try CDP evaluate first (most reliable for shadow DOM/iframe)
+            cdp_coords = await self._find_captcha_button_via_cdp(tab)
+            element_center = None
             element = None
             iframe_center: tuple[int, int] | None = None
-            try:
-                iframe_candidates = await tab.query_selector_all(
-                    "iframe#px-captcha-modal, iframe[id*='px-captcha'], iframe[src*='captcha']"
-                )
-                if iframe_candidates:
-                    iframe_el = iframe_candidates[0]
+
+            if cdp_coords:
+                element_center = cdp_coords
+                logger.info("%s using CDP coordinates: %s", self.name, element_center)
+            else:
+                # Fall back to existing iframe/selector logic
+                logger.debug("%s CDP detection failed, falling back to iframe/selector logic", self.name)
+                try:
+                    # Updated selectors to match actual PerimeterX CAPTCHA iframe structure
+                    iframe_selectors = [
+                        "#px-captcha iframe",  # Primary: iframe inside px-captcha container
+                        "iframe[title*='verification']",  # Title-based match
+                        "iframe[title*='Human verification']",  # Exact title match
+                        ".px-captcha-container iframe",  # Class-based container
+                        "div#px-captcha iframe",  # Explicit div container
+                        "iframe#px-captcha-modal",  # Legacy modal ID
+                        "iframe[id*='px-captcha']",  # ID wildcard
+                        "iframe[src*='captcha']",  # Source URL match
+                    ]
+
+                    iframe_el = None
+                    for selector in iframe_selectors:
+                        try:
+                            iframe_candidates = await tab.query_selector_all(selector)
+                            if iframe_candidates:
+                                iframe_el = iframe_candidates[0]
+                                logger.debug(
+                                    "%s found CAPTCHA iframe with selector: %s",
+                                    self.name,
+                                    selector,
+                                )
+                                break
+                        except Exception as e:
+                            logger.debug(
+                                "%s selector %s failed: %s",
+                                self.name,
+                                selector,
+                                e,
+                            )
+                            continue
+
+                    if iframe_el:
+                        try:
+                            box = await iframe_el.get_box_model()
+                            if box:
+                                # Extract coordinates from box model
+                                # Box model has content/border/padding/margin as arrays of [x,y,x,y,x,y,x,y]
+                                quads = box.get("content", box.get("border", []))
+                                if quads and len(quads) >= 8:
+                                    # Extract x and y coordinates (every other value)
+                                    xs = [quads[i] for i in range(0, len(quads), 2)]
+                                    ys = [quads[i] for i in range(1, len(quads), 2)]
+                                    iframe_x = int(sum(xs) / len(xs))
+                                    iframe_y = int(sum(ys) / len(ys))
+                                    iframe_center = (iframe_x, iframe_y)
+                                    logger.debug(
+                                        "%s calculated iframe center at (%d, %d)",
+                                        self.name,
+                                        iframe_x,
+                                        iframe_y,
+                                    )
+                        except Exception as e:
+                            logger.debug(
+                                "%s failed to get iframe box model: %s",
+                                self.name,
+                                e,
+                            )
+                            iframe_center = None
+
+                        # Attempt to find button inside iframe if API supports content querying
+                        # Note: This rarely works with cross-origin iframes, but we try anyway
+                        try:
+                            frame_buttons = await iframe_el.query_selector_all("button")
+                            for btn in frame_buttons:
+                                text = (
+                                    (getattr(btn, "text", "") or "").lower()
+                                    or btn.attrs.get("aria-label", "").lower()
+                                )
+                                if "press" in text and "hold" in text:
+                                    element = btn
+                                    logger.debug("%s found CAPTCHA button inside iframe", self.name)
+                                    break
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+
+                # If not found in iframe, try regular DOM selectors
+                if not element:
+                    selectors = [
+                        # Primary: wrapper-based selectors (modern CAPTCHA DOM structure)
+                        "#px-captcha-wrapper [role='button']",
+                        "#px-captcha-wrapper div[tabindex='0']",
+                        ".px-captcha-container [role='button']",
+                        # Secondary: class-based (legacy support)
+                        "button[class*='px-captcha']",
+                        "div[class*='px-captcha'] button",
+                        # Fallback: role-based without class constraints
+                        "[role='button'][tabindex='0']",
+                        "div[aria-describedby][role='button']",
+                    ]
+
+                    for selector in selectors:
+                        try:
+                            found = await tab.select(selector)
+                            if found:
+                                element = found
+                                logger.debug(
+                                    "%s found CAPTCHA button with selector: %s",
+                                    self.name,
+                                    selector,
+                                )
+                                break
+                        except Exception:
+                            continue
+
+                if not element:
+                    # Fallback: scan buttons for matching text
                     try:
-                        rect = await iframe_el.get_box_model()
-                        if rect and "content" in rect:
-                            xs = rect["content"][0::2]
-                            ys = rect["content"][1::2]
-                            iframe_center = (int(sum(xs) / len(xs)), int(sum(ys) / len(ys)))
-                    except Exception:
-                        iframe_center = None
-                    # Attempt to find button inside iframe if API supports content querying
-                    try:
-                        frame_buttons = await iframe_el.query_selector_all("button")
-                        for btn in frame_buttons:
+                        buttons = await tab.query_selector_all("button")
+                        for btn in buttons:
                             text = (
                                 (getattr(btn, "text", "") or "").lower()
                                 or btn.attrs.get("aria-label", "").lower()
                             )
                             if "press" in text and "hold" in text:
                                 element = btn
-                                logger.debug("%s found CAPTCHA button inside iframe", self.name)
+                                logger.debug("%s found CAPTCHA button by text scan", self.name)
                                 break
                     except Exception:
                         pass
-            except Exception:
-                pass
 
-            # If not found in iframe, try regular DOM selectors
-            if not element:
-                selectors = [
-                    # Primary: wrapper-based selectors (modern CAPTCHA DOM structure)
-                    "#px-captcha-wrapper [role='button']",
-                    "#px-captcha-wrapper div[tabindex='0']",
-                    ".px-captcha-container [role='button']",
-                    # Secondary: class-based (legacy support)
-                    "button[class*='px-captcha']",
-                    "div[class*='px-captcha'] button",
-                    # Fallback: role-based without class constraints
-                    "[role='button'][tabindex='0']",
-                    "div[aria-describedby][role='button']",
-                ]
-
-                for selector in selectors:
-                    try:
-                        found = await tab.select(selector)
-                        if found:
-                            element = found
-                            logger.debug(
-                                "%s found CAPTCHA button with selector: %s",
-                                self.name,
-                                selector,
-                            )
-                            break
-                    except Exception:
-                        continue
-
-            if not element:
-                # Fallback: scan buttons for matching text
-                try:
-                    buttons = await tab.query_selector_all("button")
-                    for btn in buttons:
-                        text = (
-                            (getattr(btn, "text", "") or "").lower()
-                            or btn.attrs.get("aria-label", "").lower()
+                if not element:
+                    # If we located the iframe bounds, press/hold at its center as a last resort
+                    if iframe_center:
+                        logger.warning(
+                            "%s CAPTCHA button not found; pressing iframe center (%d,%d)",
+                            self.name,
+                            iframe_center[0],
+                            iframe_center[1],
                         )
-                        if "press" in text and "hold" in text:
-                            element = btn
-                            logger.debug("%s found CAPTCHA button by text scan", self.name)
-                            break
-                except Exception:
-                    pass
-
-            if not element:
-                # If we located the iframe bounds, press/hold at its center as a last resort
-                if iframe_center:
-                    x, y = iframe_center
-                    logger.warning(
-                        "%s CAPTCHA button not found; pressing iframe center (%d,%d)",
-                        self.name,
-                        x,
-                        y,
-                    )
-                    element_center = (x, y)
+                        element_center = iframe_center
+                    else:
+                        logger.warning("%s could not find CAPTCHA button", self.name)
+                        return False
                 else:
-                    logger.warning("%s could not find CAPTCHA button", self.name)
-                    return False
-            else:
-                element_center = None
+                    element_center = None
 
-            # Get element position
+            # Get element position for mouse targeting
             # Note: nodriver API may vary - adjust as needed
+            x: int | None = None
+            y: int | None = None
+
             try:
                 if element_center:
                     x, y = element_center
-                else:
+                elif element is not None:
                     rect = await element.get_box_model()
                     if rect and "content" in rect:
                         xs = rect["content"][0::2]
@@ -690,17 +951,22 @@ class StealthBrowserExtractor(ImageExtractor):
                         y = int(sum(ys) / len(ys))
                     else:
                         logger.warning(
-                            "%s could not get element position, using default",
+                            "%s could not get element position, using default viewport center",
                             self.name,
                         )
-                        x, y = 640, 360  # Center of 1280x720 viewport
+                        x, y = self.DEFAULT_VIEWPORT_CENTER
+                else:
+                    logger.warning(
+                        "%s no element or coordinates available",
+                        self.name,
+                    )
+                    return False
             except AttributeError:
                 # Fallback if method not available
                 logger.warning(
                     "%s get_box_model not available, using element click",
                     self.name,
                 )
-                x, y = None, None
 
             # Phase 1 Enhancement: Use Bezier curve for mouse movement
             if x is not None and y is not None:
@@ -742,22 +1008,23 @@ class StealthBrowserExtractor(ImageExtractor):
                 if x is not None and y is not None:
                     await tab.mouse_down(x, y)
 
-                    # Simulate hand tremor during hold with ±2px jitter
-                    # Random micro-movement intervals (0.1-0.3s)
-                    # Step 3: Check for page refresh every ~200-300ms during hold
+                    # Simulate hand tremor during hold with pixel jitter
+                    # Check for page refresh at configured interval during hold
                     elapsed = 0.0
                     last_refresh_check = 0.0
-                    refresh_check_interval = 0.25  # Check every 250ms
+                    jitter = self.MOUSE_JITTER_PIXELS
+                    interval_range = self.MICRO_MOVEMENT_INTERVAL_RANGE
+                    refresh_interval = self.REFRESH_CHECK_INTERVAL_SECONDS
 
                     while elapsed < hold_duration:
-                        # Random micro-movement interval
-                        interval = random.uniform(0.1, 0.3)
+                        # Sleep for random micro-movement interval
+                        interval = random.uniform(*interval_range)
                         sleep_time = min(interval, hold_duration - elapsed)
                         await asyncio.sleep(sleep_time)
                         elapsed += sleep_time
 
-                        # Step 3: Periodically check for page refresh
-                        if elapsed - last_refresh_check >= refresh_check_interval:
+                        # Periodically check for page refresh (2-layer detection)
+                        if elapsed - last_refresh_check >= refresh_interval:
                             refresh_detected = await self._detect_page_refresh(
                                 tab, initial_url, initial_content_length
                             )
@@ -768,44 +1035,37 @@ class StealthBrowserExtractor(ImageExtractor):
                                     elapsed,
                                 )
                                 await tab.mouse_up(x, y)
-                                return False  # Signal to v2 solver to retry
+                                return False  # Signal retry with longer hold
                             last_refresh_check = elapsed
 
-                        # Apply micro-movement (±2px jitter) if not at end
+                        # Apply micro-movement (hand tremor) if not at end of hold
                         if elapsed < hold_duration:
-                            jitter_x = x + random.randint(-2, 2)
-                            jitter_y = y + random.randint(-2, 2)
+                            jitter_x = x + random.randint(-jitter, jitter)
+                            jitter_y = y + random.randint(-jitter, jitter)
                             try:
                                 await tab.mouse_move(jitter_x, jitter_y)
-                                logger.debug(
-                                    "%s micro-movement: (%d,%d) -> (%d,%d)",
-                                    self.name,
-                                    x,
-                                    y,
-                                    jitter_x,
-                                    jitter_y,
-                                )
                             except AttributeError:
                                 # Mouse move not available, continue hold
                                 pass
 
                     await tab.mouse_up(x, y)
-                else:
-                    # Fallback: just click the element
+                elif element is not None:
+                    # Fallback: just click the element without micro-movements
                     await element.click()
                     await asyncio.sleep(hold_duration)
 
             except AttributeError:
                 # Fallback if mouse methods not available
-                logger.warning(
-                    "%s mouse events not available, using element click",
-                    self.name,
-                )
-                await element.click()
-                await asyncio.sleep(hold_duration)
+                if element is not None:
+                    logger.warning(
+                        "%s mouse events not available, using element click",
+                        self.name,
+                    )
+                    await element.click()
+                    await asyncio.sleep(hold_duration)
 
             # Wait for page to change (CAPTCHA solve typically triggers navigation)
-            await asyncio.sleep(3.0)
+            await asyncio.sleep(self.CAPTCHA_SOLVE_WAIT_SECONDS)
 
             # Check if CAPTCHA is gone
             captcha_still_present = await self._check_for_captcha(tab)
@@ -824,20 +1084,28 @@ class StealthBrowserExtractor(ImageExtractor):
     async def _attempt_captcha_solve_v2(
         self, tab: uc.Tab, max_attempts: int = 3
     ) -> bool:
-        """Attempt to solve Press & Hold CAPTCHA with multi-attempt strategy.
+        """Orchestrate multi-attempt CAPTCHA solving with progressive backoff.
 
-        Phase 1 Enhancement: Multi-attempt solving with progressive backoff.
-        This method tries different solving strategies across multiple attempts:
-        - Attempt 1: Standard Bezier movement + micro-movements
-        - Attempt 2: Longer hold duration, different movement path
-        - Attempt 3: Extended hold with more aggressive micro-movements
+        This method coordinates the 2-layer CAPTCHA solving strategy by:
+        1. Calling _attempt_captcha_solve() with attempt_number to control hold duration
+        2. Applying progressive backoff between failed attempts
+        3. Returning success on first successful solve
+
+        The 2-layer timing is handled by _attempt_captcha_solve() based on attempt_number:
+        - Attempt 1: Short hold (1.5-2.5s) - expected to be interrupted by refresh
+        - Attempt 2+: Long hold (4.5-6.5s) - full solve after refresh occurred
+
+        Progressive backoff between attempts:
+        - Backoff duration = (5-10 seconds) * attempt_number
+        - Helps avoid rate limiting and allows page state to stabilize
 
         Args:
-            tab: Browser tab with CAPTCHA
-            max_attempts: Maximum number of solve attempts (default: 3)
+            tab: Browser tab containing the CAPTCHA challenge.
+            max_attempts: Maximum solve attempts before giving up (default: 3).
 
         Returns:
-            True if CAPTCHA solved on any attempt, False if all attempts fail
+            True if CAPTCHA was solved on any attempt.
+            False if all attempts were exhausted without success.
         """
         logger.info(
             "%s attempting CAPTCHA solve with up to %d attempts",
@@ -854,7 +1122,7 @@ class StealthBrowserExtractor(ImageExtractor):
             )
 
             try:
-                # Try to solve CAPTCHA using current strategy
+                # Try to solve CAPTCHA (hold duration varies by attempt_number)
                 success = await self._attempt_captcha_solve(tab, attempt_number=attempt)
 
                 if success:
@@ -876,9 +1144,8 @@ class StealthBrowserExtractor(ImageExtractor):
 
                 # If not the last attempt, apply progressive backoff
                 if attempt < max_attempts:
-                    # Progressive backoff: 5-10s × attempt number
-                    backoff_min = 5.0 * attempt
-                    backoff_max = 10.0 * attempt
+                    backoff_min = self.BACKOFF_MULTIPLIER_MIN * attempt
+                    backoff_max = self.BACKOFF_MULTIPLIER_MAX * attempt
                     backoff = random.uniform(backoff_min, backoff_max)
 
                     logger.info(
@@ -888,22 +1155,6 @@ class StealthBrowserExtractor(ImageExtractor):
                         attempt + 1,
                     )
                     await asyncio.sleep(backoff)
-
-                    # Modify strategy for next attempt
-                    if attempt == 1:
-                        # Attempt 2: Increase hold duration by 20%
-                        original_min = self.config.captcha_hold_min
-                        original_max = self.config.captcha_hold_max
-                        logger.debug(
-                            "%s attempt 2 strategy: increase hold duration 20%%",
-                            self.name,
-                        )
-                    elif attempt == 2:
-                        # Attempt 3: Increase hold duration by 40%
-                        logger.debug(
-                            "%s attempt 3 strategy: increase hold duration 40%%",
-                            self.name,
-                        )
 
             except Exception as e:
                 logger.error(

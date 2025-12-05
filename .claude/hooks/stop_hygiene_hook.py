@@ -125,9 +125,13 @@ def evaluate_hygiene(is_agent: bool = False) -> dict[str, str]:
     relevant_dirs = sorted([d for d in modified_dirs if not should_exclude(d)])
 
     if not relevant_dirs:
+        # Show which non-code dirs were modified for transparency
+        excluded_list = "\n".join(f"  - {d}" for d in sorted(modified_dirs)[:5])
+        if len(modified_dirs) > 5:
+            excluded_list += f"\n  ... and {len(modified_dirs) - 5} more"
         return {
             "decision": "approve",
-            "reason": "Only non-code directories modified. Safe to exit."
+            "reason": f"Only non-code directories modified ({len(modified_dirs)} total). Safe to exit.\n\n**Modified (excluded):**\n{excluded_list}"
         }
 
     # Check which directories lack CLAUDE.md
@@ -239,9 +243,10 @@ If CLAUDE.md >100 lines:
         }
     else:
         # All directories have up-to-date CLAUDE.md - approve
+        # Include directory list so Claude can track what was touched
         return {
             "decision": "approve",
-            "reason": f"Session modified {len(relevant_dirs)} directories."
+            "reason": f"Session modified {len(relevant_dirs)} directories. All CLAUDE.md files are current.\n\n**Modified directories:**\n{dir_list}"
         }
 
 

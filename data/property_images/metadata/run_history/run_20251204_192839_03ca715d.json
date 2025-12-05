@@ -1,0 +1,100 @@
+{
+  "run_id": "03ca715d",
+  "started_at": "2025-12-04T19:27:33.832139-05:00",
+  "ended_at": "2025-12-04T19:28:39.970821-05:00",
+  "mode": "incremental",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 62,
+    "total_new_images": 27,
+    "total_unchanged": 1,
+    "total_duplicates": 18,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 3,
+    "properties_with_changes": 1,
+    "properties_needing_review": 1
+  },
+  "property_changes": {
+    "8803 N 105th Dr, Peoria, AZ 85345": {
+      "address": "8803 N 105th Dr, Peoria, AZ 85345",
+      "property_hash": "ed34c433",
+      "urls_discovered": 62,
+      "new_images": 27,
+      "unchanged": 1,
+      "duplicates": 18,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 3,
+      "new_image_ids": [
+        "96b2d63a-30bc-4837-8e78-c40b711a5c3f",
+        "7644957a-82c8-4c16-bfa7-a0d60dc7efc1",
+        "70d88d9a-565d-4ed3-acfd-43297b6e2705",
+        "ebd16c2c-bba7-4ac1-845f-0e5f65f6dfc4",
+        "533556a5-fbec-495e-babe-39bf351aa91f",
+        "68f62177-4404-46e6-a6d8-d3f8549b4323",
+        "2e3bb3eb-b140-482d-92b8-31db9c7a036a",
+        "568f1021-c981-4e93-808a-931821ecf4d1",
+        "da9d5d23-ab2c-48fa-ae0e-a61aaa4bafa7",
+        "2602fdd8-35ef-409b-9dda-bc0e2bc3d91d",
+        "bc69f82b-f45b-4742-818a-b0bcb9230223",
+        "fbb8ab24-cc4f-4488-b96c-f1c5344df538",
+        "1f46e66a-1109-492f-881c-5fcf24f97fa1",
+        "1a09c4bd-f254-4793-b003-9884260bd5c5",
+        "daff85ed-2b9e-4dcf-868f-102925ca7136",
+        "59dec432-375a-4d18-867f-3ee1954a55ef",
+        "599b902f-7739-4fce-8a64-4daa49b8a3dd",
+        "4840e224-11de-469b-b6ac-be55f844a303",
+        "ec5757d9-6cb3-4413-b243-5ecb887b2f11",
+        "6fe03946-2760-44aa-a639-834ebb9fb40f",
+        "d3f1ca83-82b5-42aa-a628-61b3fa60dd7e",
+        "68b41969-9c32-4805-8d7a-1391c85c9177",
+        "a5c48ab9-6c98-4983-808b-8a1cfb8f17f2",
+        "c37a2e6f-828a-44bd-bf02-6860da68fc73",
+        "6dee2e42-1705-45a8-9831-d2692d8b328c",
+        "f15af4de-fdb7-46a5-8c65-beab2744aaf2",
+        "3c69d83d-d9f0-43f0-9939-3ef265440d81"
+      ],
+      "removed_urls": [],
+      "error_messages": [
+        "Error: https://ssl.cdn-redfin.com/photo/86/bcsphoto/226/genBcs.6879226_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bcsphoto/226/genBcs.6879226_1024.jpg: Image not found (404)",
+        "Error: https://ssl.cdn-redfin.com/photo/86/bcsphoto/226/genBcs.6879226_1_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bcsphoto/226/genBcs.6879226_1_1024.jpg: Image not found (404)",
+        "Error: https://ssl.cdn-redfin.com/photo/86/bcsphoto/226/genBcs.6879226_73_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bcsphoto/226/genBcs.6879226_73_1024.jpg: Image not found (404)"
+      ],
+      "listing_metadata": {
+        "beds": 4,
+        "baths": 4.0,
+        "sqft": 2225,
+        "lot_sqft": 13503,
+        "year_built": 1976,
+        "property_type": "Single Family",
+        "garage_spaces": null,
+        "parking_spaces": null,
+        "pool": true,
+        "stories": 1,
+        "list_price": null,
+        "cooling_type": "Central",
+        "heating_type": null,
+        "flooring_types": [
+          "Tile",
+          "Carpet",
+          "Vinyl"
+        ],
+        "appliances_included": [
+          "Stove/Oven"
+        ],
+        "sewer_type": "City",
+        "water_source": "City",
+        "days_on_market": null,
+        "original_list_price": null,
+        "price_reduced": true,
+        "price_reduced_pct": null,
+        "price_reduced_amount": 6000,
+        "hoa_fee": 0
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 66.138682
+}

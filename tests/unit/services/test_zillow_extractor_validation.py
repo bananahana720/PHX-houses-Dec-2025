@@ -5,6 +5,8 @@ Tests the three key modifications:
 2. Enhanced autocomplete selectors (8 selectors)
 3. _navigate_to_property_via_search() recovery logic
 
+Also validates the 2-layer CAPTCHA bypass implementation with page refresh detection.
+
 Code quality, syntax, import, and functional validation.
 """
 
@@ -193,7 +195,7 @@ class TestClickFirstSearchResult:
     """Test 3: Unit Tests for _click_first_search_result() Method"""
 
     @pytest.mark.asyncio
-    async def test_click_first_search_result_with_valid_results(self):
+    async def test_click_first_search_result_with_valid_results(self) -> None:
         """Test clicking first result when search results exist."""
         from unittest.mock import patch
 
@@ -222,7 +224,7 @@ class TestClickFirstSearchResult:
         logger.info("✓ Successfully clicks first search result")
 
     @pytest.mark.asyncio
-    async def test_click_first_search_result_tries_all_selectors(self):
+    async def test_click_first_search_result_tries_all_selectors(self) -> None:
         """Test that method tries multiple selectors in priority order."""
         from unittest.mock import patch
 
@@ -252,7 +254,7 @@ class TestClickFirstSearchResult:
         logger.info("✓ Tried selectors in priority order (4 attempts)")
 
     @pytest.mark.asyncio
-    async def test_click_first_search_result_handles_no_results(self):
+    async def test_click_first_search_result_handles_no_results(self) -> None:
         """Test graceful failure when no search results found."""
         from src.phx_home_analysis.services.image_extraction.extractors.zillow import (
             ZillowExtractor,
@@ -270,7 +272,7 @@ class TestClickFirstSearchResult:
         logger.info("✓ Correctly returns False when no results found")
 
     @pytest.mark.asyncio
-    async def test_click_first_search_result_error_handling(self):
+    async def test_click_first_search_result_error_handling(self) -> None:
         """Test error handling when DOM operations fail."""
         from src.phx_home_analysis.services.image_extraction.extractors.zillow import (
             ZillowExtractor,
@@ -571,10 +573,25 @@ class TestNavigationRecovery:
 
 
 class TestCaptchaV2Integration:
-    """Test 7: Tests for 2-layer CAPTCHA bypass with page refresh detection."""
+    """Tests for 2-layer CAPTCHA bypass with page refresh detection.
 
-    def test_imports_time_and_log_captcha_event(self):
-        """Verify required imports are present in stealth_base.py."""
+    The 2-layer CAPTCHA system handles PerimeterX's page refresh behavior:
+    - Layer 1: Short initial hold (1.5-2.5s) that will be interrupted by refresh
+    - Layer 2: After detecting refresh, longer retry hold (4.5-6.5s) for actual solve
+
+    Tests validate:
+    - Required imports and method signatures in stealth_base.py
+    - Configuration fields with proper defaults and validation
+    - Call site migration to v2 solver across all extractors
+    """
+
+    def test_imports_time_and_log_captcha_event(self) -> None:
+        """Verify stealth_base.py imports time module and log_captcha_event.
+
+        These imports are required for:
+        - time: Measuring elapsed time for refresh detection
+        - log_captcha_event: Structured logging of CAPTCHA interactions
+        """
         import ast
         from pathlib import Path
 
@@ -582,7 +599,7 @@ class TestCaptchaV2Integration:
         source = stealth_base_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
 
-        import_names = []
+        import_names: list[str] = []
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
@@ -593,10 +610,16 @@ class TestCaptchaV2Integration:
 
         assert "time" in import_names, "import time missing from stealth_base.py"
         assert "log_captcha_event" in import_names, "log_captcha_event import missing"
-        logger.info("✓ Required imports present: time, log_captcha_event")
+        logger.info("Required imports present: time, log_captcha_event")
 
-    def test_detect_page_refresh_method_exists(self):
-        """Verify _detect_page_refresh method exists with correct signature."""
+    def test_detect_page_refresh_method_exists(self) -> None:
+        """Verify _detect_page_refresh method exists with correct signature.
+
+        Method signature must include:
+        - tab: Browser tab to monitor
+        - initial_url: URL before CAPTCHA interaction
+        - initial_content_length: Page content length for comparison
+        """
         import inspect
 
         from phx_home_analysis.services.image_extraction.extractors.stealth_base import (
@@ -608,13 +631,18 @@ class TestCaptchaV2Integration:
         sig = inspect.signature(method)
         params = list(sig.parameters.keys())
 
-        assert "tab" in params
-        assert "initial_url" in params
-        assert "initial_content_length" in params
-        logger.info(f"✓ _detect_page_refresh method exists with params: {params}")
+        assert "tab" in params, "Missing 'tab' parameter"
+        assert "initial_url" in params, "Missing 'initial_url' parameter"
+        assert "initial_content_length" in params, "Missing 'initial_content_length' parameter"
+        logger.info(f"_detect_page_refresh method exists with params: {params}")
 
-    def test_attempt_captcha_solve_has_attempt_number_param(self):
-        """Verify _attempt_captcha_solve has attempt_number parameter."""
+    def test_attempt_captcha_solve_has_attempt_number_param(self) -> None:
+        """Verify _attempt_captcha_solve accepts attempt_number with default=1.
+
+        The attempt_number parameter controls timing:
+        - attempt_number=1: Uses initial hold timing (shorter, expects interrupt)
+        - attempt_number>1: Uses retry hold timing (longer, for actual solve)
+        """
         import inspect
 
         from phx_home_analysis.services.image_extraction.extractors.stealth_base import (
@@ -625,34 +653,59 @@ class TestCaptchaV2Integration:
         sig = inspect.signature(method)
         params = sig.parameters
 
-        assert "attempt_number" in params
-        assert params["attempt_number"].default == 1
-        logger.info("✓ _attempt_captcha_solve has attempt_number parameter with default=1")
+        assert "attempt_number" in params, "Missing 'attempt_number' parameter"
+        assert params["attempt_number"].default == 1, (
+            f"Expected default=1, got {params['attempt_number'].default}"
+        )
+        logger.info("_attempt_captcha_solve has attempt_number parameter with default=1")
 
-    def test_config_has_2layer_timing_fields(self):
-        """Verify StealthExtractionConfig has 2-layer timing fields."""
+    def test_config_has_2layer_timing_fields(self) -> None:
+        """Verify StealthExtractionConfig has all 2-layer timing fields with correct defaults.
+
+        Expected fields and defaults:
+        - captcha_initial_hold_min: 1.5s (first attempt minimum)
+        - captcha_initial_hold_max: 2.5s (first attempt maximum)
+        - captcha_retry_hold_min: 4.5s (retry attempt minimum)
+        - captcha_retry_hold_max: 6.5s (retry attempt maximum)
+        - captcha_refresh_wait: 2.0s (delay after detecting refresh)
+        """
         from phx_home_analysis.config.settings import StealthExtractionConfig
 
         config = StealthExtractionConfig()
 
-        # New 2-layer fields
-        assert hasattr(config, "captcha_initial_hold_min")
-        assert hasattr(config, "captcha_initial_hold_max")
-        assert hasattr(config, "captcha_retry_hold_min")
-        assert hasattr(config, "captcha_retry_hold_max")
-        assert hasattr(config, "captcha_refresh_wait")
+        # Verify fields exist
+        assert hasattr(config, "captcha_initial_hold_min"), "Missing captcha_initial_hold_min"
+        assert hasattr(config, "captcha_initial_hold_max"), "Missing captcha_initial_hold_max"
+        assert hasattr(config, "captcha_retry_hold_min"), "Missing captcha_retry_hold_min"
+        assert hasattr(config, "captcha_retry_hold_max"), "Missing captcha_retry_hold_max"
+        assert hasattr(config, "captcha_refresh_wait"), "Missing captcha_refresh_wait"
 
-        # Verify values
-        assert config.captcha_initial_hold_min == 1.5
-        assert config.captcha_initial_hold_max == 2.5
-        assert config.captcha_retry_hold_min == 4.5
-        assert config.captcha_retry_hold_max == 6.5
-        assert config.captcha_refresh_wait == 2.0
-        logger.info("✓ All 2-layer CAPTCHA config fields present with correct defaults")
+        # Verify exact default values
+        assert config.captcha_initial_hold_min == 1.5, (
+            f"Expected 1.5, got {config.captcha_initial_hold_min}"
+        )
+        assert config.captcha_initial_hold_max == 2.5, (
+            f"Expected 2.5, got {config.captcha_initial_hold_max}"
+        )
+        assert config.captcha_retry_hold_min == 4.5, (
+            f"Expected 4.5, got {config.captcha_retry_hold_min}"
+        )
+        assert config.captcha_retry_hold_max == 6.5, (
+            f"Expected 6.5, got {config.captcha_retry_hold_max}"
+        )
+        assert config.captcha_refresh_wait == 2.0, (
+            f"Expected 2.0, got {config.captcha_refresh_wait}"
+        )
+        logger.info("All 2-layer CAPTCHA config fields present with correct defaults")
 
-    def test_all_call_sites_use_v2_solver(self):
-        """Verify all CAPTCHA call sites use _attempt_captcha_solve_v2."""
-        import re
+    def test_all_call_sites_use_v2_solver(self) -> None:
+        """Verify all CAPTCHA call sites migrated to _attempt_captcha_solve_v2.
+
+        Expected call counts:
+        - zillow.py: 5 calls to v2 solver (various navigation paths)
+        - stealth_base.py: 1 call to v2 solver (base extract_image_urls)
+        - v1 solver only called internally by v2 with attempt_number parameter
+        """
         from pathlib import Path
 
         zillow_path = Path("src/phx_home_analysis/services/image_extraction/extractors/zillow.py")
@@ -662,20 +715,183 @@ class TestCaptchaV2Integration:
         zillow_source = zillow_path.read_text(encoding="utf-8")
         v2_calls_zillow = re.findall(r"await self\._attempt_captcha_solve_v2\(tab\)", zillow_source)
 
-        assert len(v2_calls_zillow) == 5, f"Expected 5 v2 calls in zillow.py, found {len(v2_calls_zillow)}"
-        logger.info(f"✓ Found {len(v2_calls_zillow)} v2 calls in zillow.py")
+        assert len(v2_calls_zillow) == 5, (
+            f"Expected 5 v2 calls in zillow.py, found {len(v2_calls_zillow)}"
+        )
+        logger.info(f"Found {len(v2_calls_zillow)} v2 calls in zillow.py")
 
         # Check stealth_base.py - should have 1 v2 call in extract_image_urls
         stealth_source = stealth_base_path.read_text(encoding="utf-8")
         v2_calls_stealth = re.findall(r"await self\._attempt_captcha_solve_v2\(tab\)", stealth_source)
 
-        assert len(v2_calls_stealth) == 1, f"Expected 1 v2 call in stealth_base.py, found {len(v2_calls_stealth)}"
-        logger.info(f"✓ Found {len(v2_calls_stealth)} v2 call in stealth_base.py")
+        assert len(v2_calls_stealth) == 1, (
+            f"Expected 1 v2 call in stealth_base.py, found {len(v2_calls_stealth)}"
+        )
+        logger.info(f"Found {len(v2_calls_stealth)} v2 call in stealth_base.py")
 
         # Verify v1 calls only appear inside v2 with attempt_number
         v1_with_attempt = re.findall(r"await self\._attempt_captcha_solve\(tab, attempt_number=", stealth_source)
-        assert len(v1_with_attempt) == 1, "v2 should call v1 with attempt_number"
-        logger.info("✓ v2 correctly calls v1 with attempt_number parameter")
+        assert len(v1_with_attempt) == 1, (
+            "v2 should call v1 exactly once with attempt_number parameter"
+        )
+        logger.info("v2 correctly calls v1 with attempt_number parameter")
+
+
+class TestCaptchaTimingValidation:
+    """Tests for CAPTCHA timing configuration validation.
+
+    Validates that StealthExtractionConfig enforces:
+    - All timing values must be positive (> 0)
+    - Min values must be <= max values for timing ranges
+    - Environment variable overrides work correctly
+    """
+
+    def test_config_rejects_negative_initial_hold_min(self) -> None:
+        """Verify config rejects negative captcha_initial_hold_min."""
+        from phx_home_analysis.config.settings import StealthExtractionConfig
+
+        with pytest.raises(ValueError, match="captcha_initial_hold_min must be positive"):
+            StealthExtractionConfig(captcha_initial_hold_min=-1.0)
+
+    def test_config_rejects_zero_initial_hold_min(self) -> None:
+        """Verify config rejects zero captcha_initial_hold_min."""
+        from phx_home_analysis.config.settings import StealthExtractionConfig
+
+        with pytest.raises(ValueError, match="captcha_initial_hold_min must be positive"):
+            StealthExtractionConfig(captcha_initial_hold_min=0.0)
+
+    def test_config_rejects_negative_refresh_wait(self) -> None:
+        """Verify config rejects negative captcha_refresh_wait."""
+        from phx_home_analysis.config.settings import StealthExtractionConfig
+
+        with pytest.raises(ValueError, match="captcha_refresh_wait must be positive"):
+            StealthExtractionConfig(captcha_refresh_wait=-0.5)
+
+    def test_config_rejects_initial_min_greater_than_max(self) -> None:
+        """Verify config rejects initial_hold_min > initial_hold_max."""
+        from phx_home_analysis.config.settings import StealthExtractionConfig
+
+        with pytest.raises(ValueError, match="captcha_initial_hold_min.*must be <="):
+            StealthExtractionConfig(
+                captcha_initial_hold_min=3.0,
+                captcha_initial_hold_max=2.0,
+            )
+
+    def test_config_rejects_retry_min_greater_than_max(self) -> None:
+        """Verify config rejects retry_hold_min > retry_hold_max."""
+        from phx_home_analysis.config.settings import StealthExtractionConfig
+
+        with pytest.raises(ValueError, match="captcha_retry_hold_min.*must be <="):
+            StealthExtractionConfig(
+                captcha_retry_hold_min=8.0,
+                captcha_retry_hold_max=5.0,
+            )
+
+    def test_config_accepts_equal_min_and_max(self) -> None:
+        """Verify config accepts timing ranges where min equals max."""
+        from phx_home_analysis.config.settings import StealthExtractionConfig
+
+        # Should not raise - equal min/max is valid (fixed timing)
+        config = StealthExtractionConfig(
+            captcha_initial_hold_min=2.0,
+            captcha_initial_hold_max=2.0,
+            captcha_retry_hold_min=5.0,
+            captcha_retry_hold_max=5.0,
+        )
+        assert config.captcha_initial_hold_min == config.captcha_initial_hold_max
+        assert config.captcha_retry_hold_min == config.captcha_retry_hold_max
+        logger.info("Config accepts equal min/max timing values")
+
+    def test_config_accepts_custom_positive_values(self) -> None:
+        """Verify config accepts custom positive timing values."""
+        from phx_home_analysis.config.settings import StealthExtractionConfig
+
+        config = StealthExtractionConfig(
+            captcha_initial_hold_min=0.5,
+            captcha_initial_hold_max=1.0,
+            captcha_retry_hold_min=3.0,
+            captcha_retry_hold_max=10.0,
+            captcha_refresh_wait=0.1,
+        )
+        assert config.captcha_initial_hold_min == 0.5
+        assert config.captcha_initial_hold_max == 1.0
+        assert config.captcha_retry_hold_min == 3.0
+        assert config.captcha_retry_hold_max == 10.0
+        assert config.captcha_refresh_wait == 0.1
+        logger.info("Config accepts custom positive timing values")
+
+    def test_from_env_loads_captcha_timing_overrides(self) -> None:
+        """Verify from_env() respects CAPTCHA timing environment variables."""
+        import os
+
+        from phx_home_analysis.config.settings import StealthExtractionConfig
+
+        # Set environment variables
+        env_overrides = {
+            "CAPTCHA_INITIAL_HOLD_MIN": "2.0",
+            "CAPTCHA_INITIAL_HOLD_MAX": "3.0",
+            "CAPTCHA_RETRY_HOLD_MIN": "5.0",
+            "CAPTCHA_RETRY_HOLD_MAX": "7.0",
+            "CAPTCHA_REFRESH_WAIT": "1.5",
+        }
+
+        # Store original values
+        original_values = {k: os.environ.get(k) for k in env_overrides}
+
+        try:
+            # Set test values
+            for key, value in env_overrides.items():
+                os.environ[key] = value
+
+            config = StealthExtractionConfig.from_env()
+
+            assert config.captcha_initial_hold_min == 2.0, (
+                f"Expected 2.0, got {config.captcha_initial_hold_min}"
+            )
+            assert config.captcha_initial_hold_max == 3.0, (
+                f"Expected 3.0, got {config.captcha_initial_hold_max}"
+            )
+            assert config.captcha_retry_hold_min == 5.0, (
+                f"Expected 5.0, got {config.captcha_retry_hold_min}"
+            )
+            assert config.captcha_retry_hold_max == 7.0, (
+                f"Expected 7.0, got {config.captcha_retry_hold_max}"
+            )
+            assert config.captcha_refresh_wait == 1.5, (
+                f"Expected 1.5, got {config.captcha_refresh_wait}"
+            )
+            logger.info("from_env() correctly loads CAPTCHA timing overrides")
+        finally:
+            # Restore original values
+            for key, original in original_values.items():
+                if original is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = original
+
+    def test_from_env_uses_defaults_for_invalid_values(self) -> None:
+        """Verify from_env() uses defaults when env vars contain invalid floats."""
+        import os
+
+        from phx_home_analysis.config.settings import StealthExtractionConfig
+
+        # Store original value
+        original = os.environ.get("CAPTCHA_INITIAL_HOLD_MIN")
+
+        try:
+            os.environ["CAPTCHA_INITIAL_HOLD_MIN"] = "not_a_number"
+            config = StealthExtractionConfig.from_env()
+
+            # Should fall back to default
+            assert config.captcha_initial_hold_min == 1.5, (
+                f"Expected default 1.5, got {config.captcha_initial_hold_min}"
+            )
+            logger.info("from_env() uses defaults for invalid env var values")
+        finally:
+            if original is None:
+                os.environ.pop("CAPTCHA_INITIAL_HOLD_MIN", None)
+            else:
+                os.environ["CAPTCHA_INITIAL_HOLD_MIN"] = original
 
 
 class TestRegressionChecks:

@@ -334,6 +334,9 @@ class ImageExtractionOrchestrator:
         # HTTP client (shared across extractors)
         self._http_client: httpx.AsyncClient | None = None
 
+        # Run ID for audit trail (8-char identifier)
+        self.run_id: str = str(uuid4())[:8]
+
     def _load_manifest(self) -> dict[str, list[dict]]:
         """Load image manifest from disk.
 
@@ -344,10 +347,11 @@ class ImageExtractionOrchestrator:
             try:
                 with open(self.manifest_path) as f:
                     data = json.load(f)
+                    properties = data.get("properties", {})
                     logger.info(
-                        f"Loaded manifest with {len(data.get('properties', {}))} properties"
+                        f"Loaded manifest with {len(properties)} properties"
                     )
-                    return data.get("properties", {})
+                    return dict(properties)  # Type cast for mypy
             except (OSError, json.JSONDecodeError) as e:
                 logger.warning(f"Failed to load manifest: {e}")
 
@@ -375,14 +379,30 @@ class ImageExtractionOrchestrator:
             raise
 
     def _save_manifest(self) -> None:
-        """Save image manifest to disk atomically."""
-        data = {
-            "version": "1.0.0",
-            "last_updated": datetime.now().astimezone().isoformat(),
-            "properties": self.manifest,
-        }
+        """Save image manifest to disk atomically with locking."""
+        from phx_home_analysis.services.image_extraction.file_lock import ManifestLock
 
-        self._atomic_json_write(self.manifest_path, data)
+        locks_dir = self.metadata_dir / "locks"
+        locks_dir.mkdir(parents=True, exist_ok=True)
+
+        with ManifestLock(locks_dir):
+            # Re-load manifest to merge any concurrent changes
+            current_manifest = self._load_manifest()
+
+            # Merge our changes (our properties take precedence)
+            for address, images in self.manifest.items():
+                current_manifest[address] = images
+
+            data = {
+                "version": "2.0.0",
+                "last_updated": datetime.now().astimezone().isoformat(),
+                "properties": current_manifest,
+            }
+            self._atomic_json_write(self.manifest_path, data)
+
+            # Update our in-memory copy
+            self.manifest = current_manifest
+
         logger.debug("Saved manifest to disk")
 
     def _load_state(self) -> ExtractionState:
@@ -494,6 +514,45 @@ class ImageExtractionOrchestrator:
         hash_input = property.full_address.lower().strip()
         return hashlib.sha256(hash_input.encode()).hexdigest()[:8]
 
+    def _get_existing_image_metadata(
+        self,
+        content_hash: str,
+        property: Property,
+    ) -> ImageMetadata | None:
+        """Get metadata for existing content-addressed image.
+
+        Args:
+            content_hash: MD5 hash of image content
+            property: Property instance
+
+        Returns:
+            ImageMetadata if found, None otherwise
+        """
+        # Check if image already in manifest for this property
+        if property.full_address in self.manifest:
+            for img in self.manifest[property.full_address]:
+                if img.get("content_hash") == content_hash:
+                    return ImageMetadata(
+                        image_id=img["image_id"],
+                        property_address=property.full_address,
+                        source=img["source"],
+                        source_url=img.get("source_url", ""),
+                        local_path=img["local_path"],
+                        original_path=img.get("original_path"),
+                        phash=img.get("phash", ""),
+                        dhash=img.get("dhash", ""),
+                        width=img.get("width", 0),
+                        height=img.get("height", 0),
+                        file_size_bytes=img.get("file_size_bytes", 0),
+                        status=img.get("status", "processed"),
+                        downloaded_at=img.get("downloaded_at", ""),
+                        processed_at=img.get("processed_at"),
+                        property_hash=img.get("property_hash", self._get_property_hash(property)),
+                        created_by_run_id=img.get("created_by_run_id", ""),
+                        content_hash=content_hash,
+                    )
+        return None
+
     def _get_property_dir(self, property: Property) -> Path:
         """Get processed images directory for a property.
 
@@ -535,6 +594,7 @@ class ImageExtractionOrchestrator:
         properties: list[Property],
         resume: bool = True,
         incremental: bool = True,
+        force: bool = False,
     ) -> ExtractionResult:
         """Extract images for all properties across all sources.
 
@@ -542,6 +602,7 @@ class ImageExtractionOrchestrator:
             properties: List of properties to process
             resume: Skip already completed properties if True
             incremental: Use URL-level tracking to only download new images
+            force: If True, force re-extraction by deleting existing data
 
         Returns:
             ExtractionResult with statistics
@@ -619,7 +680,7 @@ class ImageExtractionOrchestrator:
         ) -> tuple[Property, list[ImageMetadata], PropertyChanges]:
             async with semaphore:
                 return await self.extract_for_property_with_tracking(
-                    prop, result, incremental=incremental
+                    prop, result, incremental=incremental, force=force
                 )
 
         # Process all properties
@@ -813,10 +874,19 @@ class ImageExtractionOrchestrator:
                             result.failed_downloads += 1
                             continue
 
-                        # Generate image ID and save
-                        image_id = str(uuid4())
-                        filename = f"{image_id}.png"
-                        local_path = property_dir / filename
+                        # Compute content hash for deterministic storage
+                        content_hash = hashlib.md5(standardized_data).hexdigest()
+                        image_id = content_hash  # Use content hash as image ID
+
+                        # Content-addressed directory structure
+                        content_dir = self.processed_dir / content_hash[:8]
+                        content_dir.mkdir(parents=True, exist_ok=True)
+                        local_path = content_dir / f"{content_hash}.png"
+
+                        # Skip if already exists (natural deduplication)
+                        if local_path.exists():
+                            logger.debug(f"Image already exists (dedup): {content_hash}")
+                            continue
 
                         with open(local_path, "wb") as f:
                             f.write(standardized_data)
@@ -826,6 +896,7 @@ class ImageExtractionOrchestrator:
 
                         # Create metadata
                         now = datetime.now().astimezone().isoformat()
+                        property_hash = self._get_property_hash(property)
                         metadata = ImageMetadata(
                             image_id=image_id,
                             property_address=property.full_address,
@@ -841,6 +912,9 @@ class ImageExtractionOrchestrator:
                             status=ImageStatus.PROCESSED.value,
                             downloaded_at=now,
                             processed_at=now,
+                            property_hash=property_hash,
+                            created_by_run_id=self.run_id,
+                            content_hash=content_hash,
                         )
 
                         # Register hash
@@ -856,7 +930,7 @@ class ImageExtractionOrchestrator:
                         result.total_images += 1
                         result.unique_images += 1
 
-                        logger.debug(f"Saved image: {filename}")
+                        logger.debug(f"Saved image: {content_hash}.png")
 
                         # Rate limiting
                         await extractor._rate_limit()
@@ -911,11 +985,69 @@ class ImageExtractionOrchestrator:
         logger.info(f"Property complete: {len(images)} unique images extracted")
         return images
 
+    async def _force_cleanup_property(
+        self,
+        property: Property,
+        property_hash: str,
+    ) -> None:
+        """
+        Delete all existing data for a property before re-extraction.
+
+        Called when --force flag is passed. Cleans:
+        1. Property folder (images)
+        2. Manifest entries
+        3. URL tracker entries
+        4. Completed state
+        """
+
+        logger.warning(
+            f"--force: Cleaning up existing data for {property.full_address}"
+        )
+
+        # 1. Find and delete images for this property from manifest
+        if property.full_address in self.manifest:
+            images = self.manifest[property.full_address]
+            for img in images:
+                # Delete the actual image file
+                img_path = self.base_dir / img.get("local_path", "")
+                if img_path.exists():
+                    img_path.unlink()
+                    logger.debug(f"--force: Deleted {img_path}")
+
+                # Delete parent dir if empty
+                if img_path.parent.exists() and not any(img_path.parent.iterdir()):
+                    img_path.parent.rmdir()
+
+            # Remove from manifest
+            del self.manifest[property.full_address]
+            self._save_manifest()
+            logger.info(f"--force: Removed {len(images)} images from manifest")
+
+        # 2. Clear URL tracker entries
+        if self.url_tracker:
+            deleted = self.url_tracker.clear_property(property_hash)
+            if deleted:
+                self.url_tracker.save(self.metadata_dir / "url_tracker.json")
+                logger.info(f"--force: Cleared {deleted} URL tracker entries")
+
+        # 3. Remove from completed properties
+        if property.full_address in self.state.completed_properties:
+            self.state.completed_properties.discard(property.full_address)
+            self._save_state()
+            logger.info("--force: Removed from completed properties")
+
+        # 4. Remove from failed properties (allow retry)
+        if property.full_address in self.state.failed_properties:
+            self.state.failed_properties.discard(property.full_address)
+            self._save_state()
+            logger.info("--force: Removed from failed properties")
+
     async def extract_for_property_with_tracking(
         self,
         property: Property,
         result: ExtractionResult,
         incremental: bool = True,
+        force: bool = False,
     ) -> tuple[Property, list[ImageMetadata], PropertyChanges]:
         """Extract images for a property with URL-level tracking.
 
@@ -926,6 +1058,7 @@ class ImageExtractionOrchestrator:
             property: Property to extract images for
             result: ExtractionResult to update with stats
             incremental: If True, skip already-known URLs
+            force: If True, delete existing property data before extraction
 
         Returns:
             Tuple of (property, new_images, property_changes)
@@ -933,6 +1066,29 @@ class ImageExtractionOrchestrator:
         logger.info(f"Processing property: {property.full_address}")
 
         property_hash = self._get_property_hash(property)
+        locks_dir = self.metadata_dir / "locks"
+        locks_dir.mkdir(parents=True, exist_ok=True)
+
+        # Acquire property lock for exclusive access
+        from phx_home_analysis.services.image_extraction.file_lock import PropertyLock
+
+        with PropertyLock(locks_dir, property_hash, timeout=120.0):
+            # --force cleanup if requested
+            if force:
+                await self._force_cleanup_property(property, property_hash)
+
+            return await self._extract_for_property_locked(
+                property, property_hash, result, incremental
+            )
+
+    async def _extract_for_property_locked(
+        self,
+        property: Property,
+        property_hash: str,
+        result: ExtractionResult,
+        incremental: bool,
+    ) -> tuple[Property, list[ImageMetadata], PropertyChanges]:
+        """Inner extraction logic called within property lock."""
         property_dir = self._get_property_dir(property)
         property_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1058,10 +1214,31 @@ class ImageExtractionOrchestrator:
                             prop_changes.error_messages.append(f"Standardize failed: {url}")
                             continue
 
-                        # Generate image ID and save
-                        image_id = str(uuid4())
-                        filename = f"{image_id}.png"
-                        local_path = property_dir / filename
+                        # Use content hash as image ID for deterministic storage
+                        image_id = content_hash
+
+                        # Content-addressed directory structure
+                        content_dir = self.processed_dir / content_hash[:8]
+                        content_dir.mkdir(parents=True, exist_ok=True)
+                        local_path = content_dir / f"{content_hash}.png"
+
+                        # Skip if already exists (natural deduplication)
+                        if local_path.exists():
+                            logger.info(f"Image already exists (dedup): {content_hash}")
+                            # Load existing metadata and continue
+                            existing = self._get_existing_image_metadata(content_hash, property)
+                            if existing:
+                                # Still register URL to track it
+                                if incremental:
+                                    self.url_tracker.register_url(
+                                        url=url,
+                                        image_id=image_id,
+                                        property_hash=property_hash,
+                                        content_hash=content_hash,
+                                        source=extractor.source.value,
+                                    )
+                                prop_changes.unchanged += 1
+                                continue
 
                         with open(local_path, "wb") as f:
                             f.write(standardized_data)
@@ -1086,6 +1263,9 @@ class ImageExtractionOrchestrator:
                             status=ImageStatus.PROCESSED.value,
                             downloaded_at=now,
                             processed_at=now,
+                            property_hash=property_hash,
+                            created_by_run_id=self.run_id,
+                            content_hash=content_hash,
                         )
 
                         # Register hash
@@ -1113,7 +1293,7 @@ class ImageExtractionOrchestrator:
                         result.total_images += 1
                         result.unique_images += 1
 
-                        logger.debug(f"Saved new image: {filename}")
+                        logger.debug(f"Saved new image: {content_hash}.png")
 
                         # Rate limiting
                         await extractor._rate_limit()
@@ -1254,6 +1434,7 @@ class ImageExtractionOrchestrator:
         """
         return {
             "image_id": metadata.image_id,
+            "property_address": metadata.property_address,  # BUGFIX: was omitted
             "source": metadata.source,
             "source_url": metadata.source_url,
             "local_path": metadata.local_path,
@@ -1265,6 +1446,10 @@ class ImageExtractionOrchestrator:
             "status": metadata.status,
             "downloaded_at": metadata.downloaded_at,
             "processed_at": metadata.processed_at,
+            # NEW lineage fields for E2.S4 data integrity
+            "property_hash": metadata.property_hash,
+            "created_by_run_id": metadata.created_by_run_id,
+            "content_hash": metadata.content_hash,
         }
 
     def get_property_images(self, property: Property) -> list[ImageMetadata]:
@@ -1294,6 +1479,9 @@ class ImageExtractionOrchestrator:
                 status=img["status"],
                 downloaded_at=img["downloaded_at"],
                 processed_at=img.get("processed_at"),
+                property_hash=img.get("property_hash", self._get_property_hash(property)),
+                created_by_run_id=img.get("created_by_run_id", ""),
+                content_hash=img.get("content_hash", ""),
             )
             for img in images_data
         ]

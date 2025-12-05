@@ -224,6 +224,51 @@ class StealthExtractionConfig:
     request_timeout: float = 30.0
     max_retries: int = 3
 
+    def __post_init__(self) -> None:
+        """Validate configuration values after initialization.
+
+        Raises:
+            ValueError: If any timing values are invalid (negative or zero).
+        """
+        # Validate CAPTCHA timing values are positive
+        timing_fields = [
+            ("captcha_hold_min", self.captcha_hold_min),
+            ("captcha_hold_max", self.captcha_hold_max),
+            ("captcha_initial_hold_min", self.captcha_initial_hold_min),
+            ("captcha_initial_hold_max", self.captcha_initial_hold_max),
+            ("captcha_retry_hold_min", self.captcha_retry_hold_min),
+            ("captcha_retry_hold_max", self.captcha_retry_hold_max),
+            ("captcha_refresh_wait", self.captcha_refresh_wait),
+        ]
+
+        for field_name, value in timing_fields:
+            if value <= 0:
+                raise ValueError(f"{field_name} must be positive, got {value}")
+
+        # Validate min <= max for timing ranges
+        if self.captcha_hold_min > self.captcha_hold_max:
+            raise ValueError(
+                f"captcha_hold_min ({self.captcha_hold_min}) must be <= "
+                f"captcha_hold_max ({self.captcha_hold_max})"
+            )
+        if self.captcha_initial_hold_min > self.captcha_initial_hold_max:
+            raise ValueError(
+                f"captcha_initial_hold_min ({self.captcha_initial_hold_min}) must be <= "
+                f"captcha_initial_hold_max ({self.captcha_initial_hold_max})"
+            )
+        if self.captcha_retry_hold_min > self.captcha_retry_hold_max:
+            raise ValueError(
+                f"captcha_retry_hold_min ({self.captcha_retry_hold_min}) must be <= "
+                f"captcha_retry_hold_max ({self.captcha_retry_hold_max})"
+            )
+
+        # Validate human delay range
+        if self.human_delay_min > self.human_delay_max:
+            raise ValueError(
+                f"human_delay_min ({self.human_delay_min}) must be <= "
+                f"human_delay_max ({self.human_delay_max})"
+            )
+
     @classmethod
     def from_env(cls) -> "StealthExtractionConfig":
         """Load configuration from environment variables.
@@ -235,6 +280,11 @@ class StealthExtractionConfig:
             BROWSER_HEADLESS: "true" or "false"
             BROWSER_ISOLATION: Isolation mode (virtual_display, secondary_display,
                               off_screen, minimize, none)
+            CAPTCHA_INITIAL_HOLD_MIN: Minimum hold for first CAPTCHA attempt (seconds)
+            CAPTCHA_INITIAL_HOLD_MAX: Maximum hold for first CAPTCHA attempt (seconds)
+            CAPTCHA_RETRY_HOLD_MIN: Minimum hold for CAPTCHA retry (seconds)
+            CAPTCHA_RETRY_HOLD_MAX: Maximum hold for CAPTCHA retry (seconds)
+            CAPTCHA_REFRESH_WAIT: Wait time after page refresh (seconds)
 
         Returns:
             StealthExtractionConfig instance
@@ -246,12 +296,27 @@ class StealthExtractionConfig:
         except ValueError:
             isolation_mode = BrowserIsolationMode.VIRTUAL_DISPLAY
 
+        def _get_float(name: str, default: float) -> float:
+            """Parse float from environment variable with fallback."""
+            value = os.getenv(name)
+            if value is None:
+                return default
+            try:
+                return float(value)
+            except ValueError:
+                return default
+
         return cls(
             proxy_server=os.getenv("PROXY_SERVER", ""),
             proxy_username=os.getenv("PROXY_USERNAME", ""),
             proxy_password=os.getenv("PROXY_PASSWORD", ""),
             browser_headless=os.getenv("BROWSER_HEADLESS", "true").lower() == "true",
             isolation_mode=isolation_mode,
+            captcha_initial_hold_min=_get_float("CAPTCHA_INITIAL_HOLD_MIN", 1.5),
+            captcha_initial_hold_max=_get_float("CAPTCHA_INITIAL_HOLD_MAX", 2.5),
+            captcha_retry_hold_min=_get_float("CAPTCHA_RETRY_HOLD_MIN", 4.5),
+            captcha_retry_hold_max=_get_float("CAPTCHA_RETRY_HOLD_MAX", 6.5),
+            captcha_refresh_wait=_get_float("CAPTCHA_REFRESH_WAIT", 2.0),
         )
 
     @property

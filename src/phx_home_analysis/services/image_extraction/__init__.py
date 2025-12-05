@@ -50,11 +50,26 @@ from .downloader import (
 from .extraction_stats import ExtractionResult, SourceStats, StatsTracker
 from .naming import ImageName, generate_image_name, is_categorized_filename
 from .orchestrator import ImageExtractionOrchestrator
+from .reconciliation import (
+    DataReconciler,
+    ReconciliationReport,
+    run_reconciliation,
+)
 from .run_logger import PropertyChanges, RunLog, RunLogger
 from .standardizer import ImageStandardizer
 from .state_manager import ExtractionState, StateManager
 from .symlink_views import SymlinkViewBuilder
 from .url_tracker import URLEntry, URLTracker
+from .validators import (
+    AddressMismatchError,
+    DataIntegrityError,
+    DuringExtractionAssertions,
+    HashMismatchError,
+    MissingFileError,
+    PreExtractionValidator,
+    ValidationResult,
+    compute_property_hash,
+)
 
 __all__ = [
     # Orchestration
@@ -96,4 +111,16 @@ __all__ = [
     "ExtractionResult",
     "SourceStats",
     "StatsTracker",
+    # Data Quality & Validation (E2.S4)
+    "PreExtractionValidator",
+    "DuringExtractionAssertions",
+    "DataIntegrityError",
+    "AddressMismatchError",
+    "HashMismatchError",
+    "MissingFileError",
+    "ValidationResult",
+    "compute_property_hash",
+    "DataReconciler",
+    "ReconciliationReport",
+    "run_reconciliation",
 ]

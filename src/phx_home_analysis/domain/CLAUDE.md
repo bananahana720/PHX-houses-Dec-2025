@@ -1,6 +1,6 @@
 ---
-last_updated: 2025-12-04
-updated_by: main
+last_updated: 2025-12-05
+updated_by: agent
 staleness_hours: 24
 flags: []
 ---
@@ -30,6 +30,7 @@ Defines core domain entities (Property, EnrichmentData) and immutable value obje
 - **ScoreBreakdown rebalanced**: Section A (250), Section B (175), Section C (180) = 605 total. Percentage calculations now accurate per `value_objects.py:138-231`
 - **DDD patterns**: Property is aggregate root; EnrichmentData is external DTO. Enums carry domain logic (Orientation.base_score, SolarStatus.is_problematic)
 - **Immutability**: All value objects frozen=True (Address, Score, RiskAssessment, ScoreBreakdown, RenovationEstimate, PerceptualHash, ImageMetadata)
+- **ImageMetadata lineage**: E2.S4 added property_hash, created_by_run_id, content_hash fields for deduplication & crash recovery
 - **Orientation AZ-specific**: North=10 pts (best cooling), West=0 pts (worst); used across services without hardcoding
 
 ## Refs

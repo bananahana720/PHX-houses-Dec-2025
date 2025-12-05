@@ -40,6 +40,9 @@ class URLEntry:
         content_hash: Hash of image content for change detection
         source: Image source (zillow, redfin, etc.)
         status: Current status (active, removed, stale)
+        original_address: Full address at extraction time (lineage)
+        first_run_id: Run ID that first discovered this URL (lineage)
+        last_run_id: Run ID that last updated this entry (lineage)
     """
 
     image_id: str
@@ -49,6 +52,10 @@ class URLEntry:
     content_hash: str
     source: str = ""
     status: str = "active"  # active, removed, stale
+    # NEW lineage fields for E2.S4 data integrity
+    original_address: str = ""  # Full address at extraction time
+    first_run_id: str = ""  # Run ID that first discovered this URL
+    last_run_id: str = ""  # Run ID that last updated this entry
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization.
@@ -64,6 +71,9 @@ class URLEntry:
             "content_hash": self.content_hash,
             "source": self.source,
             "status": self.status,
+            "original_address": self.original_address,
+            "first_run_id": self.first_run_id,
+            "last_run_id": self.last_run_id,
         }
 
     @classmethod
@@ -84,6 +94,9 @@ class URLEntry:
             content_hash=data["content_hash"],
             source=data.get("source", ""),
             status=data.get("status", "active"),
+            original_address=data.get("original_address", ""),
+            first_run_id=data.get("first_run_id", ""),
+            last_run_id=data.get("last_run_id", ""),
         )
 
 
@@ -384,6 +397,32 @@ class URLTracker:
             "version": self.version,
             "last_updated": self.last_updated,
         }
+
+    def clear_property(self, property_hash: str) -> int:
+        """
+        Remove all URL entries for a property.
+
+        Used by --force flag to clean up before re-extraction.
+
+        Args:
+            property_hash: 8-char hash of property address
+
+        Returns:
+            Number of entries deleted
+        """
+        urls_to_remove = [
+            url for url, entry in self.urls.items()
+            if entry.property_hash == property_hash
+        ]
+
+        deleted = len(urls_to_remove)
+        for url in urls_to_remove:
+            del self.urls[url]
+
+        if deleted > 0:
+            logger.info(f"URLTracker: Cleared {deleted} entries for property {property_hash}")
+
+        return deleted
 
     def clear(self) -> None:
         """Clear all tracked URLs."""

@@ -463,6 +463,10 @@ class ImageMetadata:
     is_duplicate: bool = False
     duplicate_of: str | None = None  # image_id of canonical image
     error_message: str | None = None
+    # NEW lineage fields for E2.S4 data integrity
+    property_hash: str = ""  # 8-char SHA256 of normalized address
+    created_by_run_id: str = ""  # Run ID that created this image
+    content_hash: str = ""  # MD5 hash of image bytes for deduplication
 
     @property
     def perceptual_hash(self) -> PerceptualHash:

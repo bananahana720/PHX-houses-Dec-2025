@@ -113,6 +113,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Ignore previous state and start fresh",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force re-extraction by deleting existing data for each property",
+    )
 
     # Output control
     parser.add_argument(
@@ -731,6 +736,7 @@ async def main() -> int:
         result = await orchestrator.extract_all(
             properties=properties,
             resume=args.resume and not args.fresh,
+            force=args.force,
         )
 
         # Print summary

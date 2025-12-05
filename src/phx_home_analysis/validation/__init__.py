@@ -8,6 +8,11 @@ Property Schemas:
     - EnrichmentDataSchema: Pydantic model for enrichment data validation
     - SewerTypeSchema: Enum for sewer type values
 
+Image Schemas (E2.S4):
+    - ImageEntryV2: Pydantic model for image manifest entries with lineage
+    - URLEntryV2: Pydantic model for URL tracker entries with lineage
+    - ManifestV2: Pydantic model for manifest structure validation
+
 Configuration Schemas (E1.S1):
     - AppConfigSchema: Complete application configuration
     - ScoringWeightsConfigSchema: Scoring weights from scoring_weights.yaml
@@ -38,6 +43,7 @@ from .config_schemas import (
     ValueZonesSchema,
 )
 from .deduplication import DuplicateDetector, compute_property_hash
+from .image_schemas import ImageEntryV2, ManifestV2, URLEntryV2
 from .normalizer import infer_type, normalize_address
 from .schemas import (
     EnrichmentDataSchema,
@@ -62,6 +68,10 @@ __all__ = [
     "SewerTypeSchema",
     "SolarStatusSchema",
     "OrientationSchema",
+    # Image Schemas (E2.S4)
+    "ImageEntryV2",
+    "URLEntryV2",
+    "ManifestV2",
     # Configuration Schemas (E1.S1)
     "ConfigurationError",
     "AppConfigSchema",

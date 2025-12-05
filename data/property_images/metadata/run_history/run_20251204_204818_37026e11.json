@@ -1,0 +1,98 @@
+{
+  "run_id": "37026e11",
+  "started_at": "2025-12-04T20:47:23.040746-05:00",
+  "ended_at": "2025-12-04T20:48:18.008317-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 69,
+    "total_new_images": 12,
+    "total_unchanged": 49,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 12,
+    "total_errors": 3,
+    "properties_with_changes": 1,
+    "properties_needing_review": 1
+  },
+  "property_changes": {
+    "4209 W Wahalla Ln, Glendale, AZ 85308": {
+      "address": "4209 W Wahalla Ln, Glendale, AZ 85308",
+      "property_hash": "84528a14",
+      "urls_discovered": 69,
+      "new_images": 12,
+      "unchanged": 49,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 12,
+      "errors": 3,
+      "new_image_ids": [
+        "ba2398f9-dd00-479d-8132-ecd8f7a6ae99",
+        "3f93ed25-89f8-454a-8368-01bc1b77698f",
+        "1eabf73f-fa60-4a1d-8e5b-c8d4763be917",
+        "48c00f66-3f27-4b99-9988-d1bdf5705f01",
+        "0cb9d587-f5be-4050-845f-06be3f14eba5",
+        "923e9fd3-16a6-4a3f-a879-3532edcbccc5",
+        "c7371cfa-4cc1-49ff-9a7c-89ac5e9b3dae",
+        "a57deca6-ca79-4e2c-8f98-969b3f97528d",
+        "05c0e32e-000d-43d4-8277-b051de93113f",
+        "d0e40157-b4c9-4d0f-b07c-b6a3e0af43c9",
+        "f1c45e86-ebae-4de9-82e7-5e848b7737df",
+        "03671441-4989-4dae-bc2c-6e881e0e5c7f"
+      ],
+      "removed_urls": [
+        "https://photos.zillowstatic.com/fp/4d62e9b1bd9312cc9ebf4af3a71159c6-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/07e226248fddb26adce7081574d9618a-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/86218c6935497219e63818dc61b4f85d-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/b9da0b827bb49a5b343b9bb66a684512-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/917c87d798c9cd82e985d367c45b50ba-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/3d204ad7f08a8d883babb995ba67d578-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/ba2298cbe70b4f9dd8bb1450433daa8b-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/44b112cfd01d19805f03b8081586a4e5-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/111154a1f361c58eb51a41ade54affb3-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/96d512076ce01d3bc57e3014ac3d29e9-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/b568b4bb2c2ba9a8f9c337717c890548-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/bb7ccb71f5db200ccd6beff8355a82f1-p_e.jpg"
+      ],
+      "error_messages": [
+        "Error: https://ssl.cdn-redfin.com/photo/86/bigphoto/955/6931955_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bigphoto/955/6931955_1024.jpg: Image not found (404)",
+        "Error: https://ssl.cdn-redfin.com/photo/86/mbpaddedwide/955/genMid.6931955_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/mbpaddedwide/955/genMid.6931955_1024.jpg: Image not found (404)",
+        "Error: https://ssl.cdn-redfin.com/photo/86/mbphotov3/955/genMid.6931955_14_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/mbphotov3/955/genMid.6931955_14_1024.jpg: Image not found (404)"
+      ],
+      "listing_metadata": {
+        "beds": 4,
+        "baths": null,
+        "sqft": 2349,
+        "lot_sqft": null,
+        "year_built": 2002,
+        "property_type": "Single Family",
+        "garage_spaces": 2,
+        "parking_spaces": null,
+        "pool": true,
+        "stories": 1,
+        "list_price": 625000,
+        "cooling_type": "Central",
+        "heating_type": null,
+        "flooring_types": [
+          "Tile",
+          "Carpet",
+          "Laminate"
+        ],
+        "appliances_included": [
+          "Stove/Oven"
+        ],
+        "sewer_type": "City",
+        "water_source": "City",
+        "days_on_market": 17,
+        "original_list_price": null,
+        "price_reduced": true,
+        "price_reduced_pct": null,
+        "price_reduced_amount": 14100,
+        "hoa_fee": 0
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 54.967571
+}
