@@ -183,6 +183,9 @@ class Property:
     backyard_pool_ratio: str | None = None  # balanced/pool_dominant/minimal_pool
     backyard_sun_orientation: str | None = None  # N/E/S/W
 
+    # Zillow-specific identifiers (used for direct gallery navigation - E2.R1)
+    zpid: str | None = None  # Zillow property ID for direct URL construction
+
     def __post_init__(self) -> None:
         """Validate and normalize data after initialization."""
         # Ensure full_address is set

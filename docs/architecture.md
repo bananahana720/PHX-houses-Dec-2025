@@ -375,3 +375,52 @@ PROXY_PASS=...
 | Scraping Detection | nodriver + curl-cffi for stealth |
 | Rate Limiting | Built-in rate limiter per client |
 | Data Validation | Pydantic schemas for all input |
+
+---
+
+## Anti-Bot Detection Patterns (Learned)
+
+**Added:** 2025-12-05 | **Source:** Live testing validation
+
+### Current Challenges
+
+| Source | Detection | Status | Remediation |
+|--------|-----------|--------|-------------|
+| Zillow | PerimeterX px-captcha | Active | zpid direct URLs |
+| Redfin | Session-bound CDN URLs | Active | Same-session download |
+
+### Recommended Extraction Patterns
+
+#### Zillow zpid Pattern
+
+```python
+# Extract zpid from listing URL or search
+# Pattern: zillow.com/homedetails/{address-slug}/{zpid}_zpid/
+zpid = extract_zpid(url)  # e.g., "123456789"
+
+# Navigate directly to image gallery (less protected)
+gallery_url = f"https://www.zillow.com/homedetails/{zpid}_zpid/#image-lightbox"
+```
+
+#### Redfin Session Download Pattern
+
+```python
+# WRONG: Separate extraction and download (causes 404)
+# urls = await extract_urls(page)
+# await download_with_httpx(urls)  # 404!
+
+# CORRECT: Download in same browser session
+async with browser.new_page() as page:
+    await page.goto(listing_url)
+    # Extract and download while session active
+    for img in await page.query_selector_all("img.property-image"):
+        await page.screenshot(path=f"images/{hash}.png")
+        # OR: use browser-native download with cookies
+```
+
+### Fallback Priority
+
+1. **Primary:** nodriver with stealth mode + zpid URLs
+2. **Fallback 1:** Screenshot capture (guaranteed to work)
+3. **Fallback 2:** Google Images search for address
+4. **Fallback 3:** Maricopa Assessor API (limited images)

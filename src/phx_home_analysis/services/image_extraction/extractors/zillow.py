@@ -5,6 +5,7 @@ browser automation to properly load images from dynamic galleries and carousels.
 """
 
 import asyncio
+import hashlib
 import json
 import logging
 import os
@@ -272,13 +273,13 @@ class ZillowExtractor(StealthBrowserExtractor):
                         content,
                     )
                 )
-                escaped_urls = set(
+                escaped_urls = {
                     url.replace("\\/", "/")
                     for url in re.findall(
                         r"https:\\/\\/photos\\.zillowstatic\\.com[\\w\\-/\\.]+",
                         content,
                     )
-                )
+                }
                 json_urls.update(escaped_urls)
                 if json_urls:
                     logger.debug(
@@ -975,6 +976,450 @@ class ZillowExtractor(StealthBrowserExtractor):
                 results.append((width_val, url))
 
         return results
+
+    # =========================================================================
+    # Task 1: ZPID Extraction Helpers (Story E2.R1)
+    # =========================================================================
+
+    def _extract_zpid_from_listing_url(self, url: str) -> str | None:
+        """Extract zpid from a listing URL string.
+
+        Parses zpid from various Zillow URL formats:
+        - /homedetails/{slug}/{zpid}_zpid/
+        - /{zpid}_zpid/
+        - /homedetails/{zpid}_zpid/#image-lightbox
+
+        Args:
+            url: Zillow listing URL
+
+        Returns:
+            zpid string if found, None otherwise
+        """
+        if not url:
+            return None
+
+        # Pattern 1: Standard homedetails path with slug
+        # Example: /homedetails/4732-W-Davis-Rd/7686459_zpid/
+        patterns = [
+            r"/homedetails/[^/]+/(\d{6,10})_zpid",  # With slug
+            r"/homedetails/(\d{6,10})_zpid",  # Without slug
+            r"/(\d{6,10})_zpid",  # Minimal
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, url)
+            if match:
+                zpid = match.group(1)
+                logger.debug("%s extracted zpid %s from URL: %s", self.name, zpid, url[:80])
+                return zpid
+
+        logger.debug("%s no zpid found in URL: %s", self.name, url[:80])
+        return None
+
+    def _extract_zpid_from_json(self, json_content: str) -> str | None:
+        """Extract zpid from Zillow JSON response content.
+
+        Parses zpid from __NEXT_DATA__ JSON structure:
+        - {"zpid": 123456}
+        - {"props": {"pageProps": {"zpid": 123456}}}
+
+        Args:
+            json_content: JSON string from Zillow page
+
+        Returns:
+            zpid string if found, None otherwise
+        """
+        if not json_content:
+            return None
+
+        try:
+            data = json.loads(json_content)
+        except json.JSONDecodeError:
+            logger.debug("%s failed to parse JSON for zpid extraction", self.name)
+            return None
+
+        # Try direct zpid key
+        if "zpid" in data:
+            zpid = str(data["zpid"])
+            logger.debug("%s extracted zpid %s from direct JSON key", self.name, zpid)
+            return zpid
+
+        # Try nested paths
+        zpid_paths = [
+            lambda d: d.get("props", {}).get("pageProps", {}).get("zpid"),
+            lambda d: d.get("props", {}).get("zpid"),
+            lambda d: d.get("pageProps", {}).get("zpid"),
+            lambda d: d.get("propertyZpid"),
+        ]
+
+        for path_func in zpid_paths:
+            try:
+                extracted = path_func(data)
+                if extracted:
+                    zpid = str(extracted)
+                    logger.debug("%s extracted zpid %s from nested JSON", self.name, zpid)
+                    return zpid
+            except (AttributeError, TypeError):
+                continue
+
+        logger.debug("%s no zpid found in JSON content", self.name)
+        return None
+
+    # =========================================================================
+    # Task 2: Gallery URL Builder and Navigation (Story E2.R1)
+    # =========================================================================
+
+    def _build_gallery_url(self, property: Property) -> str | None:
+        """Build direct gallery URL with #image-lightbox hash.
+
+        Creates URL format: zillow.com/homedetails/{zpid}_zpid/#image-lightbox
+
+        Args:
+            property: Property with zpid attribute
+
+        Returns:
+            Gallery URL if zpid available, None otherwise
+        """
+        zpid = getattr(property, "zpid", None)
+        if not zpid:
+            logger.debug("%s cannot build gallery URL without zpid", self.name)
+            return None
+
+        url = f"{self.source.base_url}/homedetails/{zpid}_zpid/#image-lightbox"
+        logger.debug("%s built gallery URL: %s", self.name, url)
+        return url
+
+    async def _is_gallery_page(self, tab: uc.Tab) -> bool:
+        """Detect if current page is a photo gallery/lightbox.
+
+        Checks for photo carousel elements indicating gallery view.
+
+        Args:
+            tab: Browser tab to check
+
+        Returns:
+            True if gallery elements detected, False otherwise
+        """
+        gallery_selectors = [
+            '[data-testid="media-carousel"]',
+            '[data-testid="lightbox-container"]',
+            ".photo-carousel",
+            ".media-lightbox",
+            '[role="dialog"] img[src*="photos.zillowstatic.com"]',
+            ".lightbox-modal",
+        ]
+
+        for selector in gallery_selectors:
+            try:
+                elements = await tab.query_selector_all(selector)
+                if elements:
+                    logger.debug("%s gallery detected via selector: %s", self.name, selector)
+                    return True
+            except Exception:
+                continue
+
+        logger.debug("%s no gallery elements found", self.name)
+        return False
+
+    async def _navigate_to_gallery_direct(
+        self, property: Property, tab: uc.Tab
+    ) -> bool:
+        """Navigate directly to gallery URL using zpid.
+
+        Attempts to bypass search by navigating directly to:
+        zillow.com/homedetails/{zpid}_zpid/#image-lightbox
+
+        Args:
+            property: Property with zpid
+            tab: Browser tab
+
+        Returns:
+            True if navigation succeeded and gallery detected, False otherwise
+        """
+        gallery_url = self._build_gallery_url(property)
+        if not gallery_url:
+            logger.warning("%s no gallery URL available (zpid missing)", self.name)
+            return False
+
+        try:
+            logger.info("%s navigating directly to gallery: %s", self.name, gallery_url)
+            await tab.get(gallery_url)
+            await self._human_delay()
+
+            # Check for CAPTCHA
+            if await self._check_for_captcha(tab):
+                logger.warning("%s CAPTCHA on gallery page, attempting solve", self.name)
+                if not await self._attempt_captcha_solve_v2(tab):
+                    logger.error("%s CAPTCHA solve failed on gallery", self.name)
+                    return False
+                await self._human_delay()
+
+            # Validate gallery loaded
+            if await self._is_gallery_page(tab):
+                logger.info("%s gallery page loaded successfully", self.name)
+                return True
+
+            # Fallback: Check if at least on property detail page
+            if await self._is_property_detail_page(tab):
+                logger.info("%s landed on property detail page (not gallery)", self.name)
+                return True
+
+            logger.warning("%s gallery navigation did not reach expected page", self.name)
+            return False
+
+        except Exception as e:
+            logger.error("%s gallery navigation failed: %s", self.name, e)
+            return False
+
+    # =========================================================================
+    # Task 3: Screenshot Fallback (Story E2.R1)
+    # =========================================================================
+
+    async def _capture_gallery_screenshots(
+        self, tab: uc.Tab, max_images: int = 30
+    ) -> list[str]:
+        """Capture gallery screenshots as fallback when URL extraction fails.
+
+        Opens gallery and captures screenshots while cycling through images.
+        Uses content hashing to detect duplicate frames (end of gallery).
+
+        Args:
+            tab: Browser tab with gallery open
+            max_images: Maximum screenshots to capture
+
+        Returns:
+            List of saved screenshot file paths
+        """
+        screenshots: list[str] = []
+        prev_hash: str | None = None
+
+        logger.info("%s starting screenshot capture (max=%d)", self.name, max_images)
+
+        for i in range(max_images):
+            try:
+                # Capture screenshot
+                screenshot_bytes = await tab.screenshot()
+                if not screenshot_bytes:
+                    logger.warning("%s empty screenshot at frame %d", self.name, i)
+                    break
+
+                # Compute content hash
+                content_hash = hashlib.md5(screenshot_bytes).hexdigest()
+
+                # Detect duplicate (end of gallery)
+                if content_hash == prev_hash:
+                    logger.info(
+                        "%s duplicate frame detected at %d, stopping capture",
+                        self.name,
+                        i,
+                    )
+                    break
+
+                # Save to content-addressed storage
+                path = self._save_screenshot(screenshot_bytes, content_hash)
+                screenshots.append(path)
+                prev_hash = content_hash
+
+                # Advance gallery (P0-2 FIX: correct nodriver API method)
+                await tab.press("ArrowRight")
+                await asyncio.sleep(0.3)
+
+            except Exception as e:
+                logger.warning("%s screenshot capture error at frame %d: %s", self.name, i, e)
+                break
+
+        logger.info("%s captured %d screenshots", self.name, len(screenshots))
+        return screenshots
+
+    def _save_screenshot(self, screenshot_bytes: bytes, content_hash: str) -> str:
+        """Save screenshot to content-addressed storage.
+
+        Args:
+            screenshot_bytes: PNG screenshot data
+            content_hash: MD5 hash of content
+
+        Returns:
+            Path where screenshot was saved
+        """
+        # Use content-addressed path structure
+        subdir = content_hash[:8]
+        filename = f"{content_hash}.png"
+
+        # Determine base directory from config or default
+        base_dir = os.environ.get(
+            "SCREENSHOT_DIR", "data/property_images/screenshots"
+        )
+        full_dir = os.path.join(base_dir, subdir)
+        os.makedirs(full_dir, exist_ok=True)
+
+        path = os.path.join(full_dir, filename)
+
+        # Write atomically
+        with open(path, "wb") as f:
+            f.write(screenshot_bytes)
+
+        logger.debug("%s saved screenshot: %s", self.name, path)
+        return path
+
+    def _build_screenshot_metadata(self, content_hash: str) -> dict:
+        """Build metadata dict for screenshot images.
+
+        Args:
+            content_hash: MD5 hash of screenshot content
+
+        Returns:
+            Metadata dict with screenshot markers
+        """
+        return {
+            "screenshot": True,
+            "content_hash": content_hash,
+            "source": "screenshot_capture",
+            "confidence": 0.8,  # Lower confidence than URL-extracted
+        }
+
+    def _set_extraction_method(self, method: str | None) -> None:
+        """Set extraction method in last_metadata for tracking.
+
+        P0-1 FIX: Track which fallback method succeeded for debugging
+        and metrics.
+
+        Args:
+            method: One of "zpid-direct", "screenshot", "google-images", "search", or None
+        """
+        if method:
+            self.last_metadata["extraction_method"] = method
+            logger.info("%s extraction method: %s", self.name, method)
+
+    # =========================================================================
+    # Task 4: Google Images Fallback (Story E2.R1)
+    # =========================================================================
+
+    def _build_google_images_query(self, property: Property) -> str:
+        """Build Google Images search query for property.
+
+        Format: "{address}" site:zillow.com
+
+        Args:
+            property: Property to search for
+
+        Returns:
+            Search query string
+        """
+        address = property.full_address
+        query = f'"{address}" site:zillow.com'
+        logger.debug("%s built Google Images query: %s", self.name, query)
+        return query
+
+    def _build_google_images_metadata(self, url: str) -> dict:
+        """Build metadata dict for Google Images results.
+
+        Args:
+            url: Image URL from Google Images
+
+        Returns:
+            Metadata dict with low confidence markers
+        """
+        return {
+            "source": "google_images",
+            "confidence": 0.5,  # Lower confidence for indirect source
+            "original_url": url,
+        }
+
+    def _filter_google_images_for_zillow(self, urls: list[str]) -> list[str]:
+        """Filter Google Images results to zillow.com sources.
+
+        Args:
+            urls: List of image URLs from Google Images
+
+        Returns:
+            Filtered list containing only Zillow-hosted images
+        """
+        if not urls:
+            return []
+
+        filtered = []
+        for url in urls:
+            url_lower = url.lower()
+            if "zillow" in url_lower or "zillowstatic" in url_lower:
+                filtered.append(url)
+            else:
+                logger.debug("%s filtered out non-Zillow URL: %s", self.name, url[:60])
+
+        logger.info(
+            "%s filtered Google Images: %d/%d are Zillow sources",
+            self.name,
+            len(filtered),
+            len(urls),
+        )
+        return filtered
+
+    async def _google_images_fallback(self, property: Property) -> list[str]:
+        """Search Google Images for property photos as last resort.
+
+        Args:
+            property: Property to search for
+
+        Returns:
+            List of image URLs from Google Images (Zillow sources only)
+
+        Note:
+            P0-3 FIX: Browser resource handling uses shared pool singleton.
+            Tab cleanup in finally block is sufficient - browser pool manages
+            browser lifecycle across all extractors.
+        """
+        query = self._build_google_images_query(property)
+        search_url = f"https://www.google.com/search?q={quote_plus(query)}&tbm=isch"
+
+        logger.info("%s attempting Google Images fallback", self.name)
+
+        tab = None
+        try:
+            browser = await self._browser_pool.get_browser()
+            tab = await browser.get("about:blank")
+
+            await tab.get(search_url)
+            await self._human_delay()
+
+            # Extract image URLs from search results
+            urls: list[str] = []
+            img_elements = await tab.query_selector_all("img[src*='http']")
+
+            for img in img_elements:
+                src = img.attrs.get("src", "")
+                if src and src.startswith("http"):
+                    urls.append(src)
+
+            # Also check for data-src attributes (lazy loading)
+            lazy_imgs = await tab.query_selector_all("img[data-src*='http']")
+            for img in lazy_imgs:
+                data_src = img.attrs.get("data-src", "")
+                if data_src and data_src.startswith("http"):
+                    urls.append(data_src)
+
+            # Filter for Zillow sources
+            filtered = self._filter_google_images_for_zillow(urls)
+
+            logger.info(
+                "%s Google Images fallback found %d Zillow images",
+                self.name,
+                len(filtered),
+            )
+            return filtered
+
+        except Exception as e:
+            logger.error("%s Google Images fallback failed: %s", self.name, e)
+            return []
+        finally:
+            # P0-3 FIX: Ensure tab cleanup even on browser acquisition failure
+            if tab is not None:
+                try:
+                    await tab.close()
+                except Exception:
+                    pass
+
+    # =========================================================================
+    # Original _extract_zpid_from_url (async, uses tab)
+    # =========================================================================
 
     async def _extract_zpid_from_url(self, tab: uc.Tab) -> str | None:
         """Extract zpid from current URL if present.
@@ -2297,10 +2742,11 @@ class ZillowExtractor(StealthBrowserExtractor):
         Metadata is stored in self.last_metadata and can be retrieved by
         orchestrator after extraction.
 
-        Navigation Strategy:
-        1. Try interactive search navigation (PRIMARY - prevents wrong page)
-        2. Validate we're on property detail page
-        3. If on wrong page (search results), abort with empty list
+        P0-1 FIX (E2.R1): Integrated fallback chain for CAPTCHA resilience:
+        1. Try zpid-direct gallery navigation (bypasses CAPTCHA)
+        2. Screenshot fallback (if zpid-direct fails/blocked)
+        3. Google Images fallback (last resort)
+        4. Original search-based navigation (legacy compatibility)
 
         Args:
             property: Property to extract images for
@@ -2314,103 +2760,210 @@ class ZillowExtractor(StealthBrowserExtractor):
         """
         logger.info("%s extracting images for: %s", self.name, property.full_address)
 
+        # Initialize metadata for this extraction
+        self.last_metadata = {}
+        extraction_method: str | None = None
+
+        # Try to get/extract zpid first for fallback chain
+        zpid = getattr(property, "zpid", None)
+        if not zpid and hasattr(property, "listing_url"):
+            listing_url = getattr(property, "listing_url", None)
+            if listing_url:
+                zpid = self._extract_zpid_from_listing_url(listing_url)
+                if zpid:
+                    property.zpid = zpid
+                    logger.info(
+                        "%s extracted zpid %s from listing_url",
+                        self.name,
+                        zpid,
+                    )
+
         # Get browser and create new tab
         browser = await self._browser_pool.get_browser()
         tab = await browser.get("about:blank")
 
         try:
-            # Phase 1 Safety: Use interactive search to navigate
-            # This is more reliable than direct URL navigation and avoids search results
-            navigation_success = await self._navigate_to_property_via_search(
-                property, tab
-            )
+            urls: list[str] = []
 
-            if not navigation_success:
-                logger.warning(
-                    "%s Could not navigate to property detail page for %s",
+            # ===================================================================
+            # FALLBACK CHAIN (P0-1 FIX - E2.R1)
+            # ===================================================================
+
+            # 1. Try zpid-direct gallery navigation (bypasses CAPTCHA)
+            if zpid:
+                try:
+                    logger.info(
+                        "%s attempting zpid-direct gallery navigation for zpid=%s",
+                        self.name,
+                        zpid,
+                    )
+                    gallery_success = await self._navigate_to_gallery_direct(
+                        property, tab
+                    )
+                    if gallery_success:
+                        # Extract URLs from gallery page
+                        raw_urls = await self._extract_urls_from_page(
+                            tab, expected_zpid=zpid
+                        )
+                        urls = self._filter_urls_for_property(raw_urls, zpid)
+                        if urls:
+                            extraction_method = "zpid-direct"
+                            logger.info(
+                                "%s zpid-direct succeeded: %d URLs",
+                                self.name,
+                                len(urls),
+                            )
+                except Exception as e:
+                    logger.warning("%s zpid-direct failed: %s", self.name, e)
+
+            # 2. Screenshot fallback (if zpid-direct failed/blocked)
+            if not urls and zpid:
+                try:
+                    logger.info(
+                        "%s attempting screenshot fallback for zpid=%s",
+                        self.name,
+                        zpid,
+                    )
+                    # Navigate to gallery if not already there
+                    if not await self._is_gallery_page(tab):
+                        await self._navigate_to_gallery_direct(property, tab)
+
+                    screenshot_paths = await self._capture_gallery_screenshots(tab)
+                    if screenshot_paths:
+                        urls = screenshot_paths
+                        extraction_method = "screenshot"
+                        logger.info(
+                            "%s screenshot fallback succeeded: %d screenshots",
+                            self.name,
+                            len(urls),
+                        )
+                except Exception as e:
+                    logger.warning("%s screenshot fallback failed: %s", self.name, e)
+
+            # 3. Google Images fallback (last resort)
+            if not urls:
+                try:
+                    logger.info(
+                        "%s attempting Google Images fallback",
+                        self.name,
+                    )
+                    google_urls = await self._google_images_fallback(property)
+                    if google_urls:
+                        urls = google_urls
+                        extraction_method = "google-images"
+                        logger.info(
+                            "%s Google Images fallback succeeded: %d URLs",
+                            self.name,
+                            len(urls),
+                        )
+                except Exception as e:
+                    logger.warning("%s Google Images fallback failed: %s", self.name, e)
+
+            # 4. Original search-based fallback (legacy, for compatibility)
+            if not urls:
+                logger.info(
+                    "%s falling back to search-based navigation",
                     self.name,
-                    property.full_address,
                 )
-                return []
-
-            # Phase 2 Safety: Validate we're on property detail page
-            if not await self._is_property_detail_page(tab):
-                logger.error(
-                    "%s Landed on wrong page type (not property detail) for %s - aborting",
-                    self.name,
-                    property.full_address,
-                )
-                return []
-
-            # Check for CAPTCHA
-            if await self._check_for_captcha(tab):
-                logger.warning(
-                    "%s CAPTCHA detected for %s",
-                    self.name,
-                    property.full_address,
+                navigation_success = await self._navigate_to_property_via_search(
+                    property, tab
                 )
 
-                # Attempt to solve CAPTCHA using v2 multi-attempt strategy with progressive backoff
-                if not await self._attempt_captcha_solve_v2(tab):
-                    logger.error(
-                        "%s CAPTCHA solving failed for %s",
+                if not navigation_success:
+                    logger.warning(
+                        "%s Could not navigate to property detail page for %s",
                         self.name,
                         property.full_address,
                     )
-                    from .base import SourceUnavailableError
+                    self._set_extraction_method(None)
+                    return []
 
-                    raise SourceUnavailableError(
-                        self.source,
-                        "CAPTCHA detected and solving failed",
-                        retry_after=300,  # 5 minutes
+                # Validate we're on property detail page
+                if not await self._is_property_detail_page(tab):
+                    logger.error(
+                        "%s Landed on wrong page type (not property detail) for %s - aborting",
+                        self.name,
+                        property.full_address,
+                    )
+                    self._set_extraction_method(None)
+                    return []
+
+                # Check for CAPTCHA
+                if await self._check_for_captcha(tab):
+                    logger.warning(
+                        "%s CAPTCHA detected for %s",
+                        self.name,
+                        property.full_address,
                     )
 
-                logger.info("%s CAPTCHA solved for %s", self.name, property.full_address)
+                    # Attempt to solve CAPTCHA using v2 multi-attempt strategy
+                    if not await self._attempt_captcha_solve_v2(tab):
+                        logger.error(
+                            "%s CAPTCHA solving failed for %s",
+                            self.name,
+                            property.full_address,
+                        )
+                        from .base import SourceUnavailableError
 
-            # Add human delay before extraction
-            await self._human_delay()
+                        raise SourceUnavailableError(
+                            self.source,
+                            "CAPTCHA detected and solving failed",
+                            retry_after=300,  # 5 minutes
+                        )
 
-            # Try to open gallery and cycle through photos to force load
-            try:
-                await self._open_gallery_and_cycle(tab)
-            except Exception as e:
-                logger.debug("%s gallery cycle skipped: %s", self.name, e)
+                    logger.info(
+                        "%s CAPTCHA solved for %s", self.name, property.full_address
+                    )
 
-            # Determine zpid from property or URL for JSON filtering
-            expected_zpid = getattr(property, "zpid", None)
-            if not expected_zpid:
-                expected_zpid = await self._extract_zpid_from_url(tab)
-                if expected_zpid:
+                # Add human delay before extraction
+                await self._human_delay()
+
+                # Try to open gallery and cycle through photos to force load
+                try:
+                    await self._open_gallery_and_cycle(tab)
+                except Exception as e:
+                    logger.debug("%s gallery cycle skipped: %s", self.name, e)
+
+                # Determine zpid from property or URL for JSON filtering
+                expected_zpid = zpid or await self._extract_zpid_from_url(tab)
+                if expected_zpid and not zpid:
                     property.zpid = expected_zpid
 
-            # Extract URLs from page (this may also extract zpid from JSON)
-            raw_urls = await self._extract_urls_from_page(tab, expected_zpid=expected_zpid)
-
-            # FIX 4: Fail-safe - decline extraction if zpid still unknown after all attempts
-            # This prevents contamination when validation filters would be bypassed
-            if not expected_zpid:
-                logger.error(
-                    "%s CRITICAL: Declining image extraction for %s - zpid unknown after all attempts, contamination risk too high",
-                    self.name,
-                    property.full_address,
+                # Extract URLs from page
+                raw_urls = await self._extract_urls_from_page(
+                    tab, expected_zpid=expected_zpid
                 )
-                return []
 
-            # FIX: Apply comprehensive URL filtering to prevent search result contamination
-            # This filters by zpid, search result patterns, and quality
-            urls = self._filter_urls_for_property(raw_urls, expected_zpid)
+                # Fail-safe - decline extraction if zpid still unknown
+                if not expected_zpid:
+                    logger.error(
+                        "%s CRITICAL: Declining image extraction for %s - zpid unknown after all attempts, contamination risk too high",
+                        self.name,
+                        property.full_address,
+                    )
+                    self._set_extraction_method(None)
+                    return []
 
-            # FIX 5: Enhanced logging shows validation status
-            logger.info(
-                "%s URL filtering: %d raw -> %d filtered (zpid=%s, validation=%s)",
-                self.name,
-                len(raw_urls),
-                len(urls),
-                expected_zpid or "unknown",
-                "ENABLED" if expected_zpid else "DISABLED-CONTAMINATION-RISK",
-            )
+                # Apply comprehensive URL filtering
+                urls = self._filter_urls_for_property(raw_urls, expected_zpid)
+                extraction_method = "search"
 
-            # FIX: Safety check - too many URLs even after filtering suggests contamination
+                logger.info(
+                    "%s URL filtering: %d raw -> %d filtered (zpid=%s)",
+                    self.name,
+                    len(raw_urls),
+                    len(urls),
+                    expected_zpid or "unknown",
+                )
+
+            # ===================================================================
+            # POST-EXTRACTION VALIDATION (common to all methods)
+            # ===================================================================
+
+            # Track which method succeeded
+            self._set_extraction_method(extraction_method)
+
+            # Safety check - too many URLs suggests contamination
             if len(urls) > self.MAX_EXPECTED_IMAGES_PER_PROPERTY:
                 logger.warning(
                     "%s Extracted %d URLs (threshold %d), re-validating page type",
@@ -2425,7 +2978,7 @@ class ZillowExtractor(StealthBrowserExtractor):
                     )
                     return []
 
-                # Even if page validates, cap at MAX to prevent contamination
+                # Cap at MAX to prevent contamination
                 logger.warning(
                     "%s Capping URL count from %d to %d to prevent contamination",
                     self.name,
@@ -2435,15 +2988,18 @@ class ZillowExtractor(StealthBrowserExtractor):
                 urls = urls[: self.MAX_EXPECTED_IMAGES_PER_PROPERTY]
 
             # If we have far fewer than expected, scroll the gallery to force load and retry
-            if len(urls) < 20:
+            if len(urls) < 20 and extraction_method == "search":
                 try:
                     for _ in range(5):
                         await tab.scroll_down(800)
                         await asyncio.sleep(0.6)
+                    expected_zpid = getattr(property, "zpid", None)
                     retry_raw = await self._extract_urls_from_page(
                         tab, expected_zpid=expected_zpid
                     )
-                    retry_urls = self._filter_urls_for_property(retry_raw, expected_zpid)
+                    retry_urls = self._filter_urls_for_property(
+                        retry_raw, expected_zpid
+                    )
                     if len(retry_urls) > len(urls):
                         urls = retry_urls
                         logger.info(
@@ -2454,14 +3010,17 @@ class ZillowExtractor(StealthBrowserExtractor):
                 except Exception as e:
                     logger.debug("%s gallery scroll retry failed: %s", self.name, e)
 
-            # ENHANCEMENT: Extract listing metadata on same tab
-            self.last_metadata = await self.extract_listing_metadata(tab)
+            # Extract listing metadata on same tab (only for search method)
+            if extraction_method == "search":
+                metadata = await self.extract_listing_metadata(tab)
+                self.last_metadata.update(metadata)
 
             logger.info(
-                "%s extracted %d image URLs + metadata for %s",
+                "%s extracted %d image URLs + metadata for %s (method=%s)",
                 self.name,
                 len(urls),
                 property.full_address,
+                extraction_method,
             )
 
             return urls

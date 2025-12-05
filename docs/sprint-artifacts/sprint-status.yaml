@@ -67,7 +67,10 @@ development_status:
   2-5-google-maps-api-geographic-data: done
   2-6-greatschools-api-school-ratings: done
   2-7-api-integration-infrastructure: done
-  epic-2-retrospective: optional
+  epic-2-retrospective: completed  # 2025-12-05
+  # Remediation Stories (Post-Completion - Wave 0)
+  2-R1-zillow-zpid-extraction: review  # BLOCK-001 remediation - implementation complete 2025-12-05, pending live validation
+  2-R2-redfin-session-download: backlog  # BLOCK-002 remediation
 
   # =============================================================================
   # Epic 3: Kill-Switch Filtering System
@@ -148,11 +151,11 @@ development_status:
 # =============================================================================
 summary:
   total_epics: 7
-  total_stories: 42
+  total_stories: 44  # +2 remediation stories
   stories_by_status:
-    backlog: 23
+    backlog: 24  # +1 remediation story (E2.R2)
     drafted: 0
-    ready-for-dev: 0
+    ready-for-dev: 1  # E2.R1 Zillow ZPID Direct Extraction
     in-progress: 0
     review: 0
     done: 19
@@ -161,8 +164,8 @@ summary:
     contexted: 0
     done: 2
   retrospectives_by_status:
-    optional: 6
-    completed: 1
+    optional: 5
+    completed: 2
   p0_stories: 35
   p1_stories: 7
   fr_coverage: "62/62 (100%)"
@@ -178,6 +181,8 @@ summary:
 blockers:
   - id: "BLOCK-001"
     severity: "critical"
+    status: "remediation-planned"  # Updated 2025-12-05
+    remediation_story: "E2.R1"
     title: "Zillow CAPTCHA blocking all extractions"
     description: |
       Fresh extraction validation on 3 test properties revealed PerimeterX
@@ -190,6 +195,8 @@ blockers:
 
   - id: "BLOCK-002"
     severity: "high"
+    status: "remediation-planned"  # Updated 2025-12-05
+    remediation_story: "E2.R2"
     title: "Redfin CDN returning 404 for image URLs"
     description: |
       Redfin image URLs discovered but downloads fail with HTTP 404.

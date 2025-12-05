@@ -702,9 +702,11 @@ class TestCaptchaV2Integration:
         """Verify all CAPTCHA call sites migrated to _attempt_captcha_solve_v2.
 
         Expected call counts:
-        - zillow.py: 5 calls to v2 solver (various navigation paths)
+        - zillow.py: 6 calls to v2 solver (various navigation paths including gallery direct)
         - stealth_base.py: 1 call to v2 solver (base extract_image_urls)
         - v1 solver only called internally by v2 with attempt_number parameter
+
+        Updated E2.R1: Added 6th call in _navigate_to_gallery_direct for zpid-based navigation.
         """
         from pathlib import Path
 
@@ -715,8 +717,8 @@ class TestCaptchaV2Integration:
         zillow_source = zillow_path.read_text(encoding="utf-8")
         v2_calls_zillow = re.findall(r"await self\._attempt_captcha_solve_v2\(tab\)", zillow_source)
 
-        assert len(v2_calls_zillow) == 5, (
-            f"Expected 5 v2 calls in zillow.py, found {len(v2_calls_zillow)}"
+        assert len(v2_calls_zillow) == 6, (
+            f"Expected 6 v2 calls in zillow.py, found {len(v2_calls_zillow)}"
         )
         logger.info(f"Found {len(v2_calls_zillow)} v2 calls in zillow.py")
 

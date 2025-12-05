@@ -214,7 +214,56 @@
 | BLOCK-002 | Redfin 404 | Session-bound URLs | Single-session extract+download |
 
 ### Next Steps
-- Run Epic 2 retrospective
-- Remediate BLOCK-001/002
+- Run Epic 2 retrospective ✅
+- Remediate BLOCK-001/002 → See Wave 0 below
 - Begin Epic 3: Kill-Switch Filtering
+
+---
+
+## Post-Completion Remediation (Wave 0)
+
+**Added:** 2025-12-05 via Correct Course Workflow
+**Reason:** Live testing revealed 67% extraction failure rate requiring targeted fixes
+
+### E2.R1: Zillow ZPID Direct Extraction
+
+**Priority:** P0 | **Dependencies:** E2.S3 | **Blocker:** BLOCK-001
+
+**User Story:** As a system user, I want Zillow extraction to use zpid URLs directly, so that I can bypass CAPTCHA on listing pages.
+
+**Acceptance Criteria:**
+- Extract zpid from listing URLs or address search
+- Navigate directly to `zillow.com/homedetails/{zpid}_zpid/#image-lightbox`
+- Fallback to Google Images search if zpid unavailable
+- Success rate >80% on 5 test properties
+
+**Technical Approach:**
+1. Parse zpid from `zillow.com/homedetails/{slug}/{zpid}_zpid/` URLs
+2. Navigate directly to image gallery (less protected path)
+3. Extract image URLs from lightbox gallery
+4. If blocked, fallback to screenshot capture
+
+**Definition of Done:** zpid extraction | Direct gallery navigation | >80% success rate | Updated tests
+
+---
+
+### E2.R2: Redfin Session-Bound Download
+
+**Priority:** P0 | **Dependencies:** E2.S3, E2.S4 | **Blocker:** BLOCK-002
+
+**User Story:** As a system user, I want Redfin images downloaded in the same browser session, so that CDN URLs don't expire before download.
+
+**Acceptance Criteria:**
+- Extract image URLs and download in single browser session
+- Use browser's native download capabilities (not separate httpx)
+- Screenshot fallback if download fails
+- Success rate >80% on 5 test properties
+
+**Technical Approach:**
+1. Keep browser session active during download phase
+2. Use page.screenshot() or browser-native download
+3. Don't extract URLs then download separately (causes 404)
+4. Implement screenshot-capture fallback
+
+**Definition of Done:** Session-bound downloads | Screenshot fallback | >80% success rate | Updated tests
 
