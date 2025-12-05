@@ -5,7 +5,6 @@ staleness_hours: 72
 line_target: 80
 ---
 
-@claude-agent-orchestration-protocols.md
 
 # PHX Houses Analysis Pipeline
 
