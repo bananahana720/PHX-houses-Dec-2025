@@ -1,0 +1,72 @@
+{
+  "run_id": "c5c9bc4b",
+  "started_at": "2025-12-04T16:17:41.932912-05:00",
+  "ended_at": "2025-12-04T16:17:58.290853-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 45,
+    "total_new_images": 2,
+    "total_unchanged": 43,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 1,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "5219 W El Caminito Dr, Glendale, AZ 85302": {
+      "address": "5219 W El Caminito Dr, Glendale, AZ 85302",
+      "property_hash": "b18bdfc7",
+      "urls_discovered": 45,
+      "new_images": 2,
+      "unchanged": 43,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 1,
+      "errors": 0,
+      "new_image_ids": [
+        "868d5e1d-e1a7-48a1-a273-8bbfd34072e9",
+        "1c1552b3-b38d-416f-b8c0-9760f99d6255"
+      ],
+      "removed_urls": [
+        "https://photos.zillowstatic.com/fp/016f883e48e9a4c22da5e0fe62007423-p_e.jpg"
+      ],
+      "error_messages": [],
+      "listing_metadata": {
+        "beds": 5,
+        "baths": null,
+        "sqft": 2239,
+        "lot_sqft": null,
+        "year_built": 1977,
+        "property_type": "Single Family",
+        "garage_spaces": null,
+        "parking_spaces": null,
+        "pool": true,
+        "stories": 1,
+        "list_price": 520000,
+        "cooling_type": "Central",
+        "heating_type": null,
+        "flooring_types": [
+          "Tile",
+          "Carpet"
+        ],
+        "appliances_included": [
+          "Stove/Oven"
+        ],
+        "sewer_type": "City",
+        "water_source": "City",
+        "days_on_market": 20,
+        "original_list_price": null,
+        "price_reduced": true,
+        "price_reduced_pct": null,
+        "price_reduced_amount": 10000,
+        "hoa_fee": 0
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 16.357941
+}

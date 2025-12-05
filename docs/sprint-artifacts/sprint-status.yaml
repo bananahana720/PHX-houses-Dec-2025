@@ -168,3 +168,51 @@ summary:
   last_updated: "2025-12-04"
   last_story_completed: "2-4-property-image-download-and-caching"
   last_epic_completed: "epic-2"
+
+# =============================================================================
+# Active Blockers / Issues
+# =============================================================================
+blockers:
+  - id: "BLOCK-001"
+    severity: "critical"
+    title: "Zillow CAPTCHA blocking all extractions"
+    description: |
+      Fresh extraction validation on 3 test properties revealed PerimeterX
+      CAPTCHA blocking 100% of Zillow requests. px-captcha element detected.
+      CAPTCHA solve attempts failed ("could not find CAPTCHA button").
+    affected: "E2.S3, E2.S4 - Image extraction pipeline"
+    remediation: "Update ZillowExtractor to use direct zpid URLs or residential proxies"
+    file: "src/phx_home_analysis/services/image_extraction/extractors/zillow.py"
+    created: "2025-12-04"
+
+  - id: "BLOCK-002"
+    severity: "high"
+    title: "Redfin CDN returning 404 for image URLs"
+    description: |
+      Redfin image URLs discovered but downloads fail with HTTP 404.
+      Pattern: https://ssl.cdn-redfin.com/photo/86/bcsphoto/*.jpg → 404
+      URLs may be session-bound or time-limited.
+    affected: "E2.S3, E2.S4 - Image extraction pipeline"
+    remediation: "Switch to stable URL patterns or extract+download in single session"
+    file: "src/phx_home_analysis/services/image_extraction/extractors/redfin.py"
+    created: "2025-12-04"
+
+# Live Testing Validation Results (2025-12-04)
+live_testing:
+  date: "2025-12-04"
+  properties_tested: 3
+  results:
+    - address: "7233 W Corrine Dr, Peoria, AZ 85381"
+      status: "partial"
+      images: 20
+      source: "Redfin only"
+      issues: ["Zillow CAPTCHA blocked"]
+    - address: "5219 W El Caminito Dr, Glendale, AZ 85302"
+      status: "failed"
+      images: 0
+      issues: ["Zillow CAPTCHA blocked", "Redfin 404 errors"]
+    - address: "4560 E Sunrise Dr, Phoenix, AZ 85044"
+      status: "failed"
+      images: 0
+      issues: ["Zillow CAPTCHA blocked", "Redfin 404 errors"]
+  success_rate: "33% (1/3 partial)"

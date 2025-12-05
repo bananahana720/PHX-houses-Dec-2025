@@ -28,9 +28,8 @@ import asyncio
 import logging
 import random
 import time
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, Callable, Coroutine
+from collections.abc import Callable, Coroutine
+from typing import Any
 
 from .models import Job, JobResult, JobStatus, JobType
 from .queue import JobQueue
@@ -162,6 +161,11 @@ class JobExecutor:
                         break
                     # Wait for running jobs to complete
                     await asyncio.sleep(0.5)
+                    continue
+
+                # Skip if job already being processed (race condition prevention)
+                if job.id in self._active_jobs:
+                    await asyncio.sleep(0.1)  # Allow job status to update
                     continue
 
                 # Acquire semaphore and start job

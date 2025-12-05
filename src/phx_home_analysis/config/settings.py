@@ -173,6 +173,11 @@ class StealthExtractionConfig:
     CAPTCHA Handling:
         captcha_hold_min: Minimum hold duration for Press & Hold (seconds)
         captcha_hold_max: Maximum hold duration for Press & Hold (seconds)
+        captcha_initial_hold_min: Minimum hold for first CAPTCHA attempt (seconds)
+        captcha_initial_hold_max: Maximum hold for first CAPTCHA attempt (seconds)
+        captcha_retry_hold_min: Minimum hold for CAPTCHA retry after refresh (seconds)
+        captcha_retry_hold_max: Maximum hold for CAPTCHA retry after refresh (seconds)
+        captcha_refresh_wait: Wait time after page refresh before retry (seconds)
 
     Request Settings:
         request_timeout: HTTP request timeout (seconds)
@@ -202,6 +207,18 @@ class StealthExtractionConfig:
     # CAPTCHA handling
     captcha_hold_min: float = 4.5
     captcha_hold_max: float = 8.5
+
+    # 2-layer CAPTCHA timing (PerimeterX bypass)
+    # First attempt uses shorter hold - will be interrupted by page refresh
+    captcha_initial_hold_min: float = 1.5
+    captcha_initial_hold_max: float = 2.5
+
+    # Retry attempts use longer hold - actual solve duration
+    captcha_retry_hold_min: float = 4.5
+    captcha_retry_hold_max: float = 6.5
+
+    # Wait after detecting page refresh before retry
+    captcha_refresh_wait: float = 2.0
 
     # Request settings
     request_timeout: float = 30.0

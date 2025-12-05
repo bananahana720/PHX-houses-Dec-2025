@@ -11,7 +11,7 @@ workflow_path: ".bmad/bmm/workflows/"
 # Current Phase
 current_phase: "implementation"
 current_agent: "dev"
-last_activity: "2025-12-04T21:30:00Z"
+last_activity: "2025-12-04T21:45:00Z"
 
 # Phase 1: Analysis
 analysis:
@@ -94,6 +94,14 @@ implementation:
 # Key Decisions Made
 decisions:
   - date: "2025-12-04"
+    decision: "Live extraction validation revealed critical issues"
+    rationale: |
+      Fresh extraction on 3 test properties: 1 partial success (20 images), 2 failures.
+      Blockers: (1) Zillow CAPTCHA blocking all extractions - PerimeterX px-captcha detected
+      (2) Redfin CDN 404 errors on image URLs - stale/session-bound URLs
+      Remediation needed: Update ZillowExtractor to use direct zpid URLs, fix Redfin URL patterns.
+
+  - date: "2025-12-04"
     decision: "E2.S4 Property Image Download and Caching completed (GREEN+BLUE TDD phases)"
     rationale: "ImageDownloader with async httpx + semaphore (max 5), webp/png→jpg conversion, manifest tracking, --clean-images CLI flag. 29 tests. Epic 2 complete (7/7 stories)."
 
@@ -131,21 +139,31 @@ artifacts:
 
 # Next Recommended Actions
 next_actions:
-  - action: "Run Epic 2 retrospective"
+  - action: "Fix Zillow CAPTCHA blocking"
+    priority: "critical"
+    agent: "dev"
+    context: |
+      Zillow extraction blocked by PerimeterX CAPTCHA on all 3 test properties.
+      Options: (1) Use direct zpid URLs (2) Implement residential proxy rotation
+      File: src/phx_home_analysis/services/image_extraction/extractors/zillow.py
+
+  - action: "Fix Redfin CDN 404 errors"
     priority: "high"
+    agent: "dev"
+    context: |
+      Redfin image URLs returning 404. URLs likely session/time-bound.
+      Fix: Switch to stable URL patterns or extract+download in single session.
+      File: src/phx_home_analysis/services/image_extraction/extractors/redfin.py
+
+  - action: "Run Epic 2 retrospective"
+    priority: "medium"
     agent: "sm"
     command: "/bmad:bmm:workflows:retrospective"
-    context: "Epic 2 complete (7/7 stories) - review orchestration learnings before moving on"
+    context: "Epic 2 complete (7/7 stories) but live extraction has issues"
 
   - action: "Start Epic 3 Kill-Switch implementation"
-    priority: "high"
+    priority: "medium"
     agent: "dev"
     command: "/bmad:bmm:workflows:dev-story"
     next_story: "3-1-hard-kill-switch-criteria-implementation"
     context: "Epic 3 is next priority - kill-switch filtering system"
-
-  - action: "Context Epic 4 Scoring Engine"
-    priority: "medium"
-    agent: "pm"
-    command: "/bmad:bmm:workflows:create-story"
-    context: "Epic 4 has 1 story done (4-1), 5 remaining. Can start in parallel with Epic 3."

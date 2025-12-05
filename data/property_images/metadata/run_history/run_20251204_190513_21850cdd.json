@@ -1,0 +1,42 @@
+{
+  "run_id": "21850cdd",
+  "started_at": "2025-12-04T19:00:00.273181-05:00",
+  "ended_at": "2025-12-04T19:05:13.173802-05:00",
+  "mode": "incremental",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 27,
+    "total_new_images": 0,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 3,
+    "properties_with_changes": 0,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 27,
+      "new_images": 0,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 3,
+      "new_image_ids": [],
+      "removed_urls": [],
+      "error_messages": [
+        "Error: https://ssl.cdn-redfin.com/photo/86/bcsphoto/112/genBcs.6841112_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bcsphoto/112/genBcs.6841112_1024.jpg: Image not found (404)",
+        "Error: https://ssl.cdn-redfin.com/photo/86/bcsphoto/112/genBcs.6841112_1_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bcsphoto/112/genBcs.6841112_1_1024.jpg: Image not found (404)",
+        "Error: https://ssl.cdn-redfin.com/photo/86/bcsphoto/112/genBcs.6841112_9_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bcsphoto/112/genBcs.6841112_9_1024.jpg: Image not found (404)"
+      ],
+      "listing_metadata": {}
+    }
+  },
+  "errors": [],
+  "duration_seconds": 312.900621
+}

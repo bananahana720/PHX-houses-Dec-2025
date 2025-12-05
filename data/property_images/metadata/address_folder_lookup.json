@@ -64,8 +64,9 @@
     },
     "8803 N 105th Dr, Peoria, AZ 85345": {
       "folder": "ed34c433",
-      "image_count": 18,
-      "path": "data/property_images/processed/ed34c433/"
+      "image_count": 16,
+      "path": "data/property_images/processed/ed34c433/",
+      "last_updated": "2025-12-04T17:56:02.274143"
     },
     "8931 W Villa Rita Dr, Peoria, AZ 85382": {
       "folder": "c50bba98",
@@ -179,8 +180,10 @@
     },
     "4560 E Sunrise Dr, Phoenix, AZ 85044": {
       "folder": "f4e29e2c",
-      "image_count": 40,
-      "path": "data/property_images/processed/f4e29e2c/"
+      "image_count": 117,
+      "path": "data/property_images/processed/f4e29e2c/",
+      "recovered_at": "2025-12-04T16:00:00-05:00",
+      "recovery_note": "Restored from git history and archive after accidental deletion in commit d7f9976"
     }
   }
 }

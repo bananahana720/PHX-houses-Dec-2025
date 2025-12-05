@@ -1,0 +1,46 @@
+{
+  "run_id": "156b6472",
+  "started_at": "2025-12-04T17:53:25.116817-05:00",
+  "ended_at": "2025-12-04T17:54:47.446952-05:00",
+  "mode": "incremental",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 24,
+    "total_new_images": 3,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 3,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4209 W Wahalla Ln, Glendale, AZ 85308": {
+      "address": "4209 W Wahalla Ln, Glendale, AZ 85308",
+      "property_hash": "84528a14",
+      "urls_discovered": 24,
+      "new_images": 3,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 3,
+      "new_image_ids": [
+        "747b56cd-f40d-44a2-bcab-3be31d5fe91f",
+        "fd7e79c0-cfbf-4858-91bf-666087cb241e",
+        "19109591-ab7c-48a0-aa00-763ca96b3218"
+      ],
+      "removed_urls": [],
+      "error_messages": [
+        "Error: https://ssl.cdn-redfin.com/photo/86/bcsphoto/105/genBcs.6881105_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bcsphoto/105/genBcs.6881105_1024.jpg: Image not found (404)",
+        "Error: https://ssl.cdn-redfin.com/photo/86/bcsphoto/105/genBcs.6881105_1_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bcsphoto/105/genBcs.6881105_1_1024.jpg: Image not found (404)",
+        "Error: https://ssl.cdn-redfin.com/photo/86/bcsphoto/105/genBcs.6881105_36_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bcsphoto/105/genBcs.6881105_36_1024.jpg: Image not found (404)"
+      ],
+      "listing_metadata": {}
+    }
+  },
+  "errors": [],
+  "duration_seconds": 82.330135
+}

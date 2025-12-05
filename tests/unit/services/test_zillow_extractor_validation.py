@@ -195,6 +195,8 @@ class TestClickFirstSearchResult:
     @pytest.mark.asyncio
     async def test_click_first_search_result_with_valid_results(self):
         """Test clicking first result when search results exist."""
+        from unittest.mock import patch
+
         from src.phx_home_analysis.services.image_extraction.extractors.zillow import (
             ZillowExtractor,
         )
@@ -209,7 +211,11 @@ class TestClickFirstSearchResult:
 
         mock_tab.query_selector_all = AsyncMock(return_value=[mock_link])
 
-        result = await extractor._click_first_search_result(mock_tab)
+        # Patch internal async methods that are called after click
+        with patch.object(
+            extractor, "_wait_for_property_detail_page", new=AsyncMock(return_value=True)
+        ):
+            result = await extractor._click_first_search_result(mock_tab)
 
         assert result is True
         mock_link.click.assert_called_once()
@@ -218,6 +224,8 @@ class TestClickFirstSearchResult:
     @pytest.mark.asyncio
     async def test_click_first_search_result_tries_all_selectors(self):
         """Test that method tries multiple selectors in priority order."""
+        from unittest.mock import patch
+
         from src.phx_home_analysis.services.image_extraction.extractors.zillow import (
             ZillowExtractor,
         )
@@ -233,7 +241,11 @@ class TestClickFirstSearchResult:
         selector_results = [[], [], [], [mock_link], [], [], [], []]
         mock_tab.query_selector_all = AsyncMock(side_effect=selector_results)
 
-        result = await extractor._click_first_search_result(mock_tab)
+        # Patch internal async methods that are called after click
+        with patch.object(
+            extractor, "_wait_for_property_detail_page", new=AsyncMock(return_value=True)
+        ):
+            result = await extractor._click_first_search_result(mock_tab)
 
         assert result is True
         assert mock_tab.query_selector_all.call_count == 4
@@ -382,9 +394,9 @@ class TestNavigationRecovery:
         mock_tab.get_content = AsyncMock(return_value="propertydetails photos.zillowstatic.com")
         mock_tab.url = "https://www.zillow.com/homedetails/123_zpid"
 
-        # Mock the property detail check
+        # Mock the property detail check (must use AsyncMock for async method)
         with patch.object(
-            extractor, "_is_property_detail_page", return_value=True
+            extractor, "_is_property_detail_page", new=AsyncMock(return_value=True)
         ) as mock_detail:
             result = await extractor._navigate_to_property_via_search(prop, mock_tab)
 
@@ -420,13 +432,32 @@ class TestNavigationRecovery:
         mock_input = AsyncMock()
 
         mock_tab.get = AsyncMock()
-        mock_tab.query_selector_all = AsyncMock(side_effect=[
-            [mock_input],  # Search input
-            [],  # No autocomplete found
-        ])
 
+        # Track call count to determine what to return
+        # Search input selectors use "search" in the selector string
+        # Autocomplete selectors use different patterns
+        call_count = {"value": 0}
+        search_input_found = {"value": False}
+
+        async def mock_query_selector_all(selector: str):
+            call_count["value"] += 1
+            # Return search input on first call to a search selector
+            if not search_input_found["value"] and ("search" in selector.lower() or "input" in selector.lower()):
+                search_input_found["value"] = True
+                return [mock_input]
+            # Return empty for all autocomplete selectors (simulating no autocomplete)
+            return []
+
+        mock_tab.query_selector_all = mock_query_selector_all
+
+        # _is_property_detail_page returns False for direct URL attempt (Step 0),
+        # then _wait_for_property_detail_page returns True after Enter key
         with patch.object(
-            extractor, "_is_property_detail_page", return_value=True
+            extractor, "_is_property_detail_page", new=AsyncMock(return_value=False)
+        ), patch.object(
+            extractor, "_wait_for_property_detail_page", new=AsyncMock(return_value=True)
+        ), patch.object(
+            extractor, "_check_for_captcha", new=AsyncMock(return_value=False)
         ):
             result = await extractor._navigate_to_property_via_search(prop, mock_tab)
 
@@ -460,21 +491,43 @@ class TestNavigationRecovery:
         # Mock landing on search results first
         mock_tab = AsyncMock()
         mock_input = AsyncMock()
+        mock_autocomplete = AsyncMock()
 
         mock_tab.get = AsyncMock()
-        mock_tab.query_selector_all = AsyncMock(return_value=[mock_input])
 
-        # First detail check fails (search results), second succeeds (after clicking result)
+        # Track state to return correct values based on selector type
+        search_input_found = {"value": False}
+        autocomplete_found = {"value": False}
+
+        async def mock_query_selector_all(selector: str):
+            # Return search input on first call to a search selector
+            if not search_input_found["value"] and ("search" in selector.lower() or "input" in selector.lower()):
+                search_input_found["value"] = True
+                return [mock_input]
+            # Return autocomplete suggestion on first call to an autocomplete selector
+            if not autocomplete_found["value"] and ("suggestion" in selector.lower() or "result" in selector.lower() or "autocomplete" in selector.lower() or "option" in selector.lower() or "li" in selector.lower()):
+                autocomplete_found["value"] = True
+                return [mock_autocomplete]
+            return []
+
+        mock_tab.query_selector_all = mock_query_selector_all
+
+        # _is_property_detail_page returns False for direct URL (Step 0)
+        # _wait_for_property_detail_page returns False (landed on search results)
+        # _click_first_search_result is called as recovery
         with patch.object(
-            extractor, "_is_property_detail_page", side_effect=[False, True]
-        ) as mock_detail, patch.object(
-            extractor, "_click_first_search_result", return_value=True
-        ) as mock_click:
+            extractor, "_is_property_detail_page", new=AsyncMock(return_value=False)
+        ), patch.object(
+            extractor, "_wait_for_property_detail_page", new=AsyncMock(return_value=False)
+        ), patch.object(
+            extractor, "_click_first_search_result", new=AsyncMock(return_value=True)
+        ) as mock_click, patch.object(
+            extractor, "_check_for_captcha", new=AsyncMock(return_value=False)
+        ):
             result = await extractor._navigate_to_property_via_search(prop, mock_tab)
 
         assert result is True
         mock_click.assert_called_once()
-        assert mock_detail.call_count >= 2
         logger.info("✓ Recovery from search results works")
 
     @pytest.mark.asyncio
@@ -517,8 +570,116 @@ class TestNavigationRecovery:
         logger.info("✓ Correctly fails when no recovery possible")
 
 
+class TestCaptchaV2Integration:
+    """Test 7: Tests for 2-layer CAPTCHA bypass with page refresh detection."""
+
+    def test_imports_time_and_log_captcha_event(self):
+        """Verify required imports are present in stealth_base.py."""
+        import ast
+        from pathlib import Path
+
+        stealth_base_path = Path("src/phx_home_analysis/services/image_extraction/extractors/stealth_base.py")
+        source = stealth_base_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+
+        import_names = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    import_names.append(alias.name)
+            elif isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    import_names.append(alias.name)
+
+        assert "time" in import_names, "import time missing from stealth_base.py"
+        assert "log_captcha_event" in import_names, "log_captcha_event import missing"
+        logger.info("✓ Required imports present: time, log_captcha_event")
+
+    def test_detect_page_refresh_method_exists(self):
+        """Verify _detect_page_refresh method exists with correct signature."""
+        import inspect
+
+        from phx_home_analysis.services.image_extraction.extractors.stealth_base import (
+            StealthBrowserExtractor,
+        )
+
+        assert hasattr(StealthBrowserExtractor, "_detect_page_refresh")
+        method = StealthBrowserExtractor._detect_page_refresh
+        sig = inspect.signature(method)
+        params = list(sig.parameters.keys())
+
+        assert "tab" in params
+        assert "initial_url" in params
+        assert "initial_content_length" in params
+        logger.info(f"✓ _detect_page_refresh method exists with params: {params}")
+
+    def test_attempt_captcha_solve_has_attempt_number_param(self):
+        """Verify _attempt_captcha_solve has attempt_number parameter."""
+        import inspect
+
+        from phx_home_analysis.services.image_extraction.extractors.stealth_base import (
+            StealthBrowserExtractor,
+        )
+
+        method = StealthBrowserExtractor._attempt_captcha_solve
+        sig = inspect.signature(method)
+        params = sig.parameters
+
+        assert "attempt_number" in params
+        assert params["attempt_number"].default == 1
+        logger.info("✓ _attempt_captcha_solve has attempt_number parameter with default=1")
+
+    def test_config_has_2layer_timing_fields(self):
+        """Verify StealthExtractionConfig has 2-layer timing fields."""
+        from phx_home_analysis.config.settings import StealthExtractionConfig
+
+        config = StealthExtractionConfig()
+
+        # New 2-layer fields
+        assert hasattr(config, "captcha_initial_hold_min")
+        assert hasattr(config, "captcha_initial_hold_max")
+        assert hasattr(config, "captcha_retry_hold_min")
+        assert hasattr(config, "captcha_retry_hold_max")
+        assert hasattr(config, "captcha_refresh_wait")
+
+        # Verify values
+        assert config.captcha_initial_hold_min == 1.5
+        assert config.captcha_initial_hold_max == 2.5
+        assert config.captcha_retry_hold_min == 4.5
+        assert config.captcha_retry_hold_max == 6.5
+        assert config.captcha_refresh_wait == 2.0
+        logger.info("✓ All 2-layer CAPTCHA config fields present with correct defaults")
+
+    def test_all_call_sites_use_v2_solver(self):
+        """Verify all CAPTCHA call sites use _attempt_captcha_solve_v2."""
+        import re
+        from pathlib import Path
+
+        zillow_path = Path("src/phx_home_analysis/services/image_extraction/extractors/zillow.py")
+        stealth_base_path = Path("src/phx_home_analysis/services/image_extraction/extractors/stealth_base.py")
+
+        # Check zillow.py - should have v2 calls only
+        zillow_source = zillow_path.read_text(encoding="utf-8")
+        v2_calls_zillow = re.findall(r"await self\._attempt_captcha_solve_v2\(tab\)", zillow_source)
+
+        assert len(v2_calls_zillow) == 5, f"Expected 5 v2 calls in zillow.py, found {len(v2_calls_zillow)}"
+        logger.info(f"✓ Found {len(v2_calls_zillow)} v2 calls in zillow.py")
+
+        # Check stealth_base.py - should have 1 v2 call in extract_image_urls
+        stealth_source = stealth_base_path.read_text(encoding="utf-8")
+        v2_calls_stealth = re.findall(r"await self\._attempt_captcha_solve_v2\(tab\)", stealth_source)
+
+        assert len(v2_calls_stealth) == 1, f"Expected 1 v2 call in stealth_base.py, found {len(v2_calls_stealth)}"
+        logger.info(f"✓ Found {len(v2_calls_stealth)} v2 call in stealth_base.py")
+
+        # Verify v1 calls only appear inside v2 with attempt_number
+        v1_with_attempt = re.findall(r"await self\._attempt_captcha_solve\(tab, attempt_number=", stealth_source)
+        assert len(v1_with_attempt) == 1, "v2 should call v1 with attempt_number"
+        logger.info("✓ v2 correctly calls v1 with attempt_number parameter")
+
+
 class TestRegressionChecks:
-    """Test 6: Regression Testing - Verify Existing Functionality Unchanged"""
+    """Test 8: Regression Testing - Verify Existing Functionality Unchanged"""
 
     def test_build_search_url_still_works(self):
         """Verify _build_search_url() unchanged."""

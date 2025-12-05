@@ -1413,7 +1413,7 @@ class ZillowExtractor(StealthBrowserExtractor):
                                     "%s CAPTCHA detected after clicking search result, attempting solve",
                                     self.name,
                                 )
-                                if not await self._attempt_captcha_solve(tab):
+                                if not await self._attempt_captcha_solve_v2(tab):
                                     logger.error(
                                         "%s CAPTCHA solving failed after search result click",
                                         self.name,
@@ -1759,7 +1759,7 @@ class ZillowExtractor(StealthBrowserExtractor):
             # Early CAPTCHA check (homepage frequently triggers PerimeterX)
             if await self._check_for_captcha(tab):
                 logger.warning("%s CAPTCHA detected on homepage, attempting solve", self.name)
-                if not await self._attempt_captcha_solve(tab):
+                if not await self._attempt_captcha_solve_v2(tab):
                     logger.error("%s CAPTCHA solving failed on homepage", self.name)
                     return False
                 await self._human_delay()
@@ -1811,7 +1811,7 @@ class ZillowExtractor(StealthBrowserExtractor):
                         "%s CAPTCHA blocking search input, attempting solve",
                         self.name,
                     )
-                    if await self._attempt_captcha_solve(tab):
+                    if await self._attempt_captcha_solve_v2(tab):
                         await self._human_delay()
                         for selector in search_selectors:
                             try:
@@ -1948,7 +1948,7 @@ class ZillowExtractor(StealthBrowserExtractor):
                 # Solve any interstitial CAPTCHA triggered by search
                 if await self._check_for_captcha(tab):
                     logger.warning("%s CAPTCHA detected after autocomplete click, attempting solve", self.name)
-                    if not await self._attempt_captcha_solve(tab):
+                    if not await self._attempt_captcha_solve_v2(tab):
                         logger.error("%s CAPTCHA solving failed after autocomplete click", self.name)
                         return False
                     await self._human_delay()
@@ -2062,7 +2062,7 @@ class ZillowExtractor(StealthBrowserExtractor):
                 )
 
                 # Attempt to solve CAPTCHA
-                if not await self._attempt_captcha_solve(tab):
+                if not await self._attempt_captcha_solve_v2(tab):
                     logger.error(
                         "%s CAPTCHA solving failed for %s",
                         self.name,

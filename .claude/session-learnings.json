@@ -434,5 +434,95 @@
     "learnings": [
       "**"
     ]
+  },
+  {
+    "timestamp": "2025-12-04T20:04:44.691186+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "** Focus on GREEN phase - minimal implementation to pass tests. Refactoring happens in Wave 3 (code-review)."
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T20:07:35.325984+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "** This is BLUE phase - refactor for quality but DO NOT break passing tests."
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T21:55:05.815941+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [
+      "assert 7 == 3` where `7 = len(['Job 1', 'Job 1', 'Job 1', 'Job 2', 'Job 2', 'Job 3', 'Job 3'])`"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T22:53:45.647562+00:00",
+    "subagent_type": "listing-browser",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "**"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T22:55:35.596924+00:00",
+    "subagent_type": "listing-browser",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "**"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T22:56:16.220296+00:00",
+    "subagent_type": "listing-browser",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "**"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T22:56:23.881103+00:00",
+    "subagent_type": "listing-browser",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "**"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T23:08:35.345590+00:00",
+    "subagent_type": "image-assessor",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "** Large image set - sample strategically (exterior, kitchen, bedrooms, bathrooms, living areas)"
+    ]
+  },
+  {
+    "timestamp": "2025-12-04T23:44:25.597265+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "# If we can't get content, page may be refreshing"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-04T23:48:20.943798+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "**"
+    ]
   }
 ]

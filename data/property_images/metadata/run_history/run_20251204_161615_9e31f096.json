@@ -1,0 +1,69 @@
+{
+  "run_id": "9e31f096",
+  "started_at": "2025-12-04T16:16:00.365063-05:00",
+  "ended_at": "2025-12-04T16:16:15.288008-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 46,
+    "total_new_images": 0,
+    "total_unchanged": 46,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 0,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "7233 W Corrine Dr, Peoria, AZ 85381": {
+      "address": "7233 W Corrine Dr, Peoria, AZ 85381",
+      "property_hash": "16e902e2",
+      "urls_discovered": 46,
+      "new_images": 0,
+      "unchanged": 46,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 0,
+      "new_image_ids": [],
+      "removed_urls": [],
+      "error_messages": [],
+      "listing_metadata": {
+        "beds": 4,
+        "baths": 3.0,
+        "sqft": 1982,
+        "lot_sqft": null,
+        "year_built": 1987,
+        "property_type": "Single Family",
+        "garage_spaces": null,
+        "parking_spaces": null,
+        "pool": true,
+        "stories": 1,
+        "list_price": 609000,
+        "cooling_type": "Central",
+        "heating_type": null,
+        "flooring_types": [
+          "Tile",
+          "Carpet",
+          "Laminate",
+          "Vinyl"
+        ],
+        "appliances_included": [
+          "Stove/Oven"
+        ],
+        "sewer_type": "City",
+        "water_source": "City",
+        "days_on_market": null,
+        "original_list_price": null,
+        "price_reduced": true,
+        "price_reduced_pct": null,
+        "price_reduced_amount": 10000,
+        "hoa_fee": 0
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 14.922945
+}

@@ -1,0 +1,70 @@
+{
+  "run_id": "b4ee48c6",
+  "started_at": "2025-12-04T15:32:09.846795-05:00",
+  "ended_at": "2025-12-04T15:32:35.618372-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 44,
+    "total_new_images": 3,
+    "total_unchanged": 0,
+    "total_duplicates": 41,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 44,
+      "new_images": 3,
+      "unchanged": 0,
+      "duplicates": 41,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 0,
+      "new_image_ids": [
+        "f3f29ad7-211f-443d-8712-71e0801a8072",
+        "7deeeea2-036f-4d83-b223-517562bdb7c8",
+        "10ed2bee-65d5-4acc-92c7-1dd97bbb4e0e"
+      ],
+      "removed_urls": [],
+      "error_messages": [],
+      "listing_metadata": {
+        "beds": 4,
+        "baths": null,
+        "sqft": 1860,
+        "lot_sqft": null,
+        "year_built": 1983,
+        "property_type": "Single Family",
+        "garage_spaces": null,
+        "parking_spaces": null,
+        "pool": true,
+        "stories": 1,
+        "list_price": 650000,
+        "cooling_type": "Central",
+        "heating_type": null,
+        "flooring_types": [
+          "Tile"
+        ],
+        "appliances_included": [
+          "Stove/Oven"
+        ],
+        "sewer_type": "City",
+        "water_source": "City",
+        "days_on_market": 14,
+        "original_list_price": null,
+        "price_reduced": true,
+        "price_reduced_pct": null,
+        "price_reduced_amount": 10000,
+        "hoa_fee": 0
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 25.771577
+}

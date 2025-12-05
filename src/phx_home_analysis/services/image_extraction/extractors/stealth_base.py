@@ -7,6 +7,7 @@ to bypass PerimeterX and other anti-bot systems using stealth techniques.
 import asyncio
 import logging
 import random
+import time
 from abc import abstractmethod
 
 import httpx
@@ -15,6 +16,7 @@ import nodriver as uc
 from ....config.settings import StealthExtractionConfig
 from ....domain.entities import Property
 from ...infrastructure import BrowserPool, StealthHttpClient
+from ..metrics import log_captcha_event
 from .base import ExtractionError, ImageExtractor, SourceUnavailableError
 
 logger = logging.getLogger(__name__)
@@ -158,7 +160,7 @@ class StealthBrowserExtractor(ImageExtractor):
 
                 # Attempt to solve CAPTCHA
                 solve_start = time.time()
-                solved = await self._attempt_captcha_solve(tab)
+                solved = await self._attempt_captcha_solve_v2(tab)
                 solve_time = time.time() - solve_start
 
                 if not solved:
@@ -493,24 +495,89 @@ class StealthBrowserExtractor(ImageExtractor):
             except Exception:
                 pass
 
-    async def _attempt_captcha_solve(self, tab: uc.Tab) -> bool:
-        """Attempt to solve Press & Hold CAPTCHA (enhanced with Phase 1 improvements).
+    async def _detect_page_refresh(
+        self,
+        tab: uc.Tab,
+        initial_url: str,
+        initial_content_length: int,
+    ) -> bool:
+        """Detect if page has refreshed during CAPTCHA hold.
 
-        Enhanced strategy (Phase 1):
+        PerimeterX uses a 2-layer CAPTCHA: first hold is interrupted by page refresh
+        after ~1-2 seconds, then second hold succeeds after ~4-5 seconds.
+
+        Detection signals:
+        1. URL changed (navigation occurred)
+        2. Content length drastically different (>50% change)
+        3. Page content contains refresh indicators
+
+        Args:
+            tab: Browser tab being monitored
+            initial_url: URL captured before hold started
+            initial_content_length: Content length before hold
+
+        Returns:
+            True if page refresh detected, False otherwise
+        """
+        try:
+            # Check 1: URL changed
+            current_url = tab.target.url if hasattr(tab, 'target') else str(tab.url)
+            if current_url != initial_url:
+                logger.debug("%s page refresh detected: URL changed", self.name)
+                return True
+
+            # Check 2: Content length drastically changed
+            try:
+                content = await tab.get_content()
+                current_length = len(content) if content else 0
+
+                if initial_content_length > 0:
+                    change_ratio = (
+                        abs(current_length - initial_content_length)
+                        / initial_content_length
+                    )
+                    if change_ratio > 0.5:  # >50% change indicates refresh
+                        logger.debug(
+                            "%s page refresh detected: content length changed %.0f%%",
+                            self.name,
+                            change_ratio * 100
+                        )
+                        return True
+            except Exception:
+                # If we can't get content, page may be refreshing
+                logger.debug("%s page refresh detected: content unavailable", self.name)
+                return True
+
+            return False
+
+        except Exception as e:
+            logger.warning("%s error checking for page refresh: %s", self.name, e)
+            return True  # Assume refresh on error (safer)
+
+    async def _attempt_captcha_solve(self, tab: uc.Tab, attempt_number: int = 1) -> bool:
+        """Solve Press & Hold CAPTCHA (Phase 1 enhanced + refresh detection).
+
+        Enhanced strategy (Phase 1 + Step 3):
         1. Find button element with "px-captcha" class or "Press & Hold" text
         2. Get element position
         3. Move mouse with Bezier curve for natural trajectory
         4. Mouse down with micro-movements during hold (hand tremor simulation)
-        5. Mouse up and verify CAPTCHA is gone
-        6. Wider hold duration randomization (4.5-8.5s)
+        5. Detect page refresh during hold and abort if detected
+        6. Mouse up and verify CAPTCHA is gone
+        7. 2-layer hold duration: shorter for first attempt, longer for retries
 
         Args:
             tab: Browser tab with CAPTCHA
+            attempt_number: Attempt number (1=first, 2+=retry after refresh)
 
         Returns:
-            True if CAPTCHA solved, False otherwise
+            True if CAPTCHA solved, False if refresh detected or solve failed
         """
-        logger.info("%s attempting CAPTCHA solve (Phase 1 enhanced)", self.name)
+        logger.info(
+            "%s attempting CAPTCHA solve (attempt %d, Phase 1 enhanced + refresh detection)",
+            self.name,
+            attempt_number,
+        )
 
         try:
             # Try locating CAPTCHA inside its iframe overlay first
@@ -550,8 +617,16 @@ class StealthBrowserExtractor(ImageExtractor):
             # If not found in iframe, try regular DOM selectors
             if not element:
                 selectors = [
+                    # Primary: wrapper-based selectors (modern CAPTCHA DOM structure)
+                    "#px-captcha-wrapper [role='button']",
+                    "#px-captcha-wrapper div[tabindex='0']",
+                    ".px-captcha-container [role='button']",
+                    # Secondary: class-based (legacy support)
                     "button[class*='px-captcha']",
                     "div[class*='px-captcha'] button",
+                    # Fallback: role-based without class constraints
+                    "[role='button'][tabindex='0']",
+                    "div[aria-describedby][role='button']",
                 ]
 
                 for selector in selectors:
@@ -632,16 +707,33 @@ class StealthBrowserExtractor(ImageExtractor):
                 await self._human_mouse_move_bezier(tab, x, y)
                 await self._human_delay()
 
-            # Phase 1 Enhancement: Wider hold duration randomization (4.5-8.5s)
-            hold_duration = random.uniform(
-                self.config.captcha_hold_min,
-                self.config.captcha_hold_max,
-            )
+            # Step 3: Capture initial state for refresh detection
+            initial_url = tab.target.url if hasattr(tab, "target") else str(tab.url)
+            try:
+                initial_content = await tab.get_content()
+                initial_content_length = len(initial_content) if initial_content else 0
+            except Exception:
+                initial_content_length = 0
+
+            # Step 3: 2-layer hold duration based on attempt number
+            # First attempt: shorter hold (1.5-2.5s) - will likely be interrupted by refresh
+            # Retry attempts: longer hold (4.5-6.5s) - full CAPTCHA solve after refresh
+            if attempt_number == 1:
+                hold_duration = random.uniform(
+                    self.config.captcha_initial_hold_min,
+                    self.config.captcha_initial_hold_max,
+                )
+            else:
+                hold_duration = random.uniform(
+                    self.config.captcha_retry_hold_min,
+                    self.config.captcha_retry_hold_max,
+                )
 
             logger.info(
-                "%s pressing and holding CAPTCHA button for %.2fs with micro-movements",
+                "%s pressing/holding CAPTCHA for %.2fs w/ micro-movements (attempt %d)",
                 self.name,
                 hold_duration,
+                attempt_number,
             )
 
             # Phase 1 Enhancement: Press and hold with micro-movements (hand tremor simulation)
@@ -652,13 +744,32 @@ class StealthBrowserExtractor(ImageExtractor):
 
                     # Simulate hand tremor during hold with ±2px jitter
                     # Random micro-movement intervals (0.1-0.3s)
+                    # Step 3: Check for page refresh every ~200-300ms during hold
                     elapsed = 0.0
+                    last_refresh_check = 0.0
+                    refresh_check_interval = 0.25  # Check every 250ms
+
                     while elapsed < hold_duration:
                         # Random micro-movement interval
                         interval = random.uniform(0.1, 0.3)
                         sleep_time = min(interval, hold_duration - elapsed)
                         await asyncio.sleep(sleep_time)
                         elapsed += sleep_time
+
+                        # Step 3: Periodically check for page refresh
+                        if elapsed - last_refresh_check >= refresh_check_interval:
+                            refresh_detected = await self._detect_page_refresh(
+                                tab, initial_url, initial_content_length
+                            )
+                            if refresh_detected:
+                                logger.info(
+                                    "%s page refresh detected mid-hold at %.2fs, aborting",
+                                    self.name,
+                                    elapsed,
+                                )
+                                await tab.mouse_up(x, y)
+                                return False  # Signal to v2 solver to retry
+                            last_refresh_check = elapsed
 
                         # Apply micro-movement (±2px jitter) if not at end
                         if elapsed < hold_duration:
@@ -744,7 +855,7 @@ class StealthBrowserExtractor(ImageExtractor):
 
             try:
                 # Try to solve CAPTCHA using current strategy
-                success = await self._attempt_captcha_solve(tab)
+                success = await self._attempt_captcha_solve(tab, attempt_number=attempt)
 
                 if success:
                     logger.info(

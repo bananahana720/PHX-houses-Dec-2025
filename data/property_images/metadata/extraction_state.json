@@ -1,8 +1,10 @@
 {
   "completed_properties": [],
-  "failed_properties": [],
+  "failed_properties": [
+    "4560 E Sunrise Dr, Phoenix, AZ 85044"
+  ],
   "property_last_checked": {
-    "4560 E Sunrise Dr, Phoenix, AZ 85044": "2025-12-03T09:59:32.294059-05:00"
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": "2025-12-04T18:03:50.712992-05:00"
   },
-  "last_updated": "2025-12-03T09:59:32.298061-05:00"
+  "last_updated": "2025-12-04T19:05:13.161372-05:00"
 }

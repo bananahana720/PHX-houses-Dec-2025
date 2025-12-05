@@ -1,0 +1,58 @@
+{
+  "run_id": "13403c5d",
+  "started_at": "2025-12-04T18:02:30.328095-05:00",
+  "ended_at": "2025-12-04T18:03:50.738030-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 0,
+    "total_new_images": 0,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 19,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 0,
+      "new_images": 0,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 19,
+      "errors": 0,
+      "new_image_ids": [],
+      "removed_urls": [
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/112/genBcs.6841112_0.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/112/genBcs.6841112_1_0.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/112/genBcs.6841112_9_0.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/174/genBcs.6856174_1_5.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/174/genBcs.6856174_44_0.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/174/genBcs.6856174_5.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/363/genBcs.6866363_1_5.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/363/genBcs.6866363_41_5.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/363/genBcs.6866363_5.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/404/genBcs.6871404_1_4.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/404/genBcs.6871404_25_3.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/404/genBcs.6871404_4.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/406/genBcs.6880406_1_5.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/406/genBcs.6880406_7.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/406/genBcs.6880406_99_2.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/525/genBcs.6882525_1_9.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/525/genBcs.6882525_22_2.webp",
+        "https://ssl.cdn-redfin.com/photo/86/bcsphoto/525/genBcs.6882525_9.webp",
+        "https://ssl.cdn-redfin.com/photo/86/mbpaddedwide/905/genMid.2091905_1.webp"
+      ],
+      "error_messages": [],
+      "listing_metadata": {}
+    }
+  },
+  "errors": [],
+  "duration_seconds": 80.409935
+}

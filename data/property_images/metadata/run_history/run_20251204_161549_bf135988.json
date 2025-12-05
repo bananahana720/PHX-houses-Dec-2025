@@ -1,0 +1,77 @@
+{
+  "run_id": "bf135988",
+  "started_at": "2025-12-04T16:15:32.934061-05:00",
+  "ended_at": "2025-12-04T16:15:49.080414-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 46,
+    "total_new_images": 3,
+    "total_unchanged": 42,
+    "total_duplicates": 1,
+    "total_content_changed": 0,
+    "total_removed": 3,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "7233 W Corrine Dr, Peoria, AZ 85381": {
+      "address": "7233 W Corrine Dr, Peoria, AZ 85381",
+      "property_hash": "16e902e2",
+      "urls_discovered": 46,
+      "new_images": 3,
+      "unchanged": 42,
+      "duplicates": 1,
+      "content_changed": 0,
+      "removed": 3,
+      "errors": 0,
+      "new_image_ids": [
+        "3207b690-f50f-49c2-8b7b-87e57bf605b5",
+        "a7a4e508-6c90-470f-9a5a-7df3964470a3",
+        "2ec1456f-9830-49e7-9986-c4913b4e082c"
+      ],
+      "removed_urls": [
+        "https://photos.zillowstatic.com/fp/ad82b3273d38dc112081fde275fb524b-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/3a8a6cd7cca34aa9124074425a34531a-p_e.jpg",
+        "https://photos.zillowstatic.com/fp/1adc895e788b9b3fec26e811be90b0c5-p_e.jpg"
+      ],
+      "error_messages": [],
+      "listing_metadata": {
+        "beds": 4,
+        "baths": 3.0,
+        "sqft": 1982,
+        "lot_sqft": null,
+        "year_built": 1987,
+        "property_type": "Single Family",
+        "garage_spaces": null,
+        "parking_spaces": null,
+        "pool": true,
+        "stories": 1,
+        "list_price": 609000,
+        "cooling_type": "Central",
+        "heating_type": null,
+        "flooring_types": [
+          "Tile",
+          "Carpet",
+          "Laminate",
+          "Vinyl"
+        ],
+        "appliances_included": [
+          "Stove/Oven"
+        ],
+        "sewer_type": "City",
+        "water_source": "City",
+        "days_on_market": null,
+        "original_list_price": null,
+        "price_reduced": true,
+        "price_reduced_pct": null,
+        "price_reduced_amount": 10000,
+        "hoa_fee": 0
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 16.146353
+}

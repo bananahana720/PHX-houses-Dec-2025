@@ -1,0 +1,62 @@
+{
+  "run_id": "7eb0c6f6",
+  "started_at": "2025-12-04T17:53:40.267282-05:00",
+  "ended_at": "2025-12-04T17:55:19.664216-05:00",
+  "mode": "incremental",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 27,
+    "total_new_images": 19,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 3,
+    "properties_with_changes": 1,
+    "properties_needing_review": 1
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 27,
+      "new_images": 19,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 3,
+      "new_image_ids": [
+        "62513443-41f3-43af-a878-4917a0473fc0",
+        "f245b385-5b57-45c1-a883-538a24575870",
+        "d03f0441-00a6-4ab1-a746-695528ac01a8",
+        "b3591bf5-f4cc-4e5e-8173-63a5c563df01",
+        "16a03422-c8d2-4cd1-a0b3-c0525e266be6",
+        "f6d7d0f6-928c-4580-96f5-74c979bf5484",
+        "a16d297c-05ce-440b-99b8-ece8eea0720a",
+        "b1851fd7-fef3-400a-94c0-b90ea9291e2d",
+        "876fbd3a-d854-4cda-8e61-c230d13b51ae",
+        "a12a0f70-da86-42d2-b550-19067657456c",
+        "7ef6bd63-baf6-4dca-bb5e-89a235774c8c",
+        "e21bb3cf-54c9-455c-9d6f-c4a40269ba24",
+        "b50eaaf0-201a-41ab-8b88-0f7309a7586b",
+        "445cf332-63a3-4212-9ccf-64de7a162908",
+        "7d0ab56b-e7bc-4ea4-bca4-c900533cc724",
+        "a6942b72-ab30-4536-af53-bbaad2084f41",
+        "a59a19b4-9b1c-4de0-a185-c7ecf89b627a",
+        "862dc3a0-7faa-4df8-94ca-5c8738d53656",
+        "934107ef-f212-4281-a14c-417d624ad819"
+      ],
+      "removed_urls": [],
+      "error_messages": [
+        "Error: https://ssl.cdn-redfin.com/photo/86/bigphoto/863/6948863_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/bigphoto/863/6948863_1024.jpg: Image not found (404)",
+        "Error: https://ssl.cdn-redfin.com/photo/86/mbpaddedwide/863/genMid.6948863_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/mbpaddedwide/863/genMid.6948863_1024.jpg: Image not found (404)",
+        "Error: https://ssl.cdn-redfin.com/photo/86/mbphotov3/863/genMid.6948863_14_1024.jpg: Failed to download https://ssl.cdn-redfin.com/photo/86/mbphotov3/863/genMid.6948863_14_1024.jpg: Image not found (404)"
+      ],
+      "listing_metadata": {}
+    }
+  },
+  "errors": [],
+  "duration_seconds": 99.396934
+}
