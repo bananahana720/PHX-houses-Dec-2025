@@ -8,7 +8,7 @@ Tests verify:
 - RetryContext state management
 """
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
@@ -16,6 +16,7 @@ from phx_home_analysis.errors.retry import (
     RetryContext,
     calculate_backoff_delay,
     retry_with_backoff,
+    retry_with_backoff_sync,
 )
 
 
@@ -226,6 +227,284 @@ class TestRetryWithBackoff:
         result = await func()
         assert result == "success"
         assert call_count == 2
+
+
+class TestRetryWithBackoffSync:
+    """Tests for synchronous retry decorator."""
+
+    def test_sync_success_on_first_try(self) -> None:
+        """Function should return immediately on success."""
+        mock_func = Mock(return_value="success")
+
+        @retry_with_backoff_sync(max_retries=3)
+        def func() -> str:
+            return mock_func()
+
+        result = func()
+        assert result == "success"
+        assert mock_func.call_count == 1
+
+    def test_sync_retry_on_transient_error(self) -> None:
+        """Function should retry on transient error."""
+        call_count = 0
+
+        @retry_with_backoff_sync(max_retries=3, min_delay=0.001)
+        def func() -> str:
+            nonlocal call_count
+            call_count += 1
+            if call_count < 3:
+                raise ConnectionError("Connection failed")
+            return "success"
+
+        result = func()
+        assert result == "success"
+        assert call_count == 3
+
+    def test_sync_no_retry_on_permanent_error(self) -> None:
+        """Function should not retry on permanent error."""
+        mock_func = Mock(side_effect=ValueError("Bad input"))
+
+        @retry_with_backoff_sync(max_retries=3)
+        def func() -> str:
+            return mock_func()
+
+        with pytest.raises(ValueError, match="Bad input"):
+            func()
+
+        assert mock_func.call_count == 1
+
+    def test_sync_exhausted_retries_raises(self) -> None:
+        """Function should raise after exhausting retries."""
+        mock_func = Mock(side_effect=ConnectionError("Connection failed"))
+
+        @retry_with_backoff_sync(max_retries=3, min_delay=0.001)
+        def func() -> str:
+            return mock_func()
+
+        with pytest.raises(ConnectionError, match="Connection failed"):
+            func()
+
+        assert mock_func.call_count == 4  # Initial + 3 retries
+
+    def test_sync_custom_retry_predicate(self) -> None:
+        """Custom retry_on predicate should control retry behavior."""
+
+        def custom_retry(e: Exception) -> bool:
+            return isinstance(e, RuntimeError)
+
+        call_count = 0
+
+        @retry_with_backoff_sync(max_retries=3, min_delay=0.001, retry_on=custom_retry)
+        def func() -> str:
+            nonlocal call_count
+            call_count += 1
+            if call_count < 2:
+                raise RuntimeError("Temporary")
+            return "success"
+
+        result = func()
+        assert result == "success"
+        assert call_count == 2
+
+    def test_sync_http_429_transient_retried(self) -> None:
+        """HTTP 429 (rate limit) should be retried."""
+        call_count = 0
+
+        @retry_with_backoff_sync(max_retries=3, min_delay=0.001)
+        def func() -> str:
+            nonlocal call_count
+            call_count += 1
+            if call_count < 2:
+                error = Exception("Rate limited")
+                error.status_code = 429  # type: ignore[attr-defined]
+                raise error
+            return "success"
+
+        result = func()
+        assert result == "success"
+        assert call_count == 2
+
+    def test_sync_http_401_permanent_not_retried(self) -> None:
+        """HTTP 401 (unauthorized) should not be retried."""
+        error = Exception("Unauthorized")
+        error.status_code = 401  # type: ignore[attr-defined]
+        mock_func = Mock(side_effect=error)
+
+        @retry_with_backoff_sync(max_retries=3, min_delay=0.001)
+        def func() -> str:
+            return mock_func()
+
+        with pytest.raises(Exception, match="Unauthorized"):
+            func()
+
+        assert mock_func.call_count == 1
+
+    def test_sync_preserves_function_name(self) -> None:
+        """Decorator should preserve original function name."""
+
+        @retry_with_backoff_sync(max_retries=3)
+        def my_named_function() -> str:
+            return "success"
+
+        assert my_named_function.__name__ == "my_named_function"
+
+    def test_sync_preserves_function_docstring(self) -> None:
+        """Decorator should preserve original function docstring."""
+
+        @retry_with_backoff_sync(max_retries=3)
+        def documented_function() -> str:
+            """This is my docstring."""
+            return "success"
+
+        assert documented_function.__doc__ == "This is my docstring."
+
+    def test_sync_timeout_error_retried(self) -> None:
+        """TimeoutError should be retried."""
+        call_count = 0
+
+        @retry_with_backoff_sync(max_retries=3, min_delay=0.001)
+        def func() -> str:
+            nonlocal call_count
+            call_count += 1
+            if call_count < 2:
+                raise TimeoutError("Request timed out")
+            return "success"
+
+        result = func()
+        assert result == "success"
+        assert call_count == 2
+
+    def test_sync_with_function_arguments(self) -> None:
+        """Decorator should handle function with arguments."""
+        call_count = 0
+
+        @retry_with_backoff_sync(max_retries=3, min_delay=0.001)
+        def func(url: str, timeout: int) -> str:
+            nonlocal call_count
+            call_count += 1
+            if call_count < 2:
+                raise TimeoutError("Connection timeout")
+            return f"fetched from {url} with timeout {timeout}"
+
+        result = func("http://example.com", 30)
+        assert result == "fetched from http://example.com with timeout 30"
+        assert call_count == 2
+
+    def test_sync_with_keyword_arguments(self) -> None:
+        """Decorator should handle keyword arguments."""
+        call_count = 0
+
+        @retry_with_backoff_sync(max_retries=2, min_delay=0.001)
+        def func(url: str, timeout: int = 10) -> str:
+            nonlocal call_count
+            call_count += 1
+            if call_count < 2:
+                raise ConnectionError("Failed")
+            return f"url={url}, timeout={timeout}"
+
+        result = func("http://test.com", timeout=20)
+        assert result == "url=http://test.com, timeout=20"
+        assert call_count == 2
+
+    def test_sync_env_var_max_retries(self) -> None:
+        """RETRY_MAX_RETRIES should override default max_retries."""
+        with patch.dict("os.environ", {"RETRY_MAX_RETRIES": "2"}):
+            call_count = 0
+
+            @retry_with_backoff_sync(min_delay=0.001)  # Don't specify max_retries
+            def func() -> str:
+                nonlocal call_count
+                call_count += 1
+                raise ConnectionError("Always fails")
+
+            with pytest.raises(ConnectionError):
+                func()
+
+            # 2 retries + 1 initial = 3 total attempts
+            assert call_count == 3
+
+    def test_sync_env_var_overridden_by_explicit_param(self) -> None:
+        """Explicit parameter should override environment variable."""
+        with patch.dict("os.environ", {"RETRY_MAX_RETRIES": "10"}):
+            call_count = 0
+
+            @retry_with_backoff_sync(max_retries=1, min_delay=0.001)
+            def func() -> str:
+                nonlocal call_count
+                call_count += 1
+                raise ConnectionError("Always fails")
+
+            with pytest.raises(ConnectionError):
+                func()
+
+            # Explicit max_retries=1 should be used, not env var 10
+            assert call_count == 2  # 1 retry + 1 initial
+
+    def test_sync_sleep_is_called(self) -> None:
+        """time.sleep should be called between retries."""
+        with patch("time.sleep") as mock_sleep:
+            call_count = 0
+
+            @retry_with_backoff_sync(max_retries=2, min_delay=1.0, jitter=0.0)
+            def func() -> str:
+                nonlocal call_count
+                call_count += 1
+                if call_count < 2:
+                    raise ConnectionError("Failed")
+                return "success"
+
+            result = func()
+            assert result == "success"
+            # Should have slept once (after first failure)
+            assert mock_sleep.call_count == 1
+
+    def test_sync_return_types_preserved(self) -> None:
+        """Decorator should preserve function return types."""
+
+        @retry_with_backoff_sync(max_retries=3)
+        def func_int() -> int:
+            return 42
+
+        @retry_with_backoff_sync(max_retries=3)
+        def func_dict() -> dict:
+            return {"key": "value"}
+
+        @retry_with_backoff_sync(max_retries=3)
+        def func_list() -> list:
+            return [1, 2, 3]
+
+        assert func_int() == 42
+        assert func_dict() == {"key": "value"}
+        assert func_list() == [1, 2, 3]
+
+    def test_sync_multiple_decorators_independent(self) -> None:
+        """Multiple decorated functions should retry independently."""
+        call_count_1 = 0
+        call_count_2 = 0
+
+        @retry_with_backoff_sync(max_retries=2, min_delay=0.001)
+        def func1() -> str:
+            nonlocal call_count_1
+            call_count_1 += 1
+            if call_count_1 < 2:
+                raise ConnectionError("Failed")
+            return "func1"
+
+        @retry_with_backoff_sync(max_retries=3, min_delay=0.001)
+        def func2() -> str:
+            nonlocal call_count_2
+            call_count_2 += 1
+            if call_count_2 < 3:
+                raise TimeoutError("Timeout")
+            return "func2"
+
+        result1 = func1()
+        result2 = func2()
+
+        assert result1 == "func1"
+        assert result2 == "func2"
+        assert call_count_1 == 2
+        assert call_count_2 == 3
 
 
 class TestRetryContext:

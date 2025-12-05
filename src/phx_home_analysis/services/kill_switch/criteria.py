@@ -80,7 +80,9 @@ class CitySewerKillSwitch(KillSwitch):
     """Kill switch: Property must have city sewer (no septic).
 
     Buyer requirement is municipal sewer connection. Properties with septic
-    systems are automatically rejected.
+    systems or unknown sewer contribute severity points (SOFT criterion).
+
+    SOFT Criterion: severity weight = 2.5
     """
 
     @property
@@ -95,8 +97,8 @@ class CitySewerKillSwitch(KillSwitch):
 
     @property
     def is_hard(self) -> bool:
-        """This is a HARD criterion (instant fail)."""
-        return True
+        """This is a SOFT criterion (severity weighted, not instant fail)."""
+        return False
 
     def check(self, property: "Property") -> bool:
         """Test if property has city sewer.
@@ -129,18 +131,20 @@ class CitySewerKillSwitch(KillSwitch):
 
 
 class MinGarageKillSwitch(KillSwitch):
-    """Kill switch: Property must have minimum 1 indoor garage space.
+    """Kill switch: Property should have minimum 2 garage spaces.
 
-    Buyer requirement is at least 1 indoor garage space (attached/direct access).
-    Properties without indoor garage are automatically rejected. Detached garages
-    and carports do not count toward indoor garage requirement.
+    Buyer requirement is at least 2 garage spaces (attached/indoor).
+    Properties with only 1 space contribute severity points (SOFT criterion).
+    Properties with 0 spaces or no data also contribute severity.
+
+    SOFT Criterion: severity weight = 1.5 (if garage_spaces < 2)
     """
 
-    def __init__(self, min_spaces: int = 1, indoor_required: bool = True):
+    def __init__(self, min_spaces: int = 2, indoor_required: bool = True):
         """Initialize garage kill switch with minimum space requirement.
 
         Args:
-            min_spaces: Minimum number of garage spaces required (default: 1)
+            min_spaces: Minimum number of garage spaces required (default: 2)
             indoor_required: Whether garage must be indoor/attached (default: True)
         """
         self._min_spaces = min_spaces
@@ -155,13 +159,13 @@ class MinGarageKillSwitch(KillSwitch):
     def description(self) -> str:
         """Human-readable requirement description."""
         if self._indoor_required:
-            return f"Minimum {self._min_spaces} indoor garage space(s) required"
-        return f"Minimum {self._min_spaces} garage space(s) required"
+            return f"Minimum {self._min_spaces} garage space(s) preferred"
+        return f"Minimum {self._min_spaces} garage space(s) preferred"
 
     @property
     def is_hard(self) -> bool:
-        """This is a HARD criterion (instant fail)."""
-        return True
+        """This is a SOFT criterion (severity weighted, not instant fail)."""
+        return False
 
     def check(self, property: "Property") -> bool:
         """Test if property has minimum garage spaces.
@@ -392,19 +396,21 @@ class MinSqftKillSwitch(KillSwitch):
 
 
 class LotSizeKillSwitch(KillSwitch):
-    """Kill switch: Property lot must be at least 8,000 sqft.
+    """Kill switch: Property lot should be in ideal range (7k-15k sqft).
 
-    Buyer requirement is lot size greater than 8,000 square feet.
-    Properties with smaller lots are automatically rejected.
-    No maximum lot size (larger lots are acceptable in Phoenix market).
+    Buyer preference is lot size between 7,000-15,000 square feet.
+    Properties outside this range contribute severity points (SOFT criterion).
+    No maximum lot size restriction (larger lots acceptable in Phoenix market).
+
+    SOFT Criterion: severity weight = 1.0 (if lot_sqft outside 7k-15k)
     """
 
-    def __init__(self, min_sqft: int = 8000, max_sqft: int | None = None):
-        """Initialize lot size kill switch with minimum threshold.
+    def __init__(self, min_sqft: int = 7000, max_sqft: int = 15000):
+        """Initialize lot size kill switch with preferred range.
 
         Args:
-            min_sqft: Minimum lot size in square feet (default: 8000)
-            max_sqft: Maximum lot size (optional, default: None = no max)
+            min_sqft: Minimum preferred lot size in square feet (default: 7000)
+            max_sqft: Maximum preferred lot size (default: 15000)
         """
         self._min_sqft = min_sqft
         self._max_sqft = max_sqft
@@ -417,14 +423,12 @@ class LotSizeKillSwitch(KillSwitch):
     @property
     def description(self) -> str:
         """Human-readable requirement description."""
-        if self._max_sqft is not None:
-            return f"Lot size must be {self._min_sqft:,}-{self._max_sqft:,} sqft"
-        return f"Lot size must be >{self._min_sqft:,} sqft"
+        return f"Lot size preference: {self._min_sqft:,}-{self._max_sqft:,} sqft"
 
     @property
     def is_hard(self) -> bool:
-        """This is a HARD criterion (instant fail)."""
-        return True
+        """This is a SOFT criterion (severity weighted, not instant fail)."""
+        return False
 
     def check(self, property: "Property") -> bool:
         """Test if property lot size meets minimum requirement.

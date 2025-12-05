@@ -59,7 +59,9 @@ class ImageProcessingPool:
             max_workers: Number of worker processes. Defaults to CPU count - 1.
             max_dimension: Maximum dimension for standardized images.
         """
-        self.max_workers = max_workers or max(2, os.cpu_count() - 1)
+        cpu_count = os.cpu_count()
+        default_workers = max(2, cpu_count - 1) if cpu_count is not None else 2
+        self.max_workers = max_workers or default_workers
         self.max_dimension = max_dimension
         self._executor: ProcessPoolExecutor | None = None
         self._loop: asyncio.AbstractEventLoop | None = None
@@ -75,7 +77,12 @@ class ImageProcessingPool:
         self._loop = asyncio.get_event_loop()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: object | None,
+    ) -> None:
         """Shutdown the process pool."""
         if self._executor:
             self._executor.shutdown(wait=True)
@@ -149,7 +156,7 @@ def _process_image_worker(image_data: bytes, max_dimension: int) -> ProcessedIma
     original_size = len(image_data)
 
     # Open image
-    img = Image.open(BytesIO(image_data))
+    img: Image.Image = Image.open(BytesIO(image_data))
 
     # Compute perceptual hashes (CPU-intensive)
     phash = str(imagehash.phash(img))
@@ -158,7 +165,7 @@ def _process_image_worker(image_data: bytes, max_dimension: int) -> ProcessedIma
     # Standardize image
     # Convert color mode
     if img.mode == "RGBA":
-        background = Image.new("RGB", img.size, (255, 255, 255))
+        background: Image.Image = Image.new("RGB", img.size, (255, 255, 255))
         background.paste(img, mask=img.split()[3])
         img = background
     elif img.mode not in ("RGB",):
@@ -166,7 +173,7 @@ def _process_image_worker(image_data: bytes, max_dimension: int) -> ProcessedIma
 
     # Strip metadata by copying pixel data
     data = list(img.getdata())
-    clean_img = Image.new("RGB", img.size)
+    clean_img: Image.Image = Image.new("RGB", img.size)
     clean_img.putdata(data)
     img = clean_img
 

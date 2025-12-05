@@ -1,5 +1,5 @@
 ---
-last_updated: 2025-12-04
+last_updated: 2025-12-05
 updated_by: agent
 staleness_hours: 24
 flags: []
@@ -17,6 +17,7 @@ Data quality services for tracking field provenance, calculating completeness/co
 | `metrics.py` | QualityMetricsCalculator: completeness (60%) + confidence (40%) scoring |
 | `provenance_service.py` | ProvenanceService: high-level API for recording field updates with source tracking |
 | `confidence_display.py` | ConfidenceLevel enum, format/HTML utilities for reports |
+| `audit_log.py` | AuditLog: immutable event logging for quality events (NEW) |
 | `__init__.py` | Package exports (9 public APIs) |
 
 ## Tasks

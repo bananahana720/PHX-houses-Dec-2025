@@ -474,5 +474,5 @@ class SymlinkViewBuilder:
                 "directories": dir_count,
             }
 
-        stats["symlinks_supported"] = self._can_symlink
+        stats["symlinks_supported"] = {"supported": self._can_symlink}
         return stats

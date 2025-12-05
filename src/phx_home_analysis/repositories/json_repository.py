@@ -21,6 +21,7 @@ class JsonEnrichmentRepository(EnrichmentRepository):
         """
         self.json_file_path = Path(json_file_path)
         self._enrichment_cache: dict[str, EnrichmentData] | None = None
+        self._address_index: dict[str, str] | None = None  # normalized → full_address (O(1) lookup)
 
     def load_all(self, validate: bool = True) -> dict[str, EnrichmentData]:
         """Load all enrichment data from the JSON file with optional validation.
@@ -45,6 +46,7 @@ class JsonEnrichmentRepository(EnrichmentRepository):
                 # Create default enrichment template
                 self._create_default_template()
                 self._enrichment_cache = {}
+                self._address_index = {}  # Empty index for empty cache
                 return {}
 
             with open(self.json_file_path, encoding='utf-8') as f:
@@ -96,6 +98,13 @@ class JsonEnrichmentRepository(EnrichmentRepository):
                 raise DataLoadError(f"Validation failed for {len(validation_errors)} entries: {error_summary}")
 
             self._enrichment_cache = enrichment_dict
+
+            # Build normalized address index for O(1) lookups
+            self._address_index = {
+                enrichment.normalized_address: address
+                for address, enrichment in enrichment_dict.items()
+            }
+
             return enrichment_dict
 
         except json.JSONDecodeError as e:
@@ -108,9 +117,9 @@ class JsonEnrichmentRepository(EnrichmentRepository):
     def load_for_property(self, full_address: str) -> EnrichmentData | None:
         """Load enrichment data for a specific property using normalized address matching.
 
-        Lookup priority:
+        Lookup priority (all O(1)):
         1. Exact match on full_address (fastest, most common)
-        2. Normalized address matching (case-insensitive, punctuation-removed)
+        2. Normalized address index lookup (case-insensitive, punctuation-removed)
 
         Args:
             full_address: The address to look up (will be normalized for matching).
@@ -129,17 +138,16 @@ class JsonEnrichmentRepository(EnrichmentRepository):
         if not self._enrichment_cache:
             return None
 
-        # Try exact match first (fastest path)
+        # Try exact match first (fastest path, O(1))
         if full_address in self._enrichment_cache:
             return self._enrichment_cache[full_address]
 
-        # Fall back to normalized lookup
+        # Use normalized index for O(1) lookup instead of O(n) scan
         normalized_lookup = normalize_address(full_address)
+        cached_address = self._address_index.get(normalized_lookup) if self._address_index else None
 
-        # Search by normalized_address field
-        for enrichment in self._enrichment_cache.values():
-            if enrichment.normalized_address == normalized_lookup:
-                return enrichment
+        if cached_address:
+            return self._enrichment_cache.get(cached_address)
 
         return None
 
@@ -196,6 +204,12 @@ class JsonEnrichmentRepository(EnrichmentRepository):
                 logger.debug(f"Created backup: {backup}")
 
             self._enrichment_cache = enrichment_data
+
+            # Rebuild normalized address index for O(1) lookups
+            self._address_index = {
+                enrichment.normalized_address: address
+                for address, enrichment in enrichment_data.items()
+            }
 
         except OSError as e:
             raise DataSaveError(f"Failed to write JSON file: {e}") from e
@@ -272,8 +286,9 @@ class JsonEnrichmentRepository(EnrichmentRepository):
         shutil.copy2(backup_path, self.json_file_path)
         logger.info(f"Restored from backup: {backup_path}")
 
-        # Invalidate cache to force reload
+        # Invalidate cache and index to force reload
         self._enrichment_cache = None
+        self._address_index = None
 
         return True
 

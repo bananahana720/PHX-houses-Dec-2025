@@ -567,7 +567,8 @@ Rules:
                 )
 
             response.raise_for_status()
-            return response.json()
+            from typing import cast
+            return cast(dict[Any, Any], response.json())
 
         except httpx.HTTPStatusError as e:
             raise CategorizationError(

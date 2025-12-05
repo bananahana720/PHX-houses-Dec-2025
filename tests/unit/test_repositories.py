@@ -940,6 +940,206 @@ class TestRestoreFromBackup:
 # ============================================================================
 
 
+class TestAddressIndexO1Performance:
+    """Tests for O(1) address index optimization in JsonEnrichmentRepository."""
+
+    def test_address_index_created_on_load(self, temp_json_file):
+        """Verify address index is created during load_all()."""
+        repo = JsonEnrichmentRepository(temp_json_file)
+        assert repo._address_index is None  # Not created yet
+
+        repo.load_all()
+
+        assert repo._address_index is not None
+        assert len(repo._address_index) == 2
+        assert "123 main st phoenix az 85001" in repo._address_index
+        assert "456 oak ave scottsdale az 85251" in repo._address_index
+
+    def test_address_index_maps_normalized_to_full(self, temp_json_file):
+        """Verify index correctly maps normalized addresses to full addresses."""
+        repo = JsonEnrichmentRepository(temp_json_file)
+        repo.load_all()
+
+        # Normalized → Full address mapping
+        assert repo._address_index["123 main st phoenix az 85001"] == "123 Main St, Phoenix, AZ 85001"
+        assert repo._address_index["456 oak ave scottsdale az 85251"] == "456 Oak Ave, Scottsdale, AZ 85251"
+
+    def test_load_for_property_uses_index_normalized_lookup(self, temp_json_file):
+        """Verify load_for_property uses O(1) index for normalized lookup."""
+        repo = JsonEnrichmentRepository(temp_json_file)
+        repo.load_all()
+
+        # All these should use index (not O(n) scan)
+        result1 = repo.load_for_property("123 MAIN ST, PHOENIX, AZ 85001")  # Case insensitive
+        result2 = repo.load_for_property("123 Main St Phoenix AZ 85001")  # Punctuation removed
+        result3 = repo.load_for_property("  123 Main St,  Phoenix,  AZ 85001  ")  # Extra whitespace
+
+        assert result1 is not None
+        assert result2 is not None
+        assert result3 is not None
+        assert result1.lot_sqft == 9500
+        assert result2.lot_sqft == 9500
+        assert result3.lot_sqft == 9500
+
+    def test_load_for_property_exact_match_still_works(self, temp_json_file):
+        """Verify exact address match still works (first priority)."""
+        repo = JsonEnrichmentRepository(temp_json_file)
+        repo.load_all()
+
+        result = repo.load_for_property("123 Main St, Phoenix, AZ 85001")
+
+        assert result is not None
+        assert result.full_address == "123 Main St, Phoenix, AZ 85001"
+        assert result.lot_sqft == 9500
+
+    def test_index_rebuilt_on_save(self, tmp_path):
+        """Verify index is rebuilt when data is saved."""
+        from src.phx_home_analysis.utils.address_utils import normalize_address
+
+        json_file = tmp_path / "enrichment_data.json"
+        repo = JsonEnrichmentRepository(json_file)
+
+        # Create enrichment data with normalized addresses
+        addr1 = "100 Test St, TestCity, AZ 12345"
+        addr2 = "200 Demo Ave, DemoCity, AZ 54321"
+        enrichment_data = {
+            addr1: EnrichmentData(
+                full_address=addr1,
+                normalized_address=normalize_address(addr1),
+                lot_sqft=8000,
+            ),
+            addr2: EnrichmentData(
+                full_address=addr2,
+                normalized_address=normalize_address(addr2),
+                lot_sqft=9000,
+            ),
+        }
+
+        repo.save_all(enrichment_data)
+
+        # Verify index was created after save
+        assert repo._address_index is not None
+        assert len(repo._address_index) == 2
+        assert "100 test st testcity az 12345" in repo._address_index
+        assert "200 demo ave democity az 54321" in repo._address_index
+
+    def test_index_invalidated_on_restore_backup(self, tmp_path):
+        """Verify index is cleared when backup is restored."""
+        json_file = tmp_path / "enrichment_data.json"
+        backup_file = tmp_path / "backup.json"
+
+        # Create original data
+        json_file.write_text(
+            json.dumps([{"full_address": "123 Original", "lot_sqft": 1000}])
+        )
+        backup_file.write_text(
+            json.dumps([{"full_address": "456 Backup", "lot_sqft": 2000}])
+        )
+
+        repo = JsonEnrichmentRepository(json_file)
+        repo.load_all()
+
+        # Index should exist
+        assert repo._address_index is not None
+        assert "123 original" in repo._address_index
+
+        # Restore backup
+        repo.restore_from_backup(backup_file)
+
+        # Index should be invalidated
+        assert repo._address_index is None
+
+        # Reload and verify new index
+        repo.load_all()
+        assert repo._address_index is not None
+        assert "456 backup" in repo._address_index
+
+    def test_empty_enrichment_creates_empty_index(self, tmp_path):
+        """Verify empty enrichment creates empty index (not None)."""
+        json_file = tmp_path / "enrichment_data.json"
+        repo = JsonEnrichmentRepository(json_file)
+
+        # Load from non-existent file (creates template)
+        repo.load_all()
+
+        # Index should exist but be empty
+        assert repo._address_index is not None
+        assert len(repo._address_index) == 0
+
+    def test_load_for_property_with_empty_index(self, tmp_path):
+        """Verify load_for_property handles empty index gracefully."""
+        json_file = tmp_path / "enrichment_data.json"
+        repo = JsonEnrichmentRepository(json_file)
+
+        # Load from non-existent file (creates empty template)
+        repo.load_all()
+
+        # Should return None for any lookup
+        result = repo.load_for_property("999 Nonexistent, NoCity, AZ 00000")
+        assert result is None
+
+    def test_index_not_created_until_load(self, tmp_path):
+        """Verify index is not created until load_all() is called."""
+        json_file = tmp_path / "enrichment_data.json"
+        repo = JsonEnrichmentRepository(json_file)
+
+        # Index should be None initially
+        assert repo._address_index is None
+
+        # load_for_property should trigger load_all
+        result = repo.load_for_property("123 Main St, Phoenix, AZ 85001")
+
+        # Index should now exist
+        assert repo._address_index is not None
+
+    def test_multiple_properties_large_index(self, tmp_path):
+        """Test index performance with larger dataset (O(1) vs O(n))."""
+        json_file = tmp_path / "enrichment_data.json"
+
+        # Create 100+ properties
+        data = [
+            {
+                "full_address": f"{i} Property St, Phoenix, AZ 8500{i % 10}",
+                "lot_sqft": 8000 + i,
+                "year_built": 2010 + (i % 14),
+            }
+            for i in range(1, 101)
+        ]
+
+        json_file.write_text(json.dumps(data))
+
+        repo = JsonEnrichmentRepository(json_file)
+        repo.load_all()
+
+        # All lookups should be O(1) with index
+        assert len(repo._address_index) == 100
+
+        # Verify various lookups work
+        result1 = repo.load_for_property("1 Property St, Phoenix, AZ 85001")
+        result50 = repo.load_for_property("50 PROPERTY ST, PHOENIX, AZ 85000")
+        result100 = repo.load_for_property("100 Property St Phoenix AZ 85000")
+
+        assert result1 is not None
+        assert result50 is not None
+        assert result100 is not None
+        assert result1.lot_sqft == 8001
+        assert result50.lot_sqft == 8050
+        assert result100.lot_sqft == 8100
+
+    def test_index_lookup_handles_none_gracefully(self, tmp_path):
+        """Verify index lookup handles None address index gracefully."""
+        json_file = tmp_path / "enrichment_data.json"
+        repo = JsonEnrichmentRepository(json_file)
+
+        # Manually create cache without loading
+        repo._enrichment_cache = {}
+        repo._address_index = None
+
+        # Should handle None index gracefully
+        result = repo.load_for_property("123 Test St")
+        assert result is None
+
+
 class TestRepositoryIntegration:
     """Integration tests combining CSV and JSON repositories."""
 

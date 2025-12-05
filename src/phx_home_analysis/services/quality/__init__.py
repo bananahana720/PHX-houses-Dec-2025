@@ -46,6 +46,7 @@ Usage:
         print("Data quality gate passed!")
 """
 
+from .audit_log import AuditAction, AuditEntry, AuditLog
 from .confidence_display import ConfidenceLevel, format_confidence, get_confidence_html
 from .lineage import LineageTracker
 from .metrics import QualityMetricsCalculator, calculate_property_quality
@@ -57,6 +58,10 @@ __all__ = [
     "DataSource",
     "FieldLineage",
     "QualityScore",
+    # Audit logging
+    "AuditAction",
+    "AuditEntry",
+    "AuditLog",
     # Lineage tracking
     "LineageTracker",
     # Quality metrics

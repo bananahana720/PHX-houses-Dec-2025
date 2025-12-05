@@ -8,8 +8,12 @@ Security: Includes image bomb (decompression bomb) protection.
 
 import logging
 from io import BytesIO
+from typing import TYPE_CHECKING
 
 from PIL import Image
+
+if TYPE_CHECKING:
+    pass
 
 # Security: Limit maximum image pixels to prevent decompression bombs
 # 15000 x 15000 = 225 million pixels is a reasonable upper bound
@@ -128,7 +132,7 @@ class ImageStandardizer:
         try:
             # Note: PIL.Image.MAX_IMAGE_PIXELS (set at module level) provides
             # additional protection against decompression bombs
-            img = Image.open(BytesIO(image_data))
+            img: Image.Image = Image.open(BytesIO(image_data))
 
             # Convert color mode
             img = self._convert_color_mode(img)

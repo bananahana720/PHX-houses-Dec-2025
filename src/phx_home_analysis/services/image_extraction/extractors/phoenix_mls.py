@@ -279,7 +279,17 @@ class PhoenixMLSExtractor(ImageExtractor):
         # This is a generic pattern - would need refinement based on actual site
         for link in soup.find_all("a", href=True):
             link_text = link.get_text(strip=True).lower()
-            href = link["href"]
+            href_attr = link.get("href")
+
+            # href can be None or a list in BeautifulSoup
+            if not href_attr:
+                continue
+            if isinstance(href_attr, list):
+                href = href_attr[0] if href_attr else ""
+            else:
+                href = str(href_attr)
+            if not href:
+                continue
 
             # Check if link text contains street number and name
             if street_number in link_text and any(
@@ -345,7 +355,16 @@ class PhoenixMLSExtractor(ImageExtractor):
 
         # Pattern 2: Look for image links (thumbnail -> full size)
         for link in soup.find_all("a", href=True):
-            href = link["href"]
+            href_attr = link.get("href")
+            # href can be None or a list in BeautifulSoup
+            if not href_attr:
+                continue
+            if isinstance(href_attr, list):
+                href = href_attr[0] if href_attr else ""
+            else:
+                href = str(href_attr)
+            if not href:
+                continue
             # Check if href points to an image file
             if self._is_image_url(href):
                 absolute_url = urljoin(base_url, href)
@@ -368,7 +387,7 @@ class PhoenixMLSExtractor(ImageExtractor):
         logger.debug(f"Parsed {len(image_urls)} image URLs from gallery")
         return image_urls
 
-    def _extract_image_url(self, img_tag, base_url: str) -> str | None:
+    def _extract_image_url(self, img_tag: object, base_url: str) -> str | None:
         """Extract image URL from <img> tag.
 
         Checks multiple attributes: src, data-src, data-original, data-lazy-src.
@@ -380,18 +399,22 @@ class PhoenixMLSExtractor(ImageExtractor):
         Returns:
             Absolute image URL or None
         """
+        # img_tag is a BeautifulSoup Tag object - type as Any for attribute access
+        from typing import Any
+        tag: Any = img_tag
+
         # Try common image URL attributes
         for attr in ["src", "data-src", "data-original", "data-lazy-src", "data-url"]:
-            url = img_tag.get(attr)
+            url = tag.get(attr)
             if url:
                 # Skip placeholder/loading images
-                if "placeholder" in url.lower() or "loading" in url.lower():
+                if "placeholder" in str(url).lower() or "loading" in str(url).lower():
                     continue
                 # Skip data URIs
-                if url.startswith("data:"):
+                if str(url).startswith("data:"):
                     continue
                 # Convert to absolute URL
-                return urljoin(base_url, url)
+                return str(urljoin(base_url, str(url)))
         return None
 
     def _is_image_url(self, url: str) -> bool:

@@ -102,7 +102,10 @@ class HtmlReportGenerator(Reporter):
 
         # Load and render template
         template = self.env.get_template("risk_report.html")
-        html_content = template.render(properties=sorted_properties)
+        html_content = template.render(
+            properties=sorted_properties,
+            analysis_date=datetime.now().strftime("%Y-%m-%d"),
+        )
 
         # Write output
         output_path.write_text(html_content, encoding="utf-8")

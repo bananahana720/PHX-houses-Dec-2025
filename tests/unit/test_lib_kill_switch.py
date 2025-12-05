@@ -463,14 +463,19 @@ class TestSeverityThresholdConstants:
         # All 7 criteria are HARD
         assert len(HARD_CRITERIA) == 7
 
-    def test_soft_criteria_weights_empty(self):
-        """SOFT_SEVERITY_WEIGHTS should be empty (all criteria are HARD in Sprint 0)."""
-        assert len(SOFT_SEVERITY_WEIGHTS) == 0
-        # Deprecated weights no longer exist
-        assert "sewer" not in SOFT_SEVERITY_WEIGHTS
-        assert "garage" not in SOFT_SEVERITY_WEIGHTS
-        assert "lot_size" not in SOFT_SEVERITY_WEIGHTS
-        assert "year_built" not in SOFT_SEVERITY_WEIGHTS
+    def test_soft_criteria_weights_populated(self):
+        """SOFT_SEVERITY_WEIGHTS should have 4 soft criteria with defined weights."""
+        assert len(SOFT_SEVERITY_WEIGHTS) == 4
+        # Soft criteria with severity weights
+        assert "city_sewer" in SOFT_SEVERITY_WEIGHTS
+        assert "garage" in SOFT_SEVERITY_WEIGHTS
+        assert "lot_size" in SOFT_SEVERITY_WEIGHTS
+        assert "year_built" in SOFT_SEVERITY_WEIGHTS
+        # Verify severity weights
+        assert SOFT_SEVERITY_WEIGHTS["city_sewer"] == 2.5
+        assert SOFT_SEVERITY_WEIGHTS["year_built"] == 2.0
+        assert SOFT_SEVERITY_WEIGHTS["garage"] == 1.5
+        assert SOFT_SEVERITY_WEIGHTS["lot_size"] == 1.0
 
     def test_thresholds_defined(self):
         """Threshold constants should be correctly defined (retained for backward compat)."""

@@ -8,7 +8,8 @@ import logging
 import re
 from urllib.parse import quote_plus
 
-from playwright.async_api import Browser, Page, async_playwright
+import httpx
+from playwright.async_api import Browser, Page, Playwright, async_playwright
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 
 from ....domain.entities import Property
@@ -37,7 +38,7 @@ class ZillowExtractor(ImageExtractor):
 
     def __init__(
         self,
-        http_client: object | None = None,
+        http_client: httpx.AsyncClient | None = None,
         timeout: float = 30.0,
         headless: bool = True,
     ):
@@ -51,7 +52,7 @@ class ZillowExtractor(ImageExtractor):
         super().__init__(http_client, timeout)
         self._headless = headless
         self._browser: Browser | None = None
-        self._playwright = None
+        self._playwright: Playwright | None = None
 
     @property
     def source(self) -> ImageSource:

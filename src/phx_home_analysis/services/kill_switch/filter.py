@@ -33,6 +33,7 @@ from .criteria import (
     MinGarageKillSwitch,
     MinSqftKillSwitch,
     NoHoaKillSwitch,
+    NoNewBuildKillSwitch,
     NoSolarLeaseKillSwitch,
 )
 from .explanation import CriterionResult, VerdictExplainer, VerdictExplanation
@@ -91,18 +92,21 @@ class KillSwitchFilter:
     def _get_default_kill_switches() -> list[KillSwitch]:
         """Get default kill switches matching buyer requirements.
 
-        All 8 criteria are HARD (instant fail):
+        4 HARD criteria (instant fail):
         - NO HOA
         - NO solar lease
         - Minimum 4 bedrooms
         - Minimum 2 bathrooms
         - Minimum 1800 sqft
-        - Lot size > 8000 sqft
-        - City sewer only
-        - Minimum 1 indoor garage
+
+        4 SOFT criteria (severity weighted, accumulate):
+        - City sewer only (severity 2.5)
+        - No new builds (severity 2.0)
+        - Minimum 2 garage spaces (severity 1.5)
+        - Lot size 7k-15k sqft (severity 1.0)
 
         Returns:
-            List of all default KillSwitch instances (8 HARD criteria)
+            List of all default KillSwitch instances (5 HARD + 3 SOFT criteria)
         """
         return [
             NoHoaKillSwitch(),
@@ -110,9 +114,11 @@ class KillSwitchFilter:
             MinBedroomsKillSwitch(min_beds=4),
             MinBathroomsKillSwitch(min_baths=2.0),
             MinSqftKillSwitch(min_sqft=1800),
-            LotSizeKillSwitch(min_sqft=8000),
+            # SOFT criteria (severity weighted)
             CitySewerKillSwitch(),
-            MinGarageKillSwitch(min_spaces=1, indoor_required=True),
+            NoNewBuildKillSwitch(max_year=2023),
+            MinGarageKillSwitch(min_spaces=2, indoor_required=True),
+            LotSizeKillSwitch(min_sqft=7000, max_sqft=15000),
         ]
 
     def _calculate_verdict(

@@ -194,7 +194,12 @@ class PermanentError(Exception):
 # Note: These imports are placed after class definitions to avoid circular imports
 # ruff: noqa: E402
 from .pipeline import clear_failure_status, get_failure_summary, mark_item_failed
-from .retry import RetryContext, calculate_backoff_delay, retry_with_backoff
+from .retry import (
+    RetryContext,
+    calculate_backoff_delay,
+    retry_with_backoff,
+    retry_with_backoff_sync,
+)
 
 # Public exports
 __all__ = [
@@ -211,6 +216,7 @@ __all__ = [
     "PermanentError",
     # Retry utilities (from retry.py)
     "retry_with_backoff",
+    "retry_with_backoff_sync",
     "calculate_backoff_delay",
     "RetryContext",
     # Pipeline integration (from pipeline.py)

@@ -299,7 +299,9 @@ class CategoryIndex:
             return self._by_subject.get(subject, []).copy()
 
         # Both filters
-        return self._categories.get(location, {}).get(subject, []).copy()
+        if location is not None:
+            return self._categories.get(location, {}).get(subject or "", []).copy()
+        return []
 
     def get_for_property(
         self,
@@ -351,7 +353,9 @@ class CategoryIndex:
             return result
 
         # Both filters
-        return prop_data.get(location, {}).get(subject, []).copy()
+        if location is not None:
+            return prop_data.get(location, {}).get(subject or "", []).copy()
+        return []
 
     def get_metadata(self, image_id: str) -> dict | None:
         """Get metadata for an image.

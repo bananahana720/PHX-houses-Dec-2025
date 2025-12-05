@@ -20,6 +20,7 @@ import functools
 import logging
 import os
 import random
+import time
 from collections.abc import Awaitable, Callable
 from typing import ParamSpec, TypeVar
 
@@ -187,6 +188,132 @@ def retry_with_backoff(
     return decorator
 
 
+def retry_with_backoff_sync(
+    max_retries: int | None = None,
+    min_delay: float | None = None,
+    max_delay: float | None = None,
+    jitter: float | None = None,
+    retry_on: Callable[[Exception], bool] | None = None,
+) -> Callable[[Callable[P, T]], Callable[P, T]]:
+    """Decorator for synchronous functions with exponential backoff retry.
+
+    Automatically retries the decorated function when transient errors occur,
+    using exponential backoff with jitter to prevent thundering herd.
+
+    This is the synchronous counterpart to retry_with_backoff() for use with
+    non-async functions. It uses time.sleep() instead of asyncio.sleep().
+
+    Args:
+        max_retries: Maximum number of retry attempts. Defaults to RETRY_MAX_RETRIES env var
+                     or 5 if not set.
+        min_delay: Initial delay between retries in seconds. Defaults to RETRY_MIN_DELAY
+                   env var or 1.0 if not set.
+        max_delay: Maximum delay cap in seconds. Defaults to RETRY_MAX_DELAY env var
+                   or 60.0 if not set.
+        jitter: Randomization factor for delays, 0-1. Defaults to RETRY_JITTER env var
+                or 0.5 if not set.
+        retry_on: Optional custom function to determine if error is retryable.
+                  Defaults to is_transient_error().
+
+    Environment Variables:
+        RETRY_MAX_RETRIES: Override default max_retries (integer)
+        RETRY_MIN_DELAY: Override default min_delay (float, seconds)
+        RETRY_MAX_DELAY: Override default max_delay (float, seconds)
+        RETRY_JITTER: Override default jitter (float, 0-1)
+
+    Returns:
+        Decorated function with retry logic
+
+    Example:
+        @retry_with_backoff_sync(max_retries=3, min_delay=2.0)
+        def fetch_data(url: str) -> dict:
+            response = requests.get(url)
+            return response.json()
+
+    Backoff sequence (with jitter=0.5):
+        Attempt 1 failure: wait 1.0-1.5s
+        Attempt 2 failure: wait 2.0-3.0s
+        Attempt 3 failure: wait 4.0-6.0s
+        Attempt 4 failure: wait 8.0-12.0s
+        Attempt 5 failure: wait 16.0-24.0s (capped at max_delay)
+    """
+    # Resolve defaults from environment variables or hardcoded defaults
+    resolved_max_retries = (
+        max_retries
+        if max_retries is not None
+        else _get_env_int("RETRY_MAX_RETRIES", DEFAULT_MAX_RETRIES)
+    )
+    resolved_min_delay = (
+        min_delay
+        if min_delay is not None
+        else _get_env_float("RETRY_MIN_DELAY", DEFAULT_MIN_DELAY)
+    )
+    resolved_max_delay = (
+        max_delay
+        if max_delay is not None
+        else _get_env_float("RETRY_MAX_DELAY", DEFAULT_MAX_DELAY)
+    )
+    resolved_jitter = (
+        jitter if jitter is not None else _get_env_float("RETRY_JITTER", DEFAULT_JITTER)
+    )
+
+    should_retry = retry_on or is_transient_error
+
+    def decorator(
+        func: Callable[P, T],
+    ) -> Callable[P, T]:
+        @functools.wraps(func)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+            last_error: Exception | None = None
+
+            for attempt in range(resolved_max_retries + 1):
+                try:
+                    return func(*args, **kwargs)
+
+                except Exception as e:
+                    last_error = e
+
+                    # Check if we should retry
+                    if not should_retry(e):
+                        logger.warning(
+                            f"{func.__name__} failed with permanent error: "
+                            f"{format_error_message(e)}"
+                        )
+                        raise
+
+                    # Check if retries exhausted
+                    if attempt >= resolved_max_retries:
+                        logger.error(
+                            f"{func.__name__} failed after {resolved_max_retries + 1} attempts: "
+                            f"{format_error_message(e)}"
+                        )
+                        raise
+
+                    # Calculate delay with exponential backoff
+                    delay = calculate_backoff_delay(
+                        attempt=attempt,
+                        min_delay=resolved_min_delay,
+                        max_delay=resolved_max_delay,
+                        jitter=resolved_jitter,
+                    )
+
+                    logger.info(
+                        f"{func.__name__} transient error (attempt {attempt + 1}/"
+                        f"{resolved_max_retries + 1}), retrying in {delay:.1f}s: {type(e).__name__}"
+                    )
+
+                    time.sleep(delay)
+
+            # Should not reach here, but handle edge case
+            if last_error:
+                raise last_error
+            raise RuntimeError(f"{func.__name__} failed with no error recorded")
+
+        return wrapper
+
+    return decorator
+
+
 def calculate_backoff_delay(
     attempt: int,
     min_delay: float = 1.0,
@@ -301,6 +428,7 @@ class RetryContext:
 
 __all__ = [
     "retry_with_backoff",
+    "retry_with_backoff_sync",
     "calculate_backoff_delay",
     "RetryContext",
 ]

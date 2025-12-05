@@ -29,6 +29,10 @@ from enum import Enum
 from ...config.constants import (
     SEVERITY_FAIL_THRESHOLD,
     SEVERITY_WARNING_THRESHOLD,
+    SEVERITY_WEIGHT_GARAGE,
+    SEVERITY_WEIGHT_LOT_SIZE,
+    SEVERITY_WEIGHT_SEWER,
+    SEVERITY_WEIGHT_YEAR_BUILT,
 )
 
 # =============================================================================
@@ -55,19 +59,39 @@ __SEVERITY_FAIL_THRESHOLD = SEVERITY_FAIL_THRESHOLD
 __SEVERITY_WARNING_THRESHOLD = SEVERITY_WARNING_THRESHOLD
 
 # =============================================================================
-# SEVERITY WEIGHTS FOR SOFT CRITERIA (DEPRECATED)
+# SEVERITY WEIGHTS FOR SOFT CRITERIA
 # =============================================================================
-# NOTE: As of Sprint 0, all default criteria are HARD (instant fail).
-# These dictionaries are retained for backward compatibility but are empty
-# since no SOFT criteria exist in the default configuration.
+# NOTE: As of BLUE Phase, 4 criteria are SOFT (weighted) and 4 are HARD (instant fail).
+# SOFT criteria accumulate severity scores that determine verdict.
+#
+# SOFT Criteria (severity weighted, accumulate):
+# - city_sewer: 2.5 (if sewer is unknown/septic, not city)
+# - no_new_build: 2.0 (if year_built >= 2024)
+# - min_garage: 1.5 (if garage_spaces < 2)
+# - lot_size: 1.0 (if lot_sqft outside 7k-15k range)
+#
+# HARD Criteria (instant fail, no accumulation):
+# - no_hoa: instant fail
+# - no_solar_lease: instant fail
+# - min_bedrooms: instant fail
+# - min_bathrooms: instant fail
+# - min_sqft: instant fail
 
 # Severity weights for SOFT criteria (scripts/lib naming convention)
-# EMPTY - all criteria are now HARD
-SOFT_SEVERITY_WEIGHTS: dict[str, float] = {}
+SOFT_SEVERITY_WEIGHTS: dict[str, float] = {
+    "city_sewer": SEVERITY_WEIGHT_SEWER,
+    "year_built": SEVERITY_WEIGHT_YEAR_BUILT,
+    "garage": SEVERITY_WEIGHT_GARAGE,
+    "lot_size": SEVERITY_WEIGHT_LOT_SIZE,
+}
 
 # Severity weights for SOFT criteria (service layer naming convention)
-# EMPTY - all criteria are now HARD
-SOFT_SEVERITY_WEIGHTS_SERVICE: dict[str, float] = {}
+SOFT_SEVERITY_WEIGHTS_SERVICE: dict[str, float] = {
+    "city_sewer": SEVERITY_WEIGHT_SEWER,
+    "no_new_build": SEVERITY_WEIGHT_YEAR_BUILT,
+    "min_garage": SEVERITY_WEIGHT_GARAGE,
+    "lot_size": SEVERITY_WEIGHT_LOT_SIZE,
+}
 
 # =============================================================================
 # HARD CRITERIA SETS
@@ -79,14 +103,12 @@ HARD_CRITERIA: set[str] = {"hoa", "beds", "baths", "sqft", "lot_size", "sewer", 
 
 # HARD criteria names (service layer naming convention)
 # Used by src/phx_home_analysis/services/kill_switch/
-# All 8 default kill switches are HARD
+# 4 HARD criteria (instant fail)
+# 4 SOFT criteria (severity weighted, accumulate)
 HARD_CRITERIA_NAMES: set[str] = {
     "no_hoa",
     "no_solar_lease",
     "min_bedrooms",
     "min_bathrooms",
     "min_sqft",
-    "lot_size",
-    "city_sewer",
-    "min_garage",
 }

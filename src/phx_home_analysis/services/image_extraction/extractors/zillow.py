@@ -10,6 +10,7 @@ import logging
 import os
 import re
 import time
+from typing import Any
 from urllib.parse import quote_plus
 
 import httpx
@@ -909,10 +910,12 @@ class ZillowExtractor(StealthBrowserExtractor):
 
         array_str = content[array_start : end + 1]
         try:
-            return json.loads(array_str)
+            from typing import cast
+            return cast(list[Any] | None, json.loads(array_str))
         except json.JSONDecodeError:
             try:
-                return json.loads(array_str.replace("\\/", "/"))
+                from typing import cast
+                return cast(list[Any] | None, json.loads(array_str.replace("\/", "/")))
             except json.JSONDecodeError:
                 return None
 
@@ -948,14 +951,14 @@ class ZillowExtractor(StealthBrowserExtractor):
         candidates.sort(key=lambda item: item[0], reverse=True)
         return candidates[0][1]
 
-    def _collect_candidates(self, source) -> list[tuple[int, str]]:
+    def _collect_candidates(self, source: object) -> list[tuple[int, str]]:
         """Collect (width, url) tuples from mixedSources variants."""
         results: list[tuple[int, str]] = []
 
         if isinstance(source, list):
             iterable = source
         elif isinstance(source, dict):
-            iterable = source.values()
+            iterable = list(source.values())
         else:
             return results
 
@@ -1902,7 +1905,7 @@ class ZillowExtractor(StealthBrowserExtractor):
                         if buttons:
                             await buttons[0].click()
                             logger.debug("%s dismissed consent with selector: %s", self.name, selector)
-                            await self._human_delay(0.3, 0.8)
+                            await self._human_delay()
                             break
                     except Exception:
                         continue
@@ -2253,7 +2256,7 @@ class ZillowExtractor(StealthBrowserExtractor):
             if not expected_zpid:
                 expected_zpid = await self._extract_zpid_from_url(tab)
                 if expected_zpid:
-                    property.zpid = expected_zpid
+                    setattr(property, "zpid", expected_zpid)
 
             # Extract URLs from page (this may also extract zpid from JSON)
             raw_urls = await self._extract_urls_from_page(tab, expected_zpid=expected_zpid)

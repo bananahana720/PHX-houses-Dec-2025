@@ -18,6 +18,7 @@ import logging
 from collections import defaultdict
 from io import BytesIO
 from pathlib import Path
+from typing import Any, cast
 
 import imagehash
 from PIL import Image
@@ -65,10 +66,10 @@ class ImageDeduplicator:
         self._threshold = similarity_threshold
         self._num_bands = num_bands
         self._band_size = 64 // num_bands  # bits per band
-        self._hash_index: dict[str, dict] = self._load_index()
+        self._hash_index: dict[str, Any] = self._load_index()
         self._lsh_buckets: dict[int, dict[str, set[str]]] = self._build_lsh_buckets()
 
-    def _load_index(self) -> dict[str, dict]:
+    def _load_index(self) -> dict[str, Any]:
         """Load hash index from disk.
 
         Returns:
@@ -79,7 +80,7 @@ class ImageDeduplicator:
                 with open(self._index_path) as f:
                     data = json.load(f)
                     logger.info(f"Loaded {len(data.get('images', {}))} hashes from index")
-                    return data
+                    return cast(dict[str, Any], data)
             except (OSError, json.JSONDecodeError) as e:
                 logger.warning(f"Failed to load hash index: {e}")
 
@@ -187,7 +188,7 @@ class ImageDeduplicator:
             DeduplicationError: If image cannot be processed
         """
         try:
-            img = Image.open(BytesIO(image_data))
+            img: Image.Image = Image.open(BytesIO(image_data))
 
             # Convert to RGB if necessary (handles RGBA, P mode, etc.)
             if img.mode not in ("RGB", "L"):

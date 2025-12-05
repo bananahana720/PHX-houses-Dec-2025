@@ -1,8 +1,7 @@
 ---
-last_updated: 2025-12-05T15:10:00Z
+last_updated: 2025-12-05
 updated_by: agent
 staleness_hours: 24
-line_target: 80
 flags: []
 ---
 # src/phx_home_analysis/services/image_extraction

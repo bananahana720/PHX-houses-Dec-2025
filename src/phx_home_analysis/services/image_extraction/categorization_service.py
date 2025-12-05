@@ -135,7 +135,8 @@ class CategorizationService:
             try:
                 with open(self.manifest_path) as f:
                     data = json.load(f)
-                    return data.get("properties", {})
+                    from typing import cast
+                    return cast(dict[str, list[dict[Any, Any]]], data.get("properties", {}))
             except (OSError, json.JSONDecodeError) as e:
                 logger.warning(f"Failed to load manifest: {e}")
         return {}

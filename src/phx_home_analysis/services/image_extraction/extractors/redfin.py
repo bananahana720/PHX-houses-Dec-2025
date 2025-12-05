@@ -282,7 +282,7 @@ class RedfinExtractor(StealthBrowserExtractor):
 
         return tab
 
-    async def _validate_navigation_success(self, tab, expected_address: str) -> bool:
+    async def _validate_navigation_success(self, tab: uc.Tab, expected_address: str) -> bool:
         """Validate that navigation reached a property page for the expected address.
 
         Performs three-point validation:

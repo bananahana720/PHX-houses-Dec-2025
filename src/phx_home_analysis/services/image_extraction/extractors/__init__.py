@@ -26,18 +26,18 @@ from .stealth_base import StealthBrowserExtractor
 # Conditional import: nodriver (default) or Playwright (fallback)
 USE_PLAYWRIGHT = os.getenv("USE_PLAYWRIGHT_EXTRACTORS", "0") == "1"
 
-if USE_PLAYWRIGHT:
-    # Fallback: Use Playwright-based extractors
-    from .redfin_playwright import RedfinExtractor
-    from .zillow_playwright import ZillowExtractor
-else:
-    # Default: Use nodriver + curl_cffi stealth extractors
-    from .redfin import RedfinExtractor
-    from .zillow import ZillowExtractor
-
-# Also export Playwright versions directly for explicit usage
+# Always import Playwright versions with explicit names first
 from .redfin_playwright import RedfinExtractor as RedfinPlaywrightExtractor
 from .zillow_playwright import ZillowExtractor as ZillowPlaywrightExtractor
+
+if USE_PLAYWRIGHT:
+    # Fallback: Use Playwright-based extractors
+    from .redfin_playwright import RedfinExtractor  # type: ignore[assignment]
+    from .zillow_playwright import ZillowExtractor  # type: ignore[assignment]
+else:
+    # Default: Use nodriver + curl_cffi stealth extractors
+    from .redfin import RedfinExtractor  # type: ignore[assignment]
+    from .zillow import ZillowExtractor  # type: ignore[assignment]
 
 __all__ = [
     # Base classes

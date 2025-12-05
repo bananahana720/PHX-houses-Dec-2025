@@ -206,7 +206,7 @@ class MaricopaAssessorExtractor(ImageExtractor):
         query_encoded = quote(address)
         url = f"{self.source.base_url}/search/property/?q={query_encoded}"
 
-        headers = {"AUTHORIZATION": self._token}
+        headers = {k: v for k, v in {"AUTHORIZATION": self._token}.items() if v is not None}
 
         try:
             response = await self._http_client.get(url, headers=headers)
@@ -240,7 +240,8 @@ class MaricopaAssessorExtractor(ImageExtractor):
             first_result = results[0]
             apn = first_result.get("APN") or first_result.get("apn")
 
-            return apn
+            from typing import cast
+            return cast(str | None, apn)
 
         except httpx.HTTPStatusError as e:
             if e.response.status_code in (401, 403):
@@ -290,7 +291,7 @@ class MaricopaAssessorExtractor(ImageExtractor):
         # APN can be formatted with or without spaces/dashes/dots
         url = f"{self.source.base_url}/parcel/{apn}"
 
-        headers = {"AUTHORIZATION": self._token}
+        headers = {k: v for k, v in {"AUTHORIZATION": self._token}.items() if v is not None}
 
         try:
             response = await self._http_client.get(url, headers=headers)
@@ -315,7 +316,8 @@ class MaricopaAssessorExtractor(ImageExtractor):
 
             response.raise_for_status()
 
-            return response.json()
+            from typing import Any, cast
+            return cast(dict[Any, Any] | None, response.json())
 
         except httpx.HTTPStatusError as e:
             if e.response.status_code in (401, 403):
