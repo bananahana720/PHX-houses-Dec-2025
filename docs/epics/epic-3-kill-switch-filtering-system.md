@@ -7,6 +7,25 @@
 
 ---
 
+## Pre-Epic Preparation (Wave 0)
+
+**Status:** REQUIRED | **Added:** 2025-12-05
+
+Before beginning Epic 3 stories, validate image extraction blocker status:
+
+### Wave 0 Tasks
+
+| # | Task | Owner | Success Criteria | Status |
+|---|------|-------|------------------|--------|
+| W0.1 | Validate BLOCK-001/002 current status | Dev | Live test 5 properties | Pending |
+| W0.2 | IF <80%: Execute E2.R1 (Zillow zpid) | Dev | >80% Zillow success | Pending |
+| W0.3 | IF <80%: Execute E2.R2 (Redfin session) | Dev | >80% Redfin success | Pending |
+| W0.4 | Update sprint-status.yaml | SM | Blockers resolved or documented | Pending |
+
+**Note:** Epic 3 (Kill-Switch) has **NO dependency on image extraction**. Epic 3 can proceed in parallel with Wave 0 remediation if team capacity allows.
+
+---
+
 ### E3.S1: HARD Kill-Switch Criteria Implementation
 
 **Priority:** P0 | **Dependencies:** E1.S1 | **FRs:** FR9

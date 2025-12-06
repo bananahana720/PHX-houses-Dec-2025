@@ -80,6 +80,43 @@ class PropertySchema(BaseModel):
     solar_status: SolarStatusSchema | None = Field(None, description="Solar status")
     orientation: OrientationSchema | None = Field(None, description="Property orientation")
 
+    # MLS Identifiers (PhoenixMLS - E2.R1)
+    mls_number: str | None = Field(None, description="MLS listing number")
+    listing_url: str | None = Field(None, description="Source listing URL")
+    listing_status: str | None = Field(None, description="Listing status")
+    listing_office: str | None = Field(None, description="Listing brokerage")
+    mls_last_updated: str | None = Field(None, description="MLS last updated timestamp")
+
+    # Property Classification
+    property_type: str | None = Field(None, description="Property type")
+    architecture_style: str | None = Field(None, description="Architecture style")
+
+    # Systems & Utilities
+    cooling_type: str | None = Field(None, description="Cooling system type")
+    heating_type: str | None = Field(None, description="Heating system type")
+    water_source: str | None = Field(None, description="Water source")
+    roof_material: str | None = Field(None, description="Roof material")
+
+    # Interior Features (List fields)
+    kitchen_features: list[str] | None = Field(None, description="Kitchen features")
+    master_bath_features: list[str] | None = Field(None, description="Master bath features")
+    laundry_features: list[str] | None = Field(None, description="Laundry features")
+    interior_features_list: list[str] | None = Field(None, description="Interior features")
+    flooring_types: list[str] | None = Field(None, description="Flooring types")
+
+    # Exterior Features (List fields)
+    exterior_features_list: list[str] | None = Field(None, description="Exterior features")
+    patio_features: list[str] | None = Field(None, description="Patio features")
+    lot_features: list[str] | None = Field(None, description="Lot features")
+
+    # Schools
+    elementary_school_name: str | None = Field(None, description="Elementary school name")
+    middle_school_name: str | None = Field(None, description="Middle school name")
+    high_school_name: str | None = Field(None, description="High school name")
+
+    # Location
+    cross_streets: str | None = Field(None, description="Cross streets")
+
     model_config = {"str_strip_whitespace": True, "validate_assignment": True}
 
     @field_validator("address")
@@ -118,6 +155,64 @@ class PropertySchema(BaseModel):
             if self.year_built > current_year:
                 raise ValueError(f"year_built ({self.year_built}) cannot be in the future")
         return self
+
+    @field_validator("listing_status")
+    @classmethod
+    def validate_listing_status(cls, v: str | None) -> str | None:
+        """Validate listing status is known value."""
+        if v is None:
+            return v
+        valid_statuses = {"Active", "Pending", "Sold", "Withdrawn", "Expired", "Contingent"}
+        if v not in valid_statuses:
+            raise ValueError(f"listing_status must be one of {valid_statuses}")
+        return v
+
+    @field_validator("listing_url")
+    @classmethod
+    def validate_listing_url(cls, v: str | None) -> str | None:
+        """Validate listing URL is well-formed."""
+        if v is None:
+            return v
+        from urllib.parse import urlparse
+
+        parsed = urlparse(v)
+        if parsed.scheme and parsed.scheme not in ("http", "https"):
+            raise ValueError("listing_url must use http or https scheme")
+        return v
+
+    @field_validator("mls_number")
+    @classmethod
+    def validate_mls_number(cls, v: str | None) -> str | None:
+        """Validate MLS number format."""
+        if v is None:
+            return v
+        # MLS numbers are typically alphanumeric with possible hyphens
+        import re
+
+        if not re.match(r"^[A-Za-z0-9\-]+$", v):
+            raise ValueError("mls_number must be alphanumeric (hyphens allowed)")
+        return v
+
+    @field_validator("mls_last_updated")
+    @classmethod
+    def validate_mls_timestamp(cls, v: str | None) -> str | None:
+        """Validate MLS timestamp is ISO 8601 and within reasonable bounds."""
+        if v is None:
+            return v
+        from datetime import datetime, timedelta, timezone
+
+        try:
+            dt = datetime.fromisoformat(v.replace("Z", "+00:00"))
+            now = datetime.now(timezone.utc)
+            # Reject future dates more than 1 day ahead (allow some clock drift)
+            if dt > now + timedelta(days=1):
+                raise ValueError("mls_last_updated cannot be in the future")
+            # Reject dates more than 10 years old
+            if dt < now - timedelta(days=3650):
+                raise ValueError("mls_last_updated too old (>10 years)")
+            return v
+        except ValueError as e:
+            raise ValueError(f"Invalid timestamp format: {e}") from e
 
 
 class EnrichmentDataSchema(BaseModel):
@@ -159,18 +254,14 @@ class EnrichmentDataSchema(BaseModel):
     list_price: int | None = Field(None, ge=0, description="Listing price")
 
     # Location scores (Section A)
-    school_rating: float | None = Field(
-        None, ge=1, le=10, description="GreatSchools rating 1-10"
-    )
+    school_rating: float | None = Field(None, ge=1, le=10, description="GreatSchools rating 1-10")
     safety_neighborhood_score: float | None = Field(
         None, ge=0, le=10, description="Neighborhood safety 0-10"
     )
     noise_level: float | None = Field(
         None, ge=0, le=10, description="Noise level 0-10 (lower is quieter)"
     )
-    commute_minutes: int | None = Field(
-        None, ge=0, le=180, description="Commute time in minutes"
-    )
+    commute_minutes: int | None = Field(None, ge=0, le=180, description="Commute time in minutes")
     distance_to_grocery_miles: float | None = Field(
         None, ge=0, le=50, description="Distance to grocery store"
     )
@@ -188,15 +279,11 @@ class EnrichmentDataSchema(BaseModel):
     natural_light_score: float | None = Field(
         None, ge=0, le=10, description="Natural lighting 0-10"
     )
-    high_ceilings_score: float | None = Field(
-        None, ge=0, le=10, description="Ceiling height 0-10"
-    )
+    high_ceilings_score: float | None = Field(None, ge=0, le=10, description="Ceiling height 0-10")
     laundry_area_score: float | None = Field(
         None, ge=0, le=10, description="Laundry area quality 0-10"
     )
-    aesthetics_score: float | None = Field(
-        None, ge=0, le=10, description="Overall aesthetics 0-10"
-    )
+    aesthetics_score: float | None = Field(None, ge=0, le=10, description="Overall aesthetics 0-10")
     backyard_utility_score: float | None = Field(
         None, ge=0, le=10, description="Backyard functionality 0-10"
     )
@@ -279,9 +366,7 @@ class EnrichmentDataSchema(BaseModel):
     )
 
     # Air Quality (Phase 2 - EPA AirNow)
-    air_quality_aqi: int | None = Field(
-        None, ge=0, le=500, description="Air Quality Index 0-500"
-    )
+    air_quality_aqi: int | None = Field(None, ge=0, le=500, description="Air Quality Index 0-500")
     air_quality_category: str | None = Field(
         None, description="AQI category: Good/Moderate/Unhealthy/etc."
     )
@@ -301,9 +386,7 @@ class EnrichmentDataSchema(BaseModel):
     has_solar_permit: bool | None = Field(None, description="Has solar installation permit")
 
     # Exterior Assessment (Phase 2B - Image Analysis)
-    roof_visual_condition: str | None = Field(
-        None, description="UAD condition rating: C1-C6"
-    )
+    roof_visual_condition: str | None = Field(None, description="UAD condition rating: C1-C6")
     roof_age_visual_estimate: int | None = Field(
         None, ge=0, le=50, description="Visual estimate of roof age in years"
     )
@@ -329,6 +412,46 @@ class EnrichmentDataSchema(BaseModel):
     backyard_sun_orientation: str | None = Field(
         None, description="Backyard sun orientation: N/E/S/W"
     )
+
+    # Zillow-specific identifiers (E2.R1)
+    zpid: str | None = Field(None, description="Zillow property ID")
+
+    # MLS Listing Identifiers (PhoenixMLS - E2.R1)
+    mls_number: str | None = Field(None, description="MLS listing number")
+    listing_url: str | None = Field(None, description="Source listing URL")
+    listing_status: str | None = Field(None, description="Listing status")
+    listing_office: str | None = Field(None, description="Listing brokerage")
+    mls_last_updated: str | None = Field(None, description="MLS last updated timestamp")
+
+    # Property Classification
+    property_type: str | None = Field(None, description="Property type")
+    architecture_style: str | None = Field(None, description="Architecture style")
+
+    # Systems & Utilities
+    cooling_type: str | None = Field(None, description="Cooling system type")
+    heating_type: str | None = Field(None, description="Heating system type")
+    water_source: str | None = Field(None, description="Water source")
+    roof_material: str | None = Field(None, description="Roof material")
+
+    # Interior Features (List fields)
+    kitchen_features: list[str] | None = Field(None, description="Kitchen features")
+    master_bath_features: list[str] | None = Field(None, description="Master bath features")
+    laundry_features: list[str] | None = Field(None, description="Laundry features")
+    interior_features_list: list[str] | None = Field(None, description="Interior features")
+    flooring_types: list[str] | None = Field(None, description="Flooring types")
+
+    # Exterior Features (List fields)
+    exterior_features_list: list[str] | None = Field(None, description="Exterior features")
+    patio_features: list[str] | None = Field(None, description="Patio features")
+    lot_features: list[str] | None = Field(None, description="Lot features")
+
+    # Schools
+    elementary_school_name: str | None = Field(None, description="Elementary school name")
+    middle_school_name: str | None = Field(None, description="Middle school name")
+    high_school_name: str | None = Field(None, description="High school name")
+
+    # Location
+    cross_streets: str | None = Field(None, description="Cross streets")
 
     # Metadata fields (prefixed with _) for tracking data freshness
     # These are optional timestamps in ISO 8601 format
@@ -404,9 +527,7 @@ class KillSwitchCriteriaSchema(BaseModel):
     lot_sqft: int = Field(..., ge=7000, le=15000, description="Lot must be 7k-15k sqft")
     garage_spaces: int = Field(..., ge=2, description="Minimum 2-car garage required")
     hoa_fee: float | None = Field(None, le=0, description="No HOA allowed (fee must be 0)")
-    sewer_type: SewerTypeSchema = Field(
-        SewerTypeSchema.CITY, description="City sewer required"
-    )
+    sewer_type: SewerTypeSchema = Field(SewerTypeSchema.CITY, description="City sewer required")
     year_built: int = Field(..., description="No new builds (pre-current year)")
 
     @field_validator("year_built")
@@ -414,6 +535,7 @@ class KillSwitchCriteriaSchema(BaseModel):
     def validate_year_built_not_new(cls, v: int) -> int:
         """Validate year_built is before current year (no new builds)."""
         from datetime import datetime
+
         current_year = datetime.now().year
         if v >= current_year:
             raise ValueError(f"year_built must be before {current_year} (no new builds)")

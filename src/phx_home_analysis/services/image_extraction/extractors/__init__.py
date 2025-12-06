@@ -21,6 +21,7 @@ from .base import (
 )
 from .maricopa_assessor import MaricopaAssessorExtractor
 from .phoenix_mls import PhoenixMLSExtractor
+from .phoenix_mls_search import PhoenixMLSSearchExtractor
 from .stealth_base import StealthBrowserExtractor
 
 # Conditional import: nodriver (default) or Playwright (fallback)
@@ -51,6 +52,7 @@ __all__ = [
     # HTTP-based extractors
     "MaricopaAssessorExtractor",
     "PhoenixMLSExtractor",
+    "PhoenixMLSSearchExtractor",
     # Browser-based extractors (nodriver or Playwright based on env)
     "ZillowExtractor",
     "RedfinExtractor",

@@ -34,6 +34,7 @@ from .extraction_stats import ExtractionResult, SourceStats
 from .extractors import (
     MaricopaAssessorExtractor,
     PhoenixMLSExtractor,
+    PhoenixMLSSearchExtractor,
     RedfinExtractor,
     ZillowExtractor,
 )
@@ -95,7 +96,9 @@ class SourceCircuitBreaker:
             self._disabled_until[source] = time.time() + self.reset_timeout
             logger.warning(
                 "Circuit OPEN for %s - disabled for %ds after %d failures",
-                source, self.reset_timeout, self._failures[source]
+                source,
+                self.reset_timeout,
+                self._failures[source],
             )
             return True
         return False
@@ -189,7 +192,7 @@ class ErrorAggregator:
                 logger.warning(
                     "Systemic failure detected (%dx): %s... Skipping similar errors.",
                     self.threshold,
-                    normalized[:100]
+                    normalized[:100],
                 )
             return True
         return False
@@ -209,7 +212,7 @@ class ErrorAggregator:
         # For 404 errors, extract the base URL pattern
         if "404" in msg and "http" in msg:
             # Extract domain/path pattern (e.g., https://ssl.cdn-redfin.com/photo/)
-            match = re.search(r'(https?://[^/]+(?:/[^/]+){0,2})', msg)
+            match = re.search(r"(https?://[^/]+(?:/[^/]+){0,2})", msg)
             if match:
                 return f"404:{match.group(1)}"
         return msg[:100]
@@ -357,9 +360,7 @@ class ImageExtractionOrchestrator:
                 with open(self.manifest_path) as f:
                     data = json.load(f)
                     properties = data.get("properties", {})
-                    logger.info(
-                        f"Loaded manifest with {len(properties)} properties"
-                    )
+                    logger.info(f"Loaded manifest with {len(properties)} properties")
                     return dict(properties)  # Type cast for mypy
             except (OSError, json.JSONDecodeError) as e:
                 logger.warning(f"Failed to load manifest: {e}")
@@ -479,8 +480,9 @@ class ImageExtractionOrchestrator:
         await asyncio.gather(
             loop.run_in_executor(None, self._write_json_sync, self.state_path, state_data),
             loop.run_in_executor(None, self._write_json_sync, self.manifest_path, manifest_data),
-            loop.run_in_executor(None, self._write_json_sync,
-                self.metadata_dir / "url_tracker.json", tracker_data),
+            loop.run_in_executor(
+                None, self._write_json_sync, self.metadata_dir / "url_tracker.json", tracker_data
+            ),
         )
 
         elapsed_ms = (time.perf_counter() - start) * 1000
@@ -583,8 +585,11 @@ class ImageExtractionOrchestrator:
         extractors: list[ImageExtractor] = []
 
         extractor_map = {
-            ImageSource.MARICOPA_ASSESSOR: MaricopaAssessorExtractor,
+            # PhoenixMLS Search FIRST: Most reliable search-based discovery (E2.R2)
+            ImageSource.PHOENIX_MLS_SEARCH: PhoenixMLSSearchExtractor,
+            # PhoenixMLS Direct: For future use when MLS# known
             ImageSource.PHOENIX_MLS: PhoenixMLSExtractor,
+            ImageSource.MARICOPA_ASSESSOR: MaricopaAssessorExtractor,
             ImageSource.ZILLOW: ZillowExtractor,
             ImageSource.REDFIN: RedfinExtractor,
         }
@@ -672,9 +677,7 @@ class ImageExtractionOrchestrator:
         properties_to_process = properties
         if resume:
             properties_to_process = [
-                p
-                for p in properties
-                if p.full_address not in self.state.completed_properties
+                p for p in properties if p.full_address not in self.state.completed_properties
             ]
             result.properties_skipped = len(properties) - len(properties_to_process)
 
@@ -854,11 +857,13 @@ class ImageExtractionOrchestrator:
                 for url in urls:
                     try:
                         # Check if this is a local file path (screenshots)
-                        if url.startswith(('data/', './', '/', 'C:', 'D:')) or (not url.startswith('http') and os.path.exists(url)):
+                        if url.startswith(("data/", "./", "/", "C:", "D:")) or (
+                            not url.startswith("http") and os.path.exists(url)
+                        ):
                             # Local file - read directly instead of downloading
-                            with open(url, 'rb') as f:
+                            with open(url, "rb") as f:
                                 image_data = f.read()
-                            content_type = 'image/png'
+                            content_type = "image/png"
                             logger.debug(f"Read local screenshot: {url}")
                         else:
                             # Download from URL
@@ -1017,9 +1022,7 @@ class ImageExtractionOrchestrator:
         4. Completed state
         """
 
-        logger.warning(
-            f"--force: Cleaning up existing data for {property.full_address}"
-        )
+        logger.warning(f"--force: Cleaning up existing data for {property.full_address}")
 
         # 1. Find and delete images for this property from manifest
         if property.full_address in self.manifest:
@@ -1139,18 +1142,33 @@ class ImageExtractionOrchestrator:
 
                 # Extract URLs
                 logger.debug(f"Extracting from {extractor.name}")
-                urls = await extractor.extract_image_urls(property)
+                result_data = await extractor.extract_image_urls(property)
+
+                # Handle both tuple (PhoenixMLS: urls, metadata) and list (other extractors) returns
+                if isinstance(result_data, tuple):
+                    urls, metadata = result_data
+                    # Merge metadata from PhoenixMLS into listing_metadata
+                    if metadata:
+                        prop_changes.listing_metadata.update(metadata)
+                        logger.info(
+                            f"{extractor.name}: collected metadata: {list(metadata.keys())}"
+                        )
+                else:
+                    urls = result_data
+
                 source_stats.images_found += len(urls)
                 prop_changes.urls_discovered += len(urls)
                 all_discovered_urls.update(urls)
 
                 logger.info(f"{extractor.name}: found {len(urls)} images")
 
-                # Collect listing metadata if extractor provides it (Zillow)
-                if hasattr(extractor, 'last_metadata') and extractor.last_metadata:
+                # Collect listing metadata if extractor provides it (legacy)
+                # Zillow uses last_metadata attribute pattern
+                if hasattr(extractor, "last_metadata") and extractor.last_metadata:
                     prop_changes.listing_metadata.update(extractor.last_metadata)
                     logger.info(
-                        f"{extractor.name}: collected metadata: {list(extractor.last_metadata.keys())}"
+                        f"{extractor.name}: collected metadata (legacy): "
+                        f"{list(extractor.last_metadata.keys())}"
                     )
 
                 # Download and process each image
@@ -1177,11 +1195,13 @@ class ImageExtractionOrchestrator:
                             # For "new" or "content_changed", proceed with download
 
                         # Check if this is a local file path (screenshots)
-                        if url.startswith(('data/', './', '/', 'C:', 'D:')) or (not url.startswith('http') and os.path.exists(url)):
+                        if url.startswith(("data/", "./", "/", "C:", "D:")) or (
+                            not url.startswith("http") and os.path.exists(url)
+                        ):
                             # Local file - read directly instead of downloading
-                            with open(url, 'rb') as f:
+                            with open(url, "rb") as f:
                                 image_data = f.read()
-                            content_type = 'image/png'
+                            content_type = "image/png"
                             logger.debug(f"Read local screenshot: {url}")
                         else:
                             # Download from URL
@@ -1405,9 +1425,7 @@ class ImageExtractionOrchestrator:
 
         # Detect removed URLs (were tracked before but not in current listing)
         if incremental:
-            removed_urls = self.url_tracker.detect_removed_urls(
-                property_hash, all_discovered_urls
-            )
+            removed_urls = self.url_tracker.detect_removed_urls(property_hash, all_discovered_urls)
             prop_changes.removed = len(removed_urls)
             prop_changes.removed_urls = removed_urls
 
@@ -1427,8 +1445,7 @@ class ImageExtractionOrchestrator:
             changes: PropertyChanges tracking extraction results
         """
         logger.info(
-            "Property: %s | URLs: %d discovered, %d new, %d unchanged, "
-            "%d duplicates, %d errors",
+            "Property: %s | URLs: %d discovered, %d new, %d unchanged, %d duplicates, %d errors",
             address,
             changes.urls_discovered,
             changes.new_images,

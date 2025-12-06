@@ -1,5 +1,5 @@
 ---
-last_updated: 2025-12-04T00:00:00Z
+last_updated: 2025-12-05T23:30:00Z
 updated_by: agent
 staleness_hours: 24
 line_target: 60
@@ -16,7 +16,7 @@ CLI interfaces and orchestration scripts for the PHX home analysis pipeline. Han
 | `pipeline_cli.py` | Unified Typer CLI for complete end-to-end execution (Phase 0-4) |
 | `phx_home_analyzer.py` | Kill-switch filtering + 605-point scoring |
 | `extract_county_data.py` | Maricopa Assessor API extraction (lot, year, garage, sewer, pool) |
-| `extract_images.py` | Multi-source image extraction (Zillow, Redfin) with stealth browsers |
+| `extract_images.py` | Multi-source image extraction (PhoenixMLS, Zillow, Redfin) with stealth browsers |
 | `validate_phase_prerequisites.py` | Pre-spawn validation + data reconciliation |
 | `generate_all_visualizations.py` | Master runner: golden_zone_map, value_spotter, radar_charts, etc. |
 | `generate_single_deal_sheet.py` | HTML deal sheet generation (single property) |
@@ -27,6 +27,7 @@ CLI interfaces and orchestration scripts for the PHX home analysis pipeline. Han
 - **CLI pattern**: All scripts support `--all`, `--address "..."`, `--dry-run`, `--verbose`, `--resume` / `--fresh`
 - **State tracking**: Pipeline persists progress in `data/work_items.json` for crash recovery
 - **Browser stealth**: `extract_images.py` uses nodriver + curl_cffi to bypass anti-bot (NOT Playwright)
+- **Source priority**: PhoenixMLS Search → Zillow → Redfin (fallback chain)
 
 ## Tasks
 

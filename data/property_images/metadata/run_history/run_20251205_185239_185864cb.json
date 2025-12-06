@@ -1,0 +1,42 @@
+{
+  "run_id": "185864cb",
+  "started_at": "2025-12-05T18:52:25.771394-05:00",
+  "ended_at": "2025-12-05T18:52:39.499102-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 1,
+    "total_new_images": 1,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "2011 E Gary Cir, Mesa, AZ 85213": {
+      "address": "2011 E Gary Cir, Mesa, AZ 85213",
+      "property_hash": "fc5e428e",
+      "urls_discovered": 1,
+      "new_images": 1,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 0,
+      "new_image_ids": [
+        "33c0bd84e8691d928f04ed5641991d98"
+      ],
+      "removed_urls": [],
+      "error_messages": [],
+      "listing_metadata": {
+        "extraction_method": "screenshot"
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 13.727708
+}

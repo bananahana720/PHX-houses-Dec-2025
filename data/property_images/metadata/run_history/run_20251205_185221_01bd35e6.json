@@ -1,0 +1,42 @@
+{
+  "run_id": "01bd35e6",
+  "started_at": "2025-12-05T18:52:06.142552-05:00",
+  "ended_at": "2025-12-05T18:52:21.738740-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 1,
+    "total_new_images": 1,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "5038 W Echo Ln, Glendale, AZ 85302": {
+      "address": "5038 W Echo Ln, Glendale, AZ 85302",
+      "property_hash": "dfdff3c8",
+      "urls_discovered": 1,
+      "new_images": 1,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 0,
+      "new_image_ids": [
+        "99de1bd12cf06cc22e5cdae4c25cd4ce"
+      ],
+      "removed_urls": [],
+      "error_messages": [],
+      "listing_metadata": {
+        "extraction_method": "screenshot"
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 15.596188
+}

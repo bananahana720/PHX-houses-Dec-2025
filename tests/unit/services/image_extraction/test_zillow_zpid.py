@@ -1,7 +1,8 @@
-"""Unit tests for Zillow ZPID extraction and gallery navigation.
+"""Unit tests for Zillow screenshot-only extraction.
 
-Story E2.R1: Zillow ZPID Direct Extraction
-Tests for zpid extraction, gallery navigation, screenshot fallback, and Google Images fallback.
+Story E2.R1 Wave 3: Screenshot-Only Refactoring
+Tests for zpid extraction, gallery navigation, and screenshot capture.
+All URL extraction methods removed - screenshots only.
 """
 
 import hashlib
@@ -232,16 +233,38 @@ class TestScreenshotCapture:
     @pytest.mark.asyncio
     async def test_capture_gallery_screenshots_returns_paths(self, extractor):
         """Capture screenshots while cycling gallery returns file paths."""
-        mock_tab = AsyncMock()
-        # Return different bytes for each screenshot (unique content)
-        mock_tab.screenshot = AsyncMock(side_effect=[
-            b"screenshot1_content",
-            b"screenshot2_content",
-            b"screenshot2_content",  # Duplicate - should stop
-        ])
+        import os
+        import tempfile
 
-        with patch.object(extractor, "_save_screenshot", return_value="/path/to/image.png"):
+        mock_tab = AsyncMock()
+
+        # Mock hero image click
+        mock_tab.query_selector = AsyncMock(return_value=AsyncMock())
+
+        # Create temp files with different content for deduplication testing
+        temp_files = []
+        screenshots_data = [b"screenshot1_content", b"screenshot2_content", b"screenshot2_content"]
+
+        for data in screenshots_data:
+            f = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+            f.write(data)
+            f.close()
+            temp_files.append(f.name)
+
+        mock_tab.save_screenshot = AsyncMock(side_effect=temp_files)
+
+        # Mock advance method
+        with patch.object(extractor, "_advance_carousel", new_callable=AsyncMock), \
+             patch.object(extractor, "_save_screenshot", return_value="/path/to/image.png"):
+
             paths = await extractor._capture_gallery_screenshots(mock_tab, max_images=10)
+
+        # Clean up temp files
+        for temp_file in temp_files:
+            try:
+                os.unlink(temp_file)
+            except:
+                pass
 
         # Should have 2 unique screenshots before duplicate detection
         assert len(paths) == 2
@@ -249,13 +272,37 @@ class TestScreenshotCapture:
     @pytest.mark.asyncio
     async def test_duplicate_detection_stops_capture(self, extractor):
         """Stop capturing when same frame detected twice."""
+        import os
+        import tempfile
+
         mock_tab = AsyncMock()
+
+        # Mock hero image click
+        mock_tab.query_selector = AsyncMock(return_value=AsyncMock())
+
         # Same screenshot twice in a row
         same_bytes = b"same_content"
-        mock_tab.screenshot = AsyncMock(return_value=same_bytes)
+        temp_files = []
+        for _ in range(2):
+            f = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+            f.write(same_bytes)
+            f.close()
+            temp_files.append(f.name)
 
-        with patch.object(extractor, "_save_screenshot", return_value="/path/to/image.png"):
+        mock_tab.save_screenshot = AsyncMock(side_effect=temp_files)
+
+        # Mock advance method
+        with patch.object(extractor, "_advance_carousel", new_callable=AsyncMock), \
+             patch.object(extractor, "_save_screenshot", return_value="/path/to/image.png"):
+
             paths = await extractor._capture_gallery_screenshots(mock_tab, max_images=30)
+
+        # Clean up temp files
+        for temp_file in temp_files:
+            try:
+                os.unlink(temp_file)
+            except:
+                pass
 
         # Should stop after first duplicate (only 1 unique)
         assert len(paths) == 1
@@ -263,17 +310,39 @@ class TestScreenshotCapture:
     @pytest.mark.asyncio
     async def test_screenshot_content_addressing(self, extractor):
         """Screenshots saved with content hash path."""
+        import os
+        import tempfile
+
         mock_tab = AsyncMock()
+
+        # Mock hero image click
+        mock_tab.query_selector = AsyncMock(return_value=AsyncMock())
+
         screenshot_bytes = b"test_screenshot_content"
         expected_hash = hashlib.md5(screenshot_bytes).hexdigest()
-        mock_tab.screenshot = AsyncMock(side_effect=[
-            screenshot_bytes,
-            screenshot_bytes,  # Duplicate to stop loop
-        ])
 
-        with patch.object(extractor, "_save_screenshot") as mock_save:
+        # Create temp files with same content (to trigger duplicate detection)
+        temp_files = []
+        for _ in range(2):
+            f = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+            f.write(screenshot_bytes)
+            f.close()
+            temp_files.append(f.name)
+
+        mock_tab.save_screenshot = AsyncMock(side_effect=temp_files)
+
+        # Mock advance method
+        with patch.object(extractor, "_advance_carousel", new_callable=AsyncMock), \
+             patch.object(extractor, "_save_screenshot") as mock_save:
             mock_save.return_value = f"/path/{expected_hash}.png"
             await extractor._capture_gallery_screenshots(mock_tab, max_images=10)
+
+        # Clean up temp files
+        for temp_file in temp_files:
+            try:
+                os.unlink(temp_file)
+            except:
+                pass
 
         # Verify _save_screenshot was called with content and hash
         mock_save.assert_called()
@@ -306,12 +375,12 @@ class TestScreenshotMetadata:
 
 
 # =============================================================================
-# Task 4: Google Images Fallback Tests (AC#4)
+# Task 4: Carousel Helper Tests (AC#4 - Screenshot-Only Refactoring)
 # =============================================================================
 
 
-class TestGoogleImagesFallback:
-    """Tests for Google Images fallback mechanism."""
+class TestCarouselScreenshot:
+    """Tests for _capture_carousel_screenshot helper method."""
 
     @pytest.fixture
     def extractor(self):
@@ -322,30 +391,44 @@ class TestGoogleImagesFallback:
 
         return ZillowExtractor()
 
-    @pytest.fixture
-    def sample_property(self):
-        """Create sample property for testing."""
-        return create_sample_property()
+    @pytest.mark.asyncio
+    async def test_capture_returns_bytes_on_success(self, extractor):
+        """Should return screenshot bytes when capture succeeds."""
+        import os
+        import tempfile
 
-    def test_build_google_images_query(self, extractor, sample_property):
-        """Build correct Google Images search query."""
-        query = extractor._build_google_images_query(sample_property)
-        assert "4732 W Davis Rd" in query
-        assert "site:zillow.com" in query
+        tab = AsyncMock()
 
-    def test_google_images_confidence_is_0_5(self, extractor):
-        """Google Images results should have confidence 0.5."""
-        metadata = extractor._build_google_images_metadata("http://example.com/image.jpg")
-        assert metadata.get("confidence") == 0.5
+        # Mock screenshot method returns PNG bytes via temp file
+        screenshot_bytes = b"PNG_DATA_CONTENT_HERE"
+        f = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+        f.write(screenshot_bytes)
+        f.close()
 
-    def test_google_images_source_is_correct(self, extractor):
-        """Google Images results should have correct source marker."""
-        metadata = extractor._build_google_images_metadata("http://example.com/image.jpg")
-        assert metadata.get("source") == "google_images"
+        tab.save_screenshot = AsyncMock(return_value=f.name)
+
+        result = await extractor._capture_carousel_screenshot(tab)
+
+        # Clean up temp file
+        try:
+            os.unlink(f.name)
+        except:
+            pass
+
+        assert result == screenshot_bytes
+
+    @pytest.mark.asyncio
+    async def test_capture_returns_none_on_failure(self, extractor):
+        """Should return None when screenshot fails."""
+        tab = AsyncMock()
+        tab.save_screenshot = AsyncMock(return_value=None)
+
+        result = await extractor._capture_carousel_screenshot(tab)
+        assert result is None
 
 
-class TestGoogleImagesUrlFiltering:
-    """Tests for filtering Google Images results to zillow.com sources."""
+class TestCarouselAdvance:
+    """Tests for _advance_carousel helper method."""
 
     @pytest.fixture
     def extractor(self):
@@ -356,22 +439,31 @@ class TestGoogleImagesUrlFiltering:
 
         return ZillowExtractor()
 
-    def test_filter_for_zillow_domain(self, extractor):
-        """Only keep URLs from zillow.com domain."""
-        urls = [
-            "https://photos.zillowstatic.com/image1.jpg",
-            "https://www.redfin.com/image.jpg",
-            "https://photos.zillowstatic.com/image2.jpg",
-            "https://example.com/random.jpg",
-        ]
-        filtered = extractor._filter_google_images_for_zillow(urls)
-        assert len(filtered) == 2
-        assert all("zillow" in url for url in filtered)
+    @pytest.mark.asyncio
+    async def test_advance_clicks_next_button(self, extractor):
+        """Should click next button if found and return True."""
+        tab = AsyncMock()
+        next_btn = AsyncMock()
+        tab.query_selector = AsyncMock(return_value=next_btn)
 
-    def test_filter_empty_list(self, extractor):
-        """Handle empty URL list."""
-        filtered = extractor._filter_google_images_for_zillow([])
-        assert filtered == []
+        result = await extractor._advance_carousel(tab)
+
+        next_btn.click.assert_called_once()
+        assert result is True
+
+    @pytest.mark.asyncio
+    async def test_advance_sends_arrow_key_fallback(self, extractor):
+        """Should dispatch ArrowRight event if no button found."""
+        tab = AsyncMock()
+        tab.query_selector = AsyncMock(return_value=None)
+        tab.evaluate = AsyncMock()
+
+        result = await extractor._advance_carousel(tab)
+
+        # Verify ArrowRight was dispatched via JS
+        calls = tab.evaluate.call_args_list
+        assert any("ArrowRight" in str(call) for call in calls)
+        assert result is True
 
 
 # =============================================================================
@@ -411,58 +503,6 @@ class TestExtractionMethodTracking:
             assert extractor.last_metadata["extraction_method"] == method
 
 
-class TestFallbackChainLogic:
-    """Tests for fallback chain logic: zpid-direct -> screenshot -> google."""
-
-    @pytest.fixture
-    def extractor(self):
-        """Create ZillowExtractor instance for testing."""
-        from phx_home_analysis.services.image_extraction.extractors.zillow import (
-            ZillowExtractor,
-        )
-
-        return ZillowExtractor()
-
-    @pytest.fixture
-    def sample_property(self):
-        """Create sample property for testing."""
-        return create_sample_property()
-
-    def test_gallery_url_requires_zpid(self, extractor, sample_property):
-        """_build_gallery_url returns None without zpid."""
-        sample_property.zpid = None
-        result = extractor._build_gallery_url(sample_property)
-        assert result is None
-
-    def test_gallery_url_with_zpid(self, extractor, sample_property):
-        """_build_gallery_url returns URL with zpid."""
-        sample_property.zpid = "7686459"
-        result = extractor._build_gallery_url(sample_property)
-        assert result is not None
-        assert "7686459" in result
-        assert "#image-lightbox" in result
-
-    def test_fallback_chain_order(self, extractor, sample_property):
-        """Verify fallback chain order through method existence."""
-        # Verify all fallback methods exist
-        assert hasattr(extractor, "_navigate_to_gallery_direct")
-        assert hasattr(extractor, "_capture_gallery_screenshots")
-        assert hasattr(extractor, "_google_images_fallback")
-
-        # Verify screenshot method signature
-        import inspect
-        sig = inspect.signature(extractor._capture_gallery_screenshots)
-        assert "max_images" in sig.parameters
-
-    def test_google_images_fallback_filters_zillow(self, extractor):
-        """Google Images fallback filters for Zillow sources."""
-        urls = [
-            "https://photos.zillowstatic.com/image1.jpg",
-            "https://www.redfin.com/image.jpg",
-            "https://photos.zillowstatic.com/image2.jpg",
-        ]
-        filtered = extractor._filter_google_images_for_zillow(urls)
-        assert len(filtered) == 2
 
 
 # =============================================================================
@@ -471,10 +511,10 @@ class TestFallbackChainLogic:
 
 
 class TestExtractImageUrlsIntegration:
-    """Integration tests proving new methods are called in production flow.
+    """Integration tests for screenshot-only extraction flow.
 
-    P0-4 FIX: These tests verify that the fallback chain is integrated into
-    extract_image_urls() and methods are called in the correct order.
+    Wave 3: Screenshot-Only Refactoring - These tests verify that the
+    extract_image_urls() method returns screenshot file paths, not URLs.
     """
 
     @pytest.fixture
@@ -492,10 +532,10 @@ class TestExtractImageUrlsIntegration:
         return create_sample_property()
 
     @pytest.mark.asyncio
-    async def test_extract_image_urls_uses_zpid_direct_when_zpid_present(
+    async def test_extract_returns_screenshot_paths_not_urls(
         self, extractor, sample_property
     ):
-        """Verify zpid-direct is attempted first when property has zpid."""
+        """Verify extract_image_urls returns file paths to screenshots."""
         sample_property.zpid = "12345678"
 
         # Mock browser pool and tab
@@ -505,70 +545,38 @@ class TestExtractImageUrlsIntegration:
         extractor._browser_pool = MagicMock()
         extractor._browser_pool.get_browser = AsyncMock(return_value=mock_browser)
 
-        with patch.object(
-            extractor, "_navigate_to_gallery_direct", new_callable=AsyncMock
-        ) as mock_gallery, patch.object(
-            extractor, "_extract_urls_from_page", new_callable=AsyncMock
-        ) as mock_extract, patch.object(
-            extractor, "_filter_urls_for_property"
-        ) as mock_filter:
-            mock_gallery.return_value = True
-            mock_extract.return_value = ["http://example.com/image1.jpg"]
-            mock_filter.return_value = ["http://example.com/image1.jpg"]
-
-            result = await extractor.extract_image_urls(sample_property)
-
-            # Verify zpid-direct was called
-            mock_gallery.assert_called_once()
-            assert result == ["http://example.com/image1.jpg"]
-            assert extractor.last_metadata.get("extraction_method") == "zpid-direct"
-
-    @pytest.mark.asyncio
-    async def test_fallback_chain_tries_screenshot_after_zpid_direct_fails(
-        self, extractor, sample_property
-    ):
-        """Verify screenshot fallback triggered when zpid-direct fails."""
-        sample_property.zpid = "12345678"
-
-        # Mock browser pool and tab
-        mock_browser = AsyncMock()
-        mock_tab = AsyncMock()
-        mock_browser.get = AsyncMock(return_value=mock_tab)
-        extractor._browser_pool = MagicMock()
-        extractor._browser_pool.get_browser = AsyncMock(return_value=mock_browser)
+        # Mock screenshot capture to return file paths
+        screenshot_paths = [
+            "/path/to/screenshot1.png",
+            "/path/to/screenshot2.png",
+            "/path/to/screenshot3.png",
+        ]
 
         with patch.object(
             extractor, "_navigate_to_gallery_direct", new_callable=AsyncMock
         ) as mock_gallery, patch.object(
-            extractor, "_extract_urls_from_page", new_callable=AsyncMock
-        ) as mock_extract, patch.object(
-            extractor, "_filter_urls_for_property"
-        ) as mock_filter, patch.object(
             extractor, "_is_gallery_page", new_callable=AsyncMock
         ) as mock_is_gallery, patch.object(
             extractor, "_capture_gallery_screenshots", new_callable=AsyncMock
         ) as mock_screenshot:
-            # zpid-direct returns True but no URLs extracted
             mock_gallery.return_value = True
-            mock_extract.return_value = []
-            mock_filter.return_value = []
-            mock_is_gallery.return_value = False
-            mock_screenshot.return_value = ["/path/to/screenshot1.png"]
+            mock_is_gallery.return_value = True
+            mock_screenshot.return_value = screenshot_paths
 
             result = await extractor.extract_image_urls(sample_property)
 
-            # Verify zpid-direct was tried first
-            mock_gallery.assert_called()
-            # Verify screenshot fallback was called
+            # Verify screenshot method was called
             mock_screenshot.assert_called_once()
-            assert result == ["/path/to/screenshot1.png"]
+            # Verify result is file paths, not URLs
+            assert result == screenshot_paths
+            assert all(path.endswith(".png") for path in result)
             assert extractor.last_metadata.get("extraction_method") == "screenshot"
 
     @pytest.mark.asyncio
-    async def test_fallback_chain_tries_google_after_screenshot_fails(
+    async def test_screenshot_metadata_includes_source_marker(
         self, extractor, sample_property
     ):
-        """Verify Google Images fallback triggered when screenshot fails."""
+        """Verify screenshot metadata includes screenshot: true marker."""
         sample_property.zpid = "12345678"
 
         # Mock browser pool and tab
@@ -581,149 +589,24 @@ class TestExtractImageUrlsIntegration:
         with patch.object(
             extractor, "_navigate_to_gallery_direct", new_callable=AsyncMock
         ) as mock_gallery, patch.object(
-            extractor, "_extract_urls_from_page", new_callable=AsyncMock
-        ) as mock_extract, patch.object(
-            extractor, "_filter_urls_for_property"
-        ) as mock_filter, patch.object(
             extractor, "_is_gallery_page", new_callable=AsyncMock
         ) as mock_is_gallery, patch.object(
             extractor, "_capture_gallery_screenshots", new_callable=AsyncMock
-        ) as mock_screenshot, patch.object(
-            extractor, "_google_images_fallback", new_callable=AsyncMock
-        ) as mock_google:
-            # zpid-direct and screenshot both fail
+        ) as mock_screenshot:
             mock_gallery.return_value = True
-            mock_extract.return_value = []
-            mock_filter.return_value = []
-            mock_is_gallery.return_value = False
-            mock_screenshot.return_value = []
-            mock_google.return_value = ["http://google.com/zillow_image.jpg"]
-
-            result = await extractor.extract_image_urls(sample_property)
-
-            # Verify Google Images fallback was called
-            mock_google.assert_called_once()
-            assert result == ["http://google.com/zillow_image.jpg"]
-            assert extractor.last_metadata.get("extraction_method") == "google-images"
-
-    @pytest.mark.asyncio
-    async def test_fallback_chain_uses_search_when_all_fail(
-        self, extractor, sample_property
-    ):
-        """Verify search fallback used when all other methods fail."""
-        sample_property.zpid = "12345678"
-
-        # Mock browser pool and tab
-        mock_browser = AsyncMock()
-        mock_tab = AsyncMock()
-        mock_browser.get = AsyncMock(return_value=mock_tab)
-        extractor._browser_pool = MagicMock()
-        extractor._browser_pool.get_browser = AsyncMock(return_value=mock_browser)
-
-        with patch.object(
-            extractor, "_navigate_to_gallery_direct", new_callable=AsyncMock
-        ) as mock_gallery, patch.object(
-            extractor, "_extract_urls_from_page", new_callable=AsyncMock
-        ) as mock_extract, patch.object(
-            extractor, "_filter_urls_for_property"
-        ) as mock_filter, patch.object(
-            extractor, "_is_gallery_page", new_callable=AsyncMock
-        ) as mock_is_gallery, patch.object(
-            extractor, "_capture_gallery_screenshots", new_callable=AsyncMock
-        ) as mock_screenshot, patch.object(
-            extractor, "_google_images_fallback", new_callable=AsyncMock
-        ) as mock_google, patch.object(
-            extractor, "_navigate_to_property_via_search", new_callable=AsyncMock
-        ) as mock_search, patch.object(
-            extractor, "_is_property_detail_page", new_callable=AsyncMock
-        ) as mock_detail, patch.object(
-            extractor, "_check_for_captcha", new_callable=AsyncMock
-        ) as mock_captcha, patch.object(
-            extractor, "_human_delay", new_callable=AsyncMock
-        ), patch.object(
-            extractor, "_extract_zpid_from_url", new_callable=AsyncMock
-        ) as mock_zpid_url, patch.object(
-            extractor, "extract_listing_metadata", new_callable=AsyncMock
-        ) as mock_metadata:
-            # All fallbacks fail
-            mock_gallery.return_value = True
-            mock_is_gallery.return_value = False
-            mock_screenshot.return_value = []
-            mock_google.return_value = []
-
-            # First call for zpid-direct extraction returns empty
-            # Search path succeeds
-            mock_search.return_value = True
-            mock_detail.return_value = True
-            mock_captcha.return_value = False
-            mock_zpid_url.return_value = "12345678"
-            mock_metadata.return_value = {}
-
-            # Configure extract/filter for different call contexts
-            # First calls (zpid-direct): return empty
-            # Last call (search): return URLs
-            call_count = [0]
-
-            def filter_side_effect(urls, zpid):
-                call_count[0] += 1
-                if call_count[0] <= 1:  # First call from zpid-direct
-                    return []
-                return urls  # Search call returns what was passed
-
-            mock_extract.side_effect = [
-                [],  # zpid-direct
-                ["http://example.com/search_image.jpg"],  # search
-            ]
-            mock_filter.side_effect = filter_side_effect
-
-            result = await extractor.extract_image_urls(sample_property)
-
-            # Verify search fallback was called
-            mock_search.assert_called_once()
-            assert "http://example.com/search_image.jpg" in result
-            assert extractor.last_metadata.get("extraction_method") == "search"
-
-    @pytest.mark.asyncio
-    async def test_extraction_method_tracked_correctly(self, extractor, sample_property):
-        """Verify extraction_method metadata is set based on successful path."""
-        sample_property.zpid = "12345678"
-
-        # Mock browser pool and tab
-        mock_browser = AsyncMock()
-        mock_tab = AsyncMock()
-        mock_browser.get = AsyncMock(return_value=mock_tab)
-        extractor._browser_pool = MagicMock()
-        extractor._browser_pool.get_browser = AsyncMock(return_value=mock_browser)
-
-        with patch.object(
-            extractor, "_navigate_to_gallery_direct", new_callable=AsyncMock
-        ) as mock_gallery, patch.object(
-            extractor, "_extract_urls_from_page", new_callable=AsyncMock
-        ) as mock_extract, patch.object(
-            extractor, "_filter_urls_for_property"
-        ) as mock_filter:
-            mock_gallery.return_value = True
-            mock_extract.return_value = ["http://example.com/img.jpg"]
-            mock_filter.return_value = ["http://example.com/img.jpg"]
+            mock_is_gallery.return_value = True
+            mock_screenshot.return_value = ["/path/to/screenshot1.png"]
 
             await extractor.extract_image_urls(sample_property)
 
-            assert extractor.last_metadata.get("extraction_method") == "zpid-direct"
+            # Verify extraction method is set to screenshot
+            assert extractor.last_metadata.get("extraction_method") == "screenshot"
 
     def test_set_extraction_method_helper(self, extractor):
         """Verify _set_extraction_method helper sets metadata correctly."""
         extractor.last_metadata = {}
-        extractor._set_extraction_method("zpid-direct")
-        assert extractor.last_metadata.get("extraction_method") == "zpid-direct"
-
         extractor._set_extraction_method("screenshot")
         assert extractor.last_metadata.get("extraction_method") == "screenshot"
-
-        extractor._set_extraction_method("google-images")
-        assert extractor.last_metadata.get("extraction_method") == "google-images"
-
-        extractor._set_extraction_method("search")
-        assert extractor.last_metadata.get("extraction_method") == "search"
 
     def test_set_extraction_method_none_does_not_set(self, extractor):
         """Verify _set_extraction_method with None does not modify metadata."""

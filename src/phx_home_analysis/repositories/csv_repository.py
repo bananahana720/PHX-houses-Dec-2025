@@ -37,7 +37,7 @@ class CsvPropertyRepository(PropertyRepository):
                 raise DataLoadError(f"CSV file not found: {self.csv_file_path}")
 
             properties = []
-            with open(self.csv_file_path, encoding='utf-8') as f:
+            with open(self.csv_file_path, encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
                     property_obj = self._row_to_property(row)
@@ -85,7 +85,7 @@ class CsvPropertyRepository(PropertyRepository):
             # Ensure parent directory exists
             self.ranked_csv_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(self.ranked_csv_path, 'w', encoding='utf-8', newline='') as f:
+            with open(self.ranked_csv_path, "w", encoding="utf-8", newline="") as f:
                 if not properties:
                     return
 
@@ -125,64 +125,89 @@ class CsvPropertyRepository(PropertyRepository):
         """
         return Property(
             # Address fields
-            street=row['street'].strip(),
-            city=row['city'].strip(),
-            state=row['state'].strip(),
-            zip_code=row.get('zip', row.get('zip_code', '')).strip(),
-            full_address=row['full_address'].strip(),
-
+            street=row["street"].strip(),
+            city=row["city"].strip(),
+            state=row["state"].strip(),
+            zip_code=row.get("zip", row.get("zip_code", "")).strip(),
+            full_address=row["full_address"].strip(),
             # Basic listing data (required fields with fallback to 0)
-            price=row['price'].strip(),
-            price_num=self._parse_int(row.get('price_num')),  # Can be None if unparseable
-            beds=self._parse_int(row.get('beds')) or 0,
-            baths=self._parse_float(row.get('baths')) or 0.0,
-            sqft=self._parse_int(row.get('sqft')) or 0,
-            price_per_sqft_raw=self._parse_float(row.get('price_per_sqft')) or 0.0,
-
+            price=row["price"].strip(),
+            price_num=self._parse_int(row.get("price_num")),  # Can be None if unparseable
+            beds=self._parse_int(row.get("beds")) or 0,
+            baths=self._parse_float(row.get("baths")) or 0.0,
+            sqft=self._parse_int(row.get("sqft")) or 0,
+            price_per_sqft_raw=self._parse_float(row.get("price_per_sqft")) or 0.0,
             # County assessor data (may be in ranked CSV)
-            lot_sqft=self._parse_int(row.get('lot_sqft')),
-            year_built=self._parse_int(row.get('year_built')),
-            garage_spaces=self._parse_int(row.get('garage_spaces')),
-            sewer_type=self._parse_enum(row.get('sewer_type'), SewerType),
-            tax_annual=self._parse_int(row.get('tax_annual')),
-
+            lot_sqft=self._parse_int(row.get("lot_sqft")),
+            year_built=self._parse_int(row.get("year_built")),
+            garage_spaces=self._parse_int(row.get("garage_spaces")),
+            sewer_type=self._parse_enum(row.get("sewer_type"), SewerType),
+            tax_annual=self._parse_float(row.get("tax_annual")),
             # HOA and location data
-            hoa_fee=self._parse_int(row.get('hoa_fee')),
-            commute_minutes=self._parse_int(row.get('commute_minutes')),
-            school_district=row.get('school_district', '').strip() or None,
-            school_rating=self._parse_float(row.get('school_rating')),
-            orientation=self._parse_enum(row.get('orientation'), Orientation),
-            distance_to_grocery_miles=self._parse_float(row.get('distance_to_grocery_miles')),
-            distance_to_highway_miles=self._parse_float(row.get('distance_to_highway_miles')),
-
+            hoa_fee=self._parse_int(row.get("hoa_fee")),
+            commute_minutes=self._parse_int(row.get("commute_minutes")),
+            school_district=row.get("school_district", "").strip() or None,
+            school_rating=self._parse_float(row.get("school_rating")),
+            orientation=self._parse_enum(row.get("orientation"), Orientation),
+            distance_to_grocery_miles=self._parse_float(row.get("distance_to_grocery_miles")),
+            distance_to_highway_miles=self._parse_float(row.get("distance_to_highway_miles")),
             # Arizona-specific features
-            solar_status=self._parse_enum(row.get('solar_status'), SolarStatus),
-            solar_lease_monthly=self._parse_int(row.get('solar_lease_monthly')),
-            has_pool=self._parse_bool(row.get('has_pool')),
-            pool_equipment_age=self._parse_int(row.get('pool_equipment_age')),
-            roof_age=self._parse_int(row.get('roof_age')),
-            hvac_age=self._parse_int(row.get('hvac_age')),
-
+            solar_status=self._parse_enum(row.get("solar_status"), SolarStatus),
+            solar_lease_monthly=self._parse_int(row.get("solar_lease_monthly")),
+            has_pool=self._parse_bool(row.get("has_pool")),
+            pool_equipment_age=self._parse_int(row.get("pool_equipment_age")),
+            roof_age=self._parse_int(row.get("roof_age")),
+            hvac_age=self._parse_int(row.get("hvac_age")),
             # Analysis results (populated by pipeline, may not be in input CSV)
-            kill_switch_passed=self._parse_bool(row.get('kill_switch_passed')) or False,
-            kill_switch_failures=self._parse_list(row.get('kill_switch_failures')),
-            tier=self._parse_enum(row.get('tier'), Tier),
-
+            kill_switch_passed=self._parse_bool(row.get("kill_switch_passed")) or False,
+            kill_switch_failures=self._parse_list(row.get("kill_switch_failures")),
+            tier=self._parse_enum(row.get("tier"), Tier),
             # Geocoding
-            latitude=self._parse_float(row.get('latitude')),
-            longitude=self._parse_float(row.get('longitude')),
-
+            latitude=self._parse_float(row.get("latitude")),
+            longitude=self._parse_float(row.get("longitude")),
+            # Zillow identifiers (E2.R1)
+            zpid=row.get("zpid", "").strip() or None,
+            # MLS Identifiers (PhoenixMLS - E2.R1)
+            mls_number=row.get("mls_number", "").strip() or None,
+            listing_url=row.get("listing_url", "").strip() or None,
+            listing_status=row.get("listing_status", "").strip() or None,
+            listing_office=row.get("listing_office", "").strip() or None,
+            mls_last_updated=row.get("mls_last_updated", "").strip() or None,
+            # Property Classification
+            property_type=row.get("property_type", "").strip() or None,
+            architecture_style=row.get("architecture_style", "").strip() or None,
+            # Systems & Utilities
+            cooling_type=row.get("cooling_type", "").strip() or None,
+            heating_type=row.get("heating_type", "").strip() or None,
+            water_source=row.get("water_source", "").strip() or None,
+            roof_material=row.get("roof_material", "").strip() or None,
+            # Interior Features
+            kitchen_features=self._parse_list(row.get("kitchen_features")),
+            master_bath_features=self._parse_list(row.get("master_bath_features")),
+            laundry_features=self._parse_list(row.get("laundry_features")),
+            interior_features_list=self._parse_list(row.get("interior_features_list")),
+            flooring_types=self._parse_list(row.get("flooring_types")),
+            # Exterior Features
+            exterior_features_list=self._parse_list(row.get("exterior_features_list")),
+            patio_features=self._parse_list(row.get("patio_features")),
+            lot_features=self._parse_list(row.get("lot_features")),
+            # Schools
+            elementary_school_name=row.get("elementary_school_name", "").strip() or None,
+            middle_school_name=row.get("middle_school_name", "").strip() or None,
+            high_school_name=row.get("high_school_name", "").strip() or None,
+            # Location
+            cross_streets=row.get("cross_streets", "").strip() or None,
             # Manual assessment scores (may be in ranked CSV)
-            kitchen_layout_score=self._parse_float(row.get('kitchen_layout_score')),
-            master_suite_score=self._parse_float(row.get('master_suite_score')),
-            natural_light_score=self._parse_float(row.get('natural_light_score')),
-            high_ceilings_score=self._parse_float(row.get('high_ceilings_score')),
-            fireplace_present=self._parse_bool(row.get('fireplace_present')),
-            laundry_area_score=self._parse_float(row.get('laundry_area_score')),
-            aesthetics_score=self._parse_float(row.get('aesthetics_score')),
-            backyard_utility_score=self._parse_float(row.get('backyard_utility_score')),
-            safety_neighborhood_score=self._parse_float(row.get('safety_neighborhood_score')),
-            parks_walkability_score=self._parse_float(row.get('parks_walkability_score')),
+            kitchen_layout_score=self._parse_float(row.get("kitchen_layout_score")),
+            master_suite_score=self._parse_float(row.get("master_suite_score")),
+            natural_light_score=self._parse_float(row.get("natural_light_score")),
+            high_ceilings_score=self._parse_float(row.get("high_ceilings_score")),
+            fireplace_present=self._parse_bool(row.get("fireplace_present")),
+            laundry_area_score=self._parse_float(row.get("laundry_area_score")),
+            aesthetics_score=self._parse_float(row.get("aesthetics_score")),
+            backyard_utility_score=self._parse_float(row.get("backyard_utility_score")),
+            safety_neighborhood_score=self._parse_float(row.get("safety_neighborhood_score")),
+            parks_walkability_score=self._parse_float(row.get("parks_walkability_score")),
         )
 
     def _property_to_row(self, property_obj: Property) -> dict[str, Any]:
@@ -205,68 +230,157 @@ class CsvPropertyRepository(PropertyRepository):
 
         return {
             # Address fields
-            'street': property_obj.street,
-            'city': property_obj.city,
-            'state': property_obj.state,
-            'zip': property_obj.zip_code,
-            'full_address': property_obj.full_address,
-
+            "street": property_obj.street,
+            "city": property_obj.city,
+            "state": property_obj.state,
+            "zip": property_obj.zip_code,
+            "full_address": property_obj.full_address,
             # Basic listing data
-            'price': property_obj.price,
-            'price_num': property_obj.price_num,
-            'beds': property_obj.beds,
-            'baths': property_obj.baths,
-            'sqft': property_obj.sqft,
-            'price_per_sqft': f"{property_obj.price_per_sqft:.2f}" if property_obj.price_per_sqft else '',
-
+            "price": property_obj.price,
+            "price_num": property_obj.price_num,
+            "beds": property_obj.beds,
+            "baths": property_obj.baths,
+            "sqft": property_obj.sqft,
+            "price_per_sqft": f"{property_obj.price_per_sqft:.2f}"
+            if property_obj.price_per_sqft
+            else "",
             # County assessor data
-            'lot_sqft': property_obj.lot_sqft or '',
-            'year_built': property_obj.year_built or '',
-            'garage_spaces': property_obj.garage_spaces or '',
-            'sewer_type': property_obj.sewer_type.value if property_obj.sewer_type else '',
-            'tax_annual': property_obj.tax_annual or '',
-
+            "lot_sqft": property_obj.lot_sqft or "",
+            "year_built": property_obj.year_built or "",
+            "garage_spaces": property_obj.garage_spaces or "",
+            "sewer_type": property_obj.sewer_type.value if property_obj.sewer_type else "",
+            "tax_annual": property_obj.tax_annual or "",
             # HOA and location data
-            'hoa_fee': property_obj.hoa_fee if property_obj.hoa_fee is not None else '',
-            'commute_minutes': property_obj.commute_minutes or '',
-            'school_district': property_obj.school_district or '',
-            'school_rating': f"{property_obj.school_rating:.1f}" if property_obj.school_rating else '',
-            'orientation': property_obj.orientation.value if property_obj.orientation else '',
-            'distance_to_grocery_miles': f"{property_obj.distance_to_grocery_miles:.1f}" if property_obj.distance_to_grocery_miles else '',
-            'distance_to_highway_miles': f"{property_obj.distance_to_highway_miles:.1f}" if property_obj.distance_to_highway_miles else '',
-
+            "hoa_fee": property_obj.hoa_fee if property_obj.hoa_fee is not None else "",
+            "commute_minutes": property_obj.commute_minutes or "",
+            "school_district": property_obj.school_district or "",
+            "school_rating": f"{property_obj.school_rating:.1f}"
+            if property_obj.school_rating
+            else "",
+            "orientation": property_obj.orientation.value if property_obj.orientation else "",
+            "distance_to_grocery_miles": f"{property_obj.distance_to_grocery_miles:.1f}"
+            if property_obj.distance_to_grocery_miles
+            else "",
+            "distance_to_highway_miles": f"{property_obj.distance_to_highway_miles:.1f}"
+            if property_obj.distance_to_highway_miles
+            else "",
             # Arizona-specific features
-            'solar_status': property_obj.solar_status.value if property_obj.solar_status else '',
-            'solar_lease_monthly': property_obj.solar_lease_monthly or '',
-            'has_pool': str(property_obj.has_pool).lower() if property_obj.has_pool is not None else '',
-            'pool_equipment_age': property_obj.pool_equipment_age or '',
-            'roof_age': property_obj.roof_age or '',
-            'hvac_age': property_obj.hvac_age or '',
-
+            "solar_status": property_obj.solar_status.value if property_obj.solar_status else "",
+            "solar_lease_monthly": property_obj.solar_lease_monthly or "",
+            "has_pool": str(property_obj.has_pool).lower()
+            if property_obj.has_pool is not None
+            else "",
+            "pool_equipment_age": property_obj.pool_equipment_age or "",
+            "roof_age": property_obj.roof_age or "",
+            "hvac_age": property_obj.hvac_age or "",
             # Analysis results
-            'score_location': f"{score_location:.1f}" if score_location else '',
-            'score_lot_systems': f"{score_lot_systems:.1f}" if score_lot_systems else '',
-            'score_interior': f"{score_interior:.1f}" if score_interior else '',
-            'total_score': int(property_obj.total_score) if property_obj.total_score else '',
-            'tier': property_obj.tier.value if property_obj.tier else '',
-            'kill_switch_passed': str(property_obj.kill_switch_passed).lower() if property_obj.kill_switch_passed is not None else '',
-            'kill_switch_failures': ';'.join(property_obj.kill_switch_failures) if property_obj.kill_switch_failures else '',
-
+            "score_location": f"{score_location:.1f}" if score_location else "",
+            "score_lot_systems": f"{score_lot_systems:.1f}" if score_lot_systems else "",
+            "score_interior": f"{score_interior:.1f}" if score_interior else "",
+            "total_score": int(property_obj.total_score) if property_obj.total_score else "",
+            "tier": property_obj.tier.value if property_obj.tier else "",
+            "kill_switch_passed": str(property_obj.kill_switch_passed).lower()
+            if property_obj.kill_switch_passed is not None
+            else "",
+            "kill_switch_failures": ";".join(property_obj.kill_switch_failures)
+            if property_obj.kill_switch_failures
+            else "",
             # Geocoding
-            'latitude': f"{property_obj.latitude:.6f}" if property_obj.latitude else '',
-            'longitude': f"{property_obj.longitude:.6f}" if property_obj.longitude else '',
-
+            "latitude": f"{property_obj.latitude:.6f}" if property_obj.latitude else "",
+            "longitude": f"{property_obj.longitude:.6f}" if property_obj.longitude else "",
+            # Zillow identifiers (E2.R1)
+            "zpid": property_obj.zpid or "",
+            # MLS Identifiers (PhoenixMLS - E2.R1)
+            "mls_number": property_obj.mls_number or "",
+            "listing_url": property_obj.listing_url or "",
+            "listing_status": property_obj.listing_status or "",
+            "listing_office": property_obj.listing_office or "",
+            "mls_last_updated": property_obj.mls_last_updated or "",
+            # Property Classification
+            "property_type": property_obj.property_type or "",
+            "architecture_style": property_obj.architecture_style or "",
+            # Systems & Utilities
+            "cooling_type": property_obj.cooling_type or "",
+            "heating_type": property_obj.heating_type or "",
+            "water_source": property_obj.water_source or "",
+            "roof_material": property_obj.roof_material or "",
+            # Interior Features (serialize lists with CSV injection protection)
+            "kitchen_features": ";".join(
+                self._escape_csv_value(f) for f in property_obj.kitchen_features
+            )
+            if property_obj.kitchen_features
+            else "",
+            "master_bath_features": ";".join(
+                self._escape_csv_value(f) for f in property_obj.master_bath_features
+            )
+            if property_obj.master_bath_features
+            else "",
+            "laundry_features": ";".join(
+                self._escape_csv_value(f) for f in property_obj.laundry_features
+            )
+            if property_obj.laundry_features
+            else "",
+            "interior_features_list": ";".join(
+                self._escape_csv_value(f) for f in property_obj.interior_features_list
+            )
+            if property_obj.interior_features_list
+            else "",
+            "flooring_types": ";".join(
+                self._escape_csv_value(f) for f in property_obj.flooring_types
+            )
+            if property_obj.flooring_types
+            else "",
+            # Exterior Features (serialize lists with CSV injection protection)
+            "exterior_features_list": ";".join(
+                self._escape_csv_value(f) for f in property_obj.exterior_features_list
+            )
+            if property_obj.exterior_features_list
+            else "",
+            "patio_features": ";".join(
+                self._escape_csv_value(f) for f in property_obj.patio_features
+            )
+            if property_obj.patio_features
+            else "",
+            "lot_features": ";".join(self._escape_csv_value(f) for f in property_obj.lot_features)
+            if property_obj.lot_features
+            else "",
+            # Schools
+            "elementary_school_name": property_obj.elementary_school_name or "",
+            "middle_school_name": property_obj.middle_school_name or "",
+            "high_school_name": property_obj.high_school_name or "",
+            # Location
+            "cross_streets": property_obj.cross_streets or "",
             # Manual assessment scores
-            'kitchen_layout_score': f"{property_obj.kitchen_layout_score:.1f}" if property_obj.kitchen_layout_score else '',
-            'master_suite_score': f"{property_obj.master_suite_score:.1f}" if property_obj.master_suite_score else '',
-            'natural_light_score': f"{property_obj.natural_light_score:.1f}" if property_obj.natural_light_score else '',
-            'high_ceilings_score': f"{property_obj.high_ceilings_score:.1f}" if property_obj.high_ceilings_score else '',
-            'fireplace_present': str(property_obj.fireplace_present).lower() if property_obj.fireplace_present is not None else '',
-            'laundry_area_score': f"{property_obj.laundry_area_score:.1f}" if property_obj.laundry_area_score else '',
-            'aesthetics_score': f"{property_obj.aesthetics_score:.1f}" if property_obj.aesthetics_score else '',
-            'backyard_utility_score': f"{property_obj.backyard_utility_score:.1f}" if property_obj.backyard_utility_score else '',
-            'safety_neighborhood_score': f"{property_obj.safety_neighborhood_score:.1f}" if property_obj.safety_neighborhood_score else '',
-            'parks_walkability_score': f"{property_obj.parks_walkability_score:.1f}" if property_obj.parks_walkability_score else '',
+            "kitchen_layout_score": f"{property_obj.kitchen_layout_score:.1f}"
+            if property_obj.kitchen_layout_score
+            else "",
+            "master_suite_score": f"{property_obj.master_suite_score:.1f}"
+            if property_obj.master_suite_score
+            else "",
+            "natural_light_score": f"{property_obj.natural_light_score:.1f}"
+            if property_obj.natural_light_score
+            else "",
+            "high_ceilings_score": f"{property_obj.high_ceilings_score:.1f}"
+            if property_obj.high_ceilings_score
+            else "",
+            "fireplace_present": str(property_obj.fireplace_present).lower()
+            if property_obj.fireplace_present is not None
+            else "",
+            "laundry_area_score": f"{property_obj.laundry_area_score:.1f}"
+            if property_obj.laundry_area_score
+            else "",
+            "aesthetics_score": f"{property_obj.aesthetics_score:.1f}"
+            if property_obj.aesthetics_score
+            else "",
+            "backyard_utility_score": f"{property_obj.backyard_utility_score:.1f}"
+            if property_obj.backyard_utility_score
+            else "",
+            "safety_neighborhood_score": f"{property_obj.safety_neighborhood_score:.1f}"
+            if property_obj.safety_neighborhood_score
+            else "",
+            "parks_walkability_score": f"{property_obj.parks_walkability_score:.1f}"
+            if property_obj.parks_walkability_score
+            else "",
         }
 
     def _get_output_fieldnames(self) -> list[str]:
@@ -277,27 +391,93 @@ class CsvPropertyRepository(PropertyRepository):
         """
         return [
             # Address
-            'street', 'city', 'state', 'zip', 'full_address',
+            "street",
+            "city",
+            "state",
+            "zip",
+            "full_address",
             # Listing data
-            'price', 'price_num', 'beds', 'baths', 'sqft', 'price_per_sqft',
+            "price",
+            "price_num",
+            "beds",
+            "baths",
+            "sqft",
+            "price_per_sqft",
             # County data
-            'lot_sqft', 'year_built', 'garage_spaces', 'sewer_type', 'tax_annual',
+            "lot_sqft",
+            "year_built",
+            "garage_spaces",
+            "sewer_type",
+            "tax_annual",
             # Location
-            'hoa_fee', 'commute_minutes', 'school_district', 'school_rating',
-            'orientation', 'distance_to_grocery_miles', 'distance_to_highway_miles',
+            "hoa_fee",
+            "commute_minutes",
+            "school_district",
+            "school_rating",
+            "orientation",
+            "distance_to_grocery_miles",
+            "distance_to_highway_miles",
             # Features
-            'solar_status', 'solar_lease_monthly', 'has_pool',
-            'pool_equipment_age', 'roof_age', 'hvac_age',
+            "solar_status",
+            "solar_lease_monthly",
+            "has_pool",
+            "pool_equipment_age",
+            "roof_age",
+            "hvac_age",
             # Manual assessment scores
-            'kitchen_layout_score', 'master_suite_score', 'natural_light_score',
-            'high_ceilings_score', 'fireplace_present', 'laundry_area_score',
-            'aesthetics_score', 'backyard_utility_score', 'safety_neighborhood_score',
-            'parks_walkability_score',
+            "kitchen_layout_score",
+            "master_suite_score",
+            "natural_light_score",
+            "high_ceilings_score",
+            "fireplace_present",
+            "laundry_area_score",
+            "aesthetics_score",
+            "backyard_utility_score",
+            "safety_neighborhood_score",
+            "parks_walkability_score",
             # Analysis results
-            'score_location', 'score_lot_systems', 'score_interior',
-            'total_score', 'tier', 'kill_switch_passed', 'kill_switch_failures',
+            "score_location",
+            "score_lot_systems",
+            "score_interior",
+            "total_score",
+            "tier",
+            "kill_switch_passed",
+            "kill_switch_failures",
             # Geocoding
-            'latitude', 'longitude',
+            "latitude",
+            "longitude",
+            # Zillow identifiers (E2.R1)
+            "zpid",
+            # MLS Identifiers (PhoenixMLS - E2.R1)
+            "mls_number",
+            "listing_url",
+            "listing_status",
+            "listing_office",
+            "mls_last_updated",
+            # Property Classification
+            "property_type",
+            "architecture_style",
+            # Systems & Utilities
+            "cooling_type",
+            "heating_type",
+            "water_source",
+            "roof_material",
+            # Interior Features
+            "kitchen_features",
+            "master_bath_features",
+            "laundry_features",
+            "interior_features_list",
+            "flooring_types",
+            # Exterior Features
+            "exterior_features_list",
+            "patio_features",
+            "lot_features",
+            # Schools
+            "elementary_school_name",
+            "middle_school_name",
+            "high_school_name",
+            # Location
+            "cross_streets",
         ]
 
     @staticmethod
@@ -347,14 +527,14 @@ class CsvPropertyRepository(PropertyRepository):
         if not value or not value.strip():
             return None
         value_lower = value.strip().lower()
-        if value_lower in ('true', '1', 'yes'):
+        if value_lower in ("true", "1", "yes"):
             return True
-        elif value_lower in ('false', '0', 'no'):
+        elif value_lower in ("false", "0", "no"):
             return False
         return None
 
     @staticmethod
-    def _parse_list(value: str | None, delimiter: str = ';') -> list[str]:
+    def _parse_list(value: str | None, delimiter: str = ";") -> list[str]:
         """Parse list from delimited CSV string.
 
         Args:
@@ -366,7 +546,15 @@ class CsvPropertyRepository(PropertyRepository):
         """
         if not value or not value.strip():
             return []
-        return [item.strip() for item in value.split(delimiter) if item.strip()]
+        try:
+            items = [item.strip() for item in value.split(delimiter) if item.strip()]
+            return items
+        except Exception as e:
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Failed to parse list value '{value}': {e}")
+            return []
 
     @staticmethod
     def _parse_enum(value: str | None, enum_class: type[Any]) -> Any | None:
@@ -390,3 +578,17 @@ class CsvPropertyRepository(PropertyRepository):
             return None
         except (ValueError, AttributeError):
             return None
+
+    @staticmethod
+    def _escape_csv_value(value: str) -> str:
+        """Escape potential CSV formula injection characters.
+
+        Args:
+            value: String value to escape.
+
+        Returns:
+            Escaped string.
+        """
+        if value and value[0] in ("=", "+", "-", "@", "\t", "\r"):
+            return "'" + value
+        return value

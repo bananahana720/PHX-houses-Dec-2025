@@ -1,0 +1,273 @@
+================================================================================
+PHOENIX MLS SEARCH - QUICK REFERENCE CARD
+================================================================================
+
+TEST DATE: 2025-12-06
+TEST ADDRESS: 5219 W El Caminito Dr, Glendale, AZ 85302
+TEST MLS#: 6937912
+
+================================================================================
+EXTRACTION WORKFLOW
+================================================================================
+
+STEP 1: Navigate to https://phoenixmlssearch.com/simple-search/
+STEP 2: Find input with placeholder "Enter an Address, City, Zip or MLS#"
+STEP 3: Type address slowly (50-150ms per character)
+STEP 4: Wait 2-3 seconds for tree dropdown to appear
+STEP 5: Parse div[role='treeitem'] elements
+STEP 6: Extract 7-digit MLS# using regex: /\/\s*(\d{7})\s*\(MLS #\)/
+STEP 7: Click first treeitem to add to selected list
+STEP 8: Click Search button
+STEP 9: Wait 2-3 seconds for navigation to search results
+STEP 10: Click address link on first result
+STEP 11: Wait 2-3 seconds for detail page load
+STEP 12: Extract images via img[src*='sparkplatform']
+
+TOTAL TIME: 10-15 seconds per property
+
+================================================================================
+AUTOCOMPLETE STRUCTURE
+================================================================================
+
+DOM STRUCTURE:
+  combobox [expanded]
+    ├── list (selected items)
+    │   └── listitem
+    │       └── textbox (input field)
+    └── tree (results dropdown)
+        └── treeitem "ADDRESS / MLS# (MLS #)"
+
+RESULT TEXT FORMAT:
+  "5219 W EL CAMINITO Drive, Glendale, AZ 85302 / 6937912 (MLS #)"
+
+MLS# EXTRACTION REGEX:
+  /\/\s*(\d{7})\s*\(MLS #\)/
+  Captures: "6937912"
+
+INTERACTION:
+  1. Click input to activate
+  2. Type address character-by-character
+  3. Results appear after 2-3 seconds
+  4. Click treeitem (adds to selected list)
+  5. Click Search button (navigates)
+  NOTE: Clicking dropdown item does NOT navigate automatically
+
+================================================================================
+URL PATTERNS
+================================================================================
+
+SIMPLE SEARCH:
+  https://phoenixmlssearch.com/simple-search/
+
+SEARCH RESULTS:
+  https://phoenixmlssearch.com/mls/search/
+    ?OrderBy=-ListPrice
+    &StandardStatus[]=Active
+    &SavedSearch=20171227170325032090000000
+    &Limit=10
+    &ListingId={MLS_NUMBER}
+
+LISTING DETAIL:
+  https://phoenixmlssearch.com/mls/{NORMALIZED_ADDRESS}-mls_{MLS}/
+    ?{QUERY_PARAMS}
+
+ADDRESS NORMALIZATION:
+  Input:  5219 W El Caminito Drive, Glendale, AZ 85302
+  Output: 5219-W-EL-CAMINITO-Drive-Glendale-AZ-85302
+  Rules:  spaces→hyphens, UPPERCASE, keep direction (W/E/N/S)
+
+================================================================================
+IMAGE EXTRACTION
+================================================================================
+
+IMAGE URLs (SparkPlatform CDN):
+  Full-size:  https://cdn.photos.sparkplatform.com/az/{ID}-o.jpg
+  Thumbnail: https://cdn.photos.sparkplatform.com/az/{ID}-t.jpg
+  Resized:   https://cdn.resize.sparkplatform.com/az/640x480/true/{ID}-o.jpg
+
+IDENTIFIER FORMAT:
+  {YYYYMMDD}{HHMMSS}{SEQUENCE_ID}
+  Example: 20251023213131892099000000
+
+EXTRACTION METHOD:
+  1. Query all img[src*="sparkplatform"] on detail page
+  2. Get src attribute
+  3. Replace "-t.jpg" with "-o.jpg" to get full-size
+  4. Store full-size URL in image manifest
+
+TEST RESULTS:
+  Property: 5219 W EL CAMINITO Drive, Glendale, AZ 85302
+  Total Images: 43
+  Sample URLs:
+    - https://cdn.photos.sparkplatform.com/az/20251023213131892099000000-o.jpg
+    - https://cdn.photos.sparkplatform.com/az/20251023213124324538000000-o.jpg
+    - https://cdn.photos.sparkplatform.com/az/20251023213417773188000000-o.jpg
+
+================================================================================
+PROPERTY DATA EXTRACTION
+================================================================================
+
+AVAILABLE FIELDS:
+  ✓ Address          ✓ Price           ✓ Beds            ✓ Baths
+  ✓ Year Built       ✓ Sqft            ✓ Lot Size         ✓ Pool Status
+  ✓ Garage Spaces    ✓ Fireplace       ✓ Sewer Type       ✓ Water Source
+  ✓ HOA Fee          ✓ Cooling Type    ✓ Heating Type     ✓ Roof Type
+  ✓ Construction     ✓ Subdivision     ✓ County           ✓ Assessor #
+  ✓ Description      ✓ Features List   ✓ Listing Date     ✓ Status
+
+DATA SOURCES:
+  - Page heading (address, price, beds, baths, MLS#)
+  - Contract Information section
+  - Location Tax Legal section
+  - General Property Description section
+  - Property Features section
+
+TEST PROPERTY DATA:
+  Address: 5219 W EL CAMINITO Drive, Glendale, AZ 85302
+  MLS#: 6937912
+  Price: $520,000
+  Beds: 5
+  Baths: 2
+  Year Built: 1977
+  Sqft: 2239
+  Lot Sqft: 8851
+  Pool: Yes (Private, Diving)
+  Fireplace: Yes (1)
+  Garage: 2 spaces
+  Sewer: Public
+  Water: City
+  HOA: No Fees
+  Cooling: Central Air + Evaporative
+  Heating: Electric
+
+================================================================================
+ANTI-BOT PROTECTION
+================================================================================
+
+Detection Status:
+  PerimeterX:  NOT DETECTED
+  Cloudflare:  NOT DETECTED
+  Rate Limit:  NOT DETECTED
+  CAPTCHA:     NOT OBSERVED
+  Session Timeout: NOT OBSERVED (tested 30+ minutes)
+
+Browser Compatibility:
+  ✓ Standard Playwright works
+  ✓ No stealth driver needed
+  ✓ JavaScript rendering required (combobox/tree interactive)
+  ✓ Add human-like delays for robustness (50-150ms)
+
+Rate Limiting:
+  - No blocking observed after 50+ requests
+  - Recommended: 1-2 second delay between properties
+  - Safe batch size: 100+ properties per session
+
+================================================================================
+CSS SELECTORS
+================================================================================
+
+Search Input:          input[placeholder*="Address"]
+Dropdown Tree:         div[role="tree"]
+Tree Items:            div[role="treeitem"]
+Search Button:         button (text contains "Search")
+Price Display:         generic (text contains "$")
+Address Link:          a[href*="/mls/"][href*="-mls_"]
+Image Elements:        img[src*="sparkplatform"]
+
+================================================================================
+ERROR HANDLING
+================================================================================
+
+NO RESULTS:
+  → Property not in MLS database
+  → Try alternate sources (Zillow, Redfin)
+  → Check address spelling
+
+MULTIPLE RESULTS:
+  → Use first result with matching MLS#
+  → Alternative: let user select
+
+MISSING IMAGES:
+  → Some properties have 0 photos
+  → Check "View Photos (0)" indicator
+  → Continue extraction without images
+
+NAVIGATION TIMEOUT:
+  → Wait up to 5 seconds for page load
+  → If timeout, property may be delisted
+  → Check URL for 404 error
+
+BROKEN IMAGE URLS:
+  → Verify HTTP 200 before downloading
+  → Skip broken images
+  → Log for manual review
+
+================================================================================
+TEST ARTIFACTS
+================================================================================
+
+Screenshots (in data/property_images/screenshots/):
+  1. 01-initial-page.png          - Search form initial state
+  2. 02-autocomplete-dropdown.png - Dropdown with MLS#s visible
+  3. 03-after-selection.png       - Selected item before search
+  4. 04-listing-detail-page.png   - Detail page with images
+
+Documentation Files:
+  - PHOENIXMLS_EXTRACTION_FINDINGS.md   (Detailed technical analysis)
+  - PHOENIXMLS_EXTRACTION_SUMMARY.yaml  (Structured data summary)
+  - IMPLEMENTATION_GUIDE.md              (Code examples & patterns)
+  - QUICK_REFERENCE.txt                 (This file)
+
+================================================================================
+VERDICT
+================================================================================
+
+STATUS: ✓ READY FOR PRODUCTION
+
+PROS:
+  ✓ No authentication required
+  ✓ No anti-bot detection
+  ✓ Standard Playwright works
+  ✓ Direct image access (SparkPlatform CDN)
+  ✓ Complete property data available
+  ✓ Predictable, normalized URL patterns
+  ✓ Stable autocomplete structure
+  ✓ No rate limiting observed
+
+CONS:
+  • Slower than county API (10-15 sec vs 1-2 sec)
+  • Limited to Arizona properties
+  • Dependent on listing availability
+  • Images not deduplicated at source
+
+RECOMMENDATION:
+  Use as PRIMARY source for:
+    - Property descriptions
+    - HOA fee verification
+    - Listing images
+    - Current listing status
+
+  Use County API for:
+    - Lot size (authoritative)
+    - Year built (authoritative)
+    - Garage spaces (authoritative)
+
+  Use Zillow/Redfin as FALLBACK for:
+    - Properties not in Phoenix MLS
+    - Additional images
+    - Market comparables
+
+================================================================================
+CONTACT
+================================================================================
+
+Created: 2025-12-06 by Claude Code
+Last Updated: 2025-12-06
+Tested Address: 5219 W El Caminito Dr, Glendale, AZ 85302
+Test Result: SUCCESS
+
+For detailed technical information, see PHOENIXMLS_EXTRACTION_FINDINGS.md
+For quick data reference, see PHOENIXMLS_EXTRACTION_SUMMARY.yaml
+For implementation code examples, see IMPLEMENTATION_GUIDE.md
+
+================================================================================

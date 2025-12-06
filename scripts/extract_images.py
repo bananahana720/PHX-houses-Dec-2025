@@ -246,6 +246,7 @@ def parse_sources(sources_str: str | None) -> list[ImageSource] | None:
         "zillow": ImageSource.ZILLOW,
         "redfin": ImageSource.REDFIN,
         "phoenix_mls": ImageSource.PHOENIX_MLS,
+        "phoenix_mls_search": ImageSource.PHOENIX_MLS_SEARCH,
     }
 
     sources = []

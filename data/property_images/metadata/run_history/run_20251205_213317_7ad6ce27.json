@@ -1,0 +1,42 @@
+{
+  "run_id": "7ad6ce27",
+  "started_at": "2025-12-05T21:33:16.410485-05:00",
+  "ended_at": "2025-12-05T21:33:17.068843-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 2,
+    "total_new_images": 0,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 1,
+    "total_errors": 1,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 2,
+      "new_images": 0,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 1,
+      "errors": 1,
+      "new_image_ids": [],
+      "removed_urls": [
+        "data/property_images/screenshots\\c7d9b037\\c7d9b037385bb391f7f82e66012a38ce.png"
+      ],
+      "error_messages": [
+        "Phoenix MLS error: unhashable type: 'list'"
+      ],
+      "listing_metadata": {}
+    }
+  },
+  "errors": [],
+  "duration_seconds": 0.658358
+}

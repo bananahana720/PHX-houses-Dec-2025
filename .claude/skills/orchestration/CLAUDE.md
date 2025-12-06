@@ -1,52 +1,60 @@
-<!-- TEMPLATE:UNFILLED -->
-<!-- TOKEN-EFFICIENT CONTEXT: Target 50-80 lines, max 100 -->
-<!-- child CLAUDE.md | Remove this block when populated -->
 ---
-last_updated: [YYYY-MM-DDTHH:MM:SSZ]
-updated_by: [main|agent]
-staleness_hours: 24
+last_updated: 2025-12-05T00:00:00Z
+updated_by: main
+staleness_hours: 168
 line_target: 80
 flags: []
 ---
-# [Directory Name]
+# Orchestration Skill
 
 ## Purpose
-<!-- 1-2 sentences MAX. What does this directory do? Why does it exist? -->
-[Brief what + why]
+Coordinate multi-agent workflows with parallel swarm waves (non-destructive) and sequential orchestrated waves (destructive). Main Agent delegates work to sub-agents while enforcing quality standards.
 
 ## Contents
-<!-- Key files only (≤10 rows). Skip __init__.py, tests, generated files -->
 | File | Purpose |
 |------|---------|
-| `file.py` | [one-line desc] |
+| `SKILL.md` | Core skill definition with process, rules, templates |
+| `orchestration-patterns.yaml` | Comprehensive patterns (complexity, waves, agents, costs, errors, state) |
+| `patterns/sdlc-patterns.yaml` | General SDLC workflow patterns |
+| `patterns/bmad-patterns.yaml` | BMAD method workflow integrations |
+| `examples/simple-bug-fix.yaml` | Bug fix workflow example |
+| `examples/tdd-workflow.yaml` | TDD RED/GREEN/BLUE example |
+| `examples/phx-full-pipeline.yaml` | PHX property analysis full pipeline |
 
 ## Key Patterns
-<!-- 2-3 bullet points of patterns/conventions used here -->
-- [pattern]: [brief explanation]
+- **Main Agent Pattern**: Orchestrator delegates, sub-agents execute, orchestrator aggregates
+- **Wave Types**: Parallel swarm (non-destructive) vs sequential orchestrated (destructive)
+- **Single Writer Rule**: Only orchestrators modify state files; sub-agents return data
 
-## Tasks
-<!-- Max 5 items. Priority: H=blocking, M=important, L=nice-to-have -->
-- [ ] [task description] `P:H`
+## Quick Reference
 
-## Learnings
-<!-- Max 3 discoveries. Things that surprised you or are non-obvious -->
-- [discovery]: [why it matters]
+### Mode Selection
+| Mode | Token Threshold | Characteristics |
+|------|-----------------|-----------------|
+| Orchestration | >2000-3000 | Multiple components, parallel execution, SDLC workflows |
+| Simple Workflow | <2000-3000 | Single component, straightforward, no parallelism |
+
+### Model Selection
+| Model | Use When |
+|-------|----------|
+| Haiku | Structured extraction, API calls, parsing, high-volume |
+| Sonnet | Visual analysis, subjective scoring, complex reasoning |
+| Opus | Architecture, novel problems, deep domain expertise |
+
+### Thinking Block Tags
+| Tag | Purpose |
+|-----|---------|
+| `<orchestration_analysis>` | Deep task analysis (Step 1) |
+| `<adaptation_notes>` | Post-wave learning analysis |
+| `<next_steps>` | Wave progression instructions (outside thinking) |
 
 ## Refs
-<!-- Cross-references essential for navigation only -->
-- [what]: `path/to/file:lines`
+- Main SKILL.md: `SKILL.md:1-432`
+- Comprehensive patterns: `orchestration-patterns.yaml`
+- SDLC patterns: `patterns/sdlc-patterns.yaml`
+- BMAD patterns: `patterns/bmad-patterns.yaml`
+- Parent CLAUDE.md: `../.claude/CLAUDE.md`
 
 ## Deps
-<!-- Import graph edges that affect understanding -->
-← imports: [module1], [module2]
-→ used by: [consumer1]
-
-<!--
-TOKEN EFFICIENCY CHECKLIST (delete after review):
-[ ] Purpose ≤2 sentences
-[ ] Contents table ≤10 rows, key files only
-[ ] No prose paragraphs - bullets/tables only
-[ ] Learnings ≤3 items, non-obvious only
-[ ] Total lines ≤100 (target 50-80)
-[ ] Frontmatter has last_updated timestamp
--->
+<- imports: none (skill definition)
+-> used by: all agents via `Skill(orchestration)`, Task() orchestration

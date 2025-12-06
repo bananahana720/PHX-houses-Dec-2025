@@ -86,7 +86,8 @@ asyncio_default_fixture_loop_scope = "function"
 markers = [
     "live: marks tests as requiring real API calls (deselect with '-m \"not live\"')",
     "smoke: marks tests as quick smoke checks",
-    "slow: marks tests as slow running"
+    "slow: marks tests as slow running",
+    "integration: marks tests as integration tests (may use real HTTP)"
 ]
 
 [tool.ruff]

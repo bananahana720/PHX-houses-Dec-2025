@@ -5,6 +5,7 @@ computed properties, and analysis results.
 """
 
 from dataclasses import dataclass, field
+from typing import Any
 
 from .enums import CrimeRiskLevel, FloodZone, Orientation, SewerType, SolarStatus, Tier
 from .value_objects import Address, RenovationEstimate, RiskAssessment, ScoreBreakdown
@@ -186,6 +187,43 @@ class Property:
     # Zillow-specific identifiers (used for direct gallery navigation - E2.R1)
     zpid: str | None = None  # Zillow property ID for direct URL construction
 
+    # MLS Listing Identifiers (PhoenixMLS - E2.R1 Enhancement)
+    mls_number: str | None = None
+    listing_url: str | None = None
+    listing_status: str | None = None  # Active, Pending, Sold, Contingent
+    listing_office: str | None = None
+    mls_last_updated: str | None = None
+
+    # Property Classification
+    property_type: str | None = None  # Single Family Residence, Townhouse, etc.
+    architecture_style: str | None = None  # Ranch, Contemporary, etc.
+
+    # Systems & Utilities (AZ-specific)
+    cooling_type: str | None = None
+    heating_type: str | None = None
+    water_source: str | None = None
+    roof_material: str | None = None
+
+    # Interior Features (Structured lists)
+    kitchen_features: list[str] | None = None
+    master_bath_features: list[str] | None = None
+    laundry_features: list[str] | None = None
+    interior_features_list: list[str] | None = None
+    flooring_types: list[str] | None = None
+
+    # Exterior Features (Structured lists)
+    exterior_features_list: list[str] | None = None
+    patio_features: list[str] | None = None
+    lot_features: list[str] | None = None
+
+    # Schools (Names for reference)
+    elementary_school_name: str | None = None
+    middle_school_name: str | None = None
+    high_school_name: str | None = None
+
+    # Location Reference
+    cross_streets: str | None = None
+
     def __post_init__(self) -> None:
         """Validate and normalize data after initialization."""
         # Ensure full_address is set
@@ -311,9 +349,10 @@ class Property:
         """
         return self.tier == Tier.FAILED or not self.kill_switch_passed
 
-    # Cached financial data (set by service layer, not computed in domain)
-    # These fields are populated by MonthlyCostEstimator service externally
+    # Cached data (set by service layer, not computed in domain)
+    # These fields are populated by external services
     _monthly_costs_cache: dict[str, float] | None = field(default=None, repr=False)
+    _mls_metadata_cache: dict[str, Any] | None = field(default=None, repr=False)
 
     @property
     def monthly_costs(self) -> dict[str, float]:
@@ -551,6 +590,46 @@ class EnrichmentData:
     backyard_pool_ratio: str | None = None  # balanced/pool_dominant/minimal_pool
     backyard_sun_orientation: str | None = None  # N/E/S/W
 
+    # Zillow-specific identifiers (E2.R1 Enhancement)
+    zpid: str | None = None  # Zillow property ID
+
+    # MLS Listing Identifiers (PhoenixMLS - E2.R1 Enhancement)
+    mls_number: str | None = None
+    listing_url: str | None = None
+    listing_status: str | None = None  # Active, Pending, Sold, Contingent
+    listing_office: str | None = None
+    mls_last_updated: str | None = None
+
+    # Property Classification
+    property_type: str | None = None  # Single Family Residence, Townhouse, etc.
+    architecture_style: str | None = None  # Ranch, Contemporary, etc.
+
+    # Systems & Utilities (AZ-specific)
+    cooling_type: str | None = None
+    heating_type: str | None = None
+    water_source: str | None = None
+    roof_material: str | None = None
+
+    # Interior Features (Structured lists)
+    kitchen_features: list[str] | None = None
+    master_bath_features: list[str] | None = None
+    laundry_features: list[str] | None = None
+    interior_features_list: list[str] | None = None
+    flooring_types: list[str] | None = None
+
+    # Exterior Features (Structured lists)
+    exterior_features_list: list[str] | None = None
+    patio_features: list[str] | None = None
+    lot_features: list[str] | None = None
+
+    # Schools (Names for reference)
+    elementary_school_name: str | None = None
+    middle_school_name: str | None = None
+    high_school_name: str | None = None
+
+    # Location Reference
+    cross_streets: str | None = None
+
     # Provenance metadata (field-level tracking)
     _provenance: dict[str, FieldProvenance] = field(default_factory=dict)
 
@@ -614,4 +693,3 @@ class EnrichmentData:
             for field_name, prov in self._provenance.items()
             if prov.confidence < threshold
         ]
-

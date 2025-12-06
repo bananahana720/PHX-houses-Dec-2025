@@ -1,0 +1,60 @@
+{
+  "run_id": "9927e9de",
+  "started_at": "2025-12-06T00:35:45.396120-05:00",
+  "ended_at": "2025-12-06T00:36:23.784514-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 0,
+    "total_new_images": 0,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 21,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "5219 W El Caminito Dr, Glendale, AZ 85302": {
+      "address": "5219 W El Caminito Dr, Glendale, AZ 85302",
+      "property_hash": "b18bdfc7",
+      "urls_discovered": 0,
+      "new_images": 0,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 21,
+      "errors": 0,
+      "new_image_ids": [],
+      "removed_urls": [
+        "https://cdn.photos.sparkplatform.com/az/20250318184202822935000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20110121205630090682000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20251015184801365295000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20241022020226891675000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20241115215430970905000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20250411195931049883000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20230818184048677829000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20250904024853496053000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20251203235438423202000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20250204184041580982000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20251120231102407075000000.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20250318184202822935000000-o.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20251015184801365295000000-o.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20241022020226891675000000-o.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20241115215430970905000000-o.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20250411195931049883000000-o.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20230818184048677829000000-o.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20250904024853496053000000-o.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20251203235438423202000000-o.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20250204184041580982000000-o.jpg",
+        "https://cdn.photos.sparkplatform.com/az/20251120231102407075000000-o.jpg"
+      ],
+      "error_messages": [],
+      "listing_metadata": {}
+    }
+  },
+  "errors": [],
+  "duration_seconds": 38.388394
+}

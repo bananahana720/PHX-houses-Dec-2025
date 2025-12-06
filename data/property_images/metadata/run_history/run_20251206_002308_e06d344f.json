@@ -1,0 +1,54 @@
+{
+  "run_id": "e06d344f",
+  "started_at": "2025-12-06T00:22:09.748739-05:00",
+  "ended_at": "2025-12-06T00:23:08.661459-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 21,
+    "total_new_images": 11,
+    "total_unchanged": 0,
+    "total_duplicates": 10,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 1
+  },
+  "property_changes": {
+    "5219 W El Caminito Dr, Glendale, AZ 85302": {
+      "address": "5219 W El Caminito Dr, Glendale, AZ 85302",
+      "property_hash": "b18bdfc7",
+      "urls_discovered": 21,
+      "new_images": 11,
+      "unchanged": 0,
+      "duplicates": 10,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 0,
+      "new_image_ids": [
+        "5b256032f7c7ec2a97e04cd8ac3f16cf",
+        "15fd3d313f05dbc46de509bd45505345",
+        "aad90da5dda6c0b512dccdb2843b60d7",
+        "f239b971d2b40032b7bb664f1db7da60",
+        "0dccf657ec4993e1c1476c9ffe8e113c",
+        "8022155ae628cdc2532131f3b783d288",
+        "712cb50aa518f1896871095e085659fd",
+        "314a98c15443d91edfac3e2bb8598925",
+        "65c912d4b261e4845e9c4c3ee319811f",
+        "441d7ea34ee48ba97d1ba2eedaef6402",
+        "48788bf6fbb84adf39d1240bca5b7560"
+      ],
+      "removed_urls": [],
+      "error_messages": [],
+      "listing_metadata": {
+        "year_built": 2026,
+        "mls_number": "",
+        "listing_url": "https://phoenixmlssearch.com/mls/search/?SavedSearch=20171227170325032090000000&StandardStatus=Active&pg=1&OrderBy=-ListPrice"
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 58.91272
+}

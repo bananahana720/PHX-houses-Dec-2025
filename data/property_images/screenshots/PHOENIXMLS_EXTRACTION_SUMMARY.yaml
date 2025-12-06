@@ -1,0 +1,130 @@
+autocomplete:
+  dropdown_visible: true
+  dropdown_role: tree
+  item_role: treeitem
+  text_format: "{ADDRESS} / {MLS_NUMBER} (MLS #)"
+  mls_number_format: "7 digits, e.g., 6937912"
+  mls_extraction_regex: '/\s*(\d{7})\s*\(MLS #\)/'
+  multiple_results: true
+  example_result: "5219 W EL CAMINITO Drive, Glendale, AZ 85302 / 6937912 (MLS #)"
+  interaction_flow:
+    - "Type address into input (placeholder: 'Enter an Address, City, Zip or MLS#')"
+    - "Wait 2-3 seconds for tree dropdown to appear"
+    - "Parse treeitem elements in tree role"
+    - "Extract 7-digit MLS# using regex"
+    - "Click treeitem to add to selected list"
+    - "Click Search button to navigate"
+  note: "Clicking dropdown item does NOT navigate automatically - must click Search button"
+
+navigation_after_click:
+  did_navigate: true
+  flow:
+    - search_results: "https://phoenixmlssearch.com/mls/search/?OrderBy=-ListPrice&StandardStatus%5B%5D=Active&SavedSearch=20171227170325032090000000&Limit=10&ListingId=6937912"
+    - listing_detail: "https://phoenixmlssearch.com/mls/5219-W-EL-CAMINITO-Drive-Glendale-AZ-85302-mls_6937912/?SavedSearch=20171227170325032090000000&ListingId=6937912&StandardStatus=Active&pg=1&OrderBy=-ListPrice&p=n&m=20070913202326493241000000&n=n"
+
+  search_results_url_pattern: "https://phoenixmlssearch.com/mls/search/?OrderBy=-ListPrice&StandardStatus%5B%5D=Active&SavedSearch=20171227170325032090000000&Limit=10&ListingId={MLS_NUMBER}"
+
+  search_results_query_params:
+    OrderBy: "-ListPrice"
+    StandardStatus[]: "Active"
+    SavedSearch: "20171227170325032090000000"
+    Limit: "10"
+    ListingId: "{MLS_NUMBER}"
+
+  listing_detail_url_pattern: "/mls/{NORMALIZED_ADDRESS}-mls_{MLS_NUMBER}/?{QUERY_PARAMS}"
+
+  address_normalization_rules:
+    - "Spaces → hyphens"
+    - "Uppercase"
+    - "Full street direction (W, E, N, S)"
+    - "Full street type (Drive, Street, etc.)"
+
+  address_normalization_example:
+    input: "5219 W El Caminito Drive, Glendale, AZ 85302"
+    output: "5219-W-EL-CAMINITO-Drive-Glendale-AZ-85302"
+
+listing_page:
+  has_images: true
+  image_count: 43
+
+  image_url_patterns:
+    full_size: "https://cdn.photos.sparkplatform.com/az/{IDENTIFIER}-o.jpg"
+    thumbnail: "https://cdn.photos.sparkplatform.com/az/{IDENTIFIER}-t.jpg"
+    resized: "https://cdn.resize.sparkplatform.com/az/{WIDTH}x{HEIGHT}/{QUALITY}/{IDENTIFIER}-o.jpg"
+
+  image_identifier_format: "{YYYYMMDD}{HHMMSS}{SEQUENCE_ID}"
+  image_identifier_example: "20251023213131892099000000"
+
+  example_image_urls:
+    - thumbnail: "https://cdn.photos.sparkplatform.com/az/20251023213131892099000000-t.jpg"
+      full_size: "https://cdn.photos.sparkplatform.com/az/20251023213131892099000000-o.jpg"
+    - thumbnail: "https://cdn.photos.sparkplatform.com/az/20251023213124324538000000-t.jpg"
+      full_size: "https://cdn.photos.sparkplatform.com/az/20251023213124324538000000-o.jpg"
+    - thumbnail: "https://cdn.photos.sparkplatform.com/az/20251023213417773188000000-t.jpg"
+      full_size: "https://cdn.photos.sparkplatform.com/az/20251023213417773188000000-o.jpg"
+
+  image_extraction_method: "Query all img[src*='sparkplatform'] tags from DOM"
+
+  property_data_available:
+    - address
+    - mls_number
+    - price
+    - beds
+    - baths
+    - year_built
+    - sqft
+    - lot_sqft
+    - pool_status
+    - fireplace_status
+    - garage_spaces
+    - sewer_type
+    - water_source
+    - hoa_fee
+    - cooling_type
+    - heating_type
+    - roofing_type
+    - construction_type
+    - property_description
+    - subdivision
+    - county
+    - assessor_number
+
+  data_extraction_sources:
+    - "Heading (price, beds, baths, mls#)"
+    - "Contract Information section (price, status, list date)"
+    - "Location Tax Legal section (address, county, assessor#)"
+    - "General Property Description (year, sqft, lot, pool, fireplace)"
+    - "Property Features section (utilities, construction, heating/cooling)"
+
+anti_bot_protection:
+  site: "https://phoenixmlssearch.com"
+  perimeterx_detected: false
+  cloudflare_detected: false
+  protection_level: "minimal"
+  standard_playwright_works: true
+  recommendation: "Standard Playwright can work, but add human-like delays for robustness"
+
+screenshots_saved:
+  - filename: "01-initial-page.png"
+    description: "Simple search form initial state"
+    location: "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\data\\property_images\\screenshots\\"
+
+  - filename: "02-autocomplete-dropdown.png"
+    description: "Autocomplete results showing MLS#s 6937912 and 4719507"
+    shows_mls_numbers: true
+    location: "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\data\\property_images\\screenshots\\"
+
+  - filename: "03-after-selection.png"
+    description: "Selected item (MLS 6937912) in list before search button click"
+    location: "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\data\\property_images\\screenshots\\"
+
+  - filename: "04-listing-detail-page.png"
+    description: "Listing detail page showing property image from SparkPlatform CDN"
+    shows_images: true
+    shows_property_details: true
+    location: "C:\\Users\\Andrew\\.vscode\\PHX-houses-Dec-2025\\data\\property_images\\screenshots\\"
+
+detailed_findings_document: "PHOENIXMLS_EXTRACTION_FINDINGS.md"
+
+test_result: "SUCCESS"
+test_summary: "Phoenix MLS Search provides clear autocomplete with MLS# extraction, accessible URL patterns, complete property data, and direct SparkPlatform image access with no PerimeterX protection"

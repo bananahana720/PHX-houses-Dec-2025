@@ -1,0 +1,40 @@
+{
+  "run_id": "e56d6319",
+  "started_at": "2025-12-05T23:49:56.593767-05:00",
+  "ended_at": "2025-12-05T23:50:21.157450-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 0,
+    "total_new_images": 0,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 1,
+    "total_errors": 0,
+    "properties_with_changes": 1,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "5219 W El Caminito Dr, Glendale, AZ 85302": {
+      "address": "5219 W El Caminito Dr, Glendale, AZ 85302",
+      "property_hash": "b18bdfc7",
+      "urls_discovered": 0,
+      "new_images": 0,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 1,
+      "errors": 0,
+      "new_image_ids": [],
+      "removed_urls": [
+        "data/property_images/screenshots\\4d3414e6\\4d3414e6e02b6bad33c0151f162efff7.png"
+      ],
+      "error_messages": [],
+      "listing_metadata": {}
+    }
+  },
+  "errors": [],
+  "duration_seconds": 24.563683
+}

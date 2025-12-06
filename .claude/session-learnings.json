@@ -735,5 +735,361 @@
       "enrichment_data.json is a LIST (not dict). Normalized addresses via `normalize_address()` cached in `normalized_address` field. Atomic writes use temp file + rename. Backups with timestamp before each write. Restore via `restore_from_backup()`."
     ],
     "learnings": []
+  },
+  {
+    "timestamp": "2025-12-05T23:05:04.247204+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "{e}\")",
+      "{e}\")",
+      "{e}\")",
+      "{e}\")",
+      "pass",
+      "Integrate Fallback Chain into extract_image_urls()",
+      "{e}\")",
+      "{e}\")",
+      "{e}\")"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T00:04:32.404681+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "- path: [file path]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T00:27:01.134324+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "%s\", self.name, e)",
+      "pass",
+      "%s\", self.name, e)"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T00:41:08.208126+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "continue",
+      "%s\", self.name, e)",
+      "%s, falling back to viewport\", self.name, e)",
+      "pass",
+      "%s\", self.name, e)",
+      "%s\", self.name, e)",
+      "%s, falling back to viewport\", self.name, e)",
+      "%s\", self.name, e)"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T00:48:10.557201+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "pass",
+      "%s\", self.name, e)",
+      "continue",
+      "%s\", self.name, e)",
+      "%s\", self.name, e)",
+      "%s\", self.name, e)"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T00:52:21.874566+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "%s\", self.name, e)",
+      "%s\", self.name, e)"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T01:37:51.273114+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "`cdn.photos.sparkplatform.com/az/{id}-o.jpg` for full-size images"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T02:16:24.600233+00:00",
+    "subagent_type": "unit-testing:test-automator",
+    "file_references": [
+      "/c/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [
+      "N",
+      "N"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T02:16:52.278825+00:00",
+    "subagent_type": "codebase-cleanup:code-reviewer",
+    "file_references": [
+      "/c/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T02:17:38.218934+00:00",
+    "subagent_type": "debugging-toolkit:debugger",
+    "file_references": [
+      "/c/Users/Andrew/.vscode"
+    ],
+    "error_patterns": [],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T02:27:07.257421+00:00",
+    "subagent_type": "listing-browser",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "true/false"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T02:27:54.581962+00:00",
+    "subagent_type": "listing-browser",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "true/false"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T02:36:44.448793+00:00",
+    "subagent_type": "debugging-toolkit:debugger",
+    "file_references": [],
+    "error_patterns": [
+      "unhashable type: 'list'",
+      "**",
+      "unhashable type: 'list'",
+      "unhashable type: 'list'",
+      "unhashable type: 'list'"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T02:48:32.768017+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "\"URL pattern for listings\""
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T02:52:20.250177+00:00",
+    "subagent_type": "debugging-toolkit:debugger",
+    "file_references": [],
+    "error_patterns": [
+      "Playwright MCP tools not available",
+      "{e}\")",
+      "Playwright MCP tools not available"
+    ],
+    "learnings": [
+      "/mls/mls_XXXXX or /listing/XXXXX)"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T03:10:32.542215+00:00",
+    "subagent_type": "debugging-toolkit:debugger",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "`cdn.photos.sparkplatform.com/az/{id}-o.jpg`"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T03:29:09.166092+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "[how extractors register]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T03:32:29.742192+00:00",
+    "subagent_type": "backend-development:backend-architect",
+    "file_references": [],
+    "error_patterns": [
+      "**"
+    ],
+    "learnings": [
+      "https://cdn.photos.sparkplatform.com/az/{image_id}-o.jpg",
+      "\"{address} - MLS# {mls_number}\""
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T03:48:04.861822+00:00",
+    "subagent_type": "unit-testing:test-automator",
+    "file_references": [],
+    "error_patterns": [
+      "N",
+      "N"
+    ],
+    "learnings": [
+      "N",
+      "N",
+      "N"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T03:50:00.937037+00:00",
+    "subagent_type": "python-development:python-pro",
+    "file_references": [],
+    "error_patterns": [
+      "- Issue: `link[\"href\"]` returns `str | AttributeValueList`, no `.startswith()` method",
+      "- Issue: Return type mismatch in `_parse_search_results()`",
+      "- Issue: `tab.get_content()` returns `Any`",
+      "** Check how existing PhoenixMLSExtractor handles metadata return in `phoenix_mls.py` - follow same pattern."
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T04:16:03.952387+00:00",
+    "subagent_type": "full-stack-orchestration:test-automator",
+    "file_references": [],
+    "error_patterns": [
+      "**"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T04:19:42.393046+00:00",
+    "subagent_type": "debugging-toolkit:debugger",
+    "file_references": [],
+    "error_patterns": [
+      "logger.warning(f\"{self.name} timeout finding {selector}\")"
+    ],
+    "learnings": [
+      "**"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T04:42:40.778767+00:00",
+    "subagent_type": "error-debugging:debugger",
+    "file_references": [],
+    "error_patterns": [
+      "[WinError 1225] The remote computer refused the network connection"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T05:03:20.109047+00:00",
+    "subagent_type": "error-debugging:debugger",
+    "file_references": [],
+    "error_patterns": [
+      "Text Extraction Returns Empty - Score 0.00"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T05:11:52.782544+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "[yes/no]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T05:39:38.260914+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "logger.warning(\"Could not confirm selection, proceeding anyway\")"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-06T05:59:11.673970+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "no matching listing found for 5219 W El Caminito Dr, Glendale in search results"
+    ],
+    "learnings": [
+      "** We have MLS# from autocomplete (6937912). We could also try:"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T06:18:08.503670+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "7-digit number)",
+      "[regex if found]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T06:18:14.755849+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "[if exists]",
+      "[if found]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T06:20:53.197724+00:00",
+    "subagent_type": "listing-browser",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "\"[pattern with placeholders]\"",
+      "\"[SparkPlatform CDN pattern]\""
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T06:28:21.585948+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "%s, falling back to element methods\", self.name, e)",
+      "%s, falling back to element methods\", self.name, e)"
+    ],
+    "learnings": [
+      "**"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T07:53:50.564368+00:00",
+    "subagent_type": "debugging-toolkit:debugger",
+    "file_references": [],
+    "error_patterns": [
+      "** `autocomplete search failed - no MLS# found to construct direct URL`"
+    ],
+    "learnings": [
+      "%s\", self.name, mls_number, pattern.pattern)"
+    ]
+  },
+  {
+    "timestamp": "2025-12-06T08:00:10.913311+00:00",
+    "subagent_type": "debugging-toolkit:debugger",
+    "file_references": [],
+    "error_patterns": [
+      "logger.warning(\"%s batch JS timed out after %.1fs\", self.name, OPERATION_TIMEOUT)",
+      "%s\", self.name, e)",
+      "%s\", self.name, e)"
+    ],
+    "learnings": []
   }
 ]

@@ -1,0 +1,42 @@
+{
+  "run_id": "4119a28c",
+  "started_at": "2025-12-05T18:49:00.632471-05:00",
+  "ended_at": "2025-12-05T18:49:16.557406-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 1,
+    "total_new_images": 0,
+    "total_unchanged": 0,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 1,
+    "properties_with_changes": 0,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "4560 E Sunrise Dr, Phoenix, AZ 85044": {
+      "address": "4560 E Sunrise Dr, Phoenix, AZ 85044",
+      "property_hash": "f4e29e2c",
+      "urls_discovered": 1,
+      "new_images": 0,
+      "unchanged": 0,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 1,
+      "new_image_ids": [],
+      "removed_urls": [],
+      "error_messages": [
+        "Error: data/property_images/screenshots\\c1accff4\\c1accff49af0cdca1163d376de6808f5.png: Failed to download data/property_images/screenshots\\c1accff4\\c1accff49af0cdca1163d376de6808f5.png: URL validation failed (SSRF protection): Disallowed scheme: . Only http, https allowed."
+      ],
+      "listing_metadata": {
+        "extraction_method": "screenshot"
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 15.924935
+}

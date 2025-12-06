@@ -1,0 +1,49 @@
+{
+  "run_id": "272473cc",
+  "started_at": "2025-12-06T02:59:08.206794-05:00",
+  "ended_at": "2025-12-06T02:59:25.006353-05:00",
+  "mode": "fresh",
+  "properties_requested": 1,
+  "properties_processed": 1,
+  "aggregate": {
+    "total_urls_discovered": 44,
+    "total_new_images": 0,
+    "total_unchanged": 44,
+    "total_duplicates": 0,
+    "total_content_changed": 0,
+    "total_removed": 0,
+    "total_errors": 0,
+    "properties_with_changes": 0,
+    "properties_needing_review": 0
+  },
+  "property_changes": {
+    "5219 W El Caminito Dr, Glendale, AZ 85302": {
+      "address": "5219 W El Caminito Dr, Glendale, AZ 85302",
+      "property_hash": "b18bdfc7",
+      "urls_discovered": 44,
+      "new_images": 0,
+      "unchanged": 44,
+      "duplicates": 0,
+      "content_changed": 0,
+      "removed": 0,
+      "errors": 0,
+      "new_image_ids": [],
+      "removed_urls": [],
+      "error_messages": [],
+      "listing_metadata": {
+        "hoa_fee": 0.0,
+        "beds": 5,
+        "baths": 2.0,
+        "sqft": 2239,
+        "lot_sqft": 8851,
+        "garage_spaces": 2,
+        "sewer_type": "city",
+        "year_built": 1977,
+        "mls_number": "6937912",
+        "listing_url": "https://phoenixmlssearch.com/mls/5219-W-EL-CAMINITO-Drive-Glendale-AZ-85302-mls_6937912/"
+      }
+    }
+  },
+  "errors": [],
+  "duration_seconds": 16.799559
+}

@@ -77,6 +77,9 @@ class URLValidator:
         # Maricopa County Assessor
         "mcassessor.maricopa.gov",
         "gis.maricopa.gov",
+        # Phoenix MLS
+        "phoenixmlssearch.com",
+        "cdn.photos.sparkplatform.com",  # SparkPlatform CDN for MLS property images
         # Cloudfront (CDN for multiple services)
         "d1w0jwjwlq0zii.cloudfront.net",  # Common real estate CDN
         # Additional Zillow CDN subdomains

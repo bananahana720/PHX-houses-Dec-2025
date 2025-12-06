@@ -1,52 +1,44 @@
-<!-- TEMPLATE:UNFILLED -->
-<!-- TOKEN-EFFICIENT CONTEXT: Target 50-80 lines, max 100 -->
-<!-- child CLAUDE.md | Remove this block when populated -->
 ---
-last_updated: [YYYY-MM-DDTHH:MM:SSZ]
-updated_by: [main|agent]
+last_updated: 2025-12-05T22:15:00Z
+updated_by: agent
 staleness_hours: 24
-line_target: 80
 flags: []
 ---
-# [Directory Name]
+# metadata
 
 ## Purpose
-<!-- 1-2 sentences MAX. What does this directory do? Why does it exist? -->
-[Brief what + why]
+Pipeline state tracking and image indexing for property image extraction. Contains run history, deduplication indexes, and address-to-folder lookups.
 
 ## Contents
-<!-- Key files only (≤10 rows). Skip __init__.py, tests, generated files -->
 | File | Purpose |
 |------|---------|
-| `file.py` | [one-line desc] |
+| `extraction_state.json` | Current pipeline state: completed/failed properties, last checked |
+| `hash_index.json` | LSH-based perceptual hash index for image deduplication |
+| `address_folder_lookup.json` | Address -> 8-char hash folder mapping |
+| `url_tracker.json` | Tracks extracted URLs per property |
+| `pipeline_runs.json` | Summary of all extraction runs |
+| `image_manifest.json` | Master manifest of all extracted images |
+| `run_history/` | Per-run JSON logs with timestamps and metrics |
 
 ## Key Patterns
-<!-- 2-3 bullet points of patterns/conventions used here -->
-- [pattern]: [brief explanation]
+- **Atomic writes**: All JSON updates use tempfile + os.replace() pattern
+- **Address normalization**: Lowercase, whitespace-trimmed before hashing
+- **Run isolation**: Each extraction run gets unique `run_{timestamp}_{hash}.json`
 
 ## Tasks
-<!-- Max 5 items. Priority: H=blocking, M=important, L=nice-to-have -->
-- [ ] [task description] `P:H`
+- [ ] Add run_history retention policy (keep last 30 days) `P:M`
+- [ ] Implement extraction_state backup before modifications `P:H`
 
 ## Learnings
-<!-- Max 3 discoveries. Things that surprised you or are non-obvious -->
-- [discovery]: [why it matters]
+- **hash_index.json**: Uses LSH buckets for O(1) near-duplicate detection
+- **extraction_state.json**: Only stores failed properties; completed tracked via work_items.json
+- **Run history**: Useful for debugging extraction failures and tracking success rates
 
 ## Refs
-<!-- Cross-references essential for navigation only -->
-- [what]: `path/to/file:lines`
+- State management: `src/phx_home_analysis/services/image_extraction/state_manager.py`
+- Hash computation: `src/phx_home_analysis/services/image_extraction/validators.py`
+- Parent data dir: `../../../CLAUDE.md`
 
 ## Deps
-<!-- Import graph edges that affect understanding -->
-← imports: [module1], [module2]
-→ used by: [consumer1]
-
-<!--
-TOKEN EFFICIENCY CHECKLIST (delete after review):
-[ ] Purpose ≤2 sentences
-[ ] Contents table ≤10 rows, key files only
-[ ] No prose paragraphs - bullets/tables only
-[ ] Learnings ≤3 items, non-obvious only
-[ ] Total lines ≤100 (target 50-80)
-[ ] Frontmatter has last_updated timestamp
--->
+<- imports: None (data files only)
+-> used by: extract_images.py, image extraction orchestrator, reconciliation scripts

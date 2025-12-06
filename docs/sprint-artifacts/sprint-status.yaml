@@ -69,8 +69,8 @@ development_status:
   2-7-api-integration-infrastructure: done
   epic-2-retrospective: completed  # 2025-12-05
   # Remediation Stories (Post-Completion - Wave 0)
-  2-R1-zillow-zpid-extraction: review  # BLOCK-001 remediation - implementation complete 2025-12-05, pending live validation
-  2-R2-redfin-session-download: backlog  # BLOCK-002 remediation
+  2-R1-phoenixmls-data-pivot: done  # BLOCK-001/002 remediation - completed 2025-12-05 with 41 tests
+  2-R2-redfin-session-download: backlog  # BLOCK-002 remediation (may not be needed with PhoenixMLS PRIMARY)
 
   # =============================================================================
   # Epic 3: Kill-Switch Filtering System
@@ -155,10 +155,10 @@ summary:
   stories_by_status:
     backlog: 24  # +1 remediation story (E2.R2)
     drafted: 0
-    ready-for-dev: 1  # E2.R1 Zillow ZPID Direct Extraction
+    ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 19
+    done: 20  # +1 E2.R1 PhoenixMLS Data Pivot
   epics_by_status:
     backlog: 5
     contexted: 0
@@ -170,7 +170,7 @@ summary:
   p1_stories: 7
   fr_coverage: "62/62 (100%)"
   last_updated: "2025-12-05"
-  last_story_completed: "2-4-property-image-download-and-caching"
+  last_story_completed: "2-R1-phoenixmls-data-pivot"
   last_story_completed_date: "2025-12-05"
   last_epic_completed: "epic-2"
   last_epic_completed_date: "2025-12-05"
@@ -181,17 +181,23 @@ summary:
 blockers:
   - id: "BLOCK-001"
     severity: "critical"
-    status: "remediation-planned"  # Updated 2025-12-05
+    status: "mitigated"  # Updated 2025-12-05
     remediation_story: "E2.R1"
+    resolution: "PhoenixMLS pivot (E2.R1 complete)"
     title: "Zillow CAPTCHA blocking all extractions"
     description: |
       Fresh extraction validation on 3 test properties revealed PerimeterX
       CAPTCHA blocking 100% of Zillow requests. px-captcha element detected.
       CAPTCHA solve attempts failed ("could not find CAPTCHA button").
+
+      RESOLUTION: E2.R1 pivoted to PhoenixMLS as PRIMARY data source with 95%+
+      reliability and no anti-bot systems. Zillow moved to fallback position.
+      PhoenixMLS extracts all 8 kill-switch fields + 23 MLS metadata fields.
     affected: "E2.S3, E2.S4 - Image extraction pipeline"
-    remediation: "Update ZillowExtractor to use direct zpid URLs or residential proxies"
-    file: "src/phx_home_analysis/services/image_extraction/extractors/zillow.py"
+    remediation: "PhoenixMLS primary source, Zillow fallback"
+    file: "src/phx_home_analysis/services/image_extraction/orchestrator.py"
     created: "2025-12-04"
+    resolved: "2025-12-05"
 
   - id: "BLOCK-002"
     severity: "high"

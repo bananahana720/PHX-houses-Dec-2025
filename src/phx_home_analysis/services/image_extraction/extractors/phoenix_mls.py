@@ -1,23 +1,30 @@
 """Phoenix MLS image extractor implementation.
 
-Extracts property images from phoenixmlssearch.com using BeautifulSoup
-for HTML parsing. Handles search by address and gallery image extraction.
+Extracts property images from phoenixmlssearch.com using stealth browser
+(nodriver) to bypass WAF protection. Handles search by address and gallery
+image extraction.
+
+Enhanced (E2.R1): Now also extracts metadata including MLS fields, kill-switch
+criteria, property details, and school information.
+
+WAF Protection: PhoenixMLS uses RunCloud 7G WAF that blocks standard HTTP
+requests with 403 Forbidden. Stealth browser automation is required.
 """
 
+import asyncio
 import logging
 import re
-from urllib.parse import urljoin
+from typing import Any
+from urllib.parse import quote_plus, urljoin
 
 import httpx
+import nodriver as uc
 from bs4 import BeautifulSoup
 
+from ....config.settings import StealthExtractionConfig
 from ....domain.entities import Property
 from ....domain.enums import ImageSource
-from .base import (
-    ExtractionError,
-    ImageExtractor,
-    SourceUnavailableError,
-)
+from .stealth_base import StealthBrowserExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -60,16 +67,43 @@ PHOENIX_METRO_CITIES = {
 }
 
 
-class PhoenixMLSExtractor(ImageExtractor):
+class PhoenixMLSExtractor(StealthBrowserExtractor):
     """Extract property images from Phoenix MLS Search website.
 
-    Uses BeautifulSoup to parse HTML and extract image URLs from property
-    listings. Searches by address to find property pages, then extracts
-    gallery images.
+    Uses nodriver stealth browser to bypass WAF protection. Searches by
+    address to find property pages, then extracts gallery images and metadata.
 
-    Note: This implementation provides a reasonable skeleton based on common
-    MLS website patterns. May require refinement based on actual site structure.
+    WAF Protection: PhoenixMLS uses RunCloud 7G WAF that blocks standard HTTP
+    requests. Stealth browser automation is required to access the site.
+
+    Architecture:
+    - Extends StealthBrowserExtractor for WAF bypass
+    - Implements _build_search_url() and _extract_urls_from_page()
+    - Preserves existing metadata parsing logic
     """
+
+    def __init__(
+        self,
+        http_client: httpx.AsyncClient | None = None,
+        timeout: float = 30.0,
+        config: StealthExtractionConfig | None = None,
+    ):
+        """Initialize PhoenixMLS extractor with stealth configuration.
+
+        Args:
+            http_client: Shared httpx client (maintained for compatibility)
+            timeout: Request timeout in seconds
+            config: Stealth extraction configuration (loaded from env if not provided)
+        """
+        super().__init__(http_client=http_client, timeout=timeout, config=config)
+
+        # Store metadata from last extraction for orchestrator retrieval
+        self.last_metadata: dict = {}
+
+        logger.info(
+            "%s initialized for stealth extraction",
+            self.name,
+        )
 
     @property
     def source(self) -> ImageSource:
@@ -91,236 +125,176 @@ class PhoenixMLSExtractor(ImageExtractor):
         Returns:
             True if property is in Phoenix metro area
         """
+        # Validate base_url is configured
+        if not hasattr(self.source, "base_url") or not self.source.base_url:
+            logger.warning(f"{self.source.name} has no base_url configured")
+            return False
+
+        # Check if city is in Phoenix metro area
         city_normalized = property.city.lower().strip()
         return city_normalized in PHOENIX_METRO_CITIES
 
-    async def extract_image_urls(self, property: Property) -> list[str]:
-        """Extract all image URLs for a property from Phoenix MLS.
+    def _build_search_url(self, property: Property) -> str:
+        """Build PhoenixMLS search URL from property address.
 
-        Strategy:
-        1. Search for property by address
-        2. Find property listing page URL
-        3. Parse listing page for image gallery
-        4. Extract all image URLs from gallery
+        PhoenixMLS search URL format:
+            /mls/search/?OrderBy=-ListPrice&StandardStatus[]=Active&StreetAddress={address}
 
         Args:
-            property: Property entity to find images for
+            property: Property entity with address components
 
         Returns:
-            List of image URLs discovered
+            Full PhoenixMLS search URL for the property
 
-        Raises:
-            SourceUnavailableError: If site is down or rate limited
-            ExtractionError: If property not found or parsing fails
+        Example:
+            Input: "4732 W Davis Rd", "Glendale", "AZ"
+            Output: "https://phoenixmlssearch.com/mls/search/?...&StreetAddress=4732+W+Davis+Rd+Glendale+AZ"
+        """
+        # Build address query
+        address_query = f"{property.street} {property.city} {property.state}"
+        encoded_address = quote_plus(address_query)
+
+        # Build full URL
+        url = (
+            f"{self.source.base_url}/mls/search/"
+            f"?OrderBy=-ListPrice&StandardStatus[]=Active&StreetAddress={encoded_address}"
+        )
+
+        logger.debug("%s built search URL: %s", self.name, url)
+        return url
+
+    async def _extract_urls_from_page(self, tab: uc.Tab) -> list[str]:
+        """Extract image URLs from PhoenixMLS listing detail page.
+
+        Strategy:
+        1. Get search results page HTML from browser tab
+        2. Find listing link matching the property address
+        3. Navigate to the listing detail page
+        4. Extract image URLs from gallery on detail page
+        5. Extract metadata and cache on property
+
+        Args:
+            tab: Browser tab with loaded PhoenixMLS search results page
+
+        Returns:
+            List of image URLs found
         """
         try:
-            # Step 1: Search for property
-            listing_url = await self._search_property(property)
+            # Step 1: Get search results page HTML
+            search_html = await tab.get_content()
+            search_url = tab.target.url if hasattr(tab, "target") else str(tab.url)
+
+            # Step 2: Find listing detail page URL
+            listing_url = self._find_listing_url(search_html, search_url)
 
             if not listing_url:
                 logger.warning(
-                    f"Property not found on {self.name}: {property.full_address}"
+                    "%s could not find listing detail page link in search results",
+                    self.name,
                 )
                 return []
 
-            # Step 2: Fetch listing page
-            await self._rate_limit()
-            listing_html = await self._fetch_listing_page(listing_url)
+            # Step 3: Navigate to listing detail page
+            logger.debug("%s navigating to listing detail: %s", self.name, listing_url)
+            await tab.get(listing_url)
 
-            # Step 3: Extract image URLs
-            image_urls = self._parse_image_gallery(listing_html, listing_url)
+            # Wait for page to load
+            await asyncio.sleep(2)
+
+            # Step 4: Get listing detail page HTML
+            detail_html = await tab.get_content()
+            detail_url = tab.target.url if hasattr(tab, "target") else str(tab.url)
+
+            # Step 5a: Parse image gallery
+            image_urls = self._parse_image_gallery(detail_html, detail_url)
+
+            # Step 5b: Parse metadata
+            metadata = self._parse_listing_metadata(detail_html)
+            self.last_metadata = metadata
 
             logger.info(
-                f"Extracted {len(image_urls)} images from {self.name} for {property.short_address}"
+                "%s extracted %d image URLs + metadata from listing detail page",
+                self.name,
+                len(image_urls),
             )
+
             return image_urls
 
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code == 429:
-                raise SourceUnavailableError(
-                    self.source,
-                    "Rate limit exceeded",
-                    retry_after=int(e.response.headers.get("Retry-After", 60)),
-                ) from e
-            elif e.response.status_code >= 500:
-                raise SourceUnavailableError(
-                    self.source,
-                    f"Server error: {e.response.status_code}",
-                ) from e
-            else:
-                raise ExtractionError(
-                    f"HTTP error {e.response.status_code} accessing {self.name}"
-                ) from e
-
-        except httpx.TimeoutException as e:
-            raise SourceUnavailableError(
-                self.source,
-                "Request timeout",
-            ) from e
-
         except Exception as e:
-            logger.exception(f"Unexpected error extracting from {self.name}")
-            raise ExtractionError(f"Failed to extract images: {str(e)}") from e
+            logger.error("%s failed to extract URLs from page: %s", self.name, e)
+            return []
 
-    async def download_image(self, url: str) -> tuple[bytes, str]:
-        """Download image and return (data, content_type).
+    def _find_listing_url(self, search_html: str, base_url: str) -> str | None:
+        """Find the listing detail page URL from search results.
 
-        Uses standard HTTP download with retry logic from base class.
+        Searches for listing cards/links in the search results page and extracts
+        the first listing detail page URL.
+
+        Common PhoenixMLS search result patterns:
+        - <a> tags with href to /mls/listing/{id}
+        - Listing cards with data attributes
+        - Property titles with links
 
         Args:
-            url: Image URL to download
+            search_html: HTML content of search results page
+            base_url: Base URL for resolving relative URLs
 
         Returns:
-            Tuple of (image_bytes, content_type)
-
-        Raises:
-            ImageDownloadError: If download fails
+            Absolute URL to listing detail page, or None if not found
         """
-        try:
-            return await self._download_with_retry(url)
-        except Exception as e:
-            logger.error(f"Failed to download image from {url}: {e}")
-            raise
+        soup = BeautifulSoup(search_html, "html.parser")
 
-    async def _search_property(self, property: Property) -> str | None:
-        """Search for property on Phoenix MLS and return listing URL.
-
-        Phoenix MLS search patterns (common approaches):
-        - City-specific search pages (e.g., /phoenix-homes/)
-        - Search form with address input
-        - Direct listing URLs with MLS numbers
-
-        This implementation tries multiple approaches to find the property.
-
-        Args:
-            property: Property to search for
-
-        Returns:
-            Listing page URL if found, None otherwise
-        """
-        # Try city-specific search page
-        city_slug = property.city.lower().replace(" ", "-")
-        search_url = f"{self.source.base_url}/{city_slug}-homes/"
-
-        try:
-            response = await self._http_client.get(search_url)
-
-            if response.status_code == 404:
-                # City page doesn't exist, try alternative search
-                logger.debug(f"City page not found: {search_url}")
-                return await self._advanced_search(property)
-
-            response.raise_for_status()
-
-            soup = BeautifulSoup(response.text, "html.parser")
-
-            # Look for property listings matching the address
-            listing_url = self._find_matching_listing(soup, property)
-
-            if listing_url:
+        # Pattern 1: Look for links to /mls/listing/ pages
+        listing_links = soup.find_all("a", href=re.compile(r"/mls/listing/"))
+        if listing_links:
+            first_link = listing_links[0]
+            href = first_link.get("href")
+            if href:
+                listing_url = urljoin(base_url, str(href))
+                logger.debug("Found listing URL via /mls/listing/ pattern: %s", listing_url)
                 return listing_url
 
-            # If not found on first page, try advanced search
-            return await self._advanced_search(property)
+        # Pattern 2: Look for property cards with data-listing-id
+        property_cards = soup.find_all(["div", "article"], attrs={"data-listing-id": True})
+        for card in property_cards:
+            # Find link within card
+            link = card.find("a", href=True)
+            if link:
+                href = link.get("href")
+                if href and ("/listing/" in str(href) or "/property/" in str(href)):
+                    listing_url = urljoin(base_url, str(href))
+                    logger.debug("Found listing URL via property card: %s", listing_url)
+                    return listing_url
 
-        except httpx.HTTPError as e:
-            logger.warning(f"Error searching for property: {e}")
-            return None
+        # Pattern 3: Look for property title links
+        title_links = soup.find_all("a", class_=re.compile(r"(property|listing)-(title|link)"))
+        if title_links:
+            first_link = title_links[0]
+            href = first_link.get("href")
+            if href:
+                listing_url = urljoin(base_url, str(href))
+                logger.debug("Found listing URL via title link: %s", listing_url)
+                return listing_url
 
-    async def _advanced_search(self, property: Property) -> str | None:
-        """Perform advanced search for property.
+        # Pattern 4: Generic fallback - find any link containing "listing" or "property"
+        all_links = soup.find_all("a", href=True)
+        for link in all_links:
+            href = str(link.get("href", ""))
+            if "/listing/" in href or "/property/" in href:
+                # Exclude search/filter/sort links
+                if "search" not in href and "filter" not in href and "sort" not in href:
+                    listing_url = urljoin(base_url, href)
+                    logger.debug("Found listing URL via generic pattern: %s", listing_url)
+                    return listing_url
 
-        Common MLS sites have search endpoints that accept address parameters.
-        This is a placeholder for more sophisticated search logic.
-
-        Args:
-            property: Property to search for
-
-        Returns:
-            Listing page URL if found, None otherwise
-        """
-        # Phoenix MLS may have a search endpoint - this would need to be
-        # discovered through site inspection
-        logger.debug(
-            f"Advanced search not yet implemented for {property.full_address}"
-        )
+        logger.warning("No listing URL found in search results")
         return None
-
-    def _find_matching_listing(
-        self, soup: BeautifulSoup, property: Property
-    ) -> str | None:
-        """Find listing URL matching the property address in search results.
-
-        Common patterns:
-        - <a> tags with property addresses in text or data attributes
-        - Property cards/tiles with address information
-        - Links containing street names or MLS numbers
-
-        Args:
-            soup: BeautifulSoup object of search results page
-            property: Property to match
-
-        Returns:
-            Absolute URL to listing page if found, None otherwise
-        """
-        # Normalize street name for matching
-        street_normalized = property.street.lower()
-
-        # Extract street number and name (e.g., "1234 Main St" -> "1234", "main")
-        street_match = re.match(r"(\d+)\s+(.+)", street_normalized)
-        if not street_match:
-            logger.warning(f"Could not parse street address: {property.street}")
-            return None
-
-        street_number = street_match.group(1)
-        street_name_parts = street_match.group(2).split()[:2]  # First 2 words
-
-        # Common selectors for MLS listing links
-        # This is a generic pattern - would need refinement based on actual site
-        for link in soup.find_all("a", href=True):
-            link_text = link.get_text(strip=True).lower()
-            href_attr = link.get("href")
-
-            # href can be None or a list in BeautifulSoup
-            if not href_attr:
-                continue
-            if isinstance(href_attr, list):
-                href = href_attr[0] if href_attr else ""
-            else:
-                href = str(href_attr)
-            if not href:
-                continue
-
-            # Check if link text contains street number and name
-            if street_number in link_text and any(
-                part in link_text for part in street_name_parts
-            ):
-                # Convert relative URL to absolute
-                absolute_url = urljoin(self.source.base_url, href)
-                logger.debug(f"Found matching listing: {absolute_url}")
-                return absolute_url
-
-        logger.debug(f"No matching listing found for {property.street}")
-        return None
-
-    async def _fetch_listing_page(self, url: str) -> str:
-        """Fetch HTML content of listing page.
-
-        Args:
-            url: Listing page URL
-
-        Returns:
-            HTML content as string
-
-        Raises:
-            httpx.HTTPError: If request fails
-        """
-        response = await self._http_client.get(url)
-        response.raise_for_status()
-        return response.text
 
     def _parse_image_gallery(self, html: str, base_url: str) -> list[str]:
         """Parse image gallery from listing page HTML.
+
+        Prioritizes SparkPlatform CDN URLs (cdn.photos.sparkplatform.com) which
+        are the actual property photos. Filters out site assets like logos, icons.
 
         Common MLS image gallery patterns:
         - <img> tags in gallery containers (class/id with "gallery", "photos", etc.)
@@ -333,10 +307,11 @@ class PhoenixMLSExtractor(ImageExtractor):
             base_url: Base URL for resolving relative URLs
 
         Returns:
-            List of absolute image URLs
+            List of absolute image URLs (prioritized: SparkPlatform first, then others)
         """
         soup = BeautifulSoup(html, "html.parser")
-        image_urls: list[str] = []
+        sparkplatform_urls: list[str] = []
+        other_urls: list[str] = []
         seen_urls: set[str] = set()
 
         # Pattern 1: Look for common gallery containers
@@ -349,8 +324,11 @@ class PhoenixMLSExtractor(ImageExtractor):
             # Find all images in container
             for img in container.find_all("img"):
                 url = self._extract_image_url(img, base_url)
-                if url and url not in seen_urls:
-                    image_urls.append(url)
+                if url and url not in seen_urls and self._is_property_image(url):
+                    if "cdn.photos.sparkplatform.com" in url:
+                        sparkplatform_urls.append(url)
+                    else:
+                        other_urls.append(url)
                     seen_urls.add(url)
 
         # Pattern 2: Look for image links (thumbnail -> full size)
@@ -368,8 +346,11 @@ class PhoenixMLSExtractor(ImageExtractor):
             # Check if href points to an image file
             if self._is_image_url(href):
                 absolute_url = urljoin(base_url, href)
-                if absolute_url not in seen_urls:
-                    image_urls.append(absolute_url)
+                if absolute_url not in seen_urls and self._is_property_image(absolute_url):
+                    if "cdn.photos.sparkplatform.com" in absolute_url:
+                        sparkplatform_urls.append(absolute_url)
+                    else:
+                        other_urls.append(absolute_url)
                     seen_urls.add(absolute_url)
 
         # Pattern 3: Look for script tags with image arrays
@@ -380,11 +361,20 @@ class PhoenixMLSExtractor(ImageExtractor):
                 js_image_urls = self._extract_urls_from_script(script_text)
                 for url in js_image_urls:
                     absolute_url = urljoin(base_url, url)
-                    if absolute_url not in seen_urls:
-                        image_urls.append(absolute_url)
+                    if absolute_url not in seen_urls and self._is_property_image(absolute_url):
+                        if "cdn.photos.sparkplatform.com" in absolute_url:
+                            sparkplatform_urls.append(absolute_url)
+                        else:
+                            other_urls.append(absolute_url)
                         seen_urls.add(absolute_url)
 
-        logger.debug(f"Parsed {len(image_urls)} image URLs from gallery")
+        # Prioritize SparkPlatform CDN URLs (actual property photos)
+        image_urls = sparkplatform_urls + other_urls
+
+        logger.debug(
+            f"Parsed {len(image_urls)} image URLs from gallery "
+            f"({len(sparkplatform_urls)} SparkPlatform, {len(other_urls)} other)"
+        )
         return image_urls
 
     def _extract_image_url(self, img_tag: object, base_url: str) -> str | None:
@@ -400,7 +390,6 @@ class PhoenixMLSExtractor(ImageExtractor):
             Absolute image URL or None
         """
         # img_tag is a BeautifulSoup Tag object - type as Any for attribute access
-        from typing import Any
         tag: Any = img_tag
 
         # Try common image URL attributes
@@ -430,6 +419,45 @@ class PhoenixMLSExtractor(ImageExtractor):
         url_lower = url.lower()
         return any(url_lower.endswith(ext) for ext in image_extensions)
 
+    def _is_property_image(self, url: str) -> bool:
+        """Check if URL is a property image (not site asset).
+
+        Filters out:
+        - Site logos (logo.gif, logo.png, etc.)
+        - Icons and UI elements (icon-, sprite-, ui-)
+        - Thumbnails smaller than property photos
+        - Placeholder images
+
+        Args:
+            url: Image URL to check
+
+        Returns:
+            True if URL appears to be a property photo
+        """
+        url_lower = url.lower()
+
+        # Filter out site assets by filename patterns
+        site_asset_patterns = [
+            "logo",
+            "icon-",
+            "sprite",
+            "ui-",
+            "button",
+            "banner",
+            "header",
+            "footer",
+            "placeholder",
+            "loading",
+            "watermark",
+        ]
+
+        for pattern in site_asset_patterns:
+            if pattern in url_lower:
+                logger.debug(f"Blocked URL: {url} (matched pattern: {pattern})")
+                return False
+
+        return True
+
     def _extract_urls_from_script(self, script_text: str) -> list[str]:
         """Extract image URLs from JavaScript code.
 
@@ -455,3 +483,192 @@ class PhoenixMLSExtractor(ImageExtractor):
                 urls.append(match)
 
         return urls
+
+    def _parse_listing_metadata(self, html: str) -> dict[str, Any]:
+        """Parse listing metadata from PhoenixMLS page HTML.
+
+        Extracts all MLS fields from listing detail page using BeautifulSoup
+        and structured selectors.
+
+        Args:
+            html: HTML content of listing page
+
+        Returns:
+            Dict of metadata fields (property_type, beds, baths, etc.)
+        """
+        soup = BeautifulSoup(html, "html.parser")
+        metadata: dict[str, Any] = {}
+
+        # MLS Number (e.g., "MLS #: 6789012")
+        mls_elem = soup.find(string=re.compile(r"MLS #"))
+        if mls_elem:
+            mls_match = re.search(r"MLS #:\s*(\w+)", str(mls_elem))
+            if mls_match:
+                metadata["mls_number"] = mls_match.group(1)
+
+        # Price
+        price_elem = soup.find("span", class_=re.compile(r"price|listing-price"))
+        if price_elem:
+            price_text = price_elem.get_text(strip=True)
+            price_match = re.search(r"\$([0-9,]+)", price_text)
+            if price_match:
+                metadata["price"] = int(price_match.group(1).replace(",", ""))
+
+        # Property Details Table (common pattern on MLS sites)
+        details_table = soup.find("table", class_=re.compile(r"details|facts|features"))
+        if details_table:
+            for row in details_table.find_all("tr"):
+                cells = row.find_all(["th", "td"])
+                if len(cells) >= 2:
+                    label = cells[0].get_text(strip=True).lower()
+                    value = cells[1].get_text(strip=True)
+
+                    # Map common labels to fields
+                    if "bed" in label:
+                        metadata["beds"] = self._parse_int_safe(value)
+                    elif "bath" in label:
+                        metadata["baths"] = self._parse_float_safe(value)
+                    elif "sqft" in label or "square feet" in label:
+                        metadata["sqft"] = self._parse_int_safe(value.replace(",", ""))
+                    elif "lot size" in label:
+                        # Handle "8,500 sqft" or "0.19 acres"
+                        if "acre" in value.lower():
+                            acres = self._parse_float_safe(value.split()[0])
+                            if acres:
+                                metadata["lot_sqft"] = int(acres * 43560)
+                        else:
+                            metadata["lot_sqft"] = self._parse_int_safe(value.replace(",", ""))
+                    elif "year built" in label:
+                        metadata["year_built"] = self._parse_int_safe(value)
+                    elif "garage" in label:
+                        metadata["garage_spaces"] = self._parse_int_safe(value)
+                    elif "hoa" in label or "association fee" in label:
+                        # Handle "No Fees" or "$150/month"
+                        if "no fee" in value.lower():
+                            metadata["hoa_fee"] = 0.0
+                        else:
+                            hoa_match = re.search(r"\$([0-9,]+)", value)
+                            if hoa_match:
+                                metadata["hoa_fee"] = float(hoa_match.group(1).replace(",", ""))
+                    elif "pool" in label:
+                        metadata["has_pool"] = "yes" in value.lower() or "private" in value.lower()
+                    elif "sewer" in label:
+                        if "public" in value.lower() or "city" in value.lower():
+                            metadata["sewer_type"] = "city"
+                        elif "septic" in value.lower():
+                            metadata["sewer_type"] = "septic"
+                    elif "property type" in label:
+                        metadata["property_type"] = value
+                    elif "style" in label or "architecture" in label:
+                        metadata["architecture_style"] = value
+                    elif "cooling" in label:
+                        metadata["cooling_type"] = value
+                    elif "heating" in label:
+                        metadata["heating_type"] = value
+                    elif "water" in label:
+                        metadata["water_source"] = value
+                    elif "roof" in label:
+                        metadata["roof_material"] = value
+
+        # Schools (usually in separate section)
+        schools_section = soup.find("div", class_=re.compile(r"school|education"))
+        if schools_section:
+            for school_elem in schools_section.find_all(["div", "span", "p"]):
+                text = school_elem.get_text(strip=True)
+                if "elementary" in text.lower():
+                    # Extract school name after "Elementary:"
+                    school_match = re.search(r"Elementary:?\s*(.+)", text, re.IGNORECASE)
+                    if school_match:
+                        metadata["elementary_school_name"] = school_match.group(1).strip()
+                elif "middle" in text.lower():
+                    school_match = re.search(r"Middle:?\s*(.+)", text, re.IGNORECASE)
+                    if school_match:
+                        metadata["middle_school_name"] = school_match.group(1).strip()
+                elif "high" in text.lower():
+                    school_match = re.search(r"High:?\s*(.+)", text, re.IGNORECASE)
+                    if school_match:
+                        metadata["high_school_name"] = school_match.group(1).strip()
+
+        # Features (comma-separated lists)
+        features_section = soup.find("div", class_=re.compile(r"features|amenities"))
+        if features_section:
+            # Kitchen features
+            kitchen_elem = features_section.find(string=re.compile(r"Kitchen", re.IGNORECASE))
+            if kitchen_elem:
+                kitchen_parent = kitchen_elem.find_parent(["div", "section"])
+                if kitchen_parent:
+                    features_text = kitchen_parent.get_text(strip=True)
+                    metadata["kitchen_features"] = [
+                        f.strip() for f in features_text.split(",") if f.strip()
+                    ]
+
+            # Master bath features
+            master_elem = features_section.find(string=re.compile(r"Master Bath", re.IGNORECASE))
+            if master_elem:
+                master_parent = master_elem.find_parent(["div", "section"])
+                if master_parent:
+                    features_text = master_parent.get_text(strip=True)
+                    metadata["master_bath_features"] = [
+                        f.strip() for f in features_text.split(",") if f.strip()
+                    ]
+
+            # Interior features
+            interior_elem = features_section.find(string=re.compile(r"Interior", re.IGNORECASE))
+            if interior_elem:
+                interior_parent = interior_elem.find_parent(["div", "section"])
+                if interior_parent:
+                    features_text = interior_parent.get_text(strip=True)
+                    metadata["interior_features_list"] = [
+                        f.strip() for f in features_text.split(",") if f.strip()
+                    ]
+
+            # Exterior features
+            exterior_elem = features_section.find(string=re.compile(r"Exterior", re.IGNORECASE))
+            if exterior_elem:
+                exterior_parent = exterior_elem.find_parent(["div", "section"])
+                if exterior_parent:
+                    features_text = exterior_parent.get_text(strip=True)
+                    metadata["exterior_features_list"] = [
+                        f.strip() for f in features_text.split(",") if f.strip()
+                    ]
+
+        # Cross streets
+        cross_elem = soup.find(string=re.compile(r"Cross Streets", re.IGNORECASE))
+        if cross_elem:
+            cross_parent = cross_elem.find_parent(["div", "span", "p"])
+            if cross_parent:
+                cross_text = cross_parent.get_text(strip=True)
+                cross_match = re.search(r"Cross Streets:?\s*(.+)", cross_text, re.IGNORECASE)
+                if cross_match:
+                    metadata["cross_streets"] = cross_match.group(1).strip()
+
+        return metadata
+
+    def _parse_int_safe(self, value: str) -> int | None:
+        """Safely parse integer from string, returning None on failure."""
+        try:
+            return int(re.sub(r"[^\d]", "", value))
+        except (ValueError, AttributeError):
+            return None
+
+    def _parse_float_safe(self, value: str) -> float | None:
+        """Safely parse float from string, returning None on failure."""
+        try:
+            cleaned = re.sub(r"[^\d.]", "", value)
+            return float(cleaned)
+        except (ValueError, AttributeError):
+            return None
+
+    def get_cached_metadata(self, property: Property) -> dict[str, Any] | None:
+        """Retrieve cached metadata from property object.
+
+        After extract_image_urls() is called, metadata is cached on the
+        property object for later enrichment merge.
+
+        Args:
+            property: Property object with cached metadata
+
+        Returns:
+            Dict of metadata fields or None if not cached
+        """
+        return getattr(property, "_mls_metadata_cache", None)

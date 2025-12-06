@@ -324,6 +324,7 @@ class ImageSource(Enum):
 
     MARICOPA_ASSESSOR = "maricopa_assessor"
     PHOENIX_MLS = "phoenix_mls"
+    PHOENIX_MLS_SEARCH = "phoenix_mls_search"
     ZILLOW = "zillow"
     REDFIN = "redfin"
 
@@ -337,6 +338,7 @@ class ImageSource(Enum):
         return {
             ImageSource.MARICOPA_ASSESSOR: "Maricopa County Assessor",
             ImageSource.PHOENIX_MLS: "Phoenix MLS",
+            ImageSource.PHOENIX_MLS_SEARCH: "Phoenix MLS Search",
             ImageSource.ZILLOW: "Zillow",
             ImageSource.REDFIN: "Redfin",
         }[self]
@@ -351,6 +353,7 @@ class ImageSource(Enum):
         return {
             ImageSource.MARICOPA_ASSESSOR: "https://mcassessor.maricopa.gov",
             ImageSource.PHOENIX_MLS: "https://phoenixmlssearch.com",
+            ImageSource.PHOENIX_MLS_SEARCH: "https://phoenixmlssearch.com",
             ImageSource.ZILLOW: "https://www.zillow.com",
             ImageSource.REDFIN: "https://www.redfin.com",
         }[self]
@@ -362,7 +365,7 @@ class ImageSource(Enum):
         Returns:
             True if Playwright needed, False if simple HTTP works
         """
-        return self in {ImageSource.ZILLOW, ImageSource.REDFIN}
+        return self in {ImageSource.ZILLOW, ImageSource.REDFIN, ImageSource.PHOENIX_MLS_SEARCH}
 
     @property
     def rate_limit_seconds(self) -> float:
@@ -374,6 +377,7 @@ class ImageSource(Enum):
         return {
             ImageSource.MARICOPA_ASSESSOR: 2.0,  # Conservative for gov site
             ImageSource.PHOENIX_MLS: 1.0,
+            ImageSource.PHOENIX_MLS_SEARCH: 2.0,
             ImageSource.ZILLOW: 0.5,
             ImageSource.REDFIN: 0.5,
         }[self]

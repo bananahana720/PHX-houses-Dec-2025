@@ -16,7 +16,7 @@ from .base import ScoringStrategy
 from .strategies import ALL_STRATEGIES
 
 if TYPE_CHECKING:
-    from .explanation import FullScoreExplanation, ScoringExplainer
+    from .explanation import ScoringExplainer
 
 
 class PropertyScorer:
@@ -57,7 +57,7 @@ class PropertyScorer:
             self._strategies = strategies
 
         # Cache for ScoringExplainer instance (lazily initialized)
-        self._explainer: Any = None  # type: ScoringExplainer | None
+        self._explainer: ScoringExplainer | None = None
 
     @property
     def weights(self) -> ScoringWeights:

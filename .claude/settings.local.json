@@ -24,7 +24,11 @@
       "WebFetch(domain:scrapeops.io)",
       "WebFetch(domain:scrapfly.io)",
       "mcp__playwright__browser_install",
-      "Skill(orchestration)"
+      "Skill(orchestration)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "mcp__playwright__browser_network_requests",
+      "WebFetch(domain:phoenixmlssearch.com)"
     ],
     "deny": [],
     "ask": []
