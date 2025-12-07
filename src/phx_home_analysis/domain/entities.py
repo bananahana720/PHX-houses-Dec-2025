@@ -468,6 +468,7 @@ class EnrichmentData:
         - full_address: CSV/user input
         - normalized_address: Computed from full_address (lowercase, no punctuation)
         - lot_sqft, year_built, garage_spaces, sewer_type, tax_annual: County Assessor
+        - beds, baths, sqft: MLS/listing extraction (Phase 1)
         - hoa_fee, school_rating, orientation: Phase 1 extraction
         - kitchen_layout_score, master_suite_score, etc.: Phase 2 image assessment
 
@@ -492,6 +493,12 @@ class EnrichmentData:
 
     # HOA and location data
     hoa_fee: float | None = None  # Monthly HOA fee (float for precision)
+
+    # Basic listing data (from MLS/listing sources)
+    beds: int | None = None  # Number of bedrooms
+    baths: float | None = None  # Number of bathrooms (float for half baths)
+    sqft: int | None = None  # Approximate living area square footage
+
     commute_minutes: int | None = None
     school_district: str | None = None
     school_rating: float | None = None

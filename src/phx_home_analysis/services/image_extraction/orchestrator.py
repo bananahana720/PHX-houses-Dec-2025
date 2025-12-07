@@ -47,6 +47,7 @@ from .extractors.base import (
     SourceUnavailableError,
 )
 from .image_processor import ImageProcessor
+from .metadata_persister import MetadataPersister
 from .metrics import CaptchaMetrics
 from .run_logger import PropertyChanges, RunLogger
 from .standardizer import ImageProcessingError, ImageStandardizer
@@ -315,6 +316,12 @@ class ImageExtractionOrchestrator:
             base_dir=self.processed_dir,
             deduplicator=self.deduplicator,
             standardizer=self.standardizer,
+        )
+
+        # Initialize metadata persister for listing data
+        self.metadata_persister = MetadataPersister(
+            enrichment_path=self.base_dir.parent / "enrichment_data.json",
+            lineage_path=self.base_dir.parent / "field_lineage.json",
         )
 
         # State tracking
@@ -1247,6 +1254,20 @@ class ImageExtractionOrchestrator:
                         logger.info(
                             f"{extractor.name}: collected metadata: {list(metadata.keys())}"
                         )
+
+                        # Persist metadata to enrichment_data.json with provenance
+                        try:
+                            self.metadata_persister.persist_metadata(
+                                full_address=property.full_address,
+                                property_hash=property_hash,
+                                metadata=metadata,
+                                agent_id="listing-browser",
+                                phase="phase1",
+                            )
+                        except Exception as persist_err:
+                            logger.warning(
+                                f"Failed to persist metadata for {property.full_address}: {persist_err}"
+                            )
                 else:
                     urls = result_data
 
@@ -1264,6 +1285,20 @@ class ImageExtractionOrchestrator:
                         f"{extractor.name}: collected metadata (legacy): "
                         f"{list(extractor.last_metadata.keys())}"
                     )
+
+                    # Persist legacy metadata to enrichment_data.json with provenance
+                    try:
+                        self.metadata_persister.persist_metadata(
+                            full_address=property.full_address,
+                            property_hash=property_hash,
+                            metadata=extractor.last_metadata,
+                            agent_id="listing-browser",
+                            phase="phase1",
+                        )
+                    except Exception as persist_err:
+                        logger.warning(
+                            f"Failed to persist legacy metadata for {property.full_address}: {persist_err}"
+                        )
 
                 # Download and process each image
                 for url in urls:
@@ -1339,7 +1374,9 @@ class ImageExtractionOrchestrator:
 
                         # Handle duplicates (processed_image is from ImageProcessor)
                         if processed_image.is_duplicate:
-                            logger.debug(f"Duplicate detected: {url} (matches {processed_image.duplicate_of})")
+                            logger.debug(
+                                f"Duplicate detected: {url} (matches {processed_image.duplicate_of})"
+                            )
                             source_stats.duplicates_detected += 1
                             result.duplicate_images += 1
                             prop_changes.duplicates += 1
@@ -1354,7 +1391,6 @@ class ImageExtractionOrchestrator:
                                     source=extractor.source.value,
                                 )
                             continue
-
 
                         # New unique image - create metadata
                         now = datetime.now().astimezone().isoformat()
@@ -1377,7 +1413,6 @@ class ImageExtractionOrchestrator:
                             created_by_run_id=self.run_id,
                             content_hash=processed_image.content_hash,
                         )
-
 
                         # Register URL in tracker
                         if incremental:

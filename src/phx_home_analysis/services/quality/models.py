@@ -33,6 +33,7 @@ class DataSource(Enum):
     MARICOPA_GIS = "maricopa_gis"
     ZILLOW = "zillow"
     REDFIN = "redfin"
+    PHOENIX_MLS = "phoenix_mls"
     GOOGLE_MAPS = "google_maps"
     IMAGE_ASSESSMENT = "image_assessment"
 
@@ -60,6 +61,7 @@ class DataSource(Enum):
             DataSource.MARICOPA_GIS: 0.95,  # Official county GIS data
             DataSource.ZILLOW: 0.85,  # Zillow/Redfin scraping
             DataSource.REDFIN: 0.85,  # Zillow/Redfin scraping
+            DataSource.PHOENIX_MLS: 0.87,  # Phoenix regional MLS (authoritative listing data)
             DataSource.GOOGLE_MAPS: 0.90,  # Google Maps API
             DataSource.IMAGE_ASSESSMENT: 0.80,  # AI image analysis
         }
