@@ -378,7 +378,7 @@ class TestAtomicSave:
 
         # Create multiple backup files
         for i in range(7):
-            backup = tmp_path / f"test.202312{10+i:02d}_120000.bak.json"
+            backup = tmp_path / f"test.202312{10 + i:02d}_120000.bak.json"
             backup.write_text("{}")
             # Ensure different modification times
             time.sleep(0.01)
@@ -788,9 +788,7 @@ class TestConcurrentExtraction:
     def mock_properties(self):
         """Create a list of mock properties for testing."""
         return [
-            self.MockProperty(
-                full_address=f"{i} Main St, Phoenix, AZ 85001", street=f"{i} Main St"
-            )
+            self.MockProperty(full_address=f"{i} Main St, Phoenix, AZ 85001", street=f"{i} Main St")
             for i in range(1, 6)
         ]
 
@@ -820,9 +818,7 @@ class TestConcurrentExtraction:
         mock_client = AsyncMock()
         mock_client.extract_for_address = AsyncMock(return_value=mock_parcel)
 
-        results = await extract_batch_concurrent(
-            mock_client, mock_properties, max_concurrent=2
-        )
+        results = await extract_batch_concurrent(mock_client, mock_properties, max_concurrent=2)
 
         assert len(results) == 5
         # All should succeed
@@ -849,16 +845,12 @@ class TestConcurrentExtraction:
             call_count += 1
             if call_count % 2 == 0:
                 raise Exception("API error")
-            return ParcelData(
-                apn="123", full_address=street, lot_sqft=8000, source="test"
-            )
+            return ParcelData(apn="123", full_address=street, lot_sqft=8000, source="test")
 
         mock_client = AsyncMock()
         mock_client.extract_for_address = mock_extract
 
-        results = await extract_batch_concurrent(
-            mock_client, mock_properties, max_concurrent=2
-        )
+        results = await extract_batch_concurrent(mock_client, mock_properties, max_concurrent=2)
 
         # All results should be present
         assert len(results) == 5
@@ -869,9 +861,7 @@ class TestConcurrentExtraction:
         assert len(failures) > 0
 
     @pytest.mark.asyncio
-    async def test_extract_batch_concurrent_progress_callback(
-        self, mock_properties, mock_parcel
-    ):
+    async def test_extract_batch_concurrent_progress_callback(self, mock_properties, mock_parcel):
         """Test that progress callback is called for each property."""
         sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
         try:
@@ -929,7 +919,9 @@ class TestConcurrentExtraction:
         mock_client.extract_for_address = mock_extract
 
         await extract_batch_concurrent(
-            mock_client, mock_properties, max_concurrent=2  # Limit to 2
+            mock_client,
+            mock_properties,
+            max_concurrent=2,  # Limit to 2
         )
 
         # Should never exceed the semaphore limit

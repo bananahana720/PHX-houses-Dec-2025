@@ -11,7 +11,6 @@ This module implements scoring strategies for property systems and lot:
 Total Section B maximum: 175 points
 """
 
-
 from ....config.constants import (
     DEFAULT_NEUTRAL_SCORE,
     PLUMBING_YEAR_AGING_MIN,
@@ -326,7 +325,7 @@ class SolarStatusScorer(ScoringStrategy):
         """
         from ....domain.enums import SolarStatus
 
-        solar_status = getattr(property, 'solar_status', None)
+        solar_status = getattr(property, "solar_status", None)
 
         if solar_status is None:
             return 4.0  # Unknown - conservative middle
@@ -344,11 +343,11 @@ class SolarStatusScorer(ScoringStrategy):
         else:
             # Handle string comparison for backward compatibility
             status = solar_status.lower() if isinstance(solar_status, str) else str(solar_status)
-            if status in ('owned', 'solarstatus.owned'):
+            if status in ("owned", "solarstatus.owned"):
                 return 10.0  # Full points - asset
-            elif status in ('none', 'solarstatus.none'):
+            elif status in ("none", "solarstatus.none"):
                 return 5.0  # Neutral
-            elif status in ('leased', 'solarstatus.leased'):
+            elif status in ("leased", "solarstatus.leased"):
                 return 0.0  # Liability
 
         return 4.0  # Unknown default

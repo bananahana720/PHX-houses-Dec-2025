@@ -74,6 +74,7 @@ development_status:
   2-R1-wave2-imageprocessor-wiring: done  # Fixed extractor creation bug, 31+ images now saving - 2025-12-06 (0b4fa88, 3697b0c)
   2-R1-wave3-metadata-persistence: done  # Kill-switch auto-persist to enrichment_data.json - 2025-12-06 (02041da)
   2-R2-phoenixmls-full-listing-extraction: done  # Extract 35 fields (Phase 1 MLS scope) from PhoenixMLS (P1, 8 pts) - completed 2025-12-07, 84 tests, 94% live coverage
+  2-R3-phoenixmls-extended-extraction: done  # Expand from 33 to 70+ fields (P1, 13 pts) - completed 2025-12-07, 138 tests
 
   # =============================================================================
   # Epic 3: Kill-Switch Filtering System

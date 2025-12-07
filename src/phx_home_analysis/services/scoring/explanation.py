@@ -151,19 +151,25 @@ class FullScoreExplanation:
 
         # Header with score and tier
         pct = (self.total_score / self.max_score) * 100
-        lines.append(f"## Property Score: {self.total_score:.0f}/{self.max_score:.0f} ({pct:.0f}%) - {self.tier.upper()}")
+        lines.append(
+            f"## Property Score: {self.total_score:.0f}/{self.max_score:.0f} ({pct:.0f}%) - {self.tier.upper()}"
+        )
         lines.append("")
 
         # Tier context
         if self.next_tier and self.points_to_next_tier:
-            lines.append(f"**{self.points_to_next_tier:.0f} points from {self.next_tier} tier** - {self.summary}")
+            lines.append(
+                f"**{self.points_to_next_tier:.0f} points from {self.next_tier} tier** - {self.summary}"
+            )
         else:
             lines.append(f"**Top tier achieved** - {self.summary}")
         lines.append("")
 
         # Section breakdowns
         for section in self.sections:
-            lines.append(f"### Section {section.section_letter}: {section.section} ({section.total_score:.0f}/{section.max_score:.0f} pts, {section.percentage:.0f}%)")
+            lines.append(
+                f"### Section {section.section_letter}: {section.section} ({section.total_score:.0f}/{section.max_score:.0f} pts, {section.percentage:.0f}%)"
+            )
             lines.append(section.summary)
             lines.append("")
 
@@ -171,7 +177,9 @@ class FullScoreExplanation:
             lines.append("| Criterion | Score | Details |")
             lines.append("|-----------|-------|---------|")
             for criterion in section.criteria:
-                score_text = f"{criterion.score:.0f}/{criterion.max_score:.0f} ({criterion.percentage:.0f}%)"
+                score_text = (
+                    f"{criterion.score:.0f}/{criterion.max_score:.0f} ({criterion.percentage:.0f}%)"
+                )
                 lines.append(f"| {criterion.criterion} | {score_text} | {criterion.reasoning} |")
             lines.append("")
 
@@ -211,7 +219,9 @@ class FullScoreExplanation:
             "tier": self.tier,
             "tier_threshold": round(self.tier_threshold, 1),
             "next_tier": self.next_tier,
-            "points_to_next_tier": round(self.points_to_next_tier, 1) if self.points_to_next_tier else None,
+            "points_to_next_tier": round(self.points_to_next_tier, 1)
+            if self.points_to_next_tier
+            else None,
             "sections": [s.to_dict() for s in self.sections],
             "summary": self.summary,
             "top_strengths": self.top_strengths,
@@ -524,10 +534,7 @@ class ScoringExplainer:
         total_score = sum(s.weighted_score for s in scores)
         percentage = (total_score / max_score * 100) if max_score > 0 else 0
 
-        criteria = [
-            self._explain_criterion(score, property)
-            for score in scores
-        ]
+        criteria = [self._explain_criterion(score, property) for score in scores]
 
         # Identify strengths and weaknesses
         strengths = [c.criterion for c in criteria if c.percentage >= 70]
@@ -735,9 +742,7 @@ class ScoringExplainer:
                 return str(value)
         return value
 
-    def _determine_tier_info(
-        self, total: float
-    ) -> tuple[str, float, str | None, float | None]:
+    def _determine_tier_info(self, total: float) -> tuple[str, float, str | None, float | None]:
         """Determine tier classification and points to next tier.
 
         Args:
@@ -790,7 +795,9 @@ class ScoringExplainer:
             return f"Exceptional property with standout {strongest.section.lower()}"
         elif tier == "Contender":
             if weakest.percentage < 50:
-                return f"Strong candidate with {weakest.section.lower()} as primary improvement area"
+                return (
+                    f"Strong candidate with {weakest.section.lower()} as primary improvement area"
+                )
             else:
                 return "Strong candidate with balanced scores across all sections"
         else:

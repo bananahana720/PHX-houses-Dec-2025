@@ -63,7 +63,9 @@ def _ensure_log_directory() -> Path:
         Path to logs directory
     """
     # Get project root (3 levels up from this file)
-    project_root = Path(__file__).parents[5]  # phx_home_analysis/services/image_extraction/metrics.py -> root
+    project_root = Path(__file__).parents[
+        5
+    ]  # phx_home_analysis/services/image_extraction/metrics.py -> root
     logs_dir = project_root / "data" / "logs"
     logs_dir.mkdir(parents=True, exist_ok=True)
     return logs_dir
@@ -327,7 +329,7 @@ class CaptchaMetrics:
                 f"CRITICAL: CAPTCHA solve rate {self.solve_rate:.1%} < 50% over "
                 f"{self.captcha_encounters} attempts. Recommend: (1) Check proxy rotation, "
                 "(2) Verify hold duration randomization, (3) Review anti-detection techniques, "
-                "(4) Consider longer delays between requests."
+                "(4) Consider longer delays between requests.",
             )
 
         # WARNING: High encounter rate suggests detection
@@ -337,7 +339,7 @@ class CaptchaMetrics:
                 f"WARNING: CAPTCHA encounter rate {self.encounter_rate:.1%} > 50% of "
                 f"{self._extraction_attempts} extractions. Anti-bot detection may be triggering. "
                 "Consider: (1) Rotating proxies, (2) Increasing delays, "
-                "(3) Randomizing viewport/user-agent."
+                "(3) Randomizing viewport/user-agent.",
             )
 
         # INFO: First CAPTCHA is noteworthy for tracking
@@ -345,7 +347,7 @@ class CaptchaMetrics:
             return (
                 True,
                 f"INFO: First CAPTCHA encountered in this session (solve rate: "
-                f"{self.solve_rate:.1%}). Monitoring for degradation."
+                f"{self.solve_rate:.1%}). Monitoring for degradation.",
             )
 
         return (False, "")

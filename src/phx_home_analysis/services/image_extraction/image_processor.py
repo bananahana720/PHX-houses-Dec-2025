@@ -233,7 +233,9 @@ class ImageProcessor:
             # Step 2: Check for visual duplicates
             is_dup, original_id = self._deduplicator.is_duplicate(phash, dhash)
             if is_dup:
-                logger.debug("Visual duplicate detected: %s matches %s", source_url[:50], original_id)
+                logger.debug(
+                    "Visual duplicate detected: %s matches %s", source_url[:50], original_id
+                )
                 return ProcessedImage(
                     image_id=original_id or "",
                     content_hash=original_id or "",
@@ -356,5 +358,7 @@ class ImageProcessor:
         return {
             "base_dir": str(self.base_dir),
             "file_count": file_count,
-            "deduplicator_stats": self._deduplicator.get_stats() if hasattr(self._deduplicator, "get_stats") else {},
+            "deduplicator_stats": self._deduplicator.get_stats()
+            if hasattr(self._deduplicator, "get_stats")
+            else {},
         }

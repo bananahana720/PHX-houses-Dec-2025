@@ -45,18 +45,20 @@ class MonthlyCosts:
         Returns:
             Sum of all monthly cost components
         """
-        return sum([
-            self.mortgage,
-            self.property_tax,
-            self.insurance,
-            self.utilities,
-            self.water,
-            self.trash,
-            self.pool_maintenance,
-            self.maintenance_reserve,
-            self.hoa_fee,
-            self.solar_lease,
-        ])
+        return sum(
+            [
+                self.mortgage,
+                self.property_tax,
+                self.insurance,
+                self.utilities,
+                self.water,
+                self.trash,
+                self.pool_maintenance,
+                self.maintenance_reserve,
+                self.hoa_fee,
+                self.solar_lease,
+            ]
+        )
 
     @property
     def piti(self) -> float:

@@ -85,7 +85,7 @@ class TestQualityMetricsCalculator:
         }
         field_confidences = {
             "address": 0.90,  # HIGH
-            "beds": 0.75,     # LOW (below 0.80 threshold)
+            "beds": 0.75,  # LOW (below 0.80 threshold)
             "orientation": 0.70,  # LOW
         }
 

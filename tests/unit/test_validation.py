@@ -589,26 +589,30 @@ class TestPropertyValidator:
     def test_valid_property_validation(self):
         """Test valid property passes validation."""
         validator = PropertyValidator()
-        result = validator.validate({
-            "address": "123 Main Street, Phoenix, AZ 85001",
-            "beds": 4,
-            "baths": 2.0,
-            "sqft": 2000,
-            "price": 475000,
-        })
+        result = validator.validate(
+            {
+                "address": "123 Main Street, Phoenix, AZ 85001",
+                "beds": 4,
+                "baths": 2.0,
+                "sqft": 2000,
+                "price": 475000,
+            }
+        )
         assert result.is_valid
         assert len(result.errors) == 0
 
     def test_invalid_property_validation(self):
         """Test invalid property fails validation."""
         validator = PropertyValidator()
-        result = validator.validate({
-            "address": "123 Main Street, Phoenix, AZ 85001",
-            "beds": -1,  # Invalid
-            "baths": 2.0,
-            "sqft": 2000,
-            "price": 475000,
-        })
+        result = validator.validate(
+            {
+                "address": "123 Main Street, Phoenix, AZ 85001",
+                "beds": -1,  # Invalid
+                "baths": 2.0,
+                "sqft": 2000,
+                "price": 475000,
+            }
+        )
         assert not result.is_valid
         assert len(result.errors) > 0
 
@@ -616,34 +620,40 @@ class TestPropertyValidator:
         """Test ValidationResult can be used as boolean."""
         validator = PropertyValidator()
 
-        valid_result = validator.validate({
-            "address": "123 Main Street, Phoenix, AZ 85001",
-            "beds": 4,
-            "baths": 2.0,
-            "sqft": 2000,
-            "price": 475000,
-        })
+        valid_result = validator.validate(
+            {
+                "address": "123 Main Street, Phoenix, AZ 85001",
+                "beds": 4,
+                "baths": 2.0,
+                "sqft": 2000,
+                "price": 475000,
+            }
+        )
         assert bool(valid_result) is True
 
-        invalid_result = validator.validate({
-            "address": "123 Main Street, Phoenix, AZ 85001",
-            "beds": -1,
-            "baths": 2.0,
-            "sqft": 2000,
-            "price": 475000,
-        })
+        invalid_result = validator.validate(
+            {
+                "address": "123 Main Street, Phoenix, AZ 85001",
+                "beds": -1,
+                "baths": 2.0,
+                "sqft": 2000,
+                "price": 475000,
+            }
+        )
         assert bool(invalid_result) is False
 
     def test_validation_error_messages(self):
         """Test error message formatting."""
         validator = PropertyValidator()
-        result = validator.validate({
-            "address": "123 Main Street, Phoenix, AZ 85001",
-            "beds": -1,  # Invalid
-            "baths": 2.0,
-            "sqft": 2000,
-            "price": 475000,
-        })
+        result = validator.validate(
+            {
+                "address": "123 Main Street, Phoenix, AZ 85001",
+                "beds": -1,  # Invalid
+                "baths": 2.0,
+                "sqft": 2000,
+                "price": 475000,
+            }
+        )
 
         messages = result.error_messages()
         assert len(messages) > 0
@@ -652,13 +662,15 @@ class TestPropertyValidator:
     def test_validation_first_error(self):
         """Test first_error method."""
         validator = PropertyValidator()
-        result = validator.validate({
-            "address": "123",  # Too short and no number
-            "beds": 4,
-            "baths": 2.0,
-            "sqft": 2000,
-            "price": 475000,
-        })
+        result = validator.validate(
+            {
+                "address": "123",  # Too short and no number
+                "beds": 4,
+                "baths": 2.0,
+                "sqft": 2000,
+                "price": 475000,
+            }
+        )
 
         first = result.first_error()
         assert first is not None
@@ -667,24 +679,28 @@ class TestPropertyValidator:
     def test_validation_with_normalization(self):
         """Test validation applies normalization."""
         validator = PropertyValidator(normalize=True)
-        result = validator.validate({
-            "address": "123 Main Street, Phoenix, AZ 85001",
-            "beds": 4,
-            "baths": 2.0,
-            "sqft": 2000,
-            "price": "$475,000",  # String price
-            "sewer_type": "City",  # Capitalized
-        })
+        result = validator.validate(
+            {
+                "address": "123 Main Street, Phoenix, AZ 85001",
+                "beds": 4,
+                "baths": 2.0,
+                "sqft": 2000,
+                "price": "$475,000",  # String price
+                "sewer_type": "City",  # Capitalized
+            }
+        )
         assert result.is_valid
 
     def test_enrichment_validation(self):
         """Test enrichment data validation."""
         validator = PropertyValidator()
-        result = validator.validate_enrichment({
-            "full_address": "123 Main Street, Phoenix, AZ 85001",
-            "school_rating": 8.5,
-            "safety_score": 7.0,
-        })
+        result = validator.validate_enrichment(
+            {
+                "full_address": "123 Main Street, Phoenix, AZ 85001",
+                "school_rating": 8.5,
+                "safety_score": 7.0,
+            }
+        )
         assert result.is_valid
 
     def test_kill_switch_validation(self):
@@ -692,39 +708,45 @@ class TestPropertyValidator:
         validator = PropertyValidator()
 
         # Passing property
-        result = validator.validate_kill_switch({
-            "beds": 4,
-            "baths": 2.0,
-            "lot_sqft": 9500,
-            "garage_spaces": 2,
-            "hoa_fee": 0,
-            "sewer_type": "city",
-            "year_built": 2010,
-        })
+        result = validator.validate_kill_switch(
+            {
+                "beds": 4,
+                "baths": 2.0,
+                "lot_sqft": 9500,
+                "garage_spaces": 2,
+                "hoa_fee": 0,
+                "sewer_type": "city",
+                "year_built": 2010,
+            }
+        )
         assert result.is_valid
 
         # Failing - HOA
-        result = validator.validate_kill_switch({
-            "beds": 4,
-            "baths": 2.0,
-            "lot_sqft": 9500,
-            "garage_spaces": 2,
-            "hoa_fee": 200,  # Has HOA
-            "sewer_type": "city",
-            "year_built": 2010,
-        })
+        result = validator.validate_kill_switch(
+            {
+                "beds": 4,
+                "baths": 2.0,
+                "lot_sqft": 9500,
+                "garage_spaces": 2,
+                "hoa_fee": 200,  # Has HOA
+                "sewer_type": "city",
+                "year_built": 2010,
+            }
+        )
         assert not result.is_valid
 
         # Failing - Septic
-        result = validator.validate_kill_switch({
-            "beds": 4,
-            "baths": 2.0,
-            "lot_sqft": 9500,
-            "garage_spaces": 2,
-            "hoa_fee": 0,
-            "sewer_type": "septic",  # Not city
-            "year_built": 2010,
-        })
+        result = validator.validate_kill_switch(
+            {
+                "beds": 4,
+                "baths": 2.0,
+                "lot_sqft": 9500,
+                "garage_spaces": 2,
+                "hoa_fee": 0,
+                "sewer_type": "septic",  # Not city
+                "year_built": 2010,
+            }
+        )
         assert not result.is_valid
 
 
@@ -804,21 +826,25 @@ class TestConvenienceFunctions:
 
     def test_validate_property_function(self):
         """Test validate_property convenience function."""
-        result = validate_property({
-            "address": "123 Main Street, Phoenix, AZ 85001",
-            "beds": 4,
-            "baths": 2.0,
-            "sqft": 2000,
-            "price": 475000,
-        })
+        result = validate_property(
+            {
+                "address": "123 Main Street, Phoenix, AZ 85001",
+                "beds": 4,
+                "baths": 2.0,
+                "sqft": 2000,
+                "price": 475000,
+            }
+        )
         assert result.is_valid
 
     def test_validate_enrichment_function(self):
         """Test validate_enrichment convenience function."""
-        result = validate_enrichment({
-            "full_address": "123 Main Street, Phoenix, AZ 85001",
-            "school_rating": 8.5,
-        })
+        result = validate_enrichment(
+            {
+                "full_address": "123 Main Street, Phoenix, AZ 85001",
+                "school_rating": 8.5,
+            }
+        )
         assert result.is_valid
 
 

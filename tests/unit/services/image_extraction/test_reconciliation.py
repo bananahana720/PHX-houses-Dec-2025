@@ -1,4 +1,5 @@
 """Tests for data reconciliation."""
+
 import json
 
 from phx_home_analysis.services.image_extraction.reconciliation import (
@@ -36,7 +37,9 @@ def test_reconciliation_report_with_discrepancies():
     # Add discrepancies
     report.orphan_files = ["file1.png", "file2.png"]  # 2 orphan files
     report.ghost_entries = ["ghost1", "ghost2", "ghost3"]  # 3 ghosts
-    report.hash_mismatches = [{"image_id": "img1", "address": "addr", "stored_hash": "abc", "expected_hash": "def"}]
+    report.hash_mismatches = [
+        {"image_id": "img1", "address": "addr", "stored_hash": "abc", "expected_hash": "def"}
+    ]
 
     # Recalculate quality scores
     total = max(report.manifest_image_count, 1)
@@ -49,8 +52,7 @@ def test_reconciliation_report_with_discrepancies():
 
     # Consistency: 98.1% (2 orphans out of 105)
     report.consistency_score = (
-        (report.disk_file_count - len(report.orphan_files))
-        / report.disk_file_count * 100
+        (report.disk_file_count - len(report.orphan_files)) / report.disk_file_count * 100
     )
 
     assert report.accuracy_score == 99.0
@@ -75,7 +77,15 @@ def test_reconciliation_report_unhealthy():
     # Add many discrepancies
     report.orphan_files = [f"file{i}.png" for i in range(50)]  # 50 orphans
     report.ghost_entries = [f"ghost{i}" for i in range(30)]  # 30 ghosts
-    report.hash_mismatches = [{"image_id": f"img{i}", "address": f"addr{i}", "stored_hash": f"hash{i}", "expected_hash": f"exp{i}"} for i in range(20)]  # 20 mismatches
+    report.hash_mismatches = [
+        {
+            "image_id": f"img{i}",
+            "address": f"addr{i}",
+            "stored_hash": f"hash{i}",
+            "expected_hash": f"exp{i}",
+        }
+        for i in range(20)
+    ]  # 20 mismatches
 
     # Recalculate
     report.accuracy_score = 80.0

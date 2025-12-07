@@ -43,7 +43,9 @@ def temp_csv_empty(tmp_path):
         Path: Path to empty CSV file
     """
     csv_file = tmp_path / "empty_properties.csv"
-    csv_content = "street,city,state,zip,price,price_num,beds,baths,sqft,price_per_sqft,full_address\n"
+    csv_content = (
+        "street,city,state,zip,price,price_num,beds,baths,sqft,price_per_sqft,full_address\n"
+    )
     csv_file.write_text(csv_content)
     return csv_file
 
@@ -660,9 +662,7 @@ class TestJsonEnrichmentRepositorySerialization:
         """Test loading JSON in both list and dict formats."""
         # Test list format
         json_list = tmp_path / "enrichment_list.json"
-        json_list.write_text(
-            json.dumps([{"full_address": "123 Main St", "lot_sqft": 9500}])
-        )
+        json_list.write_text(json.dumps([{"full_address": "123 Main St", "lot_sqft": 9500}]))
 
         repo_list = JsonEnrichmentRepository(json_list)
         enrichment_list = repo_list.load_all()
@@ -829,9 +829,7 @@ class TestRestoreFromBackup:
         json_file = tmp_path / "enrichment_data.json"
         backup_file = tmp_path / "my_backup.json"
 
-        backup_file.write_text(
-            json.dumps([{"full_address": "123 Backup St", "lot_sqft": 5000}])
-        )
+        backup_file.write_text(json.dumps([{"full_address": "123 Backup St", "lot_sqft": 5000}]))
 
         repo = JsonEnrichmentRepository(json_file)
         result = repo.restore_from_backup(backup_file)
@@ -868,12 +866,8 @@ class TestRestoreFromBackup:
         backup_file = tmp_path / "backup.json"
 
         # Create initial data
-        json_file.write_text(
-            json.dumps([{"full_address": "123 Original", "lot_sqft": 1000}])
-        )
-        backup_file.write_text(
-            json.dumps([{"full_address": "456 Backup", "lot_sqft": 2000}])
-        )
+        json_file.write_text(json.dumps([{"full_address": "123 Original", "lot_sqft": 1000}]))
+        backup_file.write_text(json.dumps([{"full_address": "456 Backup", "lot_sqft": 2000}]))
 
         repo = JsonEnrichmentRepository(json_file)
         repo.load_all()  # Populate cache
@@ -898,9 +892,7 @@ class TestRestoreFromBackup:
 
         # Create corrupted main file
         json_file.write_text("{corrupted json content}")
-        backup_file.write_text(
-            json.dumps([{"full_address": "123 Good Data", "lot_sqft": 5000}])
-        )
+        backup_file.write_text(json.dumps([{"full_address": "123 Good Data", "lot_sqft": 5000}]))
 
         repo = JsonEnrichmentRepository(json_file)
         result = repo.restore_from_backup(backup_file)
@@ -961,8 +953,13 @@ class TestAddressIndexO1Performance:
         repo.load_all()
 
         # Normalized → Full address mapping
-        assert repo._address_index["123 main st phoenix az 85001"] == "123 Main St, Phoenix, AZ 85001"
-        assert repo._address_index["456 oak ave scottsdale az 85251"] == "456 Oak Ave, Scottsdale, AZ 85251"
+        assert (
+            repo._address_index["123 main st phoenix az 85001"] == "123 Main St, Phoenix, AZ 85001"
+        )
+        assert (
+            repo._address_index["456 oak ave scottsdale az 85251"]
+            == "456 Oak Ave, Scottsdale, AZ 85251"
+        )
 
     def test_load_for_property_uses_index_normalized_lookup(self, temp_json_file):
         """Verify load_for_property uses O(1) index for normalized lookup."""
@@ -1029,12 +1026,8 @@ class TestAddressIndexO1Performance:
         backup_file = tmp_path / "backup.json"
 
         # Create original data
-        json_file.write_text(
-            json.dumps([{"full_address": "123 Original", "lot_sqft": 1000}])
-        )
-        backup_file.write_text(
-            json.dumps([{"full_address": "456 Backup", "lot_sqft": 2000}])
-        )
+        json_file.write_text(json.dumps([{"full_address": "123 Original", "lot_sqft": 1000}]))
+        backup_file.write_text(json.dumps([{"full_address": "456 Backup", "lot_sqft": 2000}]))
 
         repo = JsonEnrichmentRepository(json_file)
         repo.load_all()

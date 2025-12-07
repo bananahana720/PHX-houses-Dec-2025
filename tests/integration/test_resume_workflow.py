@@ -40,8 +40,14 @@ class TestResumeWorkflowIntegration:
         repo.initialize_session(mode="batch", addresses=addresses)
 
         # Complete first property
-        phases = ["phase0_county", "phase1_listing", "phase1_map",
-                  "phase2_images", "phase3_synthesis", "phase4_report"]
+        phases = [
+            "phase0_county",
+            "phase1_listing",
+            "phase1_map",
+            "phase2_images",
+            "phase3_synthesis",
+            "phase4_report",
+        ]
         for phase in phases:
             repo.checkpoint_phase_start(addresses[0], phase)
             repo.checkpoint_phase_complete(addresses[0], phase)
@@ -147,8 +153,14 @@ class TestResumeWorkflowIntegration:
         repo.initialize_session(mode="batch", addresses=addresses)
 
         # Complete first property
-        phases = ["phase0_county", "phase1_listing", "phase1_map",
-                  "phase2_images", "phase3_synthesis", "phase4_report"]
+        phases = [
+            "phase0_county",
+            "phase1_listing",
+            "phase1_map",
+            "phase2_images",
+            "phase3_synthesis",
+            "phase4_report",
+        ]
         for phase in phases:
             repo.checkpoint_phase_start(addresses[0], phase)
             repo.checkpoint_phase_complete(addresses[0], phase)
@@ -200,8 +212,14 @@ class TestResumeWorkflowIntegration:
         repo.initialize_session(mode="batch", addresses=addresses)
 
         # Complete first property
-        phases = ["phase0_county", "phase1_listing", "phase1_map",
-                  "phase2_images", "phase3_synthesis", "phase4_report"]
+        phases = [
+            "phase0_county",
+            "phase1_listing",
+            "phase1_map",
+            "phase2_images",
+            "phase3_synthesis",
+            "phase4_report",
+        ]
         for phase in phases:
             repo.checkpoint_phase_start(addresses[0], phase)
             repo.checkpoint_phase_complete(addresses[0], phase)
@@ -230,8 +248,14 @@ class TestResumeWorkflowIntegration:
         repo.initialize_session(mode="batch", addresses=addresses)
 
         # Complete first two properties
-        phases = ["phase0_county", "phase1_listing", "phase1_map",
-                  "phase2_images", "phase3_synthesis", "phase4_report"]
+        phases = [
+            "phase0_county",
+            "phase1_listing",
+            "phase1_map",
+            "phase2_images",
+            "phase3_synthesis",
+            "phase4_report",
+        ]
         for addr in addresses[:2]:
             for phase in phases:
                 repo.checkpoint_phase_start(addr, phase)

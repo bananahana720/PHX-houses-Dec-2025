@@ -1,4 +1,5 @@
 """Tests for file locking mechanism."""
+
 from pathlib import Path
 
 import pytest
@@ -72,6 +73,7 @@ class TestFileLock:
         assert len(parts) == 2
 
         import os
+
         assert int(parts[0]) == os.getpid()
         assert float(parts[1]) > 0
 

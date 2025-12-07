@@ -463,9 +463,7 @@ class TestZillowExtraction:
 
         # Check count range
         expected_min = TEST_ADDRESSES[0]["expected_images_min"]
-        assert len(urls) >= expected_min, (
-            f"Expected >={expected_min} images, got {len(urls)}"
-        )
+        assert len(urls) >= expected_min, f"Expected >={expected_min} images, got {len(urls)}"
 
         # Record for drift detection
         record_response(
@@ -505,16 +503,20 @@ class TestZillowExtraction:
         for url in urls_to_download:
             try:
                 image_bytes, content_type = await zillow_extractor.download_image(url)
-                download_results.append({
-                    "success": True,
-                    "size": len(image_bytes),
-                    "content_type": content_type,
-                })
+                download_results.append(
+                    {
+                        "success": True,
+                        "size": len(image_bytes),
+                        "content_type": content_type,
+                    }
+                )
             except Exception as e:
-                download_results.append({
-                    "success": False,
-                    "error": str(e),
-                })
+                download_results.append(
+                    {
+                        "success": False,
+                        "error": str(e),
+                    }
+                )
 
         elapsed = time.monotonic() - start_time
 
@@ -524,9 +526,7 @@ class TestZillowExtraction:
         # Verify success rate
         successful = [r for r in download_results if r.get("success")]
         success_rate = len(successful) / len(download_results)
-        assert success_rate >= 0.8, (
-            f"Success rate {success_rate:.0%} too low, expected >=80%"
-        )
+        assert success_rate >= 0.8, f"Success rate {success_rate:.0%} too low, expected >=80%"
 
         # Verify content types
         for result in successful:
@@ -536,9 +536,7 @@ class TestZillowExtraction:
 
         # Verify average download time
         avg_time = elapsed / len(urls_to_download)
-        assert avg_time < 2.5, (
-            f"Average download time {avg_time:.2f}s, expected <2.5s"
-        )
+        assert avg_time < 2.5, f"Average download time {avg_time:.2f}s, expected <2.5s"
 
     async def test_field_extraction_price_beds_baths_hoa(
         self,
@@ -748,8 +746,7 @@ class TestRedfinCrossValidation:
         # Beds should match exactly
         if zillow_metadata.get("beds") and redfin_metadata.get("beds"):
             assert zillow_metadata["beds"] == redfin_metadata["beds"], (
-                f"Beds mismatch: Zillow={zillow_metadata['beds']}, "
-                f"Redfin={redfin_metadata['beds']}"
+                f"Beds mismatch: Zillow={zillow_metadata['beds']}, Redfin={redfin_metadata['beds']}"
             )
 
         # Baths should match within 0.5 (half bath difference acceptable)
@@ -762,7 +759,9 @@ class TestRedfinCrossValidation:
 
         # Image counts should be comparable (within 20%)
         if len(zillow_urls) > 0 and len(redfin_urls) > 0:
-            ratio = min(len(zillow_urls), len(redfin_urls)) / max(len(zillow_urls), len(redfin_urls))
+            ratio = min(len(zillow_urls), len(redfin_urls)) / max(
+                len(zillow_urls), len(redfin_urls)
+            )
             assert ratio >= 0.8, (
                 f"Image count mismatch: Zillow={len(zillow_urls)}, "
                 f"Redfin={len(redfin_urls)} (ratio={ratio:.2f})"

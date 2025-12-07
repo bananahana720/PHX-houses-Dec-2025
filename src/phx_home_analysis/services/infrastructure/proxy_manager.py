@@ -96,10 +96,7 @@ class ProxyManager:
             logger.info("Proxy manager initialized in DIRECT mode (no proxy)")
         elif self.is_configured:
             server = self._config.server if self._config else "unknown"
-            logger.info(
-                f"Proxy manager initialized with {self._provider.value} "
-                f"(server: {server})"
-            )
+            logger.info(f"Proxy manager initialized with {self._provider.value} (server: {server})")
         else:
             logger.warning(
                 f"Proxy manager initialized but no configuration found "

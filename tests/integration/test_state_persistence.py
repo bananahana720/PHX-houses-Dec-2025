@@ -46,9 +46,7 @@ class TestStatePersistence:
         manifest_data = json.loads(manifest_file.read_text())
         assert len(manifest_data) > 0
 
-    def test_url_tracker_incremental_updates(
-        self, orchestrator, sample_property, url_tracker_data
-    ):
+    def test_url_tracker_incremental_updates(self, orchestrator, sample_property, url_tracker_data):
         """URL tracker updates incrementally per property."""
         tracker_file = orchestrator.base_dir / "url_tracker.json"
 
@@ -69,9 +67,7 @@ class TestStatePersistence:
         assert new_property_hash in updated_tracker
         assert len(updated_tracker) == len(url_tracker_data) + 1
 
-    def test_checkpoint_frequency_every_5_properties(
-        self, orchestrator, sample_properties
-    ):
+    def test_checkpoint_frequency_every_5_properties(self, orchestrator, sample_properties):
         """Checkpoints saved every 5 properties or configurable."""
         checkpoint_interval = 5
         checkpoint_count = 0
@@ -88,9 +84,7 @@ class TestConcurrentStateSafety:
     """Test concurrent state safety with parallel processing."""
 
     @pytest.mark.asyncio
-    async def test_multiple_properties_parallel_state_update(
-        self, orchestrator, sample_properties
-    ):
+    async def test_multiple_properties_parallel_state_update(self, orchestrator, sample_properties):
         """Parallel property processing doesn't corrupt state."""
         state = {"properties_processed": []}
         state_file = orchestrator.base_dir / "concurrent_state.json"
@@ -111,9 +105,7 @@ class TestConcurrentStateSafety:
         assert all(results)
         assert len(state["properties_processed"]) == 3
 
-    def test_manifest_merge_on_concurrent_save(
-        self, orchestrator, extraction_manifest
-    ):
+    def test_manifest_merge_on_concurrent_save(self, orchestrator, extraction_manifest):
         """Concurrent manifest saves merge correctly."""
         manifest_file = orchestrator.base_dir / "manifest.json"
 
@@ -223,10 +215,7 @@ class TestCheckpointRecovery:
         completed = set(checkpoint["properties_processed"])
 
         # Filter properties to process
-        properties_to_process = [
-            p for p in sample_properties
-            if p.full_address not in completed
-        ]
+        properties_to_process = [p for p in sample_properties if p.full_address not in completed]
 
         # Should skip 2 completed properties
         assert len(properties_to_process) == len(sample_properties) - 2
@@ -260,9 +249,7 @@ class TestCheckpointRecovery:
 class TestManifestIntegrity:
     """Test manifest integrity and recovery."""
 
-    def test_manifest_backup_created_before_update(
-        self, orchestrator, extraction_manifest
-    ):
+    def test_manifest_backup_created_before_update(self, orchestrator, extraction_manifest):
         """Manifest backup created before updates."""
         manifest_file = orchestrator.base_dir / "manifest.json"
         backup_file = orchestrator.base_dir / "manifest.json.backup"
@@ -276,9 +263,7 @@ class TestManifestIntegrity:
         assert backup_file.exists()
         assert manifest_file.exists()
 
-    def test_manifest_restored_from_backup_on_corruption(
-        self, orchestrator, extraction_manifest
-    ):
+    def test_manifest_restored_from_backup_on_corruption(self, orchestrator, extraction_manifest):
         """Manifest restored from backup if main is corrupted."""
         manifest_file = orchestrator.base_dir / "manifest.json"
         backup_file = orchestrator.base_dir / "manifest.json.backup"
@@ -310,13 +295,7 @@ class TestManifestIntegrity:
         image_file.write_bytes(b"fake image data")
 
         # Create manifest without this image
-        manifest = {
-            "property_hash": {
-                "images": [
-                    {"md5": "other_hash", "file": "other_hash.jpg"}
-                ]
-            }
-        }
+        manifest = {"property_hash": {"images": [{"md5": "other_hash", "file": "other_hash.jpg"}]}}
 
         manifest_file = extraction_dir / "manifest.json"
         manifest_file.write_text(json.dumps(manifest))

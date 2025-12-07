@@ -252,10 +252,7 @@ class ProgressTracker:
             "phase2_images",
             "phase3_synthesis",
         ]
-        if all(
-            phases.get(p, {}).get("status") == "completed"
-            for p in required_phases
-        ):
+        if all(phases.get(p, {}).get("status") == "completed" for p in required_phases):
             return "complete"
 
         # Otherwise pending
@@ -411,6 +408,7 @@ def create_progress_callback(
     Returns:
         Async callback function for job progress
     """
+
     async def on_progress(job: Job) -> None:
         tracker.update_extraction_progress(job)
 
@@ -428,6 +426,7 @@ def create_completion_callback(
     Returns:
         Async callback function for job completion
     """
+
     async def on_complete(job: Job) -> None:
         tracker.sync_job_completion(job)
         tracker.update_aggregate_stats()

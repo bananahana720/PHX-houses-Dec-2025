@@ -41,7 +41,8 @@ class SchoolResult(BaseModel):
         default=0.95, ge=0.0, le=1.0, description="Data confidence (0.95 API, 0.5 fallback)"
     )
     source: str = Field(
-        default="schooldigger_api", description="Data source (schooldigger_api, google_places_fallback)"
+        default="schooldigger_api",
+        description="Data source (schooldigger_api, google_places_fallback)",
     )
 
     def to_enrichment_dict(self) -> dict:
@@ -84,7 +85,8 @@ class AssignedSchoolsResult(BaseModel):
         default=0.95, ge=0.0, le=1.0, description="Data confidence (0.95 API, 0.5 fallback)"
     )
     source: str = Field(
-        default="schooldigger_api", description="Data source (schooldigger_api, google_places_fallback)"
+        default="schooldigger_api",
+        description="Data source (schooldigger_api, google_places_fallback)",
     )
 
     def to_enrichment_dict(self) -> dict:

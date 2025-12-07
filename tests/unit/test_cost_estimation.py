@@ -519,18 +519,20 @@ class TestTotalCalculation:
         """Test that total equals sum of all components."""
         costs = estimator.estimate(basic_property)
 
-        expected_total = sum([
-            costs.mortgage,
-            costs.property_tax,
-            costs.insurance,
-            costs.utilities,
-            costs.water,
-            costs.trash,
-            costs.pool_maintenance,
-            costs.maintenance_reserve,
-            costs.hoa_fee,
-            costs.solar_lease,
-        ])
+        expected_total = sum(
+            [
+                costs.mortgage,
+                costs.property_tax,
+                costs.insurance,
+                costs.utilities,
+                costs.water,
+                costs.trash,
+                costs.pool_maintenance,
+                costs.maintenance_reserve,
+                costs.hoa_fee,
+                costs.solar_lease,
+            ]
+        )
 
         assert abs(costs.total - expected_total) < 0.01
 
@@ -714,9 +716,7 @@ class TestEstimateFromValues:
 class TestDetailedEstimate:
     """Test estimate_detailed method."""
 
-    def test_detailed_estimate_returns_cost_estimate(
-        self, estimator, basic_property
-    ):
+    def test_detailed_estimate_returns_cost_estimate(self, estimator, basic_property):
         """Test that estimate_detailed returns CostEstimate."""
         result = estimator.estimate_detailed(basic_property)
 
@@ -774,12 +774,8 @@ class TestMaxAffordablePrice:
         """Test max price is lower when pool is included."""
         max_payment = 4000.0
 
-        price_no_pool = estimator.calculate_max_affordable_price(
-            max_payment, has_pool=False
-        )
-        price_with_pool = estimator.calculate_max_affordable_price(
-            max_payment, has_pool=True
-        )
+        price_no_pool = estimator.calculate_max_affordable_price(max_payment, has_pool=False)
+        price_with_pool = estimator.calculate_max_affordable_price(max_payment, has_pool=True)
 
         assert price_with_pool < price_no_pool
 
@@ -787,12 +783,8 @@ class TestMaxAffordablePrice:
         """Test max price is lower when HOA is included."""
         max_payment = 4000.0
 
-        price_no_hoa = estimator.calculate_max_affordable_price(
-            max_payment, hoa_fee=0
-        )
-        price_with_hoa = estimator.calculate_max_affordable_price(
-            max_payment, hoa_fee=200
-        )
+        price_no_hoa = estimator.calculate_max_affordable_price(max_payment, hoa_fee=0)
+        price_with_hoa = estimator.calculate_max_affordable_price(max_payment, hoa_fee=200)
 
         assert price_with_hoa < price_no_hoa
 

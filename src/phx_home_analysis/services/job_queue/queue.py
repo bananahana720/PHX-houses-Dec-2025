@@ -289,9 +289,7 @@ class JobQueue:
         Returns:
             List of completed Jobs
         """
-        completed = [
-            j for j in self.state.jobs if j.status == JobStatus.COMPLETED
-        ]
+        completed = [j for j in self.state.jobs if j.status == JobStatus.COMPLETED]
         completed.sort(key=lambda j: j.completed_at or "", reverse=True)
 
         if limit:
@@ -450,9 +448,7 @@ class JobQueue:
         self._maybe_save()
 
         if job.status == JobStatus.RETRYING:
-            logger.info(
-                f"Job {job_id} will retry ({job.retry_count}/{job.max_retries}): {error}"
-            )
+            logger.info(f"Job {job_id} will retry ({job.retry_count}/{job.max_retries}): {error}")
         else:
             logger.error(f"Job {job_id} failed permanently: {error}")
 
@@ -528,9 +524,7 @@ class JobQueue:
         Returns:
             Number of jobs removed
         """
-        completed = [
-            j for j in self.state.jobs if j.status == JobStatus.COMPLETED
-        ]
+        completed = [j for j in self.state.jobs if j.status == JobStatus.COMPLETED]
         completed.sort(key=lambda j: j.completed_at or "", reverse=True)
 
         to_remove = set(j.id for j in completed[keep_recent:])
@@ -553,9 +547,7 @@ class JobQueue:
             Number of jobs removed
         """
         original_count = len(self.state.jobs)
-        self.state.jobs = [
-            j for j in self.state.jobs if j.status != JobStatus.FAILED
-        ]
+        self.state.jobs = [j for j in self.state.jobs if j.status != JobStatus.FAILED]
         self._rebuild_index()
 
         removed = original_count - len(self.state.jobs)

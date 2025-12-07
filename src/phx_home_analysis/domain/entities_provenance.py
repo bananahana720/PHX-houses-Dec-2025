@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 # Then add these methods:
 
+
 def set_field_provenance(
     self,
     field_name: str,
@@ -50,6 +51,7 @@ def set_field_provenance(
         derived_from=derived_from or [],
     )
 
+
 def get_field_provenance(self, field_name: str):  # -> FieldProvenance | None:
     """Get provenance metadata for a field.
 
@@ -61,6 +63,7 @@ def get_field_provenance(self, field_name: str):  # -> FieldProvenance | None:
     """
     return self._provenance.get(field_name)
 
+
 def get_low_confidence_fields(self, threshold: float = 0.80) -> list[str]:
     """Get fields with confidence below threshold.
 
@@ -71,7 +74,5 @@ def get_low_confidence_fields(self, threshold: float = 0.80) -> list[str]:
         List of field names with confidence < threshold.
     """
     return [
-        field_name
-        for field_name, prov in self._provenance.items()
-        if prov.confidence < threshold
+        field_name for field_name, prov in self._provenance.items() if prov.confidence < threshold
     ]

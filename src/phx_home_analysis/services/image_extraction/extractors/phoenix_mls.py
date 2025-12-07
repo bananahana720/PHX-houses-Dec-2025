@@ -106,6 +106,87 @@ RE_EXTERIOR = re.compile(r"Exterior", re.IGNORECASE)
 RE_CROSS_STREETS = re.compile(r"Cross Streets", re.IGNORECASE)
 RE_CROSS_STREETS_EXTRACT = re.compile(r"Cross Streets:?\s*(.+)", re.IGNORECASE)
 
+# === E2-R3: NEW EXTRACTION PATTERNS ===
+
+# Geo coordinate patterns
+RE_GEO_LAT = re.compile(r"Geo\s*Lat[:\s]*(-?\d+\.?\d*)", re.IGNORECASE)
+RE_GEO_LON = re.compile(r"Geo\s*Lon[:\s]*(-?\d+\.?\d*)", re.IGNORECASE)
+
+# Legal/Parcel patterns
+RE_TOWNSHIP = re.compile(r"Township[:\s]*([^<\n,]+)", re.IGNORECASE)
+RE_RANGE = re.compile(r"Range[:\s]*([^<\n,]+)", re.IGNORECASE)
+RE_SECTION = re.compile(r"Section[:\s]*(\d+)", re.IGNORECASE)
+RE_LOT_NUMBER = re.compile(r"Lot\s*(?:Number)?[:\s]*([^<\n,]+)", re.IGNORECASE)
+RE_SUBDIVISION = re.compile(r"Subdivision[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_APN = re.compile(
+    r"(?:Assessor\s*(?:Number|Parcel)|APN|Parcel\s*(?:Number|ID))[:\s]*([^<\n,]+)",
+    re.IGNORECASE,
+)
+
+# Property structure patterns
+RE_EXTERIOR_STORIES = re.compile(r"(?:Exterior\s*)?Stories[:\s]*(\d+)", re.IGNORECASE)
+RE_INTERIOR_LEVELS = re.compile(r"(?:Interior\s*)?Levels[:\s]*([^<\n,]+)", re.IGNORECASE)
+RE_BUILDER = re.compile(r"Builder(?:\s*Name)?[:\s]*([^<\n,]+)", re.IGNORECASE)
+RE_DWELLING_STYLES = re.compile(r"Dwelling\s*(?:Styles?|Type)[:\s]*([^<\n]+)", re.IGNORECASE)
+
+# School district patterns (separate from school names)
+RE_ELEMENTARY_DISTRICT = re.compile(
+    r"Elementary\s*(?:School\s*)?District[:\s]*([^<\n]+)", re.IGNORECASE
+)
+RE_MIDDLE_DISTRICT = re.compile(
+    r"(?:Jr\.?\s*High|Middle)\s*(?:School\s*)?District[:\s]*([^<\n]+)", re.IGNORECASE
+)
+RE_HIGH_DISTRICT = re.compile(r"High\s*(?:School\s*)?District[:\s]*([^<\n]+)", re.IGNORECASE)
+
+# Contract/Listing patterns
+RE_LIST_DATE = re.compile(
+    r"List\s*Date[:\s]*(\d{1,2}/\d{1,2}/\d{2,4}|\d{4}-\d{2}-\d{2})", re.IGNORECASE
+)
+RE_OWNERSHIP = re.compile(r"Ownership(?:\s*Type)?[:\s]*([^<\n,]+)", re.IGNORECASE)
+RE_POSSESSION = re.compile(r"Possession(?:\s*Terms)?[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_NEW_FINANCING = re.compile(r"New\s*Financing[:\s]*([^<\n]+)", re.IGNORECASE)
+
+# Pool details patterns
+RE_PRIVATE_POOL_FEATURES = re.compile(
+    r"Private\s*Pool(?:\s*Features)?[:\s]*([^<\n]+)", re.IGNORECASE
+)
+RE_SPA = re.compile(r"(?<!<)(?<!n )Spa[:\s]+([^<\n,]+)", re.IGNORECASE)
+RE_COMMUNITY_POOL = re.compile(r"Community\s*Pool[:\s]*(Yes|No|Y|N|True|False)", re.IGNORECASE)
+
+# Updates/Renovations patterns
+RE_KITCHEN_YEAR_UPDATED = re.compile(r"Kitchen\s*(?:Yr|Year)\s*Updated[:\s]*(\d{4})", re.IGNORECASE)
+RE_KITCHEN_UPDATE_SCOPE = re.compile(r"Kitchen\s*(?:Partial|Full)[:\s]*([^<\n,]+)", re.IGNORECASE)
+
+# Basement pattern
+RE_BASEMENT = re.compile(r"Basement[:\s]*(Yes|No|Y|N|Full|Partial|Finished|None)", re.IGNORECASE)
+
+# Fireplaces total pattern
+RE_FIREPLACES_TOTAL = re.compile(r"Fireplaces?\s*Total[:\s]*(\d+)", re.IGNORECASE)
+
+# Covered spaces pattern
+RE_TOTAL_COVERED_SPACES = re.compile(r"Total\s*Covered\s*Spaces[:\s]*(\d+)", re.IGNORECASE)
+
+# Feature list patterns (for comma/semicolon separated lists)
+RE_VIEW = re.compile(r"View[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_COMMUNITY_FEATURES = re.compile(r"Community\s*Features[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_PROPERTY_DESCRIPTION = re.compile(r"Property\s*Description[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_DINING_AREA = re.compile(r"Dining\s*(?:Area|Room)[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_TECHNOLOGY = re.compile(r"Technology[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_WINDOW = re.compile(r"Window(?:\s*Features)?[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_OTHER_ROOMS = re.compile(r"Other\s*Rooms[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_CONSTRUCTION = re.compile(r"Construction[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_CONSTRUCTION_FINISH = re.compile(
+    r"Const(?:ruction)?\s*-?\s*Finish[:\s]*([^<\n]+)", re.IGNORECASE
+)
+RE_PARKING = re.compile(r"Parking(?:\s*Features)?[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_FENCING = re.compile(r"Fencing[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_UTILITIES = re.compile(r"Utilities[:\s]*([^<\n]+)", re.IGNORECASE)
+RE_SERVICES = re.compile(r"Services(?:\s*Available)?[:\s]*([^<\n]+)", re.IGNORECASE)
+
+# Remarks patterns
+RE_PUBLIC_REMARKS = re.compile(r"(?:Public\s*)?Remarks:\s*([^<]+)", re.IGNORECASE)
+RE_DIRECTIONS = re.compile(r"Directions:\s*([^<]+)", re.IGNORECASE)
+
 # Days on market patterns (list of patterns)
 DOM_PATTERNS = [
     re.compile(r"(?:listed|on market)\s+(\d+)\s*days?\s*ago", re.IGNORECASE),
@@ -762,6 +843,203 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
                 cross_match = RE_CROSS_STREETS_EXTRACT.search(cross_text)
                 if cross_match:
                     metadata["cross_streets"] = cross_match.group(1).strip()
+
+        # === E2-R3: EXTENDED FIELD EXTRACTION ===
+
+        # Helper for parsing comma/semicolon-separated feature lists
+        def parse_feature_list(text: str) -> list[str]:
+            """Parse comma or semicolon separated feature list."""
+            # Split by comma or semicolon, strip whitespace, filter empty
+            items = re.split(r"[,;]", text)
+            return [item.strip() for item in items if item.strip()]
+
+        # Geo Coordinates
+        geo_lat_match = RE_GEO_LAT.search(html)
+        if geo_lat_match:
+            try:
+                metadata["geo_lat"] = float(geo_lat_match.group(1))
+            except ValueError:
+                pass
+
+        geo_lon_match = RE_GEO_LON.search(html)
+        if geo_lon_match:
+            try:
+                metadata["geo_lon"] = float(geo_lon_match.group(1))
+            except ValueError:
+                pass
+
+        # Legal/Parcel Data
+        township_match = RE_TOWNSHIP.search(html)
+        if township_match:
+            metadata["township"] = township_match.group(1).strip()
+
+        range_match = RE_RANGE.search(html)
+        if range_match:
+            metadata["range_section"] = range_match.group(1).strip()
+
+        section_match = RE_SECTION.search(html)
+        if section_match:
+            metadata["section"] = section_match.group(1).strip()
+
+        lot_number_match = RE_LOT_NUMBER.search(html)
+        if lot_number_match:
+            metadata["lot_number"] = lot_number_match.group(1).strip()
+
+        subdivision_match = RE_SUBDIVISION.search(html)
+        if subdivision_match:
+            metadata["subdivision"] = subdivision_match.group(1).strip()
+
+        apn_match = RE_APN.search(html)
+        if apn_match:
+            metadata["apn"] = apn_match.group(1).strip()
+
+        # Property Structure
+        stories_match = RE_EXTERIOR_STORIES.search(html)
+        if stories_match:
+            metadata["exterior_stories"] = self._parse_int_safe(stories_match.group(1))
+
+        levels_match = RE_INTERIOR_LEVELS.search(html)
+        if levels_match:
+            metadata["interior_levels"] = levels_match.group(1).strip()
+
+        builder_match = RE_BUILDER.search(html)
+        if builder_match:
+            metadata["builder_name"] = builder_match.group(1).strip()
+
+        dwelling_match = RE_DWELLING_STYLES.search(html)
+        if dwelling_match:
+            metadata["dwelling_styles"] = dwelling_match.group(1).strip()
+
+        # School Districts (separate from school names)
+        elem_district_match = RE_ELEMENTARY_DISTRICT.search(html)
+        if elem_district_match:
+            metadata["elementary_district"] = elem_district_match.group(1).strip()
+
+        mid_district_match = RE_MIDDLE_DISTRICT.search(html)
+        if mid_district_match:
+            metadata["middle_district"] = mid_district_match.group(1).strip()
+
+        high_district_match = RE_HIGH_DISTRICT.search(html)
+        if high_district_match:
+            metadata["high_district"] = high_district_match.group(1).strip()
+
+        # Contract/Listing Info
+        list_date_match = RE_LIST_DATE.search(html)
+        if list_date_match:
+            metadata["list_date"] = list_date_match.group(1).strip()
+
+        ownership_match = RE_OWNERSHIP.search(html)
+        if ownership_match:
+            metadata["ownership_type"] = ownership_match.group(1).strip()
+
+        possession_match = RE_POSSESSION.search(html)
+        if possession_match:
+            metadata["possession_terms"] = possession_match.group(1).strip()
+
+        financing_match = RE_NEW_FINANCING.search(html)
+        if financing_match:
+            metadata["new_financing"] = parse_feature_list(financing_match.group(1))
+
+        # Pool Details
+        private_pool_match = RE_PRIVATE_POOL_FEATURES.search(html)
+        if private_pool_match:
+            metadata["private_pool_features"] = parse_feature_list(private_pool_match.group(1))
+
+        spa_match = RE_SPA.search(html)
+        if spa_match:
+            metadata["spa_features"] = spa_match.group(1).strip()
+
+        community_pool_match = RE_COMMUNITY_POOL.search(html)
+        if community_pool_match:
+            value = community_pool_match.group(1).lower()
+            metadata["community_pool"] = value in ("yes", "y", "true")
+
+        # Updates/Renovations
+        kitchen_year_match = RE_KITCHEN_YEAR_UPDATED.search(html)
+        if kitchen_year_match:
+            metadata["kitchen_year_updated"] = self._parse_int_safe(kitchen_year_match.group(1))
+
+        kitchen_scope_match = RE_KITCHEN_UPDATE_SCOPE.search(html)
+        if kitchen_scope_match:
+            metadata["kitchen_update_scope"] = kitchen_scope_match.group(1).strip()
+
+        # Basement
+        basement_match = RE_BASEMENT.search(html)
+        if basement_match:
+            value = basement_match.group(1).lower()
+            metadata["has_basement"] = value not in ("no", "n", "none")
+
+        # Fireplaces Total
+        fireplaces_match = RE_FIREPLACES_TOTAL.search(html)
+        if fireplaces_match:
+            metadata["fireplaces_total"] = self._parse_int_safe(fireplaces_match.group(1))
+
+        # Total Covered Spaces
+        covered_match = RE_TOTAL_COVERED_SPACES.search(html)
+        if covered_match:
+            metadata["total_covered_spaces"] = self._parse_int_safe(covered_match.group(1))
+
+        # Feature Lists (comma/semicolon separated)
+        view_match = RE_VIEW.search(html)
+        if view_match:
+            metadata["view_features"] = parse_feature_list(view_match.group(1))
+
+        community_match = RE_COMMUNITY_FEATURES.search(html)
+        if community_match:
+            metadata["community_features"] = parse_feature_list(community_match.group(1))
+
+        prop_desc_match = RE_PROPERTY_DESCRIPTION.search(html)
+        if prop_desc_match:
+            metadata["property_description"] = parse_feature_list(prop_desc_match.group(1))
+
+        dining_match = RE_DINING_AREA.search(html)
+        if dining_match:
+            metadata["dining_area_features"] = parse_feature_list(dining_match.group(1))
+
+        tech_match = RE_TECHNOLOGY.search(html)
+        if tech_match:
+            metadata["technology_features"] = parse_feature_list(tech_match.group(1))
+
+        window_match = RE_WINDOW.search(html)
+        if window_match:
+            metadata["window_features"] = parse_feature_list(window_match.group(1))
+
+        other_rooms_match = RE_OTHER_ROOMS.search(html)
+        if other_rooms_match:
+            metadata["other_rooms"] = parse_feature_list(other_rooms_match.group(1))
+
+        construction_match = RE_CONSTRUCTION.search(html)
+        if construction_match:
+            metadata["construction_materials"] = parse_feature_list(construction_match.group(1))
+
+        const_finish_match = RE_CONSTRUCTION_FINISH.search(html)
+        if const_finish_match:
+            metadata["construction_finish"] = parse_feature_list(const_finish_match.group(1))
+
+        parking_match = RE_PARKING.search(html)
+        if parking_match:
+            metadata["parking_features"] = parse_feature_list(parking_match.group(1))
+
+        fencing_match = RE_FENCING.search(html)
+        if fencing_match:
+            metadata["fencing_types"] = parse_feature_list(fencing_match.group(1))
+
+        utilities_match = RE_UTILITIES.search(html)
+        if utilities_match:
+            metadata["utilities_provider"] = parse_feature_list(utilities_match.group(1))
+
+        services_match = RE_SERVICES.search(html)
+        if services_match:
+            metadata["services_available"] = parse_feature_list(services_match.group(1))
+
+        # Remarks
+        remarks_match = RE_PUBLIC_REMARKS.search(html)
+        if remarks_match:
+            metadata["public_remarks"] = remarks_match.group(1).strip()
+
+        directions_match = RE_DIRECTIONS.search(html)
+        if directions_match:
+            metadata["directions"] = directions_match.group(1).strip()
 
         return metadata
 

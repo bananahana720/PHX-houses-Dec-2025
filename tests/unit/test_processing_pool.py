@@ -1,4 +1,5 @@
 """Unit tests for multiprocess image processing pool."""
+
 from io import BytesIO
 
 import pytest

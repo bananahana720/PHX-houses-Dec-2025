@@ -43,9 +43,7 @@ class TestFullRequestFlow:
             rate_limit=RateLimit(min_delay=0.0),
         )
         # Point cache to temp directory
-        client._cache = ResponseCache(
-            "test", CacheConfig(cache_dir=tmp_path, ttl_days=1)
-        )
+        client._cache = ResponseCache("test", CacheConfig(cache_dir=tmp_path, ttl_days=1))
 
         async with client:
             # First request - should hit API
@@ -79,9 +77,7 @@ class TestFullRequestFlow:
             base_url="https://api.test.com",
             rate_limit=RateLimit(min_delay=0.0),
         )
-        client._cache = ResponseCache(
-            "test", CacheConfig(cache_dir=tmp_path, ttl_days=1)
-        )
+        client._cache = ResponseCache("test", CacheConfig(cache_dir=tmp_path, ttl_days=1))
 
         async with client:
             # First request
@@ -244,21 +240,15 @@ class TestCacheStatisticsIntegration:
     @respx.mock
     async def test_cache_stats_after_multiple_requests(self, tmp_path: Path) -> None:
         """Cache stats should be accurate after multiple requests."""
-        respx.get("https://api.test.com/a").mock(
-            return_value=httpx.Response(200, json={"id": "a"})
-        )
-        respx.get("https://api.test.com/b").mock(
-            return_value=httpx.Response(200, json={"id": "b"})
-        )
+        respx.get("https://api.test.com/a").mock(return_value=httpx.Response(200, json={"id": "a"}))
+        respx.get("https://api.test.com/b").mock(return_value=httpx.Response(200, json={"id": "b"}))
 
         client = APIClient(
             service_name="test",
             base_url="https://api.test.com",
             rate_limit=RateLimit(min_delay=0.0),
         )
-        client._cache = ResponseCache(
-            "test", CacheConfig(cache_dir=tmp_path, ttl_days=1)
-        )
+        client._cache = ResponseCache("test", CacheConfig(cache_dir=tmp_path, ttl_days=1))
 
         async with client:
             # 2 misses
@@ -330,9 +320,7 @@ class TestSubclassIntegration:
             return_value=httpx.Response(200, json={"id": "123", "name": "Test User"})
         )
         respx.get("https://mockapi.test.com/users/search").mock(
-            return_value=httpx.Response(
-                200, json={"users": [{"id": "1"}, {"id": "2"}]}
-            )
+            return_value=httpx.Response(200, json={"users": [{"id": "1"}, {"id": "2"}]})
         )
 
         async with MockAPIClient(tmp_path) as client:
@@ -415,9 +403,7 @@ class TestPOSTIntegration:
             base_url="https://api.test.com",
             rate_limit=RateLimit(min_delay=0.0),
         )
-        client._cache = ResponseCache(
-            "test", CacheConfig(cache_dir=tmp_path, ttl_days=1)
-        )
+        client._cache = ResponseCache("test", CacheConfig(cache_dir=tmp_path, ttl_days=1))
 
         async with client:
             result1 = await client.post("/action", json_data={"data": "1"})

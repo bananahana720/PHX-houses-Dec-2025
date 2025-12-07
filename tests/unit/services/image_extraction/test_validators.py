@@ -1,4 +1,5 @@
 """Tests for data integrity validators."""
+
 from pathlib import Path
 
 import pytest

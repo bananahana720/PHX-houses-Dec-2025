@@ -197,7 +197,9 @@ class TestImageProcessor:
             standardizer=mock_standardizer,
         )
 
-    def test_initialization_creates_base_dir(self, tmp_path: Path, mock_deduplicator, mock_standardizer):
+    def test_initialization_creates_base_dir(
+        self, tmp_path: Path, mock_deduplicator, mock_standardizer
+    ):
         """Test processor creates base directory on init."""
         base_dir = tmp_path / "new_dir"
         assert not base_dir.exists()
@@ -298,7 +300,9 @@ class TestImageProcessor:
         mock_standardizer.standardize.assert_called_once_with(image_data)
 
     @pytest.mark.asyncio
-    async def test_process_image_visual_duplicate(self, processor, mock_deduplicator, mock_standardizer):
+    async def test_process_image_visual_duplicate(
+        self, processor, mock_deduplicator, mock_standardizer
+    ):
         """Test processing detects visual duplicate via perceptual hash."""
         # Configure deduplicator to report duplicate
         mock_deduplicator.is_duplicate.return_value = (True, "original123")
@@ -322,7 +326,9 @@ class TestImageProcessor:
         mock_deduplicator.register.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_process_image_content_duplicate(self, processor, mock_deduplicator, mock_standardizer, tmp_path: Path):
+    async def test_process_image_content_duplicate(
+        self, processor, mock_deduplicator, mock_standardizer, tmp_path: Path
+    ):
         """Test processing detects content duplicate (same MD5)."""
         # Not a visual duplicate
         mock_deduplicator.is_duplicate.return_value = (False, None)
@@ -354,7 +360,9 @@ class TestImageProcessor:
         mock_deduplicator.register.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_process_image_hash_computation_error(self, processor, mock_deduplicator, mock_standardizer):
+    async def test_process_image_hash_computation_error(
+        self, processor, mock_deduplicator, mock_standardizer
+    ):
         """Test handling of hash computation failure."""
         mock_deduplicator.compute_hashes.side_effect = Exception("Hash computation failed")
 
@@ -370,7 +378,9 @@ class TestImageProcessor:
         assert "Hash computation failed" in error
 
     @pytest.mark.asyncio
-    async def test_process_image_standardization_error(self, processor, mock_deduplicator, mock_standardizer):
+    async def test_process_image_standardization_error(
+        self, processor, mock_deduplicator, mock_standardizer
+    ):
         """Test handling of standardization failure."""
         mock_standardizer.standardize.side_effect = Exception("Standardization failed")
 
@@ -386,7 +396,9 @@ class TestImageProcessor:
         assert "Standardization failed" in error
 
     @pytest.mark.asyncio
-    async def test_process_image_creates_subdirectory(self, processor, mock_deduplicator, mock_standardizer):
+    async def test_process_image_creates_subdirectory(
+        self, processor, mock_deduplicator, mock_standardizer
+    ):
         """Test processing creates subdirectory for content-addressed storage."""
         image_data = b"test image"
 
@@ -403,7 +415,9 @@ class TestImageProcessor:
         assert result.local_path.exists()
 
     @pytest.mark.asyncio
-    async def test_process_image_saves_standardized_data(self, processor, mock_deduplicator, mock_standardizer):
+    async def test_process_image_saves_standardized_data(
+        self, processor, mock_deduplicator, mock_standardizer
+    ):
         """Test processing saves standardized data to disk."""
         standardized_data = b"standardized image content"
         mock_standardizer.standardize.return_value = (standardized_data, 1024, 768)
@@ -421,7 +435,9 @@ class TestImageProcessor:
         assert result.local_path.read_bytes() == standardized_data
 
     @pytest.mark.asyncio
-    async def test_process_image_unexpected_error(self, processor, mock_deduplicator, mock_standardizer):
+    async def test_process_image_unexpected_error(
+        self, processor, mock_deduplicator, mock_standardizer
+    ):
         """Test handling of unexpected errors."""
         # Cause unexpected error in processing
         mock_deduplicator.register.side_effect = Exception("Unexpected error")
@@ -461,7 +477,9 @@ class TestImageProcessor:
         assert "deduplicator_stats" in stats
         assert stats["deduplicator_stats"]["hash_count"] == 100
 
-    def test_get_stats_handles_missing_directory(self, tmp_path: Path, mock_deduplicator, mock_standardizer):
+    def test_get_stats_handles_missing_directory(
+        self, tmp_path: Path, mock_deduplicator, mock_standardizer
+    ):
         """Test stats handles missing base directory gracefully."""
         base_dir = tmp_path / "nonexistent"
         processor = ImageProcessor(base_dir, mock_deduplicator, mock_standardizer)

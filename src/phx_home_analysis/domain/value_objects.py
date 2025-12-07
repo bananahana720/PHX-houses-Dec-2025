@@ -377,9 +377,7 @@ class PerceptualHash:
             if not isinstance(hash_value, str):
                 raise ValueError(f"{hash_name} must be a string, got {type(hash_value)}")
             if len(hash_value) != 16:
-                raise ValueError(
-                    f"{hash_name} must be 16 hex characters, got {len(hash_value)}"
-                )
+                raise ValueError(f"{hash_name} must be 16 hex characters, got {len(hash_value)}")
 
     def hamming_distance(self, other: "PerceptualHash") -> int:
         """Calculate Hamming distance between phash values.

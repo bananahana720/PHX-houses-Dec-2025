@@ -44,9 +44,7 @@ class TestGeocoding:
                         "results": [
                             {
                                 "formatted_address": "123 Main St, Phoenix, AZ 85001, USA",
-                                "geometry": {
-                                    "location": {"lat": 33.4484, "lng": -112.0740}
-                                },
+                                "geometry": {"location": {"lat": 33.4484, "lng": -112.0740}},
                             }
                         ],
                     }
@@ -126,13 +124,7 @@ class TestDistanceCalculations:
                 client.get = AsyncMock(
                     return_value={
                         "status": "OK",
-                        "rows": [
-                            {
-                                "elements": [
-                                    {"status": "OK", "distance": {"value": 8500}}
-                                ]
-                            }
-                        ],
+                        "rows": [{"elements": [{"status": "OK", "distance": {"value": 8500}}]}],
                     }
                 )
 
@@ -174,13 +166,7 @@ class TestDistanceCalculations:
                 client.get = AsyncMock(
                     return_value={
                         "status": "OK",
-                        "rows": [
-                            {
-                                "elements": [
-                                    {"status": "OK", "distance": {"value": 8500}}
-                                ]
-                            }
-                        ],
+                        "rows": [{"elements": [{"status": "OK", "distance": {"value": 8500}}]}],
                     }
                 )
 
@@ -239,9 +225,7 @@ class TestPlacesNearbySearch:
                         "results": [
                             {
                                 "name": "Safeway",
-                                "geometry": {
-                                    "location": {"lat": 33.4490, "lng": -112.0750}
-                                },
+                                "geometry": {"location": {"lat": 33.4490, "lng": -112.0750}},
                             }
                         ],
                     }
@@ -302,6 +286,7 @@ class TestSatelliteImagery:
             async with GoogleMapsClient() as client:
                 # Mock httpx response
                 from unittest.mock import MagicMock
+
                 mock_response = MagicMock()
                 mock_response.status_code = 200
                 mock_response.content = b"fake_image_bytes"
@@ -320,6 +305,7 @@ class TestSatelliteImagery:
         with patch.dict(os.environ, {"GOOGLE_MAPS_API_KEY": "test_key_123"}):
             async with GoogleMapsClient() as client:
                 from unittest.mock import MagicMock
+
                 mock_response = MagicMock()
                 mock_response.status_code = 200
                 mock_response.content = b"fake_image_bytes"
@@ -566,9 +552,7 @@ class TestProvenance:
         )
         assert place.source == "google_maps_places"
 
-        orientation = OrientationResult(
-            orientation=Orientation.NORTH, score_points=25.0
-        )
+        orientation = OrientationResult(orientation=Orientation.NORTH, score_points=25.0)
         assert orientation.source == "google_maps_satellite_heuristic"
 
 

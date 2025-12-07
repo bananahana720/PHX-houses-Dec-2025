@@ -399,7 +399,9 @@ class HardCriteriaSchema(BaseModel):
         Field(description="Required sewer type"),
     ]
     min_garage: Annotated[int, Field(ge=0, le=10, description="Minimum indoor garage spaces")]
-    solar_lease: Annotated[bool, Field(description="Whether solar lease allowed (False = not allowed)")]
+    solar_lease: Annotated[
+        bool, Field(description="Whether solar lease allowed (False = not allowed)")
+    ]
 
 
 class SewerCriterionSchema(BaseModel):

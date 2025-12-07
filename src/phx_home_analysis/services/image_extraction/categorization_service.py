@@ -117,9 +117,7 @@ class CategorizationService:
         self.manifest = self._load_manifest()
 
         # Initialize category index
-        self.category_index = CategoryIndex(
-            index_path=self.metadata_dir / "category_index.json"
-        )
+        self.category_index = CategoryIndex(index_path=self.metadata_dir / "category_index.json")
 
         # Initialize symlink builder if enabled
         self.symlink_builder: SymlinkViewBuilder | None = None
@@ -136,6 +134,7 @@ class CategorizationService:
                 with open(self.manifest_path) as f:
                     data = json.load(f)
                     from typing import cast
+
                     return cast(dict[str, list[dict[Any, Any]]], data.get("properties", {}))
             except (OSError, json.JSONDecodeError) as e:
                 logger.warning(f"Failed to load manifest: {e}")

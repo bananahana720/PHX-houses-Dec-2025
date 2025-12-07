@@ -65,6 +65,62 @@ MLS_FIELD_MAPPING: dict[str, str] = {
     "high_school_name": "high_school_name",
     # === LOCATION ===
     "cross_streets": "cross_streets",
+    # === E2-R3: EXTENDED MLS FIELDS ===
+    # Geo Coordinates
+    "geo_lat": "latitude",
+    "geo_lon": "longitude",
+    # Legal/Parcel Data
+    "township": "township",
+    "range_section": "range_section",
+    "section": "section",
+    "lot_number": "lot_number",
+    "subdivision": "subdivision",
+    "apn": "apn",
+    # Property Structure
+    "exterior_stories": "exterior_stories",
+    "interior_levels": "interior_levels",
+    "builder_name": "builder_name",
+    "dwelling_styles": "dwelling_styles",
+    # View & Environment Features
+    "view_features": "view_features",
+    "community_features": "community_features",
+    "property_description": "property_description",
+    # Interior Feature Categories
+    "dining_area_features": "dining_area_features",
+    "technology_features": "technology_features",
+    "window_features": "window_features",
+    "other_rooms": "other_rooms",
+    # Exterior Feature Categories
+    "construction_materials": "construction_materials",
+    "construction_finish": "construction_finish",
+    "parking_features": "parking_features",
+    "fencing_types": "fencing_types",
+    # School Districts
+    "elementary_district": "elementary_district",
+    "middle_district": "middle_district",
+    "high_district": "high_district",
+    # Contract/Listing Info
+    "list_date": "list_date",
+    "ownership_type": "ownership_type",
+    "possession_terms": "possession_terms",
+    "new_financing": "new_financing",
+    # Pool Details
+    "private_pool_features": "private_pool_features",
+    "spa_features": "spa_features",
+    "community_pool": "community_pool",
+    # Updates/Renovations
+    "kitchen_year_updated": "kitchen_year_updated",
+    "kitchen_update_scope": "kitchen_update_scope",
+    # Basement
+    "has_basement": "has_basement",
+    # Additional Details
+    "fireplaces_total": "fireplaces_total",
+    "total_covered_spaces": "total_covered_spaces",
+    "utilities_provider": "utilities_provider",
+    "services_available": "services_available",
+    # Listing Remarks
+    "public_remarks": "public_remarks",
+    "directions": "directions",
 }
 
 

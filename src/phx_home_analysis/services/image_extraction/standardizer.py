@@ -27,10 +27,10 @@ MAX_RAW_FILE_SIZE = 50 * 1024 * 1024
 
 # Security: Magic byte signatures for supported image formats
 MAGIC_SIGNATURES = {
-    b'\xff\xd8\xff': 'image/jpeg',
-    b'\x89PNG\r\n\x1a\n': 'image/png',
-    b'GIF87a': 'image/gif',
-    b'GIF89a': 'image/gif',
+    b"\xff\xd8\xff": "image/jpeg",
+    b"\x89PNG\r\n\x1a\n": "image/png",
+    b"GIF87a": "image/gif",
+    b"GIF89a": "image/gif",
 }
 
 
@@ -87,13 +87,13 @@ class ImageStandardizer:
                 return mime_type
 
         # WebP special case: RIFF container with WEBP identifier
-        if len(data) >= 12 and data[:4] == b'RIFF' and data[8:12] == b'WEBP':
-            return 'image/webp'
+        if len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+            return "image/webp"
 
         # Log rejected file for security audit
         logger.warning(
             "Rejected file with invalid magic bytes: first 16 bytes = %s",
-            data[:16].hex() if len(data) >= 16 else data.hex()
+            data[:16].hex() if len(data) >= 16 else data.hex(),
         )
 
         raise ImageProcessingError(
@@ -172,9 +172,9 @@ class ImageStandardizer:
         """
         # Check if image had EXIF data before stripping
         had_exif = False
-        if hasattr(img, '_getexif') and img._getexif():
+        if hasattr(img, "_getexif") and img._getexif():
             had_exif = True
-        elif hasattr(img, 'info') and img.info:
+        elif hasattr(img, "info") and img.info:
             had_exif = True
 
         # Get raw pixel data

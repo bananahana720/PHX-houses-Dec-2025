@@ -185,9 +185,7 @@ class LineageTracker:
 
         return lineages
 
-    def get_field_lineage(
-        self, property_hash: str, field_name: str
-    ) -> FieldLineage | None:
+    def get_field_lineage(self, property_hash: str, field_name: str) -> FieldLineage | None:
         """Get lineage for a specific field.
 
         Args:
@@ -210,9 +208,7 @@ class LineageTracker:
         """
         return self._lineage.get(property_hash, {}).copy()
 
-    def get_field_confidence(
-        self, property_hash: str, field_name: str
-    ) -> float | None:
+    def get_field_confidence(self, property_hash: str, field_name: str) -> float | None:
         """Get confidence score for a specific field.
 
         Args:
@@ -239,9 +235,7 @@ class LineageTracker:
             for field_name, lineage in self._lineage.get(property_hash, {}).items()
         }
 
-    def get_low_confidence_fields(
-        self, property_hash: str, threshold: float = 0.8
-    ) -> list[str]:
+    def get_low_confidence_fields(self, property_hash: str, threshold: float = 0.8) -> list[str]:
         """Get fields below confidence threshold.
 
         Args:
@@ -331,12 +325,14 @@ class LineageTracker:
             pct = (count / total_fields * 100) if total_fields else 0
             lines.append(f"  {source:20s}: {count:4d} fields ({pct:5.1f}%)")
 
-        lines.extend([
-            "",
-            "Confidence Metrics:",
-            f"  Average confidence: {avg_confidence:.2f}",
-            f"  High confidence (>=0.8): {high_conf_count} fields ({high_conf_pct:.1f}%)",
-            "=" * 60,
-        ])
+        lines.extend(
+            [
+                "",
+                "Confidence Metrics:",
+                f"  Average confidence: {avg_confidence:.2f}",
+                f"  High confidence (>=0.8): {high_conf_count} fields ({high_conf_pct:.1f}%)",
+                "=" * 60,
+            ]
+        )
 
         return "\n".join(lines)

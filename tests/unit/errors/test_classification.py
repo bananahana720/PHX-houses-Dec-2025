@@ -7,7 +7,6 @@ Tests verify:
 - Error message formatting
 """
 
-
 from phx_home_analysis.errors import (
     PERMANENT_HTTP_CODES,
     TRANSIENT_HTTP_CODES,

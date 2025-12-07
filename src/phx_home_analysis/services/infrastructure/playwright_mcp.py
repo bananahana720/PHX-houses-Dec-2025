@@ -66,8 +66,7 @@ class PlaywrightMcpClient:
 
         except ImportError as e:
             raise RuntimeError(
-                "Playwright MCP tools not available. "
-                "Ensure Claude Code MCP server is configured."
+                "Playwright MCP tools not available. Ensure Claude Code MCP server is configured."
             ) from e
 
     async def get_snapshot(self) -> dict[str, Any]:
@@ -89,8 +88,7 @@ class PlaywrightMcpClient:
 
         except ImportError as e:
             raise RuntimeError(
-                "Playwright MCP tools not available. "
-                "Ensure Claude Code MCP server is configured."
+                "Playwright MCP tools not available. Ensure Claude Code MCP server is configured."
             ) from e
 
     async def take_screenshot(
@@ -113,15 +111,12 @@ class PlaywrightMcpClient:
         try:
             from mcp__playwright__browser_take_screenshot import browser_take_screenshot
 
-            result = await browser_take_screenshot(
-                filename=filename, fullPage=fullPage
-            )
+            result = await browser_take_screenshot(filename=filename, fullPage=fullPage)
             return result
 
         except ImportError as e:
             raise RuntimeError(
-                "Playwright MCP tools not available. "
-                "Ensure Claude Code MCP server is configured."
+                "Playwright MCP tools not available. Ensure Claude Code MCP server is configured."
             ) from e
 
     async def click(self, element: str, ref: str) -> dict[str, Any]:
@@ -147,8 +142,7 @@ class PlaywrightMcpClient:
 
         except ImportError as e:
             raise RuntimeError(
-                "Playwright MCP tools not available. "
-                "Ensure Claude Code MCP server is configured."
+                "Playwright MCP tools not available. Ensure Claude Code MCP server is configured."
             ) from e
 
     async def close(self) -> None:
@@ -266,9 +260,7 @@ class PlaywrightMcpClient:
 
 
 # Convenience function for simple extraction
-async def extract_images_from_url(
-    url: str, filter_pattern: str | None = None
-) -> list[str]:
+async def extract_images_from_url(url: str, filter_pattern: str | None = None) -> list[str]:
     """Extract images from URL using Playwright MCP.
 
     Convenience function for simple extraction workflow:

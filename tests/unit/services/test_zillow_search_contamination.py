@@ -269,9 +269,7 @@ class TestContaminationScenario:
         # 40 contaminated URLs from other properties (simulating search results)
         for other_zpid in other_zpids:
             for i in range(13):  # ~13 each = 39 total
-                urls.append(
-                    f"https://photos.zillowstatic.com/p_e/{other_zpid}/photo{i}.jpg"
-                )
+                urls.append(f"https://photos.zillowstatic.com/p_e/{other_zpid}/photo{i}.jpg")
 
         # 1 carousel URL
         urls.append("https://photos.zillowstatic.com/similar-homes/promo.jpg")
@@ -286,9 +284,7 @@ class TestContaminationScenario:
         assert len(filtered) == 2
         assert all(target_zpid in url for url in filtered)
 
-        logger.info(
-            f"Correctly filtered contaminated URLs: {len(urls)} -> {len(filtered)}"
-        )
+        logger.info(f"Correctly filtered contaminated URLs: {len(urls)} -> {len(filtered)}")
 
     def test_promotional_overlay_urls_rejected(self):
         """URLs with promotional patterns should be rejected."""
@@ -684,15 +680,17 @@ class TestPlaceholderImageFiltering:
         ]
 
         # Filtering should log the rejection with caplog fixture
-        with caplog.at_level(logging.DEBUG, logger="src.phx_home_analysis.services.image_extraction.extractors.zillow"):
+        with caplog.at_level(
+            logging.DEBUG,
+            logger="src.phx_home_analysis.services.image_extraction.extractors.zillow",
+        ):
             filtered = extractor._filter_urls_for_property(urls, None)
 
             # Verify we rejected 2 placeholder images
             assert len(filtered) == 3
             # Check that rejection messages were logged
             rejection_logs = [
-                rec for rec in caplog.records
-                if "rejecting placeholder URL" in rec.message
+                rec for rec in caplog.records if "rejecting placeholder URL" in rec.message
             ]
             assert len(rejection_logs) >= 2
 

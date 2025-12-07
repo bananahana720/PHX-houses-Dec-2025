@@ -275,11 +275,7 @@ class AuditLog:
             List of AuditEntry objects in the date range.
         """
         with self._lock:
-            return [
-                e
-                for e in self.entries
-                if start_date <= e.timestamp <= end_date
-            ]
+            return [e for e in self.entries if start_date <= e.timestamp <= end_date]
 
     def get_entries_by_run(self, run_id: str) -> list[AuditEntry]:
         """Get all entries for a specific processing run.
@@ -293,9 +289,7 @@ class AuditLog:
         with self._lock:
             return [e for e in self.entries if e.run_id == run_id]
 
-    def get_entries_by_field(
-        self, property_hash: str, field_name: str
-    ) -> list[AuditEntry]:
+    def get_entries_by_field(self, property_hash: str, field_name: str) -> list[AuditEntry]:
         """Get all entries for a specific field in a property.
 
         Args:

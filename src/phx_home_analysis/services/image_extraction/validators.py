@@ -1,4 +1,5 @@
 """Pre-extraction and during-extraction validators for data integrity."""
+
 from __future__ import annotations
 
 import hashlib
@@ -24,22 +25,26 @@ class DataIntegrityError(Exception):
 
 class AddressMismatchError(DataIntegrityError):
     """Address doesn't match expected value."""
+
     pass
 
 
 class HashMismatchError(DataIntegrityError):
     """Computed hash doesn't match stored hash."""
+
     pass
 
 
 class MissingFileError(DataIntegrityError):
     """Expected file doesn't exist on disk."""
+
     pass
 
 
 @dataclass
 class ValidationResult:
     """Result of property validation."""
+
     is_valid: bool
     property_address: str
     property_hash: str
@@ -155,7 +160,7 @@ class DuringExtractionAssertions:
                     "expected": expected_address,
                     "actual": actual_address,
                     "content_hash": image_content_hash,
-                }
+                },
             )
 
         # Check path contains content hash
@@ -166,7 +171,7 @@ class DuringExtractionAssertions:
                 context={
                     "local_path": local_path,
                     "content_hash": image_content_hash,
-                }
+                },
             )
 
     @staticmethod
@@ -181,7 +186,7 @@ class DuringExtractionAssertions:
             raise MissingFileError(
                 f"File doesn't exist: {local_path}",
                 rule_id="DUR-004",
-                context={"path": str(local_path)}
+                context={"path": str(local_path)},
             )
 
         size = local_path.stat().st_size
@@ -189,7 +194,7 @@ class DuringExtractionAssertions:
             raise MissingFileError(
                 f"File too small ({size} bytes < {min_size}): {local_path}",
                 rule_id="DUR-004",
-                context={"path": str(local_path), "size": size, "min_size": min_size}
+                context={"path": str(local_path), "size": size, "min_size": min_size},
             )
 
     @staticmethod
@@ -204,6 +209,7 @@ class DuringExtractionAssertions:
             HashMismatchError: If hashes don't match
         """
         import hashlib
+
         actual_hash = hashlib.md5(image_data).hexdigest()
 
         if actual_hash != expected_hash:
@@ -213,7 +219,7 @@ class DuringExtractionAssertions:
                 context={
                     "expected": expected_hash,
                     "actual": actual_hash,
-                }
+                },
             )
 
     @staticmethod
@@ -248,7 +254,7 @@ class DuringExtractionAssertions:
                 context={
                     "file_size": file_size,
                     "min_size": min_size,
-                }
+                },
             )
 
         # Check image dimensions
@@ -268,7 +274,7 @@ class DuringExtractionAssertions:
                         "width": width,
                         "height": height,
                         "min_dimension": min_dimension,
-                    }
+                    },
                 )
 
             if height < min_dimension:
@@ -279,7 +285,7 @@ class DuringExtractionAssertions:
                         "width": width,
                         "height": height,
                         "min_dimension": min_dimension,
-                    }
+                    },
                 )
 
         except Exception as e:
@@ -289,7 +295,7 @@ class DuringExtractionAssertions:
             raise DataIntegrityError(
                 f"Unable to validate image dimensions: {e}",
                 rule_id="DUR-010",
-                context={"error": str(e)}
+                context={"error": str(e)},
             ) from e
 
 

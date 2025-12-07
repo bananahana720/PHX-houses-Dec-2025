@@ -7,11 +7,13 @@ from ..domain.entities import EnrichmentData, Property
 
 class DataLoadError(Exception):
     """Raised when data cannot be loaded from a source."""
+
     pass
 
 
 class DataSaveError(Exception):
     """Raised when data cannot be saved to a destination."""
+
     pass
 
 

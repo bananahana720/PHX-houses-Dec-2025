@@ -5,6 +5,7 @@ Tests cover:
 - Resume from checkpoint functionality
 - Status tracking
 """
+
 from __future__ import annotations
 
 import json
@@ -158,15 +159,9 @@ class TestCLIStatusIntegration:
             loaded = json.load(f)
 
         # Count by status
-        complete = sum(
-            1 for p in loaded["properties"].values() if p["status"] == "complete"
-        )
-        failed = sum(
-            1 for p in loaded["properties"].values() if p["status"] == "failed"
-        )
-        pending = sum(
-            1 for p in loaded["properties"].values() if p["status"] == "pending"
-        )
+        complete = sum(1 for p in loaded["properties"].values() if p["status"] == "complete")
+        failed = sum(1 for p in loaded["properties"].values() if p["status"] == "failed")
+        pending = sum(1 for p in loaded["properties"].values() if p["status"] == "pending")
 
         assert complete == 2
         assert failed == 1

@@ -136,9 +136,7 @@ class JobExecutor:
         self._on_progress = on_progress
         self._on_complete = on_complete
 
-        logger.info(
-            f"Starting executor with {self.max_concurrent} workers"
-        )
+        logger.info(f"Starting executor with {self.max_concurrent} workers")
 
         # Reset any stuck jobs from previous runs
         stuck_count = self.queue.reset_stuck_jobs(timeout_seconds=3600)
@@ -207,8 +205,7 @@ class JobExecutor:
                 )
             except asyncio.TimeoutError:
                 logger.warning(
-                    f"Timeout waiting for {len(self._active_jobs)} jobs, "
-                    "cancelling remaining tasks"
+                    f"Timeout waiting for {len(self._active_jobs)} jobs, cancelling remaining tasks"
                 )
                 for task in self._active_jobs.values():
                     task.cancel()
@@ -356,7 +353,7 @@ class JobExecutor:
             Delay in seconds
         """
         # Exponential backoff: min_delay * 2^retry_count
-        delay = self.min_retry_delay * (2 ** retry_count)
+        delay = self.min_retry_delay * (2**retry_count)
         delay = min(delay, self.max_retry_delay)
 
         # Add jitter to prevent thundering herd
@@ -368,11 +365,7 @@ class JobExecutor:
 
     def _cleanup_completed_tasks(self) -> None:
         """Remove completed tasks from active jobs dict."""
-        completed = [
-            job_id
-            for job_id, task in self._active_jobs.items()
-            if task.done()
-        ]
+        completed = [job_id for job_id, task in self._active_jobs.items() if task.done()]
         for job_id in completed:
             del self._active_jobs[job_id]
 
@@ -416,11 +409,7 @@ class JobExecutor:
         Returns:
             List of jobs being processed
         """
-        return [
-            job
-            for job in self.queue.get_running()
-            if job.id in self._active_jobs
-        ]
+        return [job for job in self.queue.get_running() if job.id in self._active_jobs]
 
     def get_stats(self) -> dict:
         """Get executor statistics.

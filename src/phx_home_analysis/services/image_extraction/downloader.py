@@ -151,10 +151,7 @@ class ImageManifest:
     @classmethod
     def from_dict(cls, data: dict) -> "ImageManifest":
         """Create manifest from dictionary."""
-        images = [
-            ImageManifestEntry.from_dict(img_data)
-            for img_data in data.get("images", [])
-        ]
+        images = [ImageManifestEntry.from_dict(img_data) for img_data in data.get("images", [])]
         return cls(
             property_address=data["property_address"],
             images=images,
@@ -638,9 +635,7 @@ class ImageDownloader:
         successful = sum(1 for r in results if r.success and not r.was_cached)
         cached = sum(1 for r in results if r.was_cached)
         failed = sum(1 for r in results if not r.success)
-        logger.info(
-            f"Download complete: {successful} new, {cached} cached, {failed} failed"
-        )
+        logger.info(f"Download complete: {successful} new, {cached} cached, {failed} failed")
 
         return results
 
@@ -696,8 +691,7 @@ class ImageDownloader:
         if deleted_files:
             action = "Would delete" if dry_run else "Deleted"
             logger.info(
-                f"{action} {len(deleted_files)} files, "
-                f"reclaimed {space_reclaimed / 1024:.1f} KB"
+                f"{action} {len(deleted_files)} files, reclaimed {space_reclaimed / 1024:.1f} KB"
             )
 
         return result

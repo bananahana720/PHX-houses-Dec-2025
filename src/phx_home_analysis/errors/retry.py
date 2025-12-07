@@ -58,6 +58,7 @@ def _get_env_float(name: str, default: float) -> float:
             )
     return default
 
+
 logger = logging.getLogger(__name__)
 
 P = ParamSpec("P")
@@ -70,9 +71,7 @@ def retry_with_backoff(
     max_delay: float | None = None,
     jitter: float | None = None,
     retry_on: Callable[[Exception], bool] | None = None,
-) -> Callable[
-    [Callable[P, Awaitable[T]]], Callable[P, Awaitable[T]]
-]:
+) -> Callable[[Callable[P, Awaitable[T]]], Callable[P, Awaitable[T]]]:
     """Decorator for async functions with exponential backoff retry.
 
     Automatically retries the decorated function when transient errors occur,
@@ -118,14 +117,10 @@ def retry_with_backoff(
         else _get_env_int("RETRY_MAX_RETRIES", DEFAULT_MAX_RETRIES)
     )
     resolved_min_delay = (
-        min_delay
-        if min_delay is not None
-        else _get_env_float("RETRY_MIN_DELAY", DEFAULT_MIN_DELAY)
+        min_delay if min_delay is not None else _get_env_float("RETRY_MIN_DELAY", DEFAULT_MIN_DELAY)
     )
     resolved_max_delay = (
-        max_delay
-        if max_delay is not None
-        else _get_env_float("RETRY_MAX_DELAY", DEFAULT_MAX_DELAY)
+        max_delay if max_delay is not None else _get_env_float("RETRY_MAX_DELAY", DEFAULT_MAX_DELAY)
     )
     resolved_jitter = (
         jitter if jitter is not None else _get_env_float("RETRY_JITTER", DEFAULT_JITTER)
@@ -244,14 +239,10 @@ def retry_with_backoff_sync(
         else _get_env_int("RETRY_MAX_RETRIES", DEFAULT_MAX_RETRIES)
     )
     resolved_min_delay = (
-        min_delay
-        if min_delay is not None
-        else _get_env_float("RETRY_MIN_DELAY", DEFAULT_MIN_DELAY)
+        min_delay if min_delay is not None else _get_env_float("RETRY_MIN_DELAY", DEFAULT_MIN_DELAY)
     )
     resolved_max_delay = (
-        max_delay
-        if max_delay is not None
-        else _get_env_float("RETRY_MAX_DELAY", DEFAULT_MAX_DELAY)
+        max_delay if max_delay is not None else _get_env_float("RETRY_MAX_DELAY", DEFAULT_MAX_DELAY)
     )
     resolved_jitter = (
         jitter if jitter is not None else _get_env_float("RETRY_JITTER", DEFAULT_JITTER)

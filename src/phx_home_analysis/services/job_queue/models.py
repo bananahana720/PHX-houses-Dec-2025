@@ -83,9 +83,7 @@ class JobProgress:
     items_completed: int = 0
     items_total: int = 0
     current_source: str | None = None
-    last_update: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    last_update: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
@@ -107,9 +105,7 @@ class JobProgress:
             items_completed=data.get("items_completed", 0),
             items_total=data.get("items_total", 0),
             current_source=data.get("current_source"),
-            last_update=data.get(
-                "last_update", datetime.now(timezone.utc).isoformat()
-            ),
+            last_update=data.get("last_update", datetime.now(timezone.utc).isoformat()),
         )
 
 
@@ -194,9 +190,7 @@ class Job:
     sources: list[str] = field(default_factory=list)
     status: JobStatus = JobStatus.PENDING
     priority: int = 0
-    created_at: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     started_at: str | None = None
     completed_at: str | None = None
     progress: JobProgress = field(default_factory=JobProgress)
@@ -255,17 +249,11 @@ class Job:
             sources=data.get("sources", []),
             status=JobStatus(data.get("status", "pending")),
             priority=data.get("priority", 0),
-            created_at=data.get(
-                "created_at", datetime.now(timezone.utc).isoformat()
-            ),
+            created_at=data.get("created_at", datetime.now(timezone.utc).isoformat()),
             started_at=data.get("started_at"),
             completed_at=data.get("completed_at"),
             progress=JobProgress.from_dict(data.get("progress", {})),
-            result=(
-                JobResult.from_dict(data["result"])
-                if data.get("result")
-                else None
-            ),
+            result=(JobResult.from_dict(data["result"]) if data.get("result") else None),
             error=data.get("error"),
             retry_count=data.get("retry_count", 0),
             max_retries=data.get("max_retries", 3),
@@ -382,12 +370,8 @@ class JobQueueState:
 
     jobs: list[Job] = field(default_factory=list)
     version: str = "1.0.0"
-    created_at: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
-    updated_at: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     total_submitted: int = 0
     total_completed: int = 0
     total_failed: int = 0
@@ -411,12 +395,8 @@ class JobQueueState:
         return cls(
             jobs=jobs,
             version=data.get("version", "1.0.0"),
-            created_at=data.get(
-                "created_at", datetime.now(timezone.utc).isoformat()
-            ),
-            updated_at=data.get(
-                "updated_at", datetime.now(timezone.utc).isoformat()
-            ),
+            created_at=data.get("created_at", datetime.now(timezone.utc).isoformat()),
+            updated_at=data.get("updated_at", datetime.now(timezone.utc).isoformat()),
             total_submitted=data.get("total_submitted", len(jobs)),
             total_completed=data.get("total_completed", 0),
             total_failed=data.get("total_failed", 0),
@@ -436,9 +416,7 @@ class JobQueueState:
         running = [j for j in self.jobs if j.status.is_active()]
 
         # Calculate average completion time from recent completed jobs
-        completed_jobs = [
-            j for j in self.jobs if j.status == JobStatus.COMPLETED and j.result
-        ]
+        completed_jobs = [j for j in self.jobs if j.status == JobStatus.COMPLETED and j.result]
         avg_duration = 0.0
         if completed_jobs:
             durations = [j.result.duration_seconds for j in completed_jobs[-10:]]

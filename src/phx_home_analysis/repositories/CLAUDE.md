@@ -1,5 +1,5 @@
 ---
-last_updated: 2025-12-05
+last_updated: 2025-12-07
 updated_by: agent
 staleness_hours: 24
 flags: []
@@ -8,61 +8,59 @@ flags: []
 # repositories
 
 ## Purpose
-Data persistence layer providing abstract repository patterns (PropertyRepository, EnrichmentRepository) for CSV listings and JSON enrichment data. Implements atomic writes, backups, and address normalization for crash-safe access.
+Data persistence layer providing abstract repository patterns (PropertyRepository, EnrichmentRepository) for CSV listings and JSON enrichment data. Implements atomic writes, backups, and full E2-R3 field serialization.
 
 ## Contents
 | Path | Purpose |
 |------|---------|
-| `base.py` | Abstract PropertyRepository, EnrichmentRepository interfaces; DataLoadError, DataSaveError exceptions |
-| `csv_repository.py` | CsvPropertyRepository - reads/writes phx_homes.csv; 50-field Property↔CSV conversion; caching |
-| `json_repository.py` | JsonEnrichmentRepository - reads/writes enrichment_data.json; atomic saves, backups, address matching |
-| `work_items_repository.py` | WorkItemsRepository - pipeline state & job queue; extraction progress, retry counts, phase status (NEW) |
-| `__init__.py` | Module exports (PropertyRepository, EnrichmentRepository, exceptions) |
+| `base.py` | Abstract PropertyRepository, EnrichmentRepository interfaces |
+| `csv_repository.py` | CsvPropertyRepository - reads/writes phx_homes.csv (50 fields) |
+| `json_repository.py` | JsonEnrichmentRepository - atomic saves, 120+ field serialization (E2-R3) |
+| `work_items_repository.py` | WorkItemsRepository - pipeline state, job queue, retry counts |
+| `cached_manager.py` | CachedDataManager - in-memory cache layer for repositories |
+| `__init__.py` | Module exports |
+
+## Key Changes (E2-R3)
+- `json_repository.py:540-728` - Added 42 E2-R3 fields to `_enrichment_to_dict()`
+- `json_repository.py:485-673` - Added 42 E2-R3 fields to `_dict_to_enrichment()`
+- **Total serialized fields**: 120+ (core + E2-R2 + E2-R3)
 
 ## Key Classes
 
-**PropertyRepository (base.py):** Abstract for property data access
-- `load_all() → list[Property]` - Load all properties
-- `load_by_address(full_address) → Property | None` - Single property lookup
-- `save_all(properties) → None` - Persist all properties
+| Class | File | Purpose |
+|-------|------|---------|
+| `PropertyRepository` | `base.py` | Abstract base for property data access |
+| `EnrichmentRepository` | `base.py` | Abstract base for enrichment data |
+| `CsvPropertyRepository` | `csv_repository.py` | CSV implementation with 50-field parsing |
+| `JsonEnrichmentRepository` | `json_repository.py` | JSON with atomic writes, 120+ fields |
+| `WorkItemsRepository` | `work_items_repository.py` | Pipeline state and job queue |
+| `CachedDataManager` | `cached_manager.py` | In-memory caching layer |
 
-**CsvPropertyRepository (csv_repository.py):** CSV implementation
-- Parses phx_homes.csv (50 fields: address, listing, county, enrichment, scores, analysis)
-- Type coercion helpers (_parse_int, _parse_float, _parse_bool, _parse_enum, _parse_list)
-- Graceful null handling ("None" strings, empty values)
+## Serialization Coverage (json_repository.py)
 
-**JsonEnrichmentRepository (json_repository.py):** JSON implementation
-- Atomic writes: temp file + atomic rename (crash-safe)
-- Auto-creates timestamped backups before write
-- Optional Pydantic validation on load/save
-- Normalized address lookup (case-insensitive, punctuation-removed)
-- Dict/list JSON format flexibility
+| Category | Fields | Lines |
+|----------|--------|-------|
+| Core fields | 20 | 540-560 |
+| E2-R2 MLS fields | 33 | 561-600 |
+| E2-R3 Extended fields | 42 | 601-680 |
+| Assessment fields | 25 | 681-728 |
 
-## Design Patterns
-- **Dual-repo architecture:** PropertyRepository (CSV base) + EnrichmentRepository (JSON overlay)
-- **Immutable entities:** Property/EnrichmentData are frozen dataclasses
-- **In-memory caching:** load_by_address() triggers populate-on-demand cache population
-- **Lazy validation:** JsonEnrichmentRepository accepts validate=False for crash recovery
-
-## Commands
-```bash
-# Repos are used by pipeline, not directly
-from phx_home_analysis.repositories import PropertyRepository, EnrichmentRepository
-```
+## Tasks
+- [x] Add E2-R3 field serialization (42 fields)
+- [x] Add E2-R3 field deserialization (42 fields)
+- [ ] Consider dynamic serialization from dataclass fields `P:M`
 
 ## Learnings
 - Atomic writes prevent data corruption via temp file + rename pattern
+- E2-R3 exposed hardcoded serialization gap - fields need explicit dict mapping
 - Address normalization (case/punctuation-insensitive) enables robust matching
-- Timestamped backup naming allows recovery without overwrites
-- Enum conversion requires explicit str→enum mapping in _parse_enum()
-- Empty JSON should create template to guide users
 
 ## Refs
 - Base classes: `base.py:8-190`
 - CSV parsing: `csv_repository.py:117-392`
-- JSON atomic save: `json_repository.py:146-201`
-- Module exports: `__init__.py:1-22`
+- JSON E2-R3 serialization: `json_repository.py:540-728`
+- JSON E2-R3 deserialization: `json_repository.py:485-673`
 
 ## Deps
-**← Imports:** domain.entities, domain.enums, validation.validators, utils.address_utils, utils.file_ops, pathlib, csv, json, abc, typing
-**→ Imported by:** pipeline.orchestrator, scripts/phx_home_analyzer.py, tests/unit/test_repositories.py
+- **← Imports:** domain.entities, domain.enums, validation.validators
+- **→ Imported by:** pipeline.orchestrator, MetadataPersister, scripts/

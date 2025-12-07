@@ -52,9 +52,7 @@ class TestTransientErrorRecoveryIntegration:
         return work_items_path
 
     @pytest.mark.asyncio
-    async def test_retry_then_succeed_no_failure_recorded(
-        self, work_items_file: Path
-    ) -> None:
+    async def test_retry_then_succeed_no_failure_recorded(self, work_items_file: Path) -> None:
         """Successful retry should not record failure."""
         call_count = 0
 
@@ -74,9 +72,7 @@ class TestTransientErrorRecoveryIntegration:
         assert summary["failed_count"] == 0
 
     @pytest.mark.asyncio
-    async def test_exhausted_retries_records_failure(
-        self, work_items_file: Path
-    ) -> None:
+    async def test_exhausted_retries_records_failure(self, work_items_file: Path) -> None:
         """Exhausted retries should record failure in work_items.json."""
         error = ConnectionError("Persistent failure")
 
@@ -102,9 +98,7 @@ class TestTransientErrorRecoveryIntegration:
         assert summary["failures"][0]["error_category"] == "transient"
 
     @pytest.mark.asyncio
-    async def test_permanent_error_immediate_failure(
-        self, work_items_file: Path
-    ) -> None:
+    async def test_permanent_error_immediate_failure(self, work_items_file: Path) -> None:
         """Permanent error should immediately record failure."""
         error = Exception("Not found")
         error.status_code = 404  # type: ignore[attr-defined]
@@ -128,9 +122,7 @@ class TestTransientErrorRecoveryIntegration:
         assert summary["failures"][0]["error_category"] == "permanent"
 
     @pytest.mark.asyncio
-    async def test_pipeline_continues_after_item_failure(
-        self, work_items_file: Path
-    ) -> None:
+    async def test_pipeline_continues_after_item_failure(self, work_items_file: Path) -> None:
         """Pipeline should continue processing after one item fails."""
         addresses = [
             "123 Main St, Phoenix, AZ 85001",
@@ -142,9 +134,7 @@ class TestTransientErrorRecoveryIntegration:
         for i, addr in enumerate(addresses):
 
             @retry_with_backoff(max_retries=1, min_delay=0.01)
-            async def process_item(
-                address: str = addr, index: int = i
-            ) -> dict[str, str | bool]:
+            async def process_item(address: str = addr, index: int = i) -> dict[str, str | bool]:
                 if index == 1:  # Second item fails
                     raise ConnectionError("Failed")
                 return {"address": address, "success": True}
@@ -153,9 +143,7 @@ class TestTransientErrorRecoveryIntegration:
                 result = await process_item()
                 results.append(result)
             except ConnectionError:
-                mark_item_failed(
-                    work_items_file, addr, "phase1_listing", ConnectionError("Failed")
-                )
+                mark_item_failed(work_items_file, addr, "phase1_listing", ConnectionError("Failed"))
 
         # Two items succeeded, one failed
         assert len(results) == 2
@@ -163,9 +151,7 @@ class TestTransientErrorRecoveryIntegration:
         assert summary["failed_count"] == 1
 
     @pytest.mark.asyncio
-    async def test_multiple_failures_tracked_separately(
-        self, work_items_file: Path
-    ) -> None:
+    async def test_multiple_failures_tracked_separately(self, work_items_file: Path) -> None:
         """Multiple failures should be tracked separately."""
         # Fail two different items
         error1 = ConnectionError("Network error")
@@ -211,9 +197,7 @@ class TestTransientErrorRecoveryIntegration:
         assert "T" in summary["failures"][0]["failed_at"]
 
     @pytest.mark.asyncio
-    async def test_failure_includes_actionable_error_message(
-        self, work_items_file: Path
-    ) -> None:
+    async def test_failure_includes_actionable_error_message(self, work_items_file: Path) -> None:
         """Failure should include actionable error message."""
         error = Exception("Unauthorized")
         error.status_code = 401  # type: ignore[attr-defined]
@@ -277,9 +261,7 @@ class TestTransientErrorRecoveryIntegration:
         assert status == "failed"
 
     @pytest.mark.asyncio
-    async def test_missing_work_items_file_handled_gracefully(
-        self, tmp_path: Path
-    ) -> None:
+    async def test_missing_work_items_file_handled_gracefully(self, tmp_path: Path) -> None:
         """Should handle missing work_items.json gracefully."""
         nonexistent_path = tmp_path / "nonexistent.json"
 
@@ -297,9 +279,7 @@ class TestTransientErrorRecoveryIntegration:
         assert summary["failures"] == []
 
     @pytest.mark.asyncio
-    async def test_unknown_address_handled_gracefully(
-        self, work_items_file: Path
-    ) -> None:
+    async def test_unknown_address_handled_gracefully(self, work_items_file: Path) -> None:
         """Should handle unknown address gracefully."""
         # Should not raise for unknown address
         mark_item_failed(

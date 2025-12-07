@@ -47,10 +47,10 @@ GOOGLE_MAPS_BASE_URL = "https://maps.googleapis.com"
 
 # Arizona-optimized orientation scoring (N=best, W=worst)
 ORIENTATION_SCORES = {
-    Orientation.NORTH: 25.0,   # Best - minimizes afternoon sun
-    Orientation.EAST: 18.75,   # Good - morning sun only
-    Orientation.SOUTH: 12.5,   # Moderate - all-day sun
-    Orientation.WEST: 0.0,     # Worst - intense afternoon heat
+    Orientation.NORTH: 25.0,  # Best - minimizes afternoon sun
+    Orientation.EAST: 18.75,  # Good - morning sun only
+    Orientation.SOUTH: 12.5,  # Moderate - all-day sun
+    Orientation.WEST: 0.0,  # Worst - intense afternoon heat
 }
 
 # Default work location (Phoenix downtown)
@@ -240,7 +240,9 @@ class GoogleMapsClient(APIClient):
             )
 
             if not data or data.get("status") != "OK":
-                logger.debug(f"Distance Matrix API error: {data.get('status') if data else 'No response'}")
+                logger.debug(
+                    f"Distance Matrix API error: {data.get('status') if data else 'No response'}"
+                )
                 return None
 
             rows = data.get("rows", [])
@@ -299,7 +301,9 @@ class GoogleMapsClient(APIClient):
             )
 
             if not data or data.get("status") not in ("OK", "ZERO_RESULTS"):
-                logger.debug(f"Places API error for {place_type}: {data.get('status') if data else 'No response'}")
+                logger.debug(
+                    f"Places API error for {place_type}: {data.get('status') if data else 'No response'}"
+                )
                 return None
 
             results = data.get("results", [])
@@ -371,12 +375,14 @@ class GoogleMapsClient(APIClient):
 
             # Build request URL
             url = f"{self.base_url}/maps/api/staticmap"
-            params = self._build_params({
-                "center": f"{lat},{lng}",
-                "zoom": zoom,
-                "size": "600x600",
-                "maptype": "satellite",
-            })
+            params = self._build_params(
+                {
+                    "center": f"{lat},{lng}",
+                    "zoom": zoom,
+                    "size": "600x600",
+                    "maptype": "satellite",
+                }
+            )
 
             response = await self._http.get(url, params=params)
             response.raise_for_status()

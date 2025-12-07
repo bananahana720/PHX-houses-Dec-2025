@@ -338,7 +338,9 @@ class TestSaveIfDirty:
         assert result3 is False
         assert mock_repository.save_count == 1
 
-    def test_save_if_dirty_returns_false_when_cache_not_loaded(self, cache_manager, mock_repository):
+    def test_save_if_dirty_returns_false_when_cache_not_loaded(
+        self, cache_manager, mock_repository
+    ):
         """save_if_dirty should return False if cache never loaded."""
         assert not cache_manager.is_loaded
 

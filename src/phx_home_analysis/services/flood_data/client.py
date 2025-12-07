@@ -122,9 +122,7 @@ class FEMAFloodClient:
             logger.error(f"FEMA API unexpected error: {e}")
             return None
 
-    def _parse_flood_zone(
-        self, attrs: dict, lat: float, lng: float
-    ) -> FloodZoneData | None:
+    def _parse_flood_zone(self, attrs: dict, lat: float, lng: float) -> FloodZoneData | None:
         """Parse flood zone attributes from FEMA response.
 
         Args:

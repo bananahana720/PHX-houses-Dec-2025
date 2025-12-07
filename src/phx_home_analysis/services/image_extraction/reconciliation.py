@@ -1,4 +1,5 @@
 """Post-extraction reconciliation and data quality verification."""
+
 from __future__ import annotations
 
 import json
@@ -27,7 +28,9 @@ class ReconciliationReport:
     # Discrepancies
     orphan_files: list[str] = field(default_factory=list)  # Files on disk not in manifest
     ghost_entries: list[str] = field(default_factory=list)  # Manifest entries without files
-    hash_mismatches: list[dict[str, str]] = field(default_factory=list)  # Hash doesn't match address
+    hash_mismatches: list[dict[str, str]] = field(
+        default_factory=list
+    )  # Hash doesn't match address
 
     # Quality scores (0-100)
     accuracy_score: float = 100.0
@@ -38,9 +41,9 @@ class ReconciliationReport:
     def overall_quality(self) -> float:
         """Weighted average quality score."""
         return (
-            self.accuracy_score * 0.4 +
-            self.completeness_score * 0.35 +
-            self.consistency_score * 0.25
+            self.accuracy_score * 0.4
+            + self.completeness_score * 0.35
+            + self.consistency_score * 0.25
         )
 
     @property
@@ -130,12 +133,14 @@ class DataReconciler:
             if address and stored_hash:
                 expected_hash = compute_property_hash(address)
                 if stored_hash != expected_hash:
-                    report.hash_mismatches.append({
-                        "image_id": image_id,
-                        "address": address,
-                        "stored_hash": stored_hash,
-                        "expected_hash": expected_hash,
-                    })
+                    report.hash_mismatches.append(
+                        {
+                            "image_id": image_id,
+                            "address": address,
+                            "stored_hash": stored_hash,
+                            "expected_hash": expected_hash,
+                        }
+                    )
 
         # Calculate quality scores
         total = max(report.manifest_image_count, 1)
@@ -149,8 +154,7 @@ class DataReconciler:
         # Consistency: % of files accounted for
         if report.disk_file_count > 0:
             report.consistency_score = (
-                (report.disk_file_count - len(report.orphan_files))
-                / report.disk_file_count * 100
+                (report.disk_file_count - len(report.orphan_files)) / report.disk_file_count * 100
             )
 
         return report

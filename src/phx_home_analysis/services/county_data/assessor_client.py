@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 # API endpoints
 OFFICIAL_API_BASE = "https://mcassessor.maricopa.gov"
-ARCGIS_API_BASE = "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/MaricopaDynamicQueryService/MapServer"
+ARCGIS_API_BASE = (
+    "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/MaricopaDynamicQueryService/MapServer"
+)
 # Zoning data may be on a different service - common layer IDs to try: 5, 6, 7
 ZONING_LAYER_ID = 5  # Layer ID for zoning - may need adjustment based on actual service
 
@@ -44,9 +46,9 @@ def escape_like_pattern(value: str) -> str:
     """
     # Order matters: escape backslash first to avoid double-escaping
     value = value.replace("\\", "\\\\")  # \ → \\
-    value = value.replace("%", "\\%")    # % → \%
-    value = value.replace("_", "\\_")    # _ → \_
-    value = value.replace("'", "''")     # ' → '' (SQL standard)
+    value = value.replace("%", "\\%")  # % → \%
+    value = value.replace("_", "\\_")  # _ → \_
+    value = value.replace("'", "''")  # ' → '' (SQL standard)
     return value
 
 
@@ -78,9 +80,7 @@ class MaricopaAssessorClient:
     # 1. Performance: regex compiled once instead of on every address check
     # 2. Security: prevents ReDoS (Regular Expression Denial of Service) by avoiding
     #    nested optional quantifiers that could cause catastrophic backtracking
-    _PO_BOX_PATTERN = re.compile(
-        r'(?i)\b(p\.?o\.?\s+box|post\s+office\s+box|pob)\b'
-    )
+    _PO_BOX_PATTERN = re.compile(r"(?i)\b(p\.?o\.?\s+box|post\s+office\s+box|pob)\b")
 
     def __init__(
         self,
@@ -102,9 +102,7 @@ class MaricopaAssessorClient:
         self._http: httpx.AsyncClient | None = None
 
         if not self._token:
-            logger.warning(
-                "MARICOPA_ASSESSOR_TOKEN not set - will use ArcGIS fallback only"
-            )
+            logger.warning("MARICOPA_ASSESSOR_TOKEN not set - will use ArcGIS fallback only")
 
     async def __aenter__(self) -> "MaricopaAssessorClient":
         """Async context manager entry with HTTP/2 support.
@@ -381,21 +379,15 @@ class MaricopaAssessorClient:
         - valuation: First entry from parcel['Valuations'] array
         """
         # Lot size from residential-details or main parcel
-        lot_sqft = self._safe_int(
-            residential.get("LotSize")
-            or parcel.get("LotSize")
-        )
+        lot_sqft = self._safe_int(residential.get("LotSize") or parcel.get("LotSize"))
 
         # Year built from residential-details
         year_built = self._safe_int(
-            residential.get("ConstructionYear")
-            or residential.get("OriginalConstructionYear")
+            residential.get("ConstructionYear") or residential.get("OriginalConstructionYear")
         )
 
         # Garage from residential-details
-        garage = self._safe_int(
-            residential.get("NumberOfGarages")
-        )
+        garage = self._safe_int(residential.get("NumberOfGarages"))
 
         # Pool - if Pool field has a value (sqft), property has a pool
         pool_sqft = residential.get("Pool")
@@ -412,10 +404,7 @@ class MaricopaAssessorClient:
         fcv = self._safe_int(valuation.get("FullCashValue"))
 
         # Limited property value (used for tax calculation)
-        lpv = self._safe_int(
-            valuation.get("LimitedPropertyValue")
-            or valuation.get("AssessedLPV")
-        )
+        lpv = self._safe_int(valuation.get("LimitedPropertyValue") or valuation.get("AssessedLPV"))
 
         # Tax area code (can be used to estimate tax rate)
         # Actual annual tax requires Treasurer API, not available here
@@ -625,9 +614,7 @@ class MaricopaAssessorClient:
             logger.debug(f"Zoning query failed: {self._safe_error_message(e)}")
             return None
 
-    def _parse_zoning_data(
-        self, attrs: dict, lat: float, lng: float
-    ) -> ZoningData | None:
+    def _parse_zoning_data(self, attrs: dict, lat: float, lng: float) -> ZoningData | None:
         """Parse zoning attributes from GIS response.
 
         Args:
@@ -677,9 +664,7 @@ class MaricopaAssessorClient:
             logger.error(f"Error parsing zoning data: {e}")
             return None
 
-    def _derive_zoning_category(
-        self, zoning_code: str, zone_class: str | None = None
-    ) -> str:
+    def _derive_zoning_category(self, zoning_code: str, zone_class: str | None = None) -> str:
         """Derive zoning category from code.
 
         Args:

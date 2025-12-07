@@ -201,7 +201,9 @@ class ConsoleReporter(Reporter):
 
         # Print high risks if any
         if prop.high_risks:
-            print(f"{self.RED if self.use_color else ''}High Risks:{self.RESET if self.use_color else ''}")
+            print(
+                f"{self.RED if self.use_color else ''}High Risks:{self.RESET if self.use_color else ''}"
+            )
             for risk in prop.high_risks:
                 print(f"  - [{risk.category}] {risk.description}")
 

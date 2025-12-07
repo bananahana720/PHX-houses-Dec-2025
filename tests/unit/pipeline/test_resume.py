@@ -213,6 +213,7 @@ class TestResetStaleItems:
 
         # Set stale timestamp directly in file
         import json
+
         with open(json_path) as f:
             state = json.load(f)
         past_time = datetime.now(timezone.utc) - timedelta(minutes=40)
@@ -262,8 +263,14 @@ class TestGetPendingAddresses:
         repo.initialize_session(mode="batch", addresses=["123 Main St", "456 Oak Ave"])
 
         # Complete all phases for first item
-        phases = ["phase0_county", "phase1_listing", "phase1_map",
-                  "phase2_images", "phase3_synthesis", "phase4_report"]
+        phases = [
+            "phase0_county",
+            "phase1_listing",
+            "phase1_map",
+            "phase2_images",
+            "phase3_synthesis",
+            "phase4_report",
+        ]
         for phase in phases:
             repo.checkpoint_phase_start("123 Main St", phase)
             repo.checkpoint_phase_complete("123 Main St", phase)
@@ -301,8 +308,14 @@ class TestGetCompletedAddresses:
         repo.initialize_session(mode="batch", addresses=["123 Main St", "456 Oak Ave"])
 
         # Complete all phases for first item
-        phases = ["phase0_county", "phase1_listing", "phase1_map",
-                  "phase2_images", "phase3_synthesis", "phase4_report"]
+        phases = [
+            "phase0_county",
+            "phase1_listing",
+            "phase1_map",
+            "phase2_images",
+            "phase3_synthesis",
+            "phase4_report",
+        ]
         for phase in phases:
             repo.checkpoint_phase_start("123 Main St", phase)
             repo.checkpoint_phase_complete("123 Main St", phase)
@@ -406,8 +419,14 @@ class TestEstimateDataLoss:
         repo.initialize_session(mode="batch", addresses=["123 Main St", "456 Oak Ave"])
 
         # Complete first item
-        phases = ["phase0_county", "phase1_listing", "phase1_map",
-                  "phase2_images", "phase3_synthesis", "phase4_report"]
+        phases = [
+            "phase0_county",
+            "phase1_listing",
+            "phase1_map",
+            "phase2_images",
+            "phase3_synthesis",
+            "phase4_report",
+        ]
         for phase in phases:
             repo.checkpoint_phase_start("123 Main St", phase)
             repo.checkpoint_phase_complete("123 Main St", phase)

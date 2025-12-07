@@ -208,14 +208,10 @@ class PropertyLifecycle(BaseModel):
             status=PropertyStatus(data.get("status", "active")),
             last_updated=datetime.fromisoformat(data["last_updated"]),
             created_at=(
-                datetime.fromisoformat(data["created_at"])
-                if data.get("created_at")
-                else None
+                datetime.fromisoformat(data["created_at"]) if data.get("created_at") else None
             ),
             archived_at=(
-                datetime.fromisoformat(data["archived_at"])
-                if data.get("archived_at")
-                else None
+                datetime.fromisoformat(data["archived_at"]) if data.get("archived_at") else None
             ),
             staleness_days=data.get("staleness_days", 0),
         )
@@ -336,19 +332,20 @@ class StalenessReport(BaseModel):
         ]
 
         if self.oldest_update and self.newest_update:
-            lines.extend([
-                "Update Range:",
-                f"  Oldest: {self.oldest_update.strftime('%Y-%m-%d')}",
-                f"  Newest: {self.newest_update.strftime('%Y-%m-%d')}",
-                "",
-            ])
+            lines.extend(
+                [
+                    "Update Range:",
+                    f"  Oldest: {self.oldest_update.strftime('%Y-%m-%d')}",
+                    f"  Newest: {self.newest_update.strftime('%Y-%m-%d')}",
+                    "",
+                ]
+            )
 
         if self.stale_properties:
             lines.append("Stale Properties:")
             for prop in sorted(self.stale_properties, key=lambda p: -p.staleness_days):
                 lines.append(
-                    f"  [{prop.property_hash}] {prop.staleness_days}d stale - "
-                    f"{prop.full_address}"
+                    f"  [{prop.property_hash}] {prop.staleness_days}d stale - {prop.full_address}"
                 )
 
         lines.append("=" * 60)
@@ -368,12 +365,8 @@ class StalenessReport(BaseModel):
             "fresh_count": self.fresh_count,
             "stale_percentage": self.stale_percentage,
             "stale_properties": [p.to_dict() for p in self.stale_properties],
-            "oldest_update": (
-                self.oldest_update.isoformat() if self.oldest_update else None
-            ),
-            "newest_update": (
-                self.newest_update.isoformat() if self.newest_update else None
-            ),
+            "oldest_update": (self.oldest_update.isoformat() if self.oldest_update else None),
+            "newest_update": (self.newest_update.isoformat() if self.newest_update else None),
         }
 
 
@@ -528,8 +521,7 @@ class BatchArchiveResult(BaseModel):
             for result in self.results:
                 if not result.success:
                     lines.append(
-                        f"  [{result.property_hash}] {result.full_address}: "
-                        f"{result.error_message}"
+                        f"  [{result.property_hash}] {result.full_address}: {result.error_message}"
                     )
 
         lines.append("=" * 60)
@@ -548,7 +540,5 @@ class BatchArchiveResult(BaseModel):
             "success_rate": self.success_rate,
             "results": [r.to_dict() for r in self.results],
             "started_at": self.started_at.isoformat(),
-            "completed_at": (
-                self.completed_at.isoformat() if self.completed_at else None
-            ),
+            "completed_at": (self.completed_at.isoformat() if self.completed_at else None),
         }

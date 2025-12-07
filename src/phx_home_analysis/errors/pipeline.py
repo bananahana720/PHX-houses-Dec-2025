@@ -61,11 +61,7 @@ def mark_item_failed(
                 item["phases"][phase] = {}
 
             category = get_error_category(error)
-            status = (
-                "retrying"
-                if (can_retry and category == ErrorCategory.TRANSIENT)
-                else "failed"
-            )
+            status = "retrying" if (can_retry and category == ErrorCategory.TRANSIENT) else "failed"
 
             item["phases"][phase]["status"] = status
             item["phases"][phase]["failed_at"] = datetime.now(timezone.utc).isoformat()

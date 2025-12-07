@@ -197,9 +197,7 @@ class StealthHttpClient:
 
                 if response.status_code == 429:
                     retry_after = int(response.headers.get("Retry-After", "60"))
-                    logger.warning(
-                        f"Rate limited downloading {url}, retry after {retry_after}s"
-                    )
+                    logger.warning(f"Rate limited downloading {url}, retry after {retry_after}s")
                     if attempt < self.max_retries - 1:
                         await asyncio.sleep(retry_after)
                         continue
@@ -278,9 +276,7 @@ class StealthHttpClient:
                         message="Empty response body",
                     )
 
-                logger.debug(
-                    f"Successfully downloaded {len(image_data)} bytes from {url}"
-                )
+                logger.debug(f"Successfully downloaded {len(image_data)} bytes from {url}")
                 return image_data, base_content_type
 
             except StealthDownloadError:

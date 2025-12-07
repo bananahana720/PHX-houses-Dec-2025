@@ -99,9 +99,7 @@ class PropertyArchiver:
             archive_dir: Directory for archive files.
                 Defaults to data/archive/.
         """
-        self.enrichment_path = (
-            Path(enrichment_path) if enrichment_path else DEFAULT_ENRICHMENT_PATH
-        )
+        self.enrichment_path = Path(enrichment_path) if enrichment_path else DEFAULT_ENRICHMENT_PATH
         self.archive_dir = Path(archive_dir) if archive_dir else DEFAULT_ARCHIVE_DIR
 
         logger.debug(
@@ -120,17 +118,13 @@ class PropertyArchiver:
             json.JSONDecodeError: If file contains invalid JSON.
         """
         if not self.enrichment_path.exists():
-            raise FileNotFoundError(
-                f"Enrichment file not found: {self.enrichment_path}"
-            )
+            raise FileNotFoundError(f"Enrichment file not found: {self.enrichment_path}")
 
         with open(self.enrichment_path, encoding="utf-8") as f:
             data = json.load(f)
 
         if not isinstance(data, list):
-            raise ValueError(
-                f"Expected list of properties, got {type(data).__name__}"
-            )
+            raise ValueError(f"Expected list of properties, got {type(data).__name__}")
 
         return data
 
@@ -501,7 +495,8 @@ class PropertyArchiver:
 
         # Remove archive metadata
         restore_data = {
-            k: v for k, v in archived_data.items()
+            k: v
+            for k, v in archived_data.items()
             if k not in ("archived_at", "status", "property_hash")
         }
 
@@ -561,8 +556,7 @@ class PropertyArchiver:
     def __str__(self) -> str:
         """String representation."""
         return (
-            f"PropertyArchiver(enrichment={self.enrichment_path}, "
-            f"archive_dir={self.archive_dir})"
+            f"PropertyArchiver(enrichment={self.enrichment_path}, archive_dir={self.archive_dir})"
         )
 
     def __repr__(self) -> str:

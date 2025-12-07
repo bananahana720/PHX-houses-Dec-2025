@@ -164,7 +164,7 @@ async def test_browser_pool_integration():
 
     except Exception as e:
         logger.error("✗ TEST 3 FAILED: %s", e)
-        if 'pool' in locals():
+        if "pool" in locals():
             await pool.close()
         return False
 
@@ -200,7 +200,7 @@ async def test_browser_pool_no_auth():
 
     except Exception as e:
         logger.error("✗ TEST 4 FAILED: %s", e)
-        if 'pool' in locals():
+        if "pool" in locals():
             await pool.close()
         return False
 

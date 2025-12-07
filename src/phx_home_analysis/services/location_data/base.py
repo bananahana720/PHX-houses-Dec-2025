@@ -32,6 +32,7 @@ class ExtractionResult(Generic[T]):
         error: Error message if extraction failed
         source_url: URL data was extracted from
     """
+
     success: bool
     data: T | None = None
     error: str | None = None

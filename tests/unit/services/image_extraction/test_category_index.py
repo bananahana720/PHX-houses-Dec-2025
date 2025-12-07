@@ -8,7 +8,6 @@ Tests cover:
 - Multiple categories per image (same image in different locations)
 """
 
-
 import pytest
 
 from phx_home_analysis.services.image_extraction.category_index import CategoryIndex

@@ -18,6 +18,7 @@ Usage:
     coordinator = PhaseCoordinator(progress_reporter=reporter)
     await coordinator.execute_pipeline(properties=["123 Main St, Phoenix, AZ"])
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -139,9 +140,7 @@ class PhaseCoordinator:
         self._work_items: dict[str, Any] = {}
 
         # Phase handlers mapping
-        self._phase_handlers: dict[
-            Phase, Callable[[str], Coroutine[Any, Any, PhaseResult]]
-        ] = {
+        self._phase_handlers: dict[Phase, Callable[[str], Coroutine[Any, Any, PhaseResult]]] = {
             Phase.COUNTY: self._execute_county,
             Phase.LISTING: self._execute_listing,
             Phase.MAP: self._execute_map,
@@ -374,9 +373,7 @@ class PhaseCoordinator:
         state.phase_status["phase1_listing"] = (
             "complete" if listing_phaseresult.success else "failed"
         )
-        state.phase_status["phase1_map"] = (
-            "complete" if map_phaseresult.success else "failed"
-        )
+        state.phase_status["phase1_map"] = "complete" if map_phaseresult.success else "failed"
 
         # Record durations
         self.reporter.record_phase_duration(listing_phaseresult.duration_seconds)

@@ -91,11 +91,7 @@ def create_extraction_handler(
                     "redfin": ImageSource.REDFIN,
                     "phoenix_mls": ImageSource.PHOENIX_MLS,
                 }
-                enabled_sources = [
-                    source_map[s]
-                    for s in job.sources
-                    if s in source_map
-                ]
+                enabled_sources = [source_map[s] for s in job.sources if s in source_map]
 
             # Create orchestrator
             orchestrator = ImageExtractionOrchestrator(
@@ -353,8 +349,7 @@ def format_queue_status(status: dict[str, Any]) -> str:
         for job in running:
             elapsed = int(job.get("elapsed_seconds", 0))
             lines.append(
-                f"  [{job['id']}] {job['address'][:40]} - "
-                f"{job['progress']:.0%} ({elapsed}s)"
+                f"  [{job['id']}] {job['address'][:40]} - {job['progress']:.0%} ({elapsed}s)"
             )
 
     if pending:

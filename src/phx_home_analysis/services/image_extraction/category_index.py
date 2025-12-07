@@ -47,9 +47,7 @@ class CategoryIndex:
         self._index_path = index_path
 
         # Primary index: location -> subject -> image_ids
-        self._categories: dict[str, dict[str, list[str]]] = defaultdict(
-            lambda: defaultdict(list)
-        )
+        self._categories: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
 
         # Secondary index: property_hash -> location -> subject -> image_ids
         self._by_property: dict[str, dict[str, dict[str, list[str]]]] = defaultdict(
@@ -145,15 +143,9 @@ class CategoryIndex:
         data = {
             "version": self.VERSION,
             "last_updated": self._last_updated,
-            "categories": {
-                loc: dict(subjects)
-                for loc, subjects in self._categories.items()
-            },
+            "categories": {loc: dict(subjects) for loc, subjects in self._categories.items()},
             "by_property": {
-                prop: {
-                    loc: dict(subjects)
-                    for loc, subjects in locations.items()
-                }
+                prop: {loc: dict(subjects) for loc, subjects in locations.items()}
                 for prop, locations in self._by_property.items()
             },
             "by_location": dict(self._by_location),
@@ -283,7 +275,9 @@ class CategoryIndex:
                 self._categories[location][subject].remove(image_id)
 
             # Remove from property index
-            if image_id in self._by_property.get(property_hash, {}).get(location, {}).get(subject, []):
+            if image_id in self._by_property.get(property_hash, {}).get(location, {}).get(
+                subject, []
+            ):
                 self._by_property[property_hash][location][subject].remove(image_id)
 
             # Remove from flat indexes
@@ -414,14 +408,10 @@ class CategoryIndex:
         total_properties = len(self._by_property)
 
         # Count by location
-        by_location = {
-            loc: len(ids) for loc, ids in self._by_location.items()
-        }
+        by_location = {loc: len(ids) for loc, ids in self._by_location.items()}
 
         # Count by subject
-        by_subject = {
-            subj: len(ids) for subj, ids in self._by_subject.items()
-        }
+        by_subject = {subj: len(ids) for subj, ids in self._by_subject.items()}
 
         # Images per property
         images_per_property = [
@@ -429,8 +419,7 @@ class CategoryIndex:
             for locs in self._by_property.values()
         ]
         avg_images_per_property = (
-            sum(images_per_property) / len(images_per_property)
-            if images_per_property else 0
+            sum(images_per_property) / len(images_per_property) if images_per_property else 0
         )
 
         # Top subjects

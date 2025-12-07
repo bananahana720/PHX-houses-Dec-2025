@@ -148,7 +148,7 @@ class TestNavigateToSimpleSearch:
     async def test_navigate_to_simple_search_includes_human_delay(self, extractor, mock_tab):
         """Test that navigation includes human delay for stealth."""
         # Arrange
-        with patch.object(extractor, '_human_delay', new_callable=AsyncMock) as mock_delay:
+        with patch.object(extractor, "_human_delay", new_callable=AsyncMock) as mock_delay:
             # Act
             await extractor._navigate_to_simple_search(mock_tab)
 
@@ -159,9 +159,11 @@ class TestNavigateToSimpleSearch:
 class TestSearchForProperty:
     """Test _search_for_property() method with direct MLS# extraction and URL navigation."""
 
-    @pytest.mark.skip(reason="COMPLEX MOCK: Unit test for _search_for_property() requires precise mock setup "
-                            "for tab.evaluate() JavaScript execution. Integration tests verify end-to-end flow. "
-                            "Recommend testing via integration tests instead.")
+    @pytest.mark.skip(
+        reason="COMPLEX MOCK: Unit test for _search_for_property() requires precise mock setup "
+        "for tab.evaluate() JavaScript execution. Integration tests verify end-to-end flow. "
+        "Recommend testing via integration tests instead."
+    )
     @pytest.mark.asyncio
     async def test_search_for_property_primary_selector_success(
         self, extractor, mock_tab, sample_property
@@ -181,20 +183,24 @@ class TestSearchForProperty:
         mock_tab.select_all = AsyncMock(return_value=[mock_autocomplete_elem])
         # 3. evaluate() returns batch JS extraction of all autocomplete texts
         # Use side_effect to ensure consistent return across multiple calls
-        mock_tab.evaluate = AsyncMock(side_effect=[
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"]
-        ])
+        mock_tab.evaluate = AsyncMock(
+            side_effect=[
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+            ]
+        )
         # 4. Mock tab.get() for navigation to direct URL
         mock_tab.get = AsyncMock()
         # 5. After navigation to direct URL, get_content() returns HTML with CDN reference
-        mock_tab.get_content = AsyncMock(return_value="""
+        mock_tab.get_content = AsyncMock(
+            return_value="""
         <html><body>
             <img src="https://cdn.photos.sparkplatform.com/az/abc123-o.jpg" />
         </body></html>
-        """)
+        """
+        )
 
         # Act
         result = await extractor._search_for_property(mock_tab, sample_property)
@@ -206,9 +212,11 @@ class TestSearchForProperty:
         # Verify evaluate() was called for batch JS extraction
         mock_tab.evaluate.assert_called()
 
-    @pytest.mark.skip(reason="COMPLEX MOCK: Unit test for _search_for_property() requires precise mock setup "
-                            "for tab.evaluate() JavaScript execution. Integration tests verify end-to-end flow. "
-                            "Recommend testing via integration tests instead.")
+    @pytest.mark.skip(
+        reason="COMPLEX MOCK: Unit test for _search_for_property() requires precise mock setup "
+        "for tab.evaluate() JavaScript execution. Integration tests verify end-to-end flow. "
+        "Recommend testing via integration tests instead."
+    )
     @pytest.mark.asyncio
     async def test_search_for_property_selector_fallback(
         self, extractor, mock_tab, sample_property
@@ -229,20 +237,24 @@ class TestSearchForProperty:
         mock_tab.select_all = AsyncMock(return_value=[mock_autocomplete_elem])
         # evaluate() returns batch JS extraction of all autocomplete texts
         # Use side_effect to ensure consistent return across multiple calls
-        mock_tab.evaluate = AsyncMock(side_effect=[
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"]
-        ])
+        mock_tab.evaluate = AsyncMock(
+            side_effect=[
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+            ]
+        )
         # Mock tab.get() for navigation to direct URL
         mock_tab.get = AsyncMock()
         # After navigation to direct URL, get_content() returns HTML with CDN reference
-        mock_tab.get_content = AsyncMock(return_value="""
+        mock_tab.get_content = AsyncMock(
+            return_value="""
         <html><body>
             <img src="https://cdn.photos.sparkplatform.com/az/abc123-o.jpg" />
         </body></html>
-        """)
+        """
+        )
 
         # Act
         result = await extractor._search_for_property(mock_tab, sample_property)
@@ -288,9 +300,11 @@ class TestSearchForProperty:
         # NEW BEHAVIOR: Returns False when no MLS# can be extracted
         assert result is False
 
-    @pytest.mark.skip(reason="COMPLEX MOCK: Unit test for _search_for_property() requires precise mock setup "
-                            "for tab.evaluate() JavaScript execution. Integration tests verify end-to-end flow. "
-                            "Recommend testing via integration tests instead.")
+    @pytest.mark.skip(
+        reason="COMPLEX MOCK: Unit test for _search_for_property() requires precise mock setup "
+        "for tab.evaluate() JavaScript execution. Integration tests verify end-to-end flow. "
+        "Recommend testing via integration tests instead."
+    )
     @pytest.mark.asyncio
     async def test_search_for_property_includes_rate_limit_delay(
         self, extractor, mock_tab, sample_property
@@ -309,23 +323,27 @@ class TestSearchForProperty:
         mock_tab.select_all = AsyncMock(return_value=[mock_autocomplete_elem])
         # evaluate() returns batch JS extraction of all autocomplete texts
         # Use side_effect to ensure consistent return across multiple calls
-        mock_tab.evaluate = AsyncMock(side_effect=[
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"]
-        ])
+        mock_tab.evaluate = AsyncMock(
+            side_effect=[
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                ["4732 W Davis Rd, Glendale, AZ 85306 / 6789012 (MLS #)"],
+            ]
+        )
         # Mock tab.get() for navigation to direct URL
         mock_tab.get = AsyncMock()
         # After navigation to direct URL, get_content() returns HTML with CDN reference
-        mock_tab.get_content = AsyncMock(return_value="""
+        mock_tab.get_content = AsyncMock(
+            return_value="""
         <html><body>
             <img src="https://cdn.photos.sparkplatform.com/az/abc123-o.jpg" />
         </body></html>
-        """)
+        """
+        )
 
         # Patch the rate limit method to track if it's called
-        with patch.object(extractor, '_rate_limit_search', new_callable=AsyncMock) as mock_delay:
+        with patch.object(extractor, "_rate_limit_search", new_callable=AsyncMock) as mock_delay:
             # Act
             result = await extractor._search_for_property(mock_tab, sample_property)
 
@@ -353,9 +371,7 @@ class TestNavigateToDetailPage:
     """Test _navigate_to_detail_page() method."""
 
     @pytest.mark.asyncio
-    async def test_navigate_to_detail_page_success(
-        self, extractor, mock_tab, detail_page_html
-    ):
+    async def test_navigate_to_detail_page_success(self, extractor, mock_tab, detail_page_html):
         """Test successful navigation to listing detail page."""
         # Arrange
         listing_url = "https://phoenixmlssearch.com/mls/listing/4732-w-davis-rd"
@@ -384,8 +400,7 @@ class TestNavigateToDetailPage:
         # Act & Assert
         with pytest.raises(asyncio.TimeoutError):
             await asyncio.wait_for(
-                extractor._navigate_to_detail_page(mock_tab, listing_url),
-                timeout=0.1
+                extractor._navigate_to_detail_page(mock_tab, listing_url), timeout=0.1
             )
 
     @pytest.mark.asyncio
@@ -397,7 +412,9 @@ class TestNavigateToDetailPage:
         listing_url = "https://phoenixmlssearch.com/mls/listing/test"
         mock_tab.get_content.return_value = detail_page_html
 
-        with patch.object(extractor, '_rate_limit_search', new_callable=AsyncMock) as mock_rate_limit:
+        with patch.object(
+            extractor, "_rate_limit_search", new_callable=AsyncMock
+        ) as mock_rate_limit:
             # Act
             await extractor._navigate_to_detail_page(mock_tab, listing_url)
 
@@ -447,26 +464,34 @@ class TestExtractUrlsFromPageIntegration:
         # 3. evaluate() is called multiple times with different purposes:
         #    - First call: batch JS extraction of autocomplete texts in _search_for_property()
         #    - Second call: image URLs extraction in _extract_images_via_javascript()
-        mock_tab.evaluate = AsyncMock(side_effect=[
-            # First call: autocomplete texts from batch JS extraction
-            ["4732 W DAVIS Road, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            # Second call: image URLs from JavaScript extraction
-            ["https://cdn.photos.sparkplatform.com/az/abc123-o.jpg",
-             "https://cdn.photos.sparkplatform.com/az/def456-o.jpg"]
-        ])
+        mock_tab.evaluate = AsyncMock(
+            side_effect=[
+                # First call: autocomplete texts from batch JS extraction
+                ["4732 W DAVIS Road, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                # Second call: image URLs from JavaScript extraction
+                [
+                    "https://cdn.photos.sparkplatform.com/az/abc123-o.jpg",
+                    "https://cdn.photos.sparkplatform.com/az/def456-o.jpg",
+                ],
+            ]
+        )
 
         # Mock URLs for navigation verification (after direct navigation to listing)
-        mock_tab.target.url = "https://phoenixmlssearch.com/mls/4732-W-DAVIS-Road-Glendale-AZ-85306-mls_6789012"
+        mock_tab.target.url = (
+            "https://phoenixmlssearch.com/mls/4732-W-DAVIS-Road-Glendale-AZ-85306-mls_6789012"
+        )
 
         # Mock get_content() returns:
         # 1. After navigation: HTML with CDN reference (for validation in _search_for_property)
         # 2. After opening gallery: detail page HTML (for _extract_kill_switch_fields)
         # 3. After image extraction: detail page HTML again (for _extract_gallery_images)
-        mock_tab.get_content = AsyncMock(side_effect=[
-            "<html><body><img src='https://cdn.photos.sparkplatform.com/az/test-o.jpg' /></body></html>",
-            detail_page_html,
-            detail_page_html
-        ])
+        mock_tab.get_content = AsyncMock(
+            side_effect=[
+                "<html><body><img src='https://cdn.photos.sparkplatform.com/az/test-o.jpg' /></body></html>",
+                detail_page_html,
+                detail_page_html,
+            ]
+        )
 
         # Act
         image_urls = await extractor._extract_urls_from_page(mock_tab)
@@ -486,9 +511,7 @@ class TestExtractUrlsFromPageIntegration:
         assert extractor.last_metadata.get("hoa_fee") == 0.0
 
     @pytest.mark.asyncio
-    async def test_extract_urls_search_fails(
-        self, extractor, mock_tab, sample_property
-    ):
+    async def test_extract_urls_search_fails(self, extractor, mock_tab, sample_property):
         """Test handling when search form interaction fails."""
         # Arrange
         extractor._current_property = sample_property
@@ -502,9 +525,7 @@ class TestExtractUrlsFromPageIntegration:
         assert extractor.last_metadata == {}
 
     @pytest.mark.asyncio
-    async def test_extract_urls_no_matching_listing(
-        self, extractor, mock_tab, sample_property
-    ):
+    async def test_extract_urls_no_matching_listing(self, extractor, mock_tab, sample_property):
         """Test handling when no matching listing found in results."""
         # Arrange
         extractor._current_property = sample_property
@@ -539,9 +560,7 @@ class TestExtractUrlsFromPageIntegration:
         assert image_urls == []
 
     @pytest.mark.asyncio
-    async def test_extract_urls_multiple_images(
-        self, extractor, mock_tab, sample_property
-    ):
+    async def test_extract_urls_multiple_images(self, extractor, mock_tab, sample_property):
         """Test extraction with multiple images via direct MLS# navigation (optimized)."""
         # Arrange
         extractor._current_property = sample_property
@@ -563,17 +582,23 @@ class TestExtractUrlsFromPageIntegration:
         # 3. evaluate() is called multiple times with different purposes:
         #    - First call: batch JS extraction of autocomplete texts in _search_for_property()
         #    - Second call: image URLs extraction in _extract_images_via_javascript()
-        mock_tab.evaluate = AsyncMock(side_effect=[
-            # First call: autocomplete texts from batch JS extraction
-            ["4732 W DAVIS Road, Glendale, AZ 85306 / 6789012 (MLS #)"],
-            # Second call: image URLs from JavaScript extraction (4 images)
-            ["https://cdn.photos.sparkplatform.com/az/img1-o.jpg",
-             "https://cdn.photos.sparkplatform.com/az/img2-o.jpg",
-             "https://cdn.photos.sparkplatform.com/az/img3-o.jpg",
-             "https://cdn.photos.sparkplatform.com/az/img4-o.png"]
-        ])
+        mock_tab.evaluate = AsyncMock(
+            side_effect=[
+                # First call: autocomplete texts from batch JS extraction
+                ["4732 W DAVIS Road, Glendale, AZ 85306 / 6789012 (MLS #)"],
+                # Second call: image URLs from JavaScript extraction (4 images)
+                [
+                    "https://cdn.photos.sparkplatform.com/az/img1-o.jpg",
+                    "https://cdn.photos.sparkplatform.com/az/img2-o.jpg",
+                    "https://cdn.photos.sparkplatform.com/az/img3-o.jpg",
+                    "https://cdn.photos.sparkplatform.com/az/img4-o.png",
+                ],
+            ]
+        )
 
-        mock_tab.target.url = "https://phoenixmlssearch.com/mls/4732-W-DAVIS-Road-Glendale-AZ-85306-mls_6789012"
+        mock_tab.target.url = (
+            "https://phoenixmlssearch.com/mls/4732-W-DAVIS-Road-Glendale-AZ-85306-mls_6789012"
+        )
 
         detail_html_multi = """
         <html>
@@ -593,11 +618,13 @@ class TestExtractUrlsFromPageIntegration:
         # 1. After navigation: HTML with CDN reference (for validation in _search_for_property)
         # 2. Detail page HTML (for _extract_kill_switch_fields)
         # 3. Detail page HTML again (for _extract_gallery_images)
-        mock_tab.get_content = AsyncMock(side_effect=[
-            "<html><body><img src='https://cdn.photos.sparkplatform.com/az/test-o.jpg' /></body></html>",
-            detail_html_multi,
-            detail_html_multi
-        ])
+        mock_tab.get_content = AsyncMock(
+            side_effect=[
+                "<html><body><img src='https://cdn.photos.sparkplatform.com/az/test-o.jpg' /></body></html>",
+                detail_html_multi,
+                detail_html_multi,
+            ]
+        )
 
         # Act
         image_urls = await extractor._extract_urls_from_page(mock_tab)
@@ -632,11 +659,13 @@ class TestExtractUrlsFromPageIntegration:
         # 2. select_all() returns autocomplete elements
         mock_tab.select_all = AsyncMock(return_value=[mock_autocomplete])
         # 3. evaluate() returns batch JS extraction of all autocomplete texts
-        mock_tab.evaluate = AsyncMock(return_value=[
-            "4732 W DAVIS Road, Glendale, AZ 85306 / 6789012 (MLS #)"
-        ])
+        mock_tab.evaluate = AsyncMock(
+            return_value=["4732 W DAVIS Road, Glendale, AZ 85306 / 6789012 (MLS #)"]
+        )
 
-        mock_tab.target.url = "https://phoenixmlssearch.com/mls/4732-W-DAVIS-Road-Glendale-AZ-85306-mls_6789012"
+        mock_tab.target.url = (
+            "https://phoenixmlssearch.com/mls/4732-W-DAVIS-Road-Glendale-AZ-85306-mls_6789012"
+        )
 
         # Mock HTML content returns detail page directly (no search results page)
         mock_tab.get_content.return_value = detail_page_html
@@ -647,12 +676,10 @@ class TestExtractUrlsFromPageIntegration:
         # Assert
         assert len(image_urls) > 0
         # Verify metadata lock exists and was used
-        assert hasattr(extractor, '_metadata_lock')
+        assert hasattr(extractor, "_metadata_lock")
         assert isinstance(extractor._metadata_lock, asyncio.Lock)
         # Verify metadata was stored safely
         assert extractor.last_metadata.get("mls_number") == "6789012"
-
-
 
 
 class TestAddressesMatch:
@@ -707,22 +734,17 @@ class TestExtractImageUrlsMainEntry:
     """Test extract_image_urls() main entry point."""
 
     @pytest.mark.asyncio
-    async def test_extract_image_urls_sets_current_property(
-        self, extractor, sample_property
-    ):
+    async def test_extract_image_urls_sets_current_property(self, extractor, sample_property):
         """Test that extract_image_urls() sets _current_property."""
         # Arrange
         with patch.object(
             extractor,
-            '_navigate_with_stealth',
+            "_navigate_with_stealth",
             new_callable=AsyncMock,
-            return_value=AsyncMock()  # Mock tab
+            return_value=AsyncMock(),  # Mock tab
         ):
             with patch.object(
-                extractor,
-                '_extract_urls_from_page',
-                new_callable=AsyncMock,
-                return_value=[]
+                extractor, "_extract_urls_from_page", new_callable=AsyncMock, return_value=[]
             ):
                 # Act
                 await extractor.extract_image_urls(sample_property)
@@ -750,15 +772,10 @@ class TestExtractImageUrlsMainEntry:
             return ["https://cdn.photos.sparkplatform.com/az/test-o.jpg"]
 
         with patch.object(
-            extractor,
-            '_navigate_with_stealth',
-            new_callable=AsyncMock,
-            return_value=mock_tab
+            extractor, "_navigate_with_stealth", new_callable=AsyncMock, return_value=mock_tab
         ):
             with patch.object(
-                extractor,
-                '_extract_urls_from_page',
-                new_callable=AsyncMock
+                extractor, "_extract_urls_from_page", new_callable=AsyncMock
             ) as mock_extract:
                 mock_extract.side_effect = mock_extract_urls
 
@@ -773,9 +790,7 @@ class TestExtractImageUrlsMainEntry:
 class TestGetCachedMetadata:
     """Test get_cached_metadata() method."""
 
-    def test_get_cached_metadata_returns_last_metadata(
-        self, extractor, sample_property
-    ):
+    def test_get_cached_metadata_returns_last_metadata(self, extractor, sample_property):
         """Test cached metadata retrieval."""
         # Arrange
         test_metadata = {
@@ -791,9 +806,7 @@ class TestGetCachedMetadata:
         # Assert
         assert result == test_metadata
 
-    def test_get_cached_metadata_returns_none_when_empty(
-        self, extractor, sample_property
-    ):
+    def test_get_cached_metadata_returns_none_when_empty(self, extractor, sample_property):
         """Test returns None when no metadata cached."""
         # Arrange
         extractor.last_metadata = {}

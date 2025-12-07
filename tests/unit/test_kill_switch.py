@@ -4,7 +4,6 @@ Tests all kill switch criteria individually and in combination, covering
 both happy path and edge cases as defined in CLAUDE.md buyer requirements.
 """
 
-
 from src.phx_home_analysis.domain.enums import SewerType
 from src.phx_home_analysis.services.kill_switch import KillSwitchVerdict
 from src.phx_home_analysis.services.kill_switch.criteria import (
@@ -419,6 +418,7 @@ class TestNoNewBuildKillSwitch:
     def test_fail_with_current_year_build(self, sample_property):
         """Test property built in current year fails."""
         from datetime import datetime
+
         sample_property.year_built = datetime.now().year
         kill_switch = NoNewBuildKillSwitch()
         assert kill_switch.check(sample_property) is False
@@ -426,6 +426,7 @@ class TestNoNewBuildKillSwitch:
     def test_fail_with_future_build(self, sample_property):
         """Test property built in future year fails."""
         from datetime import datetime
+
         sample_property.year_built = datetime.now().year + 1
         kill_switch = NoNewBuildKillSwitch()
         assert kill_switch.check(sample_property) is False
@@ -439,6 +440,7 @@ class TestNoNewBuildKillSwitch:
     def test_failure_message_new_build(self, sample_property):
         """Test failure message for new build."""
         from datetime import datetime
+
         current_year = datetime.now().year
         sample_property.year_built = current_year
         kill_switch = NoNewBuildKillSwitch()
@@ -708,9 +710,7 @@ class TestSeverityThresholdOOP:
     def test_evaluate_with_severity_returns_verdict(self, sample_property):
         """evaluate_with_severity should return verdict, severity, and failures."""
         filter_service = KillSwitchFilter()
-        verdict, severity, failures = filter_service.evaluate_with_severity(
-            sample_property
-        )
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_property)
         assert isinstance(verdict, KillSwitchVerdict)
         assert isinstance(severity, float)
         assert isinstance(failures, list)
@@ -718,9 +718,7 @@ class TestSeverityThresholdOOP:
     def test_perfect_property_passes(self, sample_property):
         """Property passing all criteria should have PASS verdict."""
         filter_service = KillSwitchFilter()
-        verdict, severity, failures = filter_service.evaluate_with_severity(
-            sample_property
-        )
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_property)
         assert verdict == KillSwitchVerdict.PASS
         assert severity == 0.0
         assert len(failures) == 0
@@ -732,9 +730,7 @@ class TestSeverityThresholdOOP:
         Single SOFT failure (2.5) >= WARNING threshold (1.5) = WARNING verdict.
         """
         filter_service = KillSwitchFilter()
-        verdict, severity, failures = filter_service.evaluate_with_severity(
-            sample_septic_property
-        )
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_septic_property)
         # Septic severity (2.5) >= WARNING threshold (1.5) = WARNING
         assert verdict == KillSwitchVerdict.WARNING
         assert severity == 2.5
@@ -744,9 +740,7 @@ class TestSeverityThresholdOOP:
     def test_hoa_is_hard_fail(self, sample_failed_property):
         """HOA failure (HARD criterion) should result in FAIL."""
         filter_service = KillSwitchFilter()
-        verdict, severity, failures = filter_service.evaluate_with_severity(
-            sample_failed_property
-        )
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_failed_property)
         assert verdict == KillSwitchVerdict.FAIL
         # Severity for HARD fails doesn't contribute
         assert any("HOA" in msg for msg in failures)
@@ -760,9 +754,7 @@ class TestSeverityThresholdOOP:
         sample_property.year_built = 2024  # 2.0 severity
 
         filter_service = KillSwitchFilter()
-        verdict, severity, failures = filter_service.evaluate_with_severity(
-            sample_property
-        )
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_property)
         # Severity accumulation: 2.5 + 2.0 = 4.5 >= FAIL threshold (3.0)
         assert verdict == KillSwitchVerdict.FAIL
         assert severity == 4.5
@@ -805,7 +797,7 @@ class TestSeverityThresholdOOP:
 
 # Document threshold constants for clarity
 WARNING_THRESHOLD = 1.5  # Severity >= 1.5 triggers WARNING
-FAIL_THRESHOLD = 3.0     # Severity >= 3.0 triggers FAIL
+FAIL_THRESHOLD = 3.0  # Severity >= 3.0 triggers FAIL
 
 
 class TestSeverityBoundaryConditions:

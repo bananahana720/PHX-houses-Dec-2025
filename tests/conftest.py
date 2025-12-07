@@ -4,7 +4,6 @@ This module provides reusable test fixtures for property creation, enrichment da
 and configuration, ensuring consistency across all test modules.
 """
 
-
 import pytest
 
 from src.phx_home_analysis.config.scoring_weights import ScoringWeights, TierThresholds

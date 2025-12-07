@@ -25,14 +25,16 @@ class TestCachedDataManagerIntegration:
         """
         # Arrange - Create test data file (list format)
         enrichment_file = tmp_path / "enrichment_data.json"
-        test_data = [{
-            "full_address": sample_property.full_address,
-            "lot_sqft": 9500,
-            "year_built": 2010,
-            "garage_spaces": 2,
-            "sewer_type": "city",
-            "hoa_fee": 0,
-        }]
+        test_data = [
+            {
+                "full_address": sample_property.full_address,
+                "lot_sqft": 9500,
+                "year_built": 2010,
+                "garage_spaces": 2,
+                "sewer_type": "city",
+                "hoa_fee": 0,
+            }
+        ]
         enrichment_file.write_text(json.dumps(test_data))
 
         # Create repository and cache
@@ -40,7 +42,7 @@ class TestCachedDataManagerIntegration:
         cache = CachedDataManager(repo)
 
         # Act - Load data multiple times
-        with patch.object(repo, 'load_all', wraps=repo.load_all) as mock_load:
+        with patch.object(repo, "load_all", wraps=repo.load_all) as mock_load:
             data1 = cache.get_all()
             data2 = cache.get_all()
             data3 = cache.get_all()
@@ -62,14 +64,16 @@ class TestCachedDataManagerIntegration:
         """
         # Arrange - Create test data file (list format)
         enrichment_file = tmp_path / "enrichment_data.json"
-        test_data = [{
-            "full_address": sample_property.full_address,
-            "lot_sqft": 9500,
-            "year_built": 2010,
-            "garage_spaces": 2,
-            "sewer_type": "city",
-            "hoa_fee": 0,
-        }]
+        test_data = [
+            {
+                "full_address": sample_property.full_address,
+                "lot_sqft": 9500,
+                "year_built": 2010,
+                "garage_spaces": 2,
+                "sewer_type": "city",
+                "hoa_fee": 0,
+            }
+        ]
         enrichment_file.write_text(json.dumps(test_data))
 
         repo = JsonEnrichmentRepository(str(enrichment_file))
@@ -82,7 +86,7 @@ class TestCachedDataManagerIntegration:
         cache.invalidate()
         assert cache.is_loaded is False
 
-        with patch.object(repo, 'load_all', wraps=repo.load_all) as mock_load:
+        with patch.object(repo, "load_all", wraps=repo.load_all) as mock_load:
             data2 = cache.get_all()
 
         # Assert - Reload occurred
@@ -101,14 +105,16 @@ class TestCachedDataManagerIntegration:
         """
         # Arrange - Create initial data file (list format)
         enrichment_file = tmp_path / "enrichment_data.json"
-        test_data = [{
-            "full_address": sample_property.full_address,
-            "lot_sqft": 9500,
-            "year_built": 2010,
-            "garage_spaces": 2,
-            "sewer_type": "city",
-            "hoa_fee": 0,
-        }]
+        test_data = [
+            {
+                "full_address": sample_property.full_address,
+                "lot_sqft": 9500,
+                "year_built": 2010,
+                "garage_spaces": 2,
+                "sewer_type": "city",
+                "hoa_fee": 0,
+            }
+        ]
         enrichment_file.write_text(json.dumps(test_data))
 
         repo = JsonEnrichmentRepository(str(enrichment_file))
@@ -167,14 +173,16 @@ class TestCachedDataManagerIntegration:
         test_data = []
         for i in range(10):
             address = f"{i} Test St, Phoenix, AZ 85001"
-            test_data.append({
-                "full_address": address,
-                "lot_sqft": 9000 + i * 100,
-                "year_built": 2010 + i,
-                "garage_spaces": 2,
-                "sewer_type": "city",
-                "hoa_fee": 0,
-            })
+            test_data.append(
+                {
+                    "full_address": address,
+                    "lot_sqft": 9000 + i * 100,
+                    "year_built": 2010 + i,
+                    "garage_spaces": 2,
+                    "sewer_type": "city",
+                    "hoa_fee": 0,
+                }
+            )
         enrichment_file.write_text(json.dumps(test_data))
 
         repo = JsonEnrichmentRepository(str(enrichment_file))
@@ -204,21 +212,23 @@ class TestCachedDataManagerIntegration:
         """
         # Arrange - Create test data file (list format)
         enrichment_file = tmp_path / "enrichment_data.json"
-        test_data = [{
-            "full_address": sample_property.full_address,
-            "lot_sqft": 9500,
-            "year_built": 2010,
-            "garage_spaces": 2,
-            "sewer_type": "city",
-            "hoa_fee": 0,
-        }]
+        test_data = [
+            {
+                "full_address": sample_property.full_address,
+                "lot_sqft": 9500,
+                "year_built": 2010,
+                "garage_spaces": 2,
+                "sewer_type": "city",
+                "hoa_fee": 0,
+            }
+        ]
         enrichment_file.write_text(json.dumps(test_data))
 
         repo = JsonEnrichmentRepository(str(enrichment_file))
         cache = CachedDataManager(repo)
 
         # Act - Load with and without force_reload
-        with patch.object(repo, 'load_all', wraps=repo.load_all) as mock_load:
+        with patch.object(repo, "load_all", wraps=repo.load_all) as mock_load:
             data1 = cache.get_all()  # Initial load
             data2 = cache.get_all()  # Uses cache
             data3 = cache.get_all(force_reload=True)  # Forces reload
@@ -240,14 +250,16 @@ class TestCachedDataManagerIntegration:
         """
         # Arrange - Create test data file (list format)
         enrichment_file = tmp_path / "enrichment_data.json"
-        test_data = [{
-            "full_address": sample_property.full_address,
-            "lot_sqft": 9500,
-            "year_built": 2010,
-            "garage_spaces": 2,
-            "sewer_type": "city",
-            "hoa_fee": 0,
-        }]
+        test_data = [
+            {
+                "full_address": sample_property.full_address,
+                "lot_sqft": 9500,
+                "year_built": 2010,
+                "garage_spaces": 2,
+                "sewer_type": "city",
+                "hoa_fee": 0,
+            }
+        ]
         enrichment_file.write_text(json.dumps(test_data))
 
         repo = JsonEnrichmentRepository(str(enrichment_file))
@@ -265,7 +277,7 @@ class TestCachedDataManagerIntegration:
             hoa_fee=0,
         )
 
-        with patch.object(repo, 'load_all', wraps=repo.load_all) as mock_load:
+        with patch.object(repo, "load_all", wraps=repo.load_all) as mock_load:
             cache.update("New Address, Phoenix, AZ 85001", new_enrichment)
 
         # Assert - Load was triggered
@@ -286,14 +298,16 @@ class TestCachedDataManagerIntegration:
         # Create 100 properties
         for i in range(100):
             address = f"{i} Test St, Phoenix, AZ 85001"
-            test_data.append({
-                "full_address": address,
-                "lot_sqft": 9000 + i * 100,
-                "year_built": 2010 + (i % 15),
-                "garage_spaces": 2 + (i % 2),
-                "sewer_type": "city",
-                "hoa_fee": 0,
-            })
+            test_data.append(
+                {
+                    "full_address": address,
+                    "lot_sqft": 9000 + i * 100,
+                    "year_built": 2010 + (i % 15),
+                    "garage_spaces": 2 + (i % 2),
+                    "sewer_type": "city",
+                    "hoa_fee": 0,
+                }
+            )
         enrichment_file.write_text(json.dumps(test_data))
 
         # Create cached and uncached repos
@@ -322,9 +336,7 @@ class TestCachedDataManagerIntegration:
             f"cached={cached_time:.4f}s, uncached={uncached_time:.4f}s"
         )
 
-    def test_pipeline_run_with_cache_manager(
-        self, tmp_path, sample_property
-    ):
+    def test_pipeline_run_with_cache_manager(self, tmp_path, sample_property):
         """Verify complete pipeline run uses cache manager correctly.
 
         Tests that the pipeline run() method properly integrates with
@@ -342,14 +354,16 @@ class TestCachedDataManagerIntegration:
         )
 
         # Create enrichment data (list format)
-        test_data = [{
-            "full_address": sample_property.full_address,
-            "lot_sqft": 9500,
-            "year_built": 2010,
-            "garage_spaces": 2,
-            "sewer_type": "city",
-            "hoa_fee": 0,
-        }]
+        test_data = [
+            {
+                "full_address": sample_property.full_address,
+                "lot_sqft": 9500,
+                "year_built": 2010,
+                "garage_spaces": 2,
+                "sewer_type": "city",
+                "hoa_fee": 0,
+            }
+        ]
         enrichment_file.write_text(json.dumps(test_data))
 
         # Create config using default then replacing paths (frozen dataclass)
@@ -371,9 +385,9 @@ class TestCachedDataManagerIntegration:
 
         # Create repositories
         from src.phx_home_analysis.repositories import CsvPropertyRepository
+
         property_repo = CsvPropertyRepository(
-            csv_file_path=str(csv_file),
-            ranked_csv_path=str(output_csv)
+            csv_file_path=str(csv_file), ranked_csv_path=str(output_csv)
         )
         enrichment_repo = JsonEnrichmentRepository(str(enrichment_file))
         cache = CachedDataManager(enrichment_repo)
@@ -386,7 +400,7 @@ class TestCachedDataManagerIntegration:
         )
 
         # Act - Run full pipeline
-        with patch.object(enrichment_repo, 'load_all', wraps=enrichment_repo.load_all) as mock_load:
+        with patch.object(enrichment_repo, "load_all", wraps=enrichment_repo.load_all) as mock_load:
             result = pipeline.run()
 
         # Assert - Only one load occurred

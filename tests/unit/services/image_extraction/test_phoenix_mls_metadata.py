@@ -1295,3 +1295,782 @@ class TestMetadataPersisterIntegration:
 
         # Fields not in metadata should not be in results
         assert "beds" not in results
+
+
+# ============================================================================
+# E2-R3: EXTENDED FIELD EXTRACTION TESTS (Added 2025-12-07)
+# ============================================================================
+
+
+class TestE2R3GeoCoordinates:
+    """Tests for geo coordinate extraction (E2-R3)."""
+
+    def test_parse_geo_lat(self, extractor: PhoenixMLSExtractor):
+        """Test geo latitude extraction."""
+        html = """
+        <html><body>
+            <p>Geo Lat: 33.4484</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["geo_lat"] == 33.4484
+
+    def test_parse_geo_lon(self, extractor: PhoenixMLSExtractor):
+        """Test geo longitude extraction."""
+        html = """
+        <html><body>
+            <p>Geo Lon: -112.0740</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["geo_lon"] == -112.0740
+
+    def test_parse_geo_coordinates_combined(self, extractor: PhoenixMLSExtractor):
+        """Test extraction of both lat and lon together."""
+        html = """
+        <html><body>
+            <div>Geo Lat: 33.5384 Geo Lon: -112.1840</div>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["geo_lat"] == 33.5384
+        assert metadata["geo_lon"] == -112.1840
+
+
+class TestE2R3LegalParcelData:
+    """Tests for legal/parcel data extraction (E2-R3)."""
+
+    def test_parse_township(self, extractor: PhoenixMLSExtractor):
+        """Test township extraction."""
+        html = """
+        <html><body>
+            <p>Township: 2N</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["township"] == "2N"
+
+    def test_parse_range_section(self, extractor: PhoenixMLSExtractor):
+        """Test range extraction."""
+        html = """
+        <html><body>
+            <p>Range: 3E</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["range_section"] == "3E"
+
+    def test_parse_section(self, extractor: PhoenixMLSExtractor):
+        """Test section extraction."""
+        html = """
+        <html><body>
+            <p>Section: 24</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["section"] == "24"
+
+    def test_parse_lot_number(self, extractor: PhoenixMLSExtractor):
+        """Test lot number extraction."""
+        html = """
+        <html><body>
+            <p>Lot Number: 123</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["lot_number"] == "123"
+
+    def test_parse_subdivision(self, extractor: PhoenixMLSExtractor):
+        """Test subdivision extraction."""
+        html = """
+        <html><body>
+            <p>Subdivision: Desert Ridge Estates Unit 2</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["subdivision"] == "Desert Ridge Estates Unit 2"
+
+    def test_parse_apn(self, extractor: PhoenixMLSExtractor):
+        """Test APN extraction."""
+        html = """
+        <html><body>
+            <p>Assessor Number: 123-45-678-A</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["apn"] == "123-45-678-A"
+
+    def test_parse_apn_alternative_label(self, extractor: PhoenixMLSExtractor):
+        """Test APN extraction with alternative label."""
+        html = """
+        <html><body>
+            <p>Parcel Number: 987-65-432</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["apn"] == "987-65-432"
+
+
+class TestE2R3PropertyStructure:
+    """Tests for property structure extraction (E2-R3)."""
+
+    def test_parse_exterior_stories(self, extractor: PhoenixMLSExtractor):
+        """Test exterior stories extraction."""
+        html = """
+        <html><body>
+            <p>Stories: 2</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["exterior_stories"] == 2
+
+    def test_parse_interior_levels(self, extractor: PhoenixMLSExtractor):
+        """Test interior levels extraction."""
+        html = """
+        <html><body>
+            <p>Levels: Split Level</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["interior_levels"] == "Split Level"
+
+    def test_parse_builder_name(self, extractor: PhoenixMLSExtractor):
+        """Test builder name extraction."""
+        html = """
+        <html><body>
+            <p>Builder: Meritage Homes</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["builder_name"] == "Meritage Homes"
+
+    def test_parse_dwelling_styles(self, extractor: PhoenixMLSExtractor):
+        """Test dwelling styles extraction."""
+        html = """
+        <html><body>
+            <p>Dwelling Type: Detached</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["dwelling_styles"] == "Detached"
+
+
+class TestE2R3SchoolDistricts:
+    """Tests for school district extraction (E2-R3)."""
+
+    def test_parse_elementary_district(self, extractor: PhoenixMLSExtractor):
+        """Test elementary school district extraction."""
+        html = """
+        <html><body>
+            <p>Elementary School District: Paradise Valley Unified</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["elementary_district"] == "Paradise Valley Unified"
+
+    def test_parse_middle_district(self, extractor: PhoenixMLSExtractor):
+        """Test middle school district extraction."""
+        html = """
+        <html><body>
+            <p>Jr. High School District: Scottsdale Unified</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["middle_district"] == "Scottsdale Unified"
+
+    def test_parse_high_district(self, extractor: PhoenixMLSExtractor):
+        """Test high school district extraction."""
+        html = """
+        <html><body>
+            <p>High School District: Cave Creek Unified</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["high_district"] == "Cave Creek Unified"
+
+
+class TestE2R3ContractListing:
+    """Tests for contract/listing info extraction (E2-R3)."""
+
+    def test_parse_list_date_iso(self, extractor: PhoenixMLSExtractor):
+        """Test list date extraction (ISO format)."""
+        html = """
+        <html><body>
+            <p>List Date: 2025-12-01</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["list_date"] == "2025-12-01"
+
+    def test_parse_list_date_us(self, extractor: PhoenixMLSExtractor):
+        """Test list date extraction (US format)."""
+        html = """
+        <html><body>
+            <p>List Date: 12/1/2025</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["list_date"] == "12/1/2025"
+
+    def test_parse_ownership_type(self, extractor: PhoenixMLSExtractor):
+        """Test ownership type extraction."""
+        html = """
+        <html><body>
+            <p>Ownership: Fee Simple</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["ownership_type"] == "Fee Simple"
+
+    def test_parse_possession_terms(self, extractor: PhoenixMLSExtractor):
+        """Test possession terms extraction."""
+        html = """
+        <html><body>
+            <p>Possession Terms: Close of Escrow</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["possession_terms"] == "Close of Escrow"
+
+    def test_parse_new_financing(self, extractor: PhoenixMLSExtractor):
+        """Test new financing options extraction."""
+        html = """
+        <html><body>
+            <p>New Financing: Cash, VA, FHA, Conventional</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["new_financing"] == ["Cash", "VA", "FHA", "Conventional"]
+
+
+class TestE2R3PoolDetails:
+    """Tests for pool details extraction (E2-R3)."""
+
+    def test_parse_private_pool_features(self, extractor: PhoenixMLSExtractor):
+        """Test private pool features extraction."""
+        html = """
+        <html><body>
+            <p>Private Pool Features: Heated, Pebble Finish, Diving Pool</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Heated" in metadata["private_pool_features"]
+        assert "Pebble Finish" in metadata["private_pool_features"]
+
+    def test_parse_spa_features(self, extractor: PhoenixMLSExtractor):
+        """Test spa features extraction."""
+        html = """
+        <html><body>
+            <p>Spa: Private</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["spa_features"] == "Private"
+
+    def test_parse_community_pool_yes(self, extractor: PhoenixMLSExtractor):
+        """Test community pool extraction (yes)."""
+        html = """
+        <html><body>
+            <p>Community Pool: Yes</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["community_pool"] is True
+
+    def test_parse_community_pool_no(self, extractor: PhoenixMLSExtractor):
+        """Test community pool extraction (no)."""
+        html = """
+        <html><body>
+            <p>Community Pool: No</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["community_pool"] is False
+
+
+class TestE2R3UpdatesRenovations:
+    """Tests for updates/renovations extraction (E2-R3)."""
+
+    def test_parse_kitchen_year_updated(self, extractor: PhoenixMLSExtractor):
+        """Test kitchen year updated extraction."""
+        html = """
+        <html><body>
+            <p>Kitchen Yr Updated: 2022</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["kitchen_year_updated"] == 2022
+
+    def test_parse_kitchen_update_scope(self, extractor: PhoenixMLSExtractor):
+        """Test kitchen update scope extraction."""
+        html = """
+        <html><body>
+            <p>Kitchen Partial: Counters, Backsplash</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Counters" in metadata["kitchen_update_scope"]
+
+
+class TestE2R3AdditionalDetails:
+    """Tests for additional details extraction (E2-R3)."""
+
+    def test_parse_basement_yes(self, extractor: PhoenixMLSExtractor):
+        """Test basement extraction (yes)."""
+        html = """
+        <html><body>
+            <p>Basement: Full</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["has_basement"] is True
+
+    def test_parse_basement_no(self, extractor: PhoenixMLSExtractor):
+        """Test basement extraction (no)."""
+        html = """
+        <html><body>
+            <p>Basement: None</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["has_basement"] is False
+
+    def test_parse_fireplaces_total(self, extractor: PhoenixMLSExtractor):
+        """Test fireplaces total extraction."""
+        html = """
+        <html><body>
+            <p>Fireplaces Total: 2</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["fireplaces_total"] == 2
+
+    def test_parse_total_covered_spaces(self, extractor: PhoenixMLSExtractor):
+        """Test total covered spaces extraction."""
+        html = """
+        <html><body>
+            <p>Total Covered Spaces: 3</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert metadata["total_covered_spaces"] == 3
+
+
+class TestE2R3FeatureLists:
+    """Tests for feature list extraction (E2-R3)."""
+
+    def test_parse_view_features(self, extractor: PhoenixMLSExtractor):
+        """Test view features extraction."""
+        html = """
+        <html><body>
+            <p>View: Mountain, City Lights, Desert</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Mountain" in metadata["view_features"]
+        assert "City Lights" in metadata["view_features"]
+
+    def test_parse_community_features(self, extractor: PhoenixMLSExtractor):
+        """Test community features extraction."""
+        html = """
+        <html><body>
+            <p>Community Features: Gated, Golf, Tennis</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Gated" in metadata["community_features"]
+        assert "Golf" in metadata["community_features"]
+
+    def test_parse_property_description(self, extractor: PhoenixMLSExtractor):
+        """Test property description extraction."""
+        html = """
+        <html><body>
+            <p>Property Description: N/S Exposure, Corner Lot, Cul-de-Sac</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "N/S Exposure" in metadata["property_description"]
+        assert "Corner Lot" in metadata["property_description"]
+
+    def test_parse_dining_area_features(self, extractor: PhoenixMLSExtractor):
+        """Test dining area features extraction."""
+        html = """
+        <html><body>
+            <p>Dining Area: Formal, Eat-in Kitchen, Breakfast Bar</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Formal" in metadata["dining_area_features"]
+        assert "Eat-in Kitchen" in metadata["dining_area_features"]
+
+    def test_parse_technology_features(self, extractor: PhoenixMLSExtractor):
+        """Test technology features extraction."""
+        html = """
+        <html><body>
+            <p>Technology: Smart Home, Security System, Cat5 Wiring</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Smart Home" in metadata["technology_features"]
+        assert "Security System" in metadata["technology_features"]
+
+    def test_parse_window_features(self, extractor: PhoenixMLSExtractor):
+        """Test window features extraction."""
+        html = """
+        <html><body>
+            <p>Window Features: Dual Pane, Low-E, Solar Screens</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Dual Pane" in metadata["window_features"]
+        assert "Low-E" in metadata["window_features"]
+
+    def test_parse_other_rooms(self, extractor: PhoenixMLSExtractor):
+        """Test other rooms extraction."""
+        html = """
+        <html><body>
+            <p>Other Rooms: Office, Den, Bonus Room</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Office" in metadata["other_rooms"]
+        assert "Den" in metadata["other_rooms"]
+
+    def test_parse_construction_materials(self, extractor: PhoenixMLSExtractor):
+        """Test construction materials extraction."""
+        html = """
+        <html><body>
+            <p>Construction: Stucco, Block, Frame</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Stucco" in metadata["construction_materials"]
+        assert "Block" in metadata["construction_materials"]
+
+    def test_parse_construction_finish(self, extractor: PhoenixMLSExtractor):
+        """Test construction finish extraction."""
+        html = """
+        <html><body>
+            <p>Const-Finish: Painted, Smooth</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Painted" in metadata["construction_finish"]
+        assert "Smooth" in metadata["construction_finish"]
+
+    def test_parse_parking_features(self, extractor: PhoenixMLSExtractor):
+        """Test parking features extraction."""
+        html = """
+        <html><body>
+            <p>Parking Features: Garage Door Opener, RV Gate, Extended Driveway</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Garage Door Opener" in metadata["parking_features"]
+        assert "RV Gate" in metadata["parking_features"]
+
+    def test_parse_fencing_types(self, extractor: PhoenixMLSExtractor):
+        """Test fencing types extraction."""
+        html = """
+        <html><body>
+            <p>Fencing: Block, Wrought Iron, Partial</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Block" in metadata["fencing_types"]
+        assert "Wrought Iron" in metadata["fencing_types"]
+
+    def test_parse_utilities_provider(self, extractor: PhoenixMLSExtractor):
+        """Test utilities provider extraction."""
+        html = """
+        <html><body>
+            <p>Utilities: APS, SW Gas, City Water</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "APS" in metadata["utilities_provider"]
+        assert "SW Gas" in metadata["utilities_provider"]
+
+    def test_parse_services_available(self, extractor: PhoenixMLSExtractor):
+        """Test services available extraction."""
+        html = """
+        <html><body>
+            <p>Services: Trash, Recycling, Cable</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Trash" in metadata["services_available"]
+        assert "Recycling" in metadata["services_available"]
+
+
+class TestE2R3Remarks:
+    """Tests for remarks extraction (E2-R3)."""
+
+    def test_parse_public_remarks(self, extractor: PhoenixMLSExtractor):
+        """Test public remarks extraction."""
+        html = """
+        <html><body>
+            <p>Remarks: Beautiful home with mountain views and upgraded kitchen.</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Beautiful home" in metadata["public_remarks"]
+        assert "mountain views" in metadata["public_remarks"]
+
+    def test_parse_directions(self, extractor: PhoenixMLSExtractor):
+        """Test directions extraction."""
+        html = """
+        <html><body>
+            <p>Directions: From Loop 101, exit Thunderbird Rd, go west 2 miles.</p>
+        </body></html>
+        """
+        metadata = extractor._parse_listing_metadata(html)
+        assert "Loop 101" in metadata["directions"]
+        assert "Thunderbird Rd" in metadata["directions"]
+
+
+class TestE2R3FieldMappingExpansion:
+    """Tests for expanded MLS_FIELD_MAPPING (33 -> 70+ fields)."""
+
+    def test_mapping_count_e2r3(self):
+        """Test MLS_FIELD_MAPPING has expected number of fields after E2-R3."""
+        from phx_home_analysis.services.image_extraction.metadata_persister import (
+            MLS_FIELD_MAPPING,
+        )
+
+        # Should have 70+ fields after E2-R3 expansion
+        assert len(MLS_FIELD_MAPPING) >= 70, f"Expected 70+ fields, got {len(MLS_FIELD_MAPPING)}"
+
+    def test_mapping_has_geo_fields(self):
+        """Test mapping includes geo coordinate fields."""
+        from phx_home_analysis.services.image_extraction.metadata_persister import (
+            MLS_FIELD_MAPPING,
+        )
+
+        assert "geo_lat" in MLS_FIELD_MAPPING
+        assert "geo_lon" in MLS_FIELD_MAPPING
+        assert MLS_FIELD_MAPPING["geo_lat"] == "latitude"
+        assert MLS_FIELD_MAPPING["geo_lon"] == "longitude"
+
+    def test_mapping_has_legal_fields(self):
+        """Test mapping includes legal/parcel fields."""
+        from phx_home_analysis.services.image_extraction.metadata_persister import (
+            MLS_FIELD_MAPPING,
+        )
+
+        legal_fields = [
+            "township",
+            "range_section",
+            "section",
+            "lot_number",
+            "subdivision",
+            "apn",
+        ]
+        for field in legal_fields:
+            assert field in MLS_FIELD_MAPPING, f"Missing legal field: {field}"
+
+    def test_mapping_has_school_district_fields(self):
+        """Test mapping includes school district fields."""
+        from phx_home_analysis.services.image_extraction.metadata_persister import (
+            MLS_FIELD_MAPPING,
+        )
+
+        district_fields = [
+            "elementary_district",
+            "middle_district",
+            "high_district",
+        ]
+        for field in district_fields:
+            assert field in MLS_FIELD_MAPPING, f"Missing district field: {field}"
+
+    def test_mapping_has_pool_detail_fields(self):
+        """Test mapping includes pool detail fields."""
+        from phx_home_analysis.services.image_extraction.metadata_persister import (
+            MLS_FIELD_MAPPING,
+        )
+
+        pool_fields = [
+            "private_pool_features",
+            "spa_features",
+            "community_pool",
+        ]
+        for field in pool_fields:
+            assert field in MLS_FIELD_MAPPING, f"Missing pool field: {field}"
+
+
+class TestE2R3ComprehensiveExtraction:
+    """Integration test for E2-R3 comprehensive field extraction."""
+
+    @pytest.fixture
+    def e2r3_comprehensive_html(self) -> str:
+        """Sample PhoenixMLS listing HTML with all E2-R3 fields."""
+        return """
+        <html>
+            <body>
+                <div class="listing-details">
+                    <span class="listing-price">$575,000</span>
+                    <span class="status-badge">Active</span>
+                    <p>MLS #: 7654321</p>
+                    <p>Listed 14 days ago</p>
+                    <p>Last Updated: 2025-12-05</p>
+
+                    <!-- Geo Coordinates -->
+                    <p>Geo Lat: 33.5678 Geo Lon: -111.9876</p>
+
+                    <!-- Legal/Parcel -->
+                    <p>Township: 3N</p>
+                    <p>Range: 4E</p>
+                    <p>Section: 12</p>
+                    <p>Lot Number: 456</p>
+                    <p>Subdivision: Sonoran Estates Phase 3</p>
+                    <p>Assessor Number: 304-56-789</p>
+
+                    <!-- Property Structure -->
+                    <p>Stories: 1</p>
+                    <p>Levels: Single Level</p>
+                    <p>Builder: Taylor Morrison</p>
+                    <p>Dwelling Type: Detached</p>
+
+                    <!-- School Districts -->
+                    <p>Elementary School District: Cave Creek Unified</p>
+                    <p>Jr. High School District: Cave Creek Unified</p>
+                    <p>High School District: Cave Creek Unified</p>
+
+                    <!-- Contract/Listing -->
+                    <p>List Date: 2025-11-23</p>
+                    <p>Ownership: Fee Simple</p>
+                    <p>Possession Terms: Close of Escrow</p>
+                    <p>New Financing: Cash, Conventional, VA</p>
+
+                    <!-- Pool -->
+                    <p>Private Pool Features: Heated, Pebble Finish</p>
+                    <p>Spa: Private</p>
+                    <p>Community Pool: No</p>
+
+                    <!-- Updates -->
+                    <p>Kitchen Yr Updated: 2023</p>
+
+                    <!-- Additional -->
+                    <p>Basement: None</p>
+                    <p>Fireplaces Total: 1</p>
+                    <p>Total Covered Spaces: 3</p>
+
+                    <!-- Features -->
+                    <p>View: Mountain, City Lights</p>
+                    <p>Community Features: Gated, Golf Course</p>
+                    <p>Property Description: N/S Exposure, Corner Lot</p>
+                    <p>Dining Area: Formal, Eat-in Kitchen</p>
+                    <p>Technology: Smart Home</p>
+                    <p>Window Features: Dual Pane, Low-E</p>
+                    <p>Other Rooms: Office, Den</p>
+                    <p>Construction: Stucco, Block</p>
+                    <p>Const-Finish: Painted</p>
+                    <p>Parking Features: Garage Door Opener, RV Gate</p>
+                    <p>Fencing: Block, Wrought Iron</p>
+                    <p>Utilities: APS, SW Gas</p>
+                    <p>Services: Trash, Recycling</p>
+
+                    <!-- Remarks -->
+                    <p>Remarks: Stunning home with panoramic views.</p>
+                    <p>Directions: From I-17, exit Carefree Hwy east.</p>
+
+                    <table class="property-facts">
+                        <tr><th>Bedrooms</th><td>4</td></tr>
+                        <tr><th>Bathrooms</th><td>3.0</td></tr>
+                        <tr><th>Square Feet</th><td>2,800</td></tr>
+                        <tr><th>Lot Size</th><td>10,500 sqft</td></tr>
+                        <tr><th>Year Built</th><td>2020</td></tr>
+                        <tr><th>Garage Spaces</th><td>3</td></tr>
+                        <tr><th>HOA Fee</th><td>No Fees</td></tr>
+                        <tr><th>Pool</th><td>Yes - Private</td></tr>
+                        <tr><th>Sewer</th><td>Sewer - Public</td></tr>
+                    </table>
+                </div>
+            </body>
+        </html>
+        """
+
+    def test_e2r3_full_extraction(
+        self, extractor: PhoenixMLSExtractor, e2r3_comprehensive_html: str
+    ):
+        """Test extraction of all E2-R3 fields from comprehensive HTML."""
+        metadata = extractor._parse_listing_metadata(e2r3_comprehensive_html)
+
+        # Verify geo coordinates
+        assert metadata["geo_lat"] == 33.5678
+        assert metadata["geo_lon"] == -111.9876
+
+        # Verify legal/parcel
+        assert metadata["township"] == "3N"
+        assert metadata["range_section"] == "4E"
+        assert metadata["section"] == "12"
+        assert metadata["lot_number"] == "456"
+        assert metadata["subdivision"] == "Sonoran Estates Phase 3"
+        assert metadata["apn"] == "304-56-789"
+
+        # Verify property structure
+        assert metadata["exterior_stories"] == 1
+        assert metadata["interior_levels"] == "Single Level"
+        assert metadata["builder_name"] == "Taylor Morrison"
+        assert metadata["dwelling_styles"] == "Detached"
+
+        # Verify school districts
+        assert metadata["elementary_district"] == "Cave Creek Unified"
+        assert metadata["middle_district"] == "Cave Creek Unified"
+        assert metadata["high_district"] == "Cave Creek Unified"
+
+        # Verify contract/listing
+        assert metadata["list_date"] == "2025-11-23"
+        assert metadata["ownership_type"] == "Fee Simple"
+        assert metadata["possession_terms"] == "Close of Escrow"
+        assert "Cash" in metadata["new_financing"]
+        assert "VA" in metadata["new_financing"]
+
+        # Verify pool details
+        assert "Heated" in metadata["private_pool_features"]
+        assert metadata["spa_features"] == "Private"
+        assert metadata["community_pool"] is False
+
+        # Verify additional details
+        assert metadata["has_basement"] is False
+        assert metadata["fireplaces_total"] == 1
+        assert metadata["total_covered_spaces"] == 3
+
+        # Verify feature lists
+        assert "Mountain" in metadata["view_features"]
+        assert "Gated" in metadata["community_features"]
+        assert "N/S Exposure" in metadata["property_description"]
+        assert "Formal" in metadata["dining_area_features"]
+        assert "Smart Home" in metadata["technology_features"]
+        assert "Dual Pane" in metadata["window_features"]
+        assert "Office" in metadata["other_rooms"]
+        assert "Stucco" in metadata["construction_materials"]
+        assert "Painted" in metadata["construction_finish"]
+        assert "RV Gate" in metadata["parking_features"]
+        assert "Block" in metadata["fencing_types"]
+        assert "APS" in metadata["utilities_provider"]
+        assert "Trash" in metadata["services_available"]
+
+        # Verify remarks
+        assert "panoramic views" in metadata["public_remarks"]
+        assert "Carefree Hwy" in metadata["directions"]
+
+        # Verify base kill-switch fields still work
+        assert metadata["beds"] == 4
+        assert metadata["baths"] == 3.0
+        assert metadata["sqft"] == 2800
+        assert metadata["lot_sqft"] == 10500
+        assert metadata["year_built"] == 2020
+        assert metadata["garage_spaces"] == 3
+        assert metadata["hoa_fee"] == 0.0
+        assert metadata["has_pool"] is True
+        assert metadata["sewer_type"] == "city"
+
+    def test_e2r3_field_count(self, extractor: PhoenixMLSExtractor, e2r3_comprehensive_html: str):
+        """Test that comprehensive HTML yields minimum expected field count."""
+        metadata = extractor._parse_listing_metadata(e2r3_comprehensive_html)
+
+        # Should extract at least 50 fields from comprehensive E2-R3 HTML
+        assert len(metadata) >= 50, (
+            f"Expected 50+ fields, got {len(metadata)}: {list(metadata.keys())}"
+        )

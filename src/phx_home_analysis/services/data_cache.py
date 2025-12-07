@@ -66,11 +66,11 @@ class PropertyDataCache:
         _lock: Thread synchronization lock
     """
 
-    _instance: Optional['PropertyDataCache'] = None
+    _instance: Optional["PropertyDataCache"] = None
     _lock_class = threading.Lock()  # Class-level lock for __new__
     _initialized: bool  # Instance variable (set in __new__)
 
-    def __new__(cls) -> 'PropertyDataCache':
+    def __new__(cls) -> "PropertyDataCache":
         """Create or return singleton instance (thread-safe).
 
         Returns:
@@ -140,7 +140,7 @@ class PropertyDataCache:
             if needs_reload:
                 # Load CSV data
                 csv_data = []
-                with open(csv_path, encoding='utf-8') as f:
+                with open(csv_path, encoding="utf-8") as f:
                     reader = csv.DictReader(f)
                     for row in reader:
                         csv_data.append(dict(row))
@@ -195,7 +195,7 @@ class PropertyDataCache:
 
             if needs_reload:
                 # Load JSON data
-                with open(json_path, encoding='utf-8') as f:
+                with open(json_path, encoding="utf-8") as f:
                     enrichment_data = json.load(f)
 
                 # Check schema version if enabled
@@ -291,17 +291,15 @@ class PropertyDataCache:
         """
         with self._lock:
             return {
-                'csv_cached': self._csv_data is not None,
-                'json_cached': self._enrichment_data is not None,
-                'csv_path': str(self._csv_path) if self._csv_path else None,
-                'json_path': str(self._json_path) if self._json_path else None,
-                'csv_mtime': self._csv_mtime,
-                'json_mtime': self._json_mtime,
-                'csv_rows': len(self._csv_data) if self._csv_data else 0,
-                'json_entries': (
-                    len(self._enrichment_data)
-                    if self._enrichment_data is not None
-                    else 0
+                "csv_cached": self._csv_data is not None,
+                "json_cached": self._enrichment_data is not None,
+                "csv_path": str(self._csv_path) if self._csv_path else None,
+                "json_path": str(self._json_path) if self._json_path else None,
+                "csv_mtime": self._csv_mtime,
+                "json_mtime": self._json_mtime,
+                "csv_rows": len(self._csv_data) if self._csv_data else 0,
+                "json_entries": (
+                    len(self._enrichment_data) if self._enrichment_data is not None else 0
                 ),
             }
 

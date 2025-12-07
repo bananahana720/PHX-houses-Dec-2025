@@ -96,9 +96,7 @@ class BrowserPool:
         self._proxy_extension: ProxyExtensionBuilder | None = None
 
         # Check if proxy URL contains credentials
-        self._proxy_has_auth = bool(
-            proxy_url and "@" in proxy_url and "://" in proxy_url
-        )
+        self._proxy_has_auth = bool(proxy_url and "@" in proxy_url and "://" in proxy_url)
 
         # Import here to avoid circular imports
         from .logging_utils import sanitize_proxy_config_for_logging
@@ -143,26 +141,20 @@ class BrowserPool:
             logger.info("Initializing new browser instance with stealth configuration")
 
             # Prefer an explicit Chrome binary if available (needed in sandbox/WSL)
-            chrome_path = os.environ.get("CHROME_PATH") or os.environ.get(
-                "GOOGLE_CHROME_SHIM"
-            )
+            chrome_path = os.environ.get("CHROME_PATH") or os.environ.get("GOOGLE_CHROME_SHIM")
             if not chrome_path:
                 # Try Playwright-downloaded Chromium (no async calls inside loop)
                 pw_root = Path.home() / ".cache" / "ms-playwright"
                 for candidate in pw_root.glob("chromium-*/chrome-linux/chrome"):
                     if candidate.exists():
                         chrome_path = str(candidate)
-                        logger.info(
-                            "Using Playwright Chromium for nodriver: %s", chrome_path
-                        )
+                        logger.info("Using Playwright Chromium for nodriver: %s", chrome_path)
                         break
 
             # Create browser with nodriver
             # Note: nodriver 0.48+ uses add_argument() instead of browser_args property
             browser_config = (
-                uc.Config(browser_executable_path=chrome_path)
-                if chrome_path
-                else uc.Config()
+                uc.Config(browser_executable_path=chrome_path) if chrome_path else uc.Config()
             )
             browser_config.sandbox = False  # Needed for WSL/root environments
             browser_config.headless = self.headless
@@ -190,23 +182,15 @@ class BrowserPool:
                     )
 
                     try:
-                        self._proxy_extension = ProxyExtensionBuilder.from_url(
-                            self.proxy_url
-                        )
+                        self._proxy_extension = ProxyExtensionBuilder.from_url(self.proxy_url)
                         extension_path = self._proxy_extension.create_extension()
 
                         # Load extension (works in both headless and headed mode)
-                        browser_config.add_argument(
-                            f"--load-extension={extension_path}"
-                        )
+                        browser_config.add_argument(f"--load-extension={extension_path}")
                         # For headless mode, also need this to ensure extension loads
-                        browser_config.add_argument(
-                            f"--disable-extensions-except={extension_path}"
-                        )
+                        browser_config.add_argument(f"--disable-extensions-except={extension_path}")
 
-                        logger.info(
-                            "Proxy extension loaded from: %s", extension_path
-                        )
+                        logger.info("Proxy extension loaded from: %s", extension_path)
 
                     except Exception as e:
                         logger.error("Failed to create proxy extension: %s", e)
@@ -257,13 +241,9 @@ class BrowserPool:
             vd = find_virtual_display()
             if vd:
                 position = (vd.x, vd.y)
-                logger.info(
-                    "Using virtual display for isolation at (%d, %d)", vd.x, vd.y
-                )
+                logger.info("Using virtual display for isolation at (%d, %d)", vd.x, vd.y)
             elif self.fallback_to_minimize:
-                logger.warning(
-                    "Virtual display not found, falling back to minimize mode"
-                )
+                logger.warning("Virtual display not found, falling back to minimize mode")
                 effective_mode = BrowserIsolationMode.MINIMIZE
             else:
                 # Use recommended position (off-screen or secondary)
@@ -289,9 +269,7 @@ class BrowserPool:
                     secondary.y,
                 )
             elif self.fallback_to_minimize:
-                logger.warning(
-                    "Secondary display not found, falling back to minimize mode"
-                )
+                logger.warning("Secondary display not found, falling back to minimize mode")
                 effective_mode = BrowserIsolationMode.MINIMIZE
             else:
                 position = get_recommended_position()
@@ -315,9 +293,7 @@ class BrowserPool:
 
         # Apply position if determined
         if position:
-            browser_config.add_argument(
-                f"--window-position={position[0]},{position[1]}"
-            )
+            browser_config.add_argument(f"--window-position={position[0]},{position[1]}")
 
         # Apply minimize mode if needed
         if effective_mode == BrowserIsolationMode.MINIMIZE:

@@ -58,7 +58,7 @@ PMI_THRESHOLD_LTV: Final[float] = 0.80
 PMI_ANNUAL_RATE: Final[float] = 0.005  # 0.5% of loan
 
 # Re-export aliases for backward compatibility (already imported from constants)
-#MORTGAGE_RATE_30YR already imported above
+# MORTGAGE_RATE_30YR already imported above
 LOAN_TERM_30YR_MONTHS: Final[int] = MORTGAGE_TERM_MONTHS
 
 
@@ -156,6 +156,7 @@ SOLAR_LEASE_TYPICAL_MAX: Final[float] = 200.0
 # =============================================================================
 # RATE CONFIGURATION DATACLASS
 # =============================================================================
+
 
 @dataclass(frozen=True)
 class RateConfig:

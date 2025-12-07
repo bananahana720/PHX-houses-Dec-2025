@@ -87,9 +87,7 @@ class RedfinExtractor(ImageExtractor):
 
         try:
             self._playwright = await async_playwright().start()
-            self._browser = await self._playwright.chromium.launch(
-                headless=self._headless
-            )
+            self._browser = await self._playwright.chromium.launch(headless=self._headless)
             self._context = await self._browser.new_context(
                 user_agent=self.USER_AGENT,
                 viewport={"width": 1920, "height": 1080},
@@ -227,9 +225,7 @@ class RedfinExtractor(ImageExtractor):
 
         try:
             # Strategy 1: Extract from meta tags
-            og_image = await page.locator('meta[property="og:image"]').get_attribute(
-                "content"
-            )
+            og_image = await page.locator('meta[property="og:image"]').get_attribute("content")
             if og_image:
                 urls.add(og_image)
                 logger.debug(f"Found og:image: {og_image}")

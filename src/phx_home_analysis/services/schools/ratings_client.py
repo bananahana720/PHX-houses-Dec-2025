@@ -275,9 +275,7 @@ class SchoolRatingsClient(APIClient):
         except (ValueError, AttributeError):
             return SchoolLevel.UNKNOWN
 
-    async def get_assigned_schools(
-        self, lat: float, lng: float
-    ) -> AssignedSchoolsResult | None:
+    async def get_assigned_schools(self, lat: float, lng: float) -> AssignedSchoolsResult | None:
         """Get assigned elementary, middle, and high schools with composite rating.
 
         Searches for schools near property and determines assigned schools.

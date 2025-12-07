@@ -93,7 +93,7 @@ class GreatSchoolsExtractor(LocationDataExtractor[SchoolData]):
             # - "High School" + rating number
 
             # Find all rating patterns with school types
-            school_pattern = r'(elementary|middle|high)\s+school.*?rating[:\s]*(\d+(?:\.\d+)?)'
+            school_pattern = r"(elementary|middle|high)\s+school.*?rating[:\s]*(\d+(?:\.\d+)?)"
             matches = re.finditer(school_pattern, content, re.IGNORECASE | re.DOTALL)
 
             for match in matches:
@@ -115,9 +115,7 @@ class GreatSchoolsExtractor(LocationDataExtractor[SchoolData]):
                     elif school_type == "high":
                         high_ratings.append(rating)
 
-                    logger.debug(
-                        "%s found %s school rating: %.1f", self.name, school_type, rating
-                    )
+                    logger.debug("%s found %s school rating: %.1f", self.name, school_type, rating)
 
                 except (ValueError, IndexError):
                     continue

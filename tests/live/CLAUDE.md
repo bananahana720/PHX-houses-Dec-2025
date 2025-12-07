@@ -1,51 +1,74 @@
 ---
-last_updated: 2025-12-04
+last_updated: 2025-12-07
 updated_by: agent
 staleness_hours: 24
 flags: []
 ---
+
 # tests/live
 
 ## Purpose
-Live API tests for external service validation. Makes real HTTP calls to Maricopa County Assessor API to validate authentication, schema compliance, rate limiting, data accuracy, and error handling. Excluded from default pytest runs (use `-m live` flag).
+Live API and integration tests requiring real external services. Makes HTTP calls to Maricopa County Assessor API and validates E2-R3 data flow. Excluded from default pytest runs (use `-m live` flag).
 
 ## Contents
 | Path | Purpose |
 |------|---------|
-| `__init__.py` | Module docstring + setup instructions (11 lines) |
-| `conftest.py` | Live test fixtures: token loading, API client factory, rate limiter, response recording (185 lines) |
-| `test_county_assessor_live.py` | 10 parameterized live tests across 5 categories: authentication (2), schema validation (3), rate limiting (1), data accuracy (2), error handling (2) (259 lines) |
-| `README.md` | Comprehensive documentation: prerequisites, running tests, test categories, troubleshooting, CI/CD integration (660 lines) |
+| `conftest.py` | Live test fixtures: token loading, API client factory, rate limiter |
+| `test_county_assessor_live.py` | 10 tests: auth, schema, rate limiting, data accuracy, errors |
+| `test_zillow_redfin_live.py` | Live extraction tests for Zillow/Redfin sources |
+| `test_e2r3_data_flow.py` | 12 tests: E2-R3 field mapping, persistence, round-trip validation |
+| `README.md` | Prerequisites, running tests, troubleshooting |
+
+## Test Summary
+
+| File | Tests | Purpose |
+|------|-------|---------|
+| `test_county_assessor_live.py` | 10 | Maricopa County API validation |
+| `test_zillow_redfin_live.py` | 8 | Listing extraction validation |
+| `test_e2r3_data_flow.py` | 12 | E2-R3 extraction → storage flow |
+| **Total** | **30** | |
+
+## E2-R3 Data Flow Tests (NEW)
+
+| Test Class | Tests | Coverage |
+|------------|-------|----------|
+| `TestE2R3FieldMappingValidation` | 5 | MLS_FIELD_MAPPING completeness |
+| `TestE2R3ExtractionToStorage` | 3 | MetadataPersister integration |
+| `TestE2R3ExtractionPatterns` | 2 | Regex pattern validation |
+| `TestE2R3Statistics` | 2 | Coverage metrics |
+
+## Commands
+```bash
+# All live tests
+pytest tests/live/ -m live -v
+
+# E2-R3 data flow only
+pytest tests/live/test_e2r3_data_flow.py -v
+
+# County assessor only
+pytest tests/live/test_county_assessor_live.py -m live -v
+
+# Record responses for drift detection
+pytest tests/live/ -m live --record-responses
+```
 
 ## Tasks
-- [x] Implementation complete (all 10 tests passing)
-- [x] Response recording for drift detection (--record-responses flag)
-- [x] Rate limiting configured (0.5s default, configurable via CLI)
-- [x] Documentation complete (README + inline docstrings)
+- [x] County Assessor live tests (10 tests)
+- [x] Zillow/Redfin live tests (8 tests)
+- [x] E2-R3 data flow validation (12 tests)
+- [ ] Add PhoenixMLS live extraction tests `P:M`
 
 ## Learnings
-- Live tests catch mock drift between recorded responses and real API behavior—essential for integration validation before releases
-- Rate limiter at 60 requests/min prevents 429 errors; proactive throttling at 70% prevents threshold violations
-- Recording format (tests/fixtures/recorded/) with schema_version enables version-aware drift detection workflows
-- Tests skip gracefully when MARICOPA_ASSESSOR_TOKEN missing (pytest auto-skip in fixture)
-- Parametrized tests with known addresses + constraint ranges allow range-based validation (catch major changes, tolerate minor updates)
+- E2-R3 validation caught JSON serialization gap before production
+- Live tests catch mock drift between recorded and real API behavior
+- Rate limiter at 60 req/min prevents 429 errors
+- Tests skip gracefully when tokens missing (pytest auto-skip)
 
 ## Refs
-- Fixture definitions: `conftest.py:33-185` (pytest hooks, token/client/rate-limiter/recording)
-- Test categories: `test_county_assessor_live.py:57-277` (5 test classes, 10 tests total)
-- Known test addresses: `test_county_assessor_live.py:37-54` (2 parametrized addresses with constraints)
-- Rate limit config: `conftest.py:119-125` (60/min, 0.7 throttle threshold, 0.5s min_delay)
-- Response recording: `conftest.py:129-185` (recording fixture with JSON output to tests/fixtures/recorded/)
-- Module docstring: `__init__.py:1-10` (quick reference)
+- E2-R3 tests: `test_e2r3_data_flow.py:1-180`
+- County tests: `test_county_assessor_live.py:57-277`
+- Fixtures: `conftest.py:33-185`
 
 ## Deps
-← Imports from:
-- `phx_home_analysis.services.county_data.MaricopaAssessorClient` (real API client)
-- `phx_home_analysis.services.api_client.rate_limiter.RateLimit, RateLimiter` (rate limiting)
-- `pytest` (framework, markers, fixtures)
-- `os, json, datetime, pathlib` (stdlib)
-
-→ Imported by:
-- CI/CD nightly jobs (pytest tests/live/ -m live)
-- Manual integration validation before releases
-- Response baseline recording for drift detection workflows
+- **← Imports:** phx_home_analysis.services, phx_home_analysis.repositories
+- **→ Run by:** CI/CD nightly jobs, manual integration validation

@@ -8,6 +8,7 @@ Tests cover:
 - Resume and fresh modes
 - State management
 """
+
 from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -175,9 +176,7 @@ class TestPhaseCoordinator:
         assert coordinator._get_phase_key(Phase.SYNTHESIS) == "phase3_synthesis"
         assert coordinator._get_phase_key(Phase.REPORT) == "phase4_report"
 
-    def test_get_or_create_property_state_new(
-        self, coordinator: PhaseCoordinator
-    ) -> None:
+    def test_get_or_create_property_state_new(self, coordinator: PhaseCoordinator) -> None:
         """Test creating new property state."""
         state = coordinator._get_or_create_property_state("123 Main St")
 
@@ -185,9 +184,7 @@ class TestPhaseCoordinator:
         assert state.status == "pending"
         assert "123 Main St" in coordinator._property_states
 
-    def test_get_or_create_property_state_existing(
-        self, coordinator: PhaseCoordinator
-    ) -> None:
+    def test_get_or_create_property_state_existing(self, coordinator: PhaseCoordinator) -> None:
         """Test getting existing property state."""
         # Create initial state
         coordinator._property_states["123 Main St"] = PropertyState(
@@ -222,9 +219,7 @@ class TestPhaseCoordinator:
 
         assert coordinator._is_property_complete("123 Main St") is True
 
-    def test_is_property_complete_not_found(
-        self, coordinator: PhaseCoordinator
-    ) -> None:
+    def test_is_property_complete_not_found(self, coordinator: PhaseCoordinator) -> None:
         """Test unknown property is not complete."""
         coordinator._work_items = {"properties": {}}
 
@@ -303,9 +298,7 @@ class TestPhaseCoordinatorAsync:
         )
 
     @pytest.mark.asyncio
-    async def test_phase0_executes_county_script(
-        self, coordinator: PhaseCoordinator
-    ) -> None:
+    async def test_phase0_executes_county_script(self, coordinator: PhaseCoordinator) -> None:
         """Test Phase 0 executes county extraction script."""
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=0, stderr="")
@@ -317,9 +310,7 @@ class TestPhaseCoordinatorAsync:
             mock_run.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_phase0_handles_failure(
-        self, coordinator: PhaseCoordinator
-    ) -> None:
+    async def test_phase0_handles_failure(self, coordinator: PhaseCoordinator) -> None:
         """Test Phase 0 handles script failure."""
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=1, stderr="API error")
@@ -330,16 +321,10 @@ class TestPhaseCoordinatorAsync:
             assert "API error" in (result.error_message or "")
 
     @pytest.mark.asyncio
-    async def test_phase1_parallel_execution(
-        self, coordinator: PhaseCoordinator
-    ) -> None:
+    async def test_phase1_parallel_execution(self, coordinator: PhaseCoordinator) -> None:
         """Test Phase 1a and 1b run in parallel."""
-        with patch.object(
-            coordinator, "_execute_listing", new_callable=AsyncMock
-        ) as mock_listing:
-            with patch.object(
-                coordinator, "_execute_map", new_callable=AsyncMock
-            ) as mock_map:
+        with patch.object(coordinator, "_execute_listing", new_callable=AsyncMock) as mock_listing:
+            with patch.object(coordinator, "_execute_map", new_callable=AsyncMock) as mock_map:
                 mock_listing.return_value = PhaseResult(
                     phase=Phase.LISTING,
                     property_address="123 Main St",
@@ -366,16 +351,10 @@ class TestPhaseCoordinatorAsync:
                 mock_map.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_phase1_partial_failure_continues(
-        self, coordinator: PhaseCoordinator
-    ) -> None:
+    async def test_phase1_partial_failure_continues(self, coordinator: PhaseCoordinator) -> None:
         """Test Phase 1 continues with partial failure."""
-        with patch.object(
-            coordinator, "_execute_listing", new_callable=AsyncMock
-        ) as mock_listing:
-            with patch.object(
-                coordinator, "_execute_map", new_callable=AsyncMock
-            ) as mock_map:
+        with patch.object(coordinator, "_execute_listing", new_callable=AsyncMock) as mock_listing:
+            with patch.object(coordinator, "_execute_map", new_callable=AsyncMock) as mock_map:
                 mock_listing.return_value = PhaseResult(
                     phase=Phase.LISTING,
                     property_address="123 Main St",
@@ -401,9 +380,7 @@ class TestPhaseCoordinatorAsync:
                 assert map_result.success is True
 
     @pytest.mark.asyncio
-    async def test_phase2_validates_prerequisites(
-        self, coordinator: PhaseCoordinator
-    ) -> None:
+    async def test_phase2_validates_prerequisites(self, coordinator: PhaseCoordinator) -> None:
         """Test Phase 2 validates prerequisites before execution."""
         with patch("subprocess.run") as mock_run:
             # Validation passes
@@ -433,9 +410,7 @@ class TestPhaseCoordinatorAsync:
             assert can_proceed is False
 
     @pytest.mark.asyncio
-    async def test_property_marked_failed_on_error(
-        self, coordinator: PhaseCoordinator
-    ) -> None:
+    async def test_property_marked_failed_on_error(self, coordinator: PhaseCoordinator) -> None:
         """Test property is marked failed after error."""
         state = coordinator._get_or_create_property_state("123 Main St")
 

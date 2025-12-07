@@ -58,56 +58,58 @@ class URLValidator:
     """
 
     # Trusted CDN hosts for real estate images
-    ALLOWED_CDN_HOSTS: frozenset[str] = frozenset({
-        # Zillow
-        "photos.zillowstatic.com",
-        "zillowstatic.com",
-        "photos.zillow.com",
-        # Redfin
-        "ssl.cdn-redfin.com",
-        "cdn-redfin.com",
-        "redfin.com",
-        # Realtor.com
-        "ap.rdcpix.com",
-        "rdcpix.com",
-        "staticrdc.com",
-        # Homes.com
-        "images.homes.com",
-        "homes.com",
-        # Maricopa County Assessor
-        "mcassessor.maricopa.gov",
-        "gis.maricopa.gov",
-        # Phoenix MLS
-        "phoenixmlssearch.com",
-        "cdn.photos.sparkplatform.com",  # SparkPlatform CDN for MLS property images
-        # Cloudfront (CDN for multiple services)
-        "d1w0jwjwlq0zii.cloudfront.net",  # Common real estate CDN
-        # Additional Zillow CDN subdomains
-        "maps.googleapis.com",  # For map tiles only
-        "streetviewpixels-pa.googleapis.com",  # Street view images
-    })
+    ALLOWED_CDN_HOSTS: frozenset[str] = frozenset(
+        {
+            # Zillow
+            "photos.zillowstatic.com",
+            "zillowstatic.com",
+            "photos.zillow.com",
+            # Redfin
+            "ssl.cdn-redfin.com",
+            "cdn-redfin.com",
+            "redfin.com",
+            # Realtor.com
+            "ap.rdcpix.com",
+            "rdcpix.com",
+            "staticrdc.com",
+            # Homes.com
+            "images.homes.com",
+            "homes.com",
+            # Maricopa County Assessor
+            "mcassessor.maricopa.gov",
+            "gis.maricopa.gov",
+            # Phoenix MLS
+            "phoenixmlssearch.com",
+            "cdn.photos.sparkplatform.com",  # SparkPlatform CDN for MLS property images
+            # Cloudfront (CDN for multiple services)
+            "d1w0jwjwlq0zii.cloudfront.net",  # Common real estate CDN
+            # Additional Zillow CDN subdomains
+            "maps.googleapis.com",  # For map tiles only
+            "streetviewpixels-pa.googleapis.com",  # Street view images
+        }
+    )
 
     # IP ranges that should never be accessed (CIDR notation)
     BLOCKED_IP_RANGES: tuple[str, ...] = (
-        "127.0.0.0/8",       # Loopback (localhost)
-        "10.0.0.0/8",        # Private (Class A)
-        "172.16.0.0/12",     # Private (Class B)
-        "192.168.0.0/16",    # Private (Class C)
-        "169.254.0.0/16",    # Link-local (APIPA)
-        "0.0.0.0/8",         # Current network
-        "100.64.0.0/10",     # Carrier-grade NAT
-        "192.0.0.0/24",      # IETF Protocol Assignments
-        "192.0.2.0/24",      # TEST-NET-1 Documentation
-        "198.51.100.0/24",   # TEST-NET-2 Documentation
-        "203.0.113.0/24",    # TEST-NET-3 Documentation
-        "224.0.0.0/4",       # Multicast
-        "240.0.0.0/4",       # Reserved for future use
+        "127.0.0.0/8",  # Loopback (localhost)
+        "10.0.0.0/8",  # Private (Class A)
+        "172.16.0.0/12",  # Private (Class B)
+        "192.168.0.0/16",  # Private (Class C)
+        "169.254.0.0/16",  # Link-local (APIPA)
+        "0.0.0.0/8",  # Current network
+        "100.64.0.0/10",  # Carrier-grade NAT
+        "192.0.0.0/24",  # IETF Protocol Assignments
+        "192.0.2.0/24",  # TEST-NET-1 Documentation
+        "198.51.100.0/24",  # TEST-NET-2 Documentation
+        "203.0.113.0/24",  # TEST-NET-3 Documentation
+        "224.0.0.0/4",  # Multicast
+        "240.0.0.0/4",  # Reserved for future use
         "255.255.255.255/32",  # Broadcast
         # IPv6 blocked ranges
-        "::1/128",           # IPv6 loopback
-        "fc00::/7",          # IPv6 unique local addresses
-        "fe80::/10",         # IPv6 link-local
-        "::ffff:0:0/96",     # IPv4-mapped IPv6
+        "::1/128",  # IPv6 loopback
+        "fc00::/7",  # IPv6 unique local addresses
+        "fe80::/10",  # IPv6 link-local
+        "::ffff:0:0/96",  # IPv4-mapped IPv6
     )
 
     # Allowed URL schemes
@@ -259,7 +261,7 @@ class URLValidator:
         # Check parent domains (e.g., "img.zillowstatic.com" matches "zillowstatic.com")
         parts = host.split(".")
         for i in range(len(parts) - 1):
-            parent = ".".join(parts[i + 1:])
+            parent = ".".join(parts[i + 1 :])
             if parent in self.allowed_hosts:
                 return True
 

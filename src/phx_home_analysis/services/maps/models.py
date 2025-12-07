@@ -40,9 +40,7 @@ class GeocodeResult(BaseModel):
     longitude: float = Field(..., description="Longitude in decimal degrees")
     formatted_address: str = Field(..., description="Full formatted address from Google")
     confidence: float = Field(default=0.95, description="Data quality confidence score")
-    source: str = Field(
-        default="google_maps_geocoding", description="Data source identifier"
-    )
+    source: str = Field(default="google_maps_geocoding", description="Data source identifier")
 
     def to_enrichment_dict(self) -> dict:
         """Convert to enrichment_data.json format.
@@ -88,9 +86,7 @@ class DistanceResult(BaseModel):
         default=None, description="Distance to nearest park in meters"
     )
     confidence: float = Field(default=0.95, description="Data quality confidence score")
-    source: str = Field(
-        default="google_maps_distance", description="Data source identifier"
-    )
+    source: str = Field(default="google_maps_distance", description="Data source identifier")
 
     def to_enrichment_dict(self) -> dict:
         """Convert to enrichment_data.json format.

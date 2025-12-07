@@ -530,13 +530,15 @@ class TestPropertyEntity:
     def test_property_monthly_costs_with_cache(self, sample_property):
         """Test Property.monthly_costs returns cached data after set_monthly_costs."""
         # Simulate service layer setting the cache
-        sample_property.set_monthly_costs({
-            "mortgage": 2500.0,
-            "property_tax": 300.0,
-            "hoa": 0.0,
-            "solar_lease": 0.0,
-            "pool_maintenance": 0.0,
-        })
+        sample_property.set_monthly_costs(
+            {
+                "mortgage": 2500.0,
+                "property_tax": 300.0,
+                "hoa": 0.0,
+                "solar_lease": 0.0,
+                "pool_maintenance": 0.0,
+            }
+        )
 
         costs = sample_property.monthly_costs
 
@@ -557,13 +559,15 @@ class TestPropertyEntity:
 
     def test_property_total_monthly_cost_with_cache(self, sample_property):
         """Test Property.total_monthly_cost aggregation with cached data."""
-        sample_property.set_monthly_costs({
-            "mortgage": 2500.0,
-            "property_tax": 300.0,
-            "hoa": 150.0,
-            "solar_lease": 0.0,
-            "pool_maintenance": 0.0,
-        })
+        sample_property.set_monthly_costs(
+            {
+                "mortgage": 2500.0,
+                "property_tax": 300.0,
+                "hoa": 150.0,
+                "solar_lease": 0.0,
+                "pool_maintenance": 0.0,
+            }
+        )
 
         total = sample_property.total_monthly_cost
         expected = sum(sample_property.monthly_costs.values())
@@ -573,39 +577,45 @@ class TestPropertyEntity:
 
     def test_property_set_monthly_costs_with_hoa(self, sample_property):
         """Test monthly costs can include HOA fee via set_monthly_costs."""
-        sample_property.set_monthly_costs({
-            "mortgage": 2500.0,
-            "property_tax": 300.0,
-            "hoa": 150.0,
-            "solar_lease": 0.0,
-            "pool_maintenance": 0.0,
-        })
+        sample_property.set_monthly_costs(
+            {
+                "mortgage": 2500.0,
+                "property_tax": 300.0,
+                "hoa": 150.0,
+                "solar_lease": 0.0,
+                "pool_maintenance": 0.0,
+            }
+        )
         costs = sample_property.monthly_costs
 
         assert costs["hoa"] == 150.0
 
     def test_property_set_monthly_costs_with_solar_lease(self, sample_property):
         """Test monthly costs can include solar lease via set_monthly_costs."""
-        sample_property.set_monthly_costs({
-            "mortgage": 2500.0,
-            "property_tax": 300.0,
-            "hoa": 0.0,
-            "solar_lease": 120.0,
-            "pool_maintenance": 0.0,
-        })
+        sample_property.set_monthly_costs(
+            {
+                "mortgage": 2500.0,
+                "property_tax": 300.0,
+                "hoa": 0.0,
+                "solar_lease": 120.0,
+                "pool_maintenance": 0.0,
+            }
+        )
         costs = sample_property.monthly_costs
 
         assert costs["solar_lease"] == 120.0
 
     def test_property_set_monthly_costs_with_pool(self, sample_property):
         """Test monthly costs can include pool maintenance via set_monthly_costs."""
-        sample_property.set_monthly_costs({
-            "mortgage": 2500.0,
-            "property_tax": 300.0,
-            "hoa": 0.0,
-            "solar_lease": 0.0,
-            "pool_maintenance": 200.0,
-        })
+        sample_property.set_monthly_costs(
+            {
+                "mortgage": 2500.0,
+                "property_tax": 300.0,
+                "hoa": 0.0,
+                "solar_lease": 0.0,
+                "pool_maintenance": 200.0,
+            }
+        )
         costs = sample_property.monthly_costs
 
         # Service uses comprehensive pool cost: $125 service + $75 energy = $200

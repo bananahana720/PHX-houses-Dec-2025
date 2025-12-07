@@ -110,9 +110,7 @@ class SchemaMetadata:
     version: str
     migrated_at: str | None = None
     migrated_from: str | None = None
-    created_at: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self) -> dict[str, Any]:
         """Convert metadata to dictionary for JSON serialization.
@@ -141,9 +139,7 @@ class SchemaMetadata:
             version=data.get("version", SchemaVersion.V1_0.value),
             migrated_at=data.get("migrated_at"),
             migrated_from=data.get("migrated_from"),
-            created_at=data.get(
-                "created_at", datetime.now(timezone.utc).isoformat()
-            ),
+            created_at=data.get("created_at", datetime.now(timezone.utc).isoformat()),
         )
 
 
@@ -220,15 +216,12 @@ class SchemaMigrator:
         # Case 1: Data is a dict with _schema_metadata at top level
         if isinstance(data, dict):
             if "_schema_metadata" in data:
-                version_str = data["_schema_metadata"].get(
-                    "version", SchemaVersion.V1_0.value
-                )
+                version_str = data["_schema_metadata"].get("version", SchemaVersion.V1_0.value)
                 try:
                     return SchemaVersion.from_string(version_str)
                 except ValueError:
                     logger.warning(
-                        f"Unknown version in _schema_metadata: {version_str}, "
-                        f"assuming V1.0"
+                        f"Unknown version in _schema_metadata: {version_str}, assuming V1.0"
                     )
                     return SchemaVersion.V1_0
 
@@ -245,8 +238,7 @@ class SchemaMigrator:
                         return SchemaVersion.from_string(version_str)
                     except ValueError:
                         logger.warning(
-                            f"Unknown version in _schema_metadata: {version_str}, "
-                            f"assuming V1.0"
+                            f"Unknown version in _schema_metadata: {version_str}, assuming V1.0"
                         )
                         return SchemaVersion.V1_0
 
@@ -291,9 +283,7 @@ class SchemaMigrator:
             return data
 
         if target < current:
-            raise ValueError(
-                f"Schema downgrade not supported: {current.value} -> {target.value}"
-            )
+            raise ValueError(f"Schema downgrade not supported: {current.value} -> {target.value}")
 
         logger.info(f"Migrating schema from {current.value} to {target.value}")
 
@@ -306,14 +296,10 @@ class SchemaMigrator:
         for i in range(current_idx, target_idx):
             from_version = versions[i]
             to_version = versions[i + 1]
-            migrated_data = self._apply_migration(
-                migrated_data, from_version, to_version
-            )
+            migrated_data = self._apply_migration(migrated_data, from_version, to_version)
 
         # Update metadata after all migrations
-        migrated_data = self._update_metadata_after_migration(
-            migrated_data, current, target
-        )
+        migrated_data = self._update_metadata_after_migration(migrated_data, current, target)
 
         return migrated_data
 
@@ -343,9 +329,7 @@ class SchemaMigrator:
             logger.info(f"Applying migration: {migration_key}")
             return migrations[migration_key](data)
         else:
-            logger.warning(
-                f"No migration handler for {migration_key}, returning data unchanged"
-            )
+            logger.warning(f"No migration handler for {migration_key}, returning data unchanged")
             return data
 
     def _migrate_v1_to_v2(self, data: dict | list) -> dict | list:
@@ -444,16 +428,12 @@ class SchemaMigrator:
                 # Don't overwrite existing metadata
                 if "_schema_metadata" not in data[0]:
                     data[0]["_schema_metadata"] = metadata.to_dict()
-                    logger.info(
-                        f"Added _schema_metadata (version {version.value}) to first record"
-                    )
+                    logger.info(f"Added _schema_metadata (version {version.value}) to first record")
         elif isinstance(data, dict):
             # For dict format, add at top level
             if "_schema_metadata" not in data:
                 data["_schema_metadata"] = metadata.to_dict()
-                logger.info(
-                    f"Added _schema_metadata (version {version.value}) to top-level dict"
-                )
+                logger.info(f"Added _schema_metadata (version {version.value}) to top-level dict")
 
         return data
 

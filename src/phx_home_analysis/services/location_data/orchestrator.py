@@ -97,7 +97,17 @@ class LocationDataOrchestrator:
         await orchestrator.close()
     """
 
-    SOURCES = ["crime", "walkscore", "schools", "noise", "flood", "census", "zoning", "air_quality", "permits"]
+    SOURCES = [
+        "crime",
+        "walkscore",
+        "schools",
+        "noise",
+        "flood",
+        "census",
+        "zoning",
+        "air_quality",
+        "permits",
+    ]
     ZIP_LEVEL_SOURCES = ["crime", "census"]  # These batch by ZIP
 
     def __init__(
@@ -421,7 +431,9 @@ class LocationDataOrchestrator:
 
             self._assessor_client = MaricopaAssessorClient()
         try:
-            return await self._assessor_client.get_zoning_data(property.latitude, property.longitude)
+            return await self._assessor_client.get_zoning_data(
+                property.latitude, property.longitude
+            )
         except Exception as e:
             logger.error("Zoning extraction failed: %s", e)
             return None

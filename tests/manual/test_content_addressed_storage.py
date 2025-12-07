@@ -31,7 +31,9 @@ async def test_deterministic_storage():
 
         # Verify run_id is set
         print(f"Run ID: {orchestrator.run_id}")
-        assert len(orchestrator.run_id) == 8, f"Run ID should be 8 chars, got {len(orchestrator.run_id)}"
+        assert len(orchestrator.run_id) == 8, (
+            f"Run ID should be 8 chars, got {len(orchestrator.run_id)}"
+        )
 
         # Create test image data
         test_image = b"FAKE_PNG_DATA_FOR_TESTING"

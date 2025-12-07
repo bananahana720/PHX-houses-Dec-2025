@@ -82,9 +82,7 @@ class TestHoaKillSwitch:
         """Property with HOA fee should fail."""
         prop = Property(beds=4, baths=2, hoa_fee=150)
         result = apply_kill_switch(prop)
-        assert not result.kill_switch_passed or "hoa" in str(
-            result.kill_switch_failures
-        ).lower()
+        assert not result.kill_switch_passed or "hoa" in str(result.kill_switch_failures).lower()
 
 
 class TestSewerKillSwitch:

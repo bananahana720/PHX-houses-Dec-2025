@@ -107,9 +107,7 @@ def valid_interior_criteria():
 
 
 @pytest.fixture
-def valid_section_weights(
-    valid_location_criteria, valid_systems_criteria, valid_interior_criteria
-):
+def valid_section_weights(valid_location_criteria, valid_systems_criteria, valid_interior_criteria):
     """Valid section weights with correct totals (605 pts, 1.0 weight) - Sprint 0."""
     return {
         "location": {
@@ -362,9 +360,7 @@ class TestTierThresholdsSchema:
         assert schema.contender.min_score == 363
         assert schema.pass_.min_score == 0
 
-    def test_tier_thresholds_unicorn_not_greater_than_contender(
-        self, valid_tier_thresholds
-    ):
+    def test_tier_thresholds_unicorn_not_greater_than_contender(self, valid_tier_thresholds):
         """Test that unicorn <= contender is rejected."""
         valid_tier_thresholds["unicorn"]["min_score"] = 363  # Same as contender
         with pytest.raises(ValidationError) as exc_info:
@@ -372,9 +368,7 @@ class TestTierThresholdsSchema:
         assert "unicorn" in str(exc_info.value).lower()
         assert "contender" in str(exc_info.value).lower()
 
-    def test_tier_thresholds_contender_not_greater_than_pass(
-        self, valid_tier_thresholds
-    ):
+    def test_tier_thresholds_contender_not_greater_than_pass(self, valid_tier_thresholds):
         """Test that contender <= pass is rejected."""
         valid_tier_thresholds["contender"]["min_score"] = 0  # Same as pass
         with pytest.raises(ValidationError) as exc_info:
@@ -479,9 +473,7 @@ class TestSewerCriterionSchema:
         """Test that invalid sewer type is rejected."""
         with pytest.raises(ValidationError) as exc_info:
             SewerCriterionSchema(required="septic", severity=2.5)
-        assert "literal" in str(exc_info.value).lower() or "Input should be" in str(
-            exc_info.value
-        )
+        assert "literal" in str(exc_info.value).lower() or "Input should be" in str(exc_info.value)
 
     def test_sewer_criterion_severity_over_10(self):
         """Test that severity > 10 is rejected."""

@@ -407,9 +407,7 @@ class MonthlyCostEstimator:
 
         # Tax estimation
         if property.tax_annual is None or property.tax_annual <= 0:
-            notes.append(
-                f"Property tax estimated at {self._config.property_tax_rate:.2%} rate"
-            )
+            notes.append(f"Property tax estimated at {self._config.property_tax_rate:.2%} rate")
 
         # Pool costs
         if property.has_pool:
@@ -418,17 +416,14 @@ class MonthlyCostEstimator:
         # Solar lease warning
         if property.solar_lease_monthly:
             notes.append(
-                f"Solar lease: ${property.solar_lease_monthly}/month "
-                "(verify transfer terms)"
+                f"Solar lease: ${property.solar_lease_monthly}/month (verify transfer terms)"
             )
 
         # High LTV warning
         if property.price_num > 0:
             ltv = loan_amount / property.price_num
             if ltv > 0.80:
-                notes.append(
-                    f"LTV ratio {ltv:.1%} may require PMI (not included in estimate)"
-                )
+                notes.append(f"LTV ratio {ltv:.1%} may require PMI (not included in estimate)")
 
         return notes
 

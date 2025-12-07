@@ -324,11 +324,7 @@ class URLTracker:
         Returns:
             List of URLs associated with this property
         """
-        return [
-            url
-            for url, entry in self.urls.items()
-            if entry.property_hash == property_hash
-        ]
+        return [url for url, entry in self.urls.items() if entry.property_hash == property_hash]
 
     def get_active_urls_for_property(self, property_hash: str) -> list[str]:
         """Get only active URLs for a property.
@@ -411,8 +407,7 @@ class URLTracker:
             Number of entries deleted
         """
         urls_to_remove = [
-            url for url, entry in self.urls.items()
-            if entry.property_hash == property_hash
+            url for url, entry in self.urls.items() if entry.property_hash == property_hash
         ]
 
         deleted = len(urls_to_remove)

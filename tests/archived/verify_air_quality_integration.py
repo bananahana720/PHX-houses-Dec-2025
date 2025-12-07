@@ -31,8 +31,15 @@ print(f"AirQualityScorer.category: {air_quality_scorer.category}")
 # Calculate total points
 weights_instance = ScoringWeights()
 section_a_fields = [
-    'school_district', 'quietness', 'crime_index', 'supermarket_proximity',
-    'parks_walkability', 'sun_orientation', 'flood_risk', 'walk_transit', 'air_quality'
+    "school_district",
+    "quietness",
+    "crime_index",
+    "supermarket_proximity",
+    "parks_walkability",
+    "sun_orientation",
+    "flood_risk",
+    "walk_transit",
+    "air_quality",
 ]
 section_a_total = sum(getattr(weights_instance, k) for k in section_a_fields)
 total_possible = weights_instance.total_possible_score
@@ -53,7 +60,7 @@ all_checks_pass = (
     and ScoringWeights.flood_risk == 23
     and ScoringWeights.walk_transit == 22
     and ScoringWeights.air_quality == 15
-    and 'AirQualityScorer' in scorer_names
+    and "AirQualityScorer" in scorer_names
     and len(LOCATION_STRATEGIES) == 9
     and air_quality_scorer.weight == 15
     and section_a_total == 250

@@ -225,6 +225,72 @@ class Property:
     # Location Reference
     cross_streets: str | None = None
 
+    # === E2-R3: EXTENDED MLS FIELDS ===
+
+    # Legal/Parcel Data (from MLS Location Tax Legal section)
+    township: str | None = None
+    range_section: str | None = None
+    section: str | None = None
+    lot_number: str | None = None
+    subdivision: str | None = None
+    apn: str | None = None  # Assessor Parcel Number
+
+    # Property Structure (from MLS General Property Description)
+    exterior_stories: int | None = None
+    interior_levels: str | None = None  # "1", "2", "Split Level"
+    builder_name: str | None = None
+    dwelling_styles: str | None = None  # "Detached", "Attached", etc.
+
+    # View & Environment Features
+    view_features: list[str] | None = None
+    community_features: list[str] | None = None
+    property_description: list[str] | None = None  # N/S Exposure, Mountain Views, etc.
+
+    # Interior Feature Categories
+    dining_area_features: list[str] | None = None
+    technology_features: list[str] | None = None
+    window_features: list[str] | None = None
+    other_rooms: list[str] | None = None
+
+    # Exterior Feature Categories
+    construction_materials: list[str] | None = None
+    construction_finish: list[str] | None = None
+    parking_features: list[str] | None = None
+    fencing_types: list[str] | None = None
+
+    # School Districts (separate from school names)
+    elementary_district: str | None = None
+    middle_district: str | None = None
+    high_district: str | None = None
+
+    # Contract/Listing Info
+    list_date: str | None = None  # ISO format YYYY-MM-DD
+    ownership_type: str | None = None  # Fee Simple, Leasehold
+    possession_terms: str | None = None
+    new_financing: list[str] | None = None  # Cash, VA, FHA, Conventional
+
+    # Pool Details
+    private_pool_features: list[str] | None = None
+    spa_features: str | None = None
+    community_pool: bool | None = None
+
+    # Updates/Renovations
+    kitchen_year_updated: int | None = None
+    kitchen_update_scope: str | None = None  # Partial, Full
+
+    # Basement
+    has_basement: bool | None = None
+
+    # Additional Details
+    fireplaces_total: int | None = None
+    total_covered_spaces: int | None = None
+    utilities_provider: list[str] | None = None  # APS, SW Gas, etc.
+    services_available: list[str] | None = None
+
+    # Listing Remarks
+    public_remarks: str | None = None  # Supplements/Description
+    directions: str | None = None
+
     def __post_init__(self) -> None:
         """Validate and normalize data after initialization."""
         # Ensure full_address is set
@@ -638,6 +704,76 @@ class EnrichmentData:
 
     # Location Reference
     cross_streets: str | None = None
+
+    # === E2-R3: EXTENDED MLS FIELDS ===
+
+    # Legal/Parcel Data (from MLS Location Tax Legal section)
+    township: str | None = None
+    range_section: str | None = None
+    section: str | None = None
+    lot_number: str | None = None
+    subdivision: str | None = None
+    apn: str | None = None  # Assessor Parcel Number
+
+    # Property Structure (from MLS General Property Description)
+    exterior_stories: int | None = None
+    interior_levels: str | None = None  # "1", "2", "Split Level"
+    builder_name: str | None = None
+    dwelling_styles: str | None = None  # "Detached", "Attached", etc.
+
+    # View & Environment Features
+    view_features: list[str] | None = None
+    community_features: list[str] | None = None
+    property_description: list[str] | None = None  # N/S Exposure, Mountain Views, etc.
+
+    # Interior Feature Categories
+    dining_area_features: list[str] | None = None
+    technology_features: list[str] | None = None
+    window_features: list[str] | None = None
+    other_rooms: list[str] | None = None
+
+    # Exterior Feature Categories
+    construction_materials: list[str] | None = None
+    construction_finish: list[str] | None = None
+    parking_features: list[str] | None = None
+    fencing_types: list[str] | None = None
+
+    # School Districts (separate from school names)
+    elementary_district: str | None = None
+    middle_district: str | None = None
+    high_district: str | None = None
+
+    # Contract/Listing Info
+    list_date: str | None = None  # ISO format YYYY-MM-DD
+    ownership_type: str | None = None  # Fee Simple, Leasehold
+    possession_terms: str | None = None
+    new_financing: list[str] | None = None  # Cash, VA, FHA, Conventional
+
+    # Pool Details
+    private_pool_features: list[str] | None = None
+    spa_features: str | None = None
+    community_pool: bool | None = None
+
+    # Updates/Renovations
+    kitchen_year_updated: int | None = None
+    kitchen_update_scope: str | None = None  # Partial, Full
+
+    # Basement
+    has_basement: bool | None = None
+
+    # Additional Details
+    fireplaces_total: int | None = None
+    total_covered_spaces: int | None = None
+    utilities_provider: list[str] | None = None  # APS, SW Gas, etc.
+    services_available: list[str] | None = None
+
+    # Listing Remarks
+    public_remarks: str | None = None  # Supplements/Description
+    directions: str | None = None
+
+    # Geo Coordinates (E2-R3 - from MLS Geo section)
+    latitude: float | None = None
+    longitude: float | None = None
 
     # Provenance metadata (field-level tracking)
     _provenance: dict[str, FieldProvenance] = field(default_factory=dict)

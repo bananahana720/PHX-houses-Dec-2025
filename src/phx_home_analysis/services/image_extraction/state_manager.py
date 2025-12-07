@@ -73,9 +73,7 @@ class ExtractionState:
 
         # Log migration from older versions
         if version != CURRENT_SCHEMA_VERSION:
-            logger.warning(
-                f"Migrating state from version {version} to {CURRENT_SCHEMA_VERSION}"
-            )
+            logger.warning(f"Migrating state from version {version} to {CURRENT_SCHEMA_VERSION}")
 
         # Future migration logic:
         # if version == "1.0.0":
@@ -250,7 +248,9 @@ class StateManager:
                 return False
 
             pattern = f"{self.state_path.stem}_*.json"
-            backups = sorted(backup_dir.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
+            backups = sorted(
+                backup_dir.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True
+            )
 
             if not backups:
                 logger.error("No backups found")

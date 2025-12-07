@@ -35,9 +35,7 @@ class TestEndToEndPipeline:
                 assert isinstance(manifest, dict)
 
     @pytest.mark.asyncio
-    async def test_full_pipeline_with_captcha_retry(
-        self, orchestrator, sample_property
-    ):
+    async def test_full_pipeline_with_captcha_retry(self, orchestrator, sample_property):
         """Pipeline retries on CAPTCHA, then succeeds."""
         attempt_count = 0
 
@@ -76,9 +74,7 @@ class TestEndToEndPipeline:
 
         # Load manifest
         manifest = json.loads(manifest_file.read_text())
-        original_count = len(
-            list(manifest.values())[0]["images"]
-        ) if manifest else 0
+        original_count = len(list(manifest.values())[0]["images"]) if manifest else 0
 
         # Second run with same property
         # Add some duplicate images
@@ -185,9 +181,7 @@ class TestPipelineErrorRecovery:
     """Test error recovery within pipeline."""
 
     @pytest.mark.asyncio
-    async def test_pipeline_continues_on_property_failure(
-        self, orchestrator, sample_properties
-    ):
+    async def test_pipeline_continues_on_property_failure(self, orchestrator, sample_properties):
         """Pipeline continues processing after single property failure."""
         processed = []
         failed = []
@@ -242,9 +236,7 @@ class TestPipelinePerformance:
     """Test pipeline performance characteristics."""
 
     @pytest.mark.asyncio
-    async def test_pipeline_completes_within_time_budget(
-        self, orchestrator, sample_properties
-    ):
+    async def test_pipeline_completes_within_time_budget(self, orchestrator, sample_properties):
         """Pipeline completes within acceptable time budget per property."""
         import time
 
@@ -343,9 +335,7 @@ class TestPipelineManifestGeneration:
 
         assert len(manifest) == 3
 
-    def test_manifest_preserves_image_source_metadata(
-        self, orchestrator, extraction_manifest
-    ):
+    def test_manifest_preserves_image_source_metadata(self, orchestrator, extraction_manifest):
         """Manifest preserves source information for each image."""
         for prop_hash, prop_data in extraction_manifest.items():
             for img in prop_data["images"]:

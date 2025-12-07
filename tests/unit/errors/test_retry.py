@@ -31,8 +31,7 @@ class TestCalculateBackoffDelay:
     def test_exponential_growth(self) -> None:
         """Delay should double with each attempt."""
         delays = [
-            calculate_backoff_delay(i, min_delay=1.0, max_delay=60.0, jitter=0.0)
-            for i in range(5)
+            calculate_backoff_delay(i, min_delay=1.0, max_delay=60.0, jitter=0.0) for i in range(5)
         ]
         assert delays == [1.0, 2.0, 4.0, 8.0, 16.0]
 
@@ -50,8 +49,7 @@ class TestCalculateBackoffDelay:
     def test_no_jitter_when_zero(self) -> None:
         """No jitter should be added when jitter=0."""
         delays = [
-            calculate_backoff_delay(0, min_delay=1.0, max_delay=60.0, jitter=0.0)
-            for _ in range(10)
+            calculate_backoff_delay(0, min_delay=1.0, max_delay=60.0, jitter=0.0) for _ in range(10)
         ]
         assert all(d == 1.0 for d in delays)
 

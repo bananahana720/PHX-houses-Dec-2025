@@ -274,9 +274,7 @@ class TestConfigLoaderYamlErrors:
 class TestConfigLoaderValidationErrors:
     """Tests for validation error handling and formatting."""
 
-    def test_validation_error_negative_points(
-        self, temp_config_dir, valid_scoring_weights_yaml
-    ):
+    def test_validation_error_negative_points(self, temp_config_dir, valid_scoring_weights_yaml):
         """Test validation error for negative points."""
         valid_scoring_weights_yaml["section_weights"]["location"]["points"] = -50
         valid_scoring_weights_yaml["section_weights"]["systems"]["points"] = 460
@@ -340,9 +338,7 @@ class TestConfigLoaderEnvOverrides:
 
     def test_env_override_integer_value(self, temp_config_dir):
         """Test environment override for integer value."""
-        with mock.patch.dict(
-            os.environ, {"PHX__BUYER_CRITERIA__HARD_CRITERIA__MIN_BEDS": "5"}
-        ):
+        with mock.patch.dict(os.environ, {"PHX__BUYER_CRITERIA__HARD_CRITERIA__MIN_BEDS": "5"}):
             loader = ConfigLoader(base_dir=temp_config_dir["base_dir"])
             config = loader.load()
 
@@ -351,9 +347,7 @@ class TestConfigLoaderEnvOverrides:
     def test_env_override_float_value(self, temp_config_dir):
         """Test environment override for float value (using hoa_fee instead of thresholds)."""
         # Sprint 0: No thresholds, use hard_criteria.hoa_fee for float test
-        with mock.patch.dict(
-            os.environ, {"PHX__BUYER_CRITERIA__HARD_CRITERIA__HOA_FEE": "50"}
-        ):
+        with mock.patch.dict(os.environ, {"PHX__BUYER_CRITERIA__HARD_CRITERIA__HOA_FEE": "50"}):
             loader = ConfigLoader(base_dir=temp_config_dir["base_dir"])
             config = loader.load()
 
@@ -370,16 +364,12 @@ class TestConfigLoaderEnvOverrides:
             # Let's adjust to keep total at 600
             pass  # Skip this complex test case
 
-    def test_env_override_precedence(
-        self, temp_config_dir, valid_buyer_criteria_yaml
-    ):
+    def test_env_override_precedence(self, temp_config_dir, valid_buyer_criteria_yaml):
         """Test that env vars override YAML values."""
         # YAML has min_beds=4
         assert valid_buyer_criteria_yaml["hard_criteria"]["min_beds"] == 4
 
-        with mock.patch.dict(
-            os.environ, {"PHX__BUYER_CRITERIA__HARD_CRITERIA__MIN_BEDS": "6"}
-        ):
+        with mock.patch.dict(os.environ, {"PHX__BUYER_CRITERIA__HARD_CRITERIA__MIN_BEDS": "6"}):
             loader = ConfigLoader(base_dir=temp_config_dir["base_dir"])
             config = loader.load()
 
@@ -521,9 +511,7 @@ class TestTypeCoercion:
 
     def test_coerce_string_to_int(self, temp_config_dir):
         """Test string to int coercion."""
-        with mock.patch.dict(
-            os.environ, {"PHX__BUYER_CRITERIA__HARD_CRITERIA__HOA_FEE": "100"}
-        ):
+        with mock.patch.dict(os.environ, {"PHX__BUYER_CRITERIA__HARD_CRITERIA__HOA_FEE": "100"}):
             loader = ConfigLoader(base_dir=temp_config_dir["base_dir"])
             config = loader.load()
 
@@ -546,6 +534,4 @@ class TestTypeCoercion:
             config = loader.load()
 
             assert config.scoring.section_weights.location.weight == 0.5000
-            assert isinstance(
-                config.scoring.section_weights.location.weight, float
-            )
+            assert isinstance(config.scoring.section_weights.location.weight, float)

@@ -250,9 +250,7 @@ class TestURLValidatorDNSResolution:
     def test_dns_to_loopback_blocked(self, validator_with_dns):
         """Hostname resolving to loopback should be blocked."""
         with patch("socket.getaddrinfo") as mock_dns:
-            mock_dns.return_value = [
-                (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("127.0.0.1", 80))
-            ]
+            mock_dns.return_value = [(socket.AF_INET, socket.SOCK_STREAM, 0, "", ("127.0.0.1", 80))]
             url = "http://localhost.evil.com/admin"
             result = validator_with_dns.validate_url(url)
             assert not result.is_valid
@@ -459,8 +457,8 @@ class TestURLValidatorSSRFAttackVectors:
         """IPv6 private addresses should be blocked."""
         ipv6_urls = [
             "http://[::1]/admin",  # loopback
-            "http://[fe80::1]/",   # link-local
-            "http://[fc00::1]/",   # unique local
+            "http://[fe80::1]/",  # link-local
+            "http://[fc00::1]/",  # unique local
         ]
         for url in ipv6_urls:
             result = validator.validate_url(url)
@@ -482,10 +480,7 @@ class TestURLValidationError:
 
     def test_exception_message(self):
         """URLValidationError should have informative message."""
-        error = URLValidationError(
-            url="http://localhost/admin",
-            reason="Host is in blocked range"
-        )
+        error = URLValidationError(url="http://localhost/admin", reason="Host is in blocked range")
         assert "localhost" in str(error)
         assert "blocked" in str(error).lower()
         assert error.url == "http://localhost/admin"

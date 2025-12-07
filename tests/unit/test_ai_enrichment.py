@@ -354,8 +354,14 @@ class TestFieldTagger:
         missing = tagger.tag_missing_fields({})
 
         expected = [
-            "beds", "baths", "sqft", "lot_sqft",
-            "year_built", "garage_spaces", "sewer_type", "has_pool"
+            "beds",
+            "baths",
+            "sqft",
+            "lot_sqft",
+            "year_built",
+            "garage_spaces",
+            "sewer_type",
+            "has_pool",
         ]
         assert missing == expected
 
@@ -444,10 +450,7 @@ class TestFieldInferencer:
         inferencer = FieldInferencer()
         property_data = {"beds": 4, "baths": None}
 
-        results = await inferencer.infer_fields(
-            property_data,
-            "123 Main St, Phoenix, AZ 85001"
-        )
+        results = await inferencer.infer_fields(property_data, "123 Main St, Phoenix, AZ 85001")
 
         assert isinstance(results, list)
         assert all(isinstance(r, FieldInference) for r in results)
@@ -462,15 +465,10 @@ class TestFieldInferencer:
             "sqft": 2000,
         }
 
-        results = await inferencer.infer_fields(
-            property_data,
-            "123 Main St, Phoenix, AZ 85001"
-        )
+        results = await inferencer.infer_fields(property_data, "123 Main St, Phoenix, AZ 85001")
 
         # baths should be marked as ai_pending (since programmatic fails)
-        baths_result = next(
-            (r for r in results if r.field_name == "baths"), None
-        )
+        baths_result = next((r for r in results if r.field_name == "baths"), None)
         assert baths_result is not None
         assert baths_result.source == "ai_pending"
         assert baths_result.needs_ai_inference is True
@@ -481,10 +479,7 @@ class TestFieldInferencer:
         inferencer = FieldInferencer()
         property_data = {}  # All fields missing
 
-        results = await inferencer.infer_fields(
-            property_data,
-            "123 Main St, Phoenix, AZ 85001"
-        )
+        results = await inferencer.infer_fields(property_data, "123 Main St, Phoenix, AZ 85001")
 
         # Should have inference for each required field
         result_fields = {r.field_name for r in results}

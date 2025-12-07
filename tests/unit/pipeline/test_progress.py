@@ -7,6 +7,7 @@ Tests cover:
 - Status table generation
 - Tier breakdown statistics
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timedelta

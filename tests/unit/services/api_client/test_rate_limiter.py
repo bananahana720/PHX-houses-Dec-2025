@@ -133,9 +133,7 @@ class TestRateLimiter:
     async def test_daily_limit_warning(self, caplog: pytest.LogCaptureFixture) -> None:
         """Daily limit should log warning when approaching threshold."""
         # 10 requests per day, throttle at 80% = 8 requests
-        limiter = RateLimiter(
-            RateLimit(requests_per_day=10, throttle_threshold=0.8, min_delay=0.0)
-        )
+        limiter = RateLimiter(RateLimit(requests_per_day=10, throttle_threshold=0.8, min_delay=0.0))
 
         # Make 9 requests to trigger warning
         for _ in range(9):

@@ -37,6 +37,7 @@ def create_sample_property(**kwargs):
     defaults.update(kwargs)
     return Property(**defaults)
 
+
 # =============================================================================
 # Task 1: ZPID Extraction Helper Tests (AC#1)
 # =============================================================================
@@ -246,7 +247,7 @@ class TestScreenshotCapture:
         screenshots_data = [b"screenshot1_content", b"screenshot2_content", b"screenshot2_content"]
 
         for data in screenshots_data:
-            f = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+            f = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
             f.write(data)
             f.close()
             temp_files.append(f.name)
@@ -254,9 +255,10 @@ class TestScreenshotCapture:
         mock_tab.save_screenshot = AsyncMock(side_effect=temp_files)
 
         # Mock advance method
-        with patch.object(extractor, "_advance_carousel", new_callable=AsyncMock), \
-             patch.object(extractor, "_save_screenshot", return_value="/path/to/image.png"):
-
+        with (
+            patch.object(extractor, "_advance_carousel", new_callable=AsyncMock),
+            patch.object(extractor, "_save_screenshot", return_value="/path/to/image.png"),
+        ):
             paths = await extractor._capture_gallery_screenshots(mock_tab, max_images=10)
 
         # Clean up temp files
@@ -284,7 +286,7 @@ class TestScreenshotCapture:
         same_bytes = b"same_content"
         temp_files = []
         for _ in range(2):
-            f = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+            f = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
             f.write(same_bytes)
             f.close()
             temp_files.append(f.name)
@@ -292,9 +294,10 @@ class TestScreenshotCapture:
         mock_tab.save_screenshot = AsyncMock(side_effect=temp_files)
 
         # Mock advance method
-        with patch.object(extractor, "_advance_carousel", new_callable=AsyncMock), \
-             patch.object(extractor, "_save_screenshot", return_value="/path/to/image.png"):
-
+        with (
+            patch.object(extractor, "_advance_carousel", new_callable=AsyncMock),
+            patch.object(extractor, "_save_screenshot", return_value="/path/to/image.png"),
+        ):
             paths = await extractor._capture_gallery_screenshots(mock_tab, max_images=30)
 
         # Clean up temp files
@@ -324,7 +327,7 @@ class TestScreenshotCapture:
         # Create temp files with same content (to trigger duplicate detection)
         temp_files = []
         for _ in range(2):
-            f = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+            f = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
             f.write(screenshot_bytes)
             f.close()
             temp_files.append(f.name)
@@ -332,8 +335,10 @@ class TestScreenshotCapture:
         mock_tab.save_screenshot = AsyncMock(side_effect=temp_files)
 
         # Mock advance method
-        with patch.object(extractor, "_advance_carousel", new_callable=AsyncMock), \
-             patch.object(extractor, "_save_screenshot") as mock_save:
+        with (
+            patch.object(extractor, "_advance_carousel", new_callable=AsyncMock),
+            patch.object(extractor, "_save_screenshot") as mock_save,
+        ):
             mock_save.return_value = f"/path/{expected_hash}.png"
             await extractor._capture_gallery_screenshots(mock_tab, max_images=10)
 
@@ -401,7 +406,7 @@ class TestCarouselScreenshot:
 
         # Mock screenshot method returns PNG bytes via temp file
         screenshot_bytes = b"PNG_DATA_CONTENT_HERE"
-        f = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+        f = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
         f.write(screenshot_bytes)
         f.close()
 
@@ -503,8 +508,6 @@ class TestExtractionMethodTracking:
             assert extractor.last_metadata["extraction_method"] == method
 
 
-
-
 # =============================================================================
 # P0-4: Integration Tests (Story E2.R1 - Proving Fallback Chain Is Called)
 # =============================================================================
@@ -532,9 +535,7 @@ class TestExtractImageUrlsIntegration:
         return create_sample_property()
 
     @pytest.mark.asyncio
-    async def test_extract_returns_screenshot_paths_not_urls(
-        self, extractor, sample_property
-    ):
+    async def test_extract_returns_screenshot_paths_not_urls(self, extractor, sample_property):
         """Verify extract_image_urls returns file paths to screenshots."""
         sample_property.zpid = "12345678"
 
@@ -552,13 +553,15 @@ class TestExtractImageUrlsIntegration:
             "/path/to/screenshot3.png",
         ]
 
-        with patch.object(
-            extractor, "_navigate_to_gallery_direct", new_callable=AsyncMock
-        ) as mock_gallery, patch.object(
-            extractor, "_is_gallery_page", new_callable=AsyncMock
-        ) as mock_is_gallery, patch.object(
-            extractor, "_capture_gallery_screenshots", new_callable=AsyncMock
-        ) as mock_screenshot:
+        with (
+            patch.object(
+                extractor, "_navigate_to_gallery_direct", new_callable=AsyncMock
+            ) as mock_gallery,
+            patch.object(extractor, "_is_gallery_page", new_callable=AsyncMock) as mock_is_gallery,
+            patch.object(
+                extractor, "_capture_gallery_screenshots", new_callable=AsyncMock
+            ) as mock_screenshot,
+        ):
             mock_gallery.return_value = True
             mock_is_gallery.return_value = True
             mock_screenshot.return_value = screenshot_paths
@@ -573,9 +576,7 @@ class TestExtractImageUrlsIntegration:
             assert extractor.last_metadata.get("extraction_method") == "screenshot"
 
     @pytest.mark.asyncio
-    async def test_screenshot_metadata_includes_source_marker(
-        self, extractor, sample_property
-    ):
+    async def test_screenshot_metadata_includes_source_marker(self, extractor, sample_property):
         """Verify screenshot metadata includes screenshot: true marker."""
         sample_property.zpid = "12345678"
 
@@ -586,13 +587,15 @@ class TestExtractImageUrlsIntegration:
         extractor._browser_pool = MagicMock()
         extractor._browser_pool.get_browser = AsyncMock(return_value=mock_browser)
 
-        with patch.object(
-            extractor, "_navigate_to_gallery_direct", new_callable=AsyncMock
-        ) as mock_gallery, patch.object(
-            extractor, "_is_gallery_page", new_callable=AsyncMock
-        ) as mock_is_gallery, patch.object(
-            extractor, "_capture_gallery_screenshots", new_callable=AsyncMock
-        ) as mock_screenshot:
+        with (
+            patch.object(
+                extractor, "_navigate_to_gallery_direct", new_callable=AsyncMock
+            ) as mock_gallery,
+            patch.object(extractor, "_is_gallery_page", new_callable=AsyncMock) as mock_is_gallery,
+            patch.object(
+                extractor, "_capture_gallery_screenshots", new_callable=AsyncMock
+            ) as mock_screenshot,
+        ):
             mock_gallery.return_value = True
             mock_is_gallery.return_value = True
             mock_screenshot.return_value = ["/path/to/screenshot1.png"]

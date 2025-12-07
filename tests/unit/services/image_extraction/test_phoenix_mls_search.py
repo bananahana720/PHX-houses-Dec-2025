@@ -113,7 +113,6 @@ class TestPhoenixMLSSearchExtractor:
         url = extractor._build_search_url(sample_property)
         assert url == "https://phoenixmlssearch.com/simple-search/"
 
-
     def test_addresses_match_exact(self, extractor, sample_property):
         """Test address matching with exact match."""
         card_text = "123 Main St, Phoenix, AZ 85001 - 4 bed, 2 bath"
@@ -392,9 +391,7 @@ class TestAutocompleteMatching:
             "4732 W Davis, Glendale",  # Minimal
         ]
 
-        scores = [
-            extractor._score_autocomplete_match(query, option) for option in options
-        ]
+        scores = [extractor._score_autocomplete_match(query, option) for option in options]
 
         # First should be best, others should be reasonable
         assert scores[0] >= scores[1]  # Exact better than Road variant

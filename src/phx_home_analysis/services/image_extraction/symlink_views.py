@@ -93,8 +93,7 @@ class SymlinkViewBuilder:
                 return True
             except (OSError, PermissionError):
                 logger.warning(
-                    "Symlinks not available on Windows without admin. "
-                    "Using file copies instead."
+                    "Symlinks not available on Windows without admin. Using file copies instead."
                 )
                 if test_dir.exists():
                     test_dir.rmdir()

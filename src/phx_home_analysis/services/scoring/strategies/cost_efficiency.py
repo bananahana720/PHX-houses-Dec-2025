@@ -5,7 +5,6 @@ their estimated monthly cost efficiency, capturing the financial burden of
 ownership including mortgage, taxes, HOA, solar lease, and pool maintenance.
 """
 
-
 from ....config.scoring_weights import ScoringWeights
 from ....domain.entities import Property
 from ...cost_estimation import MonthlyCostEstimator
@@ -89,13 +88,15 @@ class CostEfficiencyScorer(ScoringStrategy):
         monthly_cost = cost_estimate.total
 
         # Cache the costs on the property for other consumers
-        property.set_monthly_costs({
-            "mortgage": cost_estimate.mortgage,
-            "property_tax": cost_estimate.property_tax,
-            "hoa": cost_estimate.hoa_fee,
-            "solar_lease": cost_estimate.solar_lease,
-            "pool_maintenance": cost_estimate.pool_maintenance,
-        })
+        property.set_monthly_costs(
+            {
+                "mortgage": cost_estimate.mortgage,
+                "property_tax": cost_estimate.property_tax,
+                "hoa": cost_estimate.hoa_fee,
+                "solar_lease": cost_estimate.solar_lease,
+                "pool_maintenance": cost_estimate.pool_maintenance,
+            }
+        )
 
         # Handle edge case where cost calculation fails
         if monthly_cost <= 0:

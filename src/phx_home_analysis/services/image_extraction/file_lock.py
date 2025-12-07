@@ -1,4 +1,5 @@
 """Cross-process file locking for concurrent extraction safety."""
+
 from __future__ import annotations
 
 import logging
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class LockAcquisitionError(Exception):
     """Failed to acquire lock within timeout."""
+
     pass
 
 
@@ -72,10 +74,7 @@ class FileLock:
         while time.time() - start_time < self.timeout:
             try:
                 # Atomic file creation - fails if exists
-                fd = os.open(
-                    str(self.lock_path),
-                    os.O_CREAT | os.O_EXCL | os.O_WRONLY
-                )
+                fd = os.open(str(self.lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
                 # Write PID and timestamp for debugging
                 content = f"{os.getpid()}:{time.time()}"
                 os.write(fd, content.encode())
@@ -176,12 +175,7 @@ class FileLock:
 class PropertyLock(FileLock):
     """Lock for a specific property during extraction."""
 
-    def __init__(
-        self,
-        locks_dir: Path,
-        property_hash: str,
-        **kwargs: object
-    ) -> None:
+    def __init__(self, locks_dir: Path, property_hash: str, **kwargs: object) -> None:
         lock_path = locks_dir / f"{property_hash}.lock"
         super().__init__(lock_path, **kwargs)  # type: ignore[arg-type]
         self.property_hash = property_hash

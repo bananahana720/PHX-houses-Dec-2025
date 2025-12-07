@@ -31,12 +31,12 @@ DEFAULT_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # Color codes for console output (ANSI escape sequences)
 COLORS = {
-    "DEBUG": "\033[36m",     # Cyan
-    "INFO": "\033[32m",      # Green
-    "WARNING": "\033[33m",   # Yellow
-    "ERROR": "\033[31m",     # Red
+    "DEBUG": "\033[36m",  # Cyan
+    "INFO": "\033[32m",  # Green
+    "WARNING": "\033[33m",  # Yellow
+    "ERROR": "\033[31m",  # Red
     "CRITICAL": "\033[35m",  # Magenta
-    "RESET": "\033[0m",      # Reset
+    "RESET": "\033[0m",  # Reset
 }
 
 

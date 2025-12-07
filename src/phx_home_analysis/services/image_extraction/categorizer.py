@@ -127,18 +127,32 @@ class ImageSubject(Enum):
             ImageLocation that typically contains this subject
         """
         exterior = {
-            ImageSubject.FRONT, ImageSubject.REAR, ImageSubject.POOL,
-            ImageSubject.GARAGE, ImageSubject.YARD, ImageSubject.AERIAL,
-            ImageSubject.DRIVEWAY, ImageSubject.PATIO, ImageSubject.COURTYARD,
+            ImageSubject.FRONT,
+            ImageSubject.REAR,
+            ImageSubject.POOL,
+            ImageSubject.GARAGE,
+            ImageSubject.YARD,
+            ImageSubject.AERIAL,
+            ImageSubject.DRIVEWAY,
+            ImageSubject.PATIO,
+            ImageSubject.COURTYARD,
         }
         systems = {
-            ImageSubject.HVAC, ImageSubject.HVAC_LABEL, ImageSubject.ELECTRICAL,
-            ImageSubject.WATER_HEATER, ImageSubject.ROOF, ImageSubject.PLUMBING,
+            ImageSubject.HVAC,
+            ImageSubject.HVAC_LABEL,
+            ImageSubject.ELECTRICAL,
+            ImageSubject.WATER_HEATER,
+            ImageSubject.ROOF,
+            ImageSubject.PLUMBING,
             ImageSubject.ATTIC,
         }
         features = {
-            ImageSubject.FIREPLACE, ImageSubject.SOLAR, ImageSubject.POOL_EQUIP,
-            ImageSubject.CEILING_FAN, ImageSubject.BUILT_IN, ImageSubject.FLOORING,
+            ImageSubject.FIREPLACE,
+            ImageSubject.SOLAR,
+            ImageSubject.POOL_EQUIP,
+            ImageSubject.CEILING_FAN,
+            ImageSubject.BUILT_IN,
+            ImageSubject.FLOORING,
         }
 
         if self in exterior:
@@ -265,7 +279,7 @@ class ImageCategorizer:
     """
 
     # Claude Vision categorization prompt
-    CATEGORIZATION_PROMPT = '''Analyze this real estate listing image and classify it.
+    CATEGORIZATION_PROMPT = """Analyze this real estate listing image and classify it.
 
 Return JSON only (no markdown, no explanation):
 {
@@ -328,7 +342,7 @@ Rules:
 3. Confidence should reflect certainty: clear shots = 0.9+, partial views = 0.6-0.8.
 4. List 1-3 features detected (granite counters, stainless appliances, pool heater, etc.)
 5. Include 1-2 alternative categories if uncertain.
-6. Use "unknown" only when truly unidentifiable.'''
+6. Use "unknown" only when truly unidentifiable."""
 
     # Model configuration
     MODEL_ID = "claude-haiku-4-5-20251001"
@@ -453,10 +467,7 @@ Rules:
         """
         if not self.is_available:
             logger.warning("API key not configured - returning unknown for all images")
-            return [
-                CategoryResult.unknown("API key not configured")
-                for _ in image_paths
-            ]
+            return [CategoryResult.unknown("API key not configured") for _ in image_paths]
 
         results: list[CategoryResult | None] = [None] * len(image_paths)
         completed = 0
@@ -478,17 +489,11 @@ Rules:
                     progress_callback(completed, len(image_paths))
 
         # Process all images concurrently (semaphore limits parallelism)
-        tasks = [
-            process_one(i, path)
-            for i, path in enumerate(image_paths)
-        ]
+        tasks = [process_one(i, path) for i, path in enumerate(image_paths)]
         await asyncio.gather(*tasks, return_exceptions=True)
 
         # Replace None with unknown results (shouldn't happen, but safety)
-        return [
-            r if r is not None else CategoryResult.unknown("Processing error")
-            for r in results
-        ]
+        return [r if r is not None else CategoryResult.unknown("Processing error") for r in results]
 
     def _encode_image(self, path: Path) -> str:
         """Encode image file as base64.
@@ -568,6 +573,7 @@ Rules:
 
             response.raise_for_status()
             from typing import cast
+
             return cast(dict[Any, Any], response.json())
 
         except httpx.HTTPStatusError as e:
@@ -618,10 +624,7 @@ Rules:
             if json_str.startswith("```"):
                 # Remove markdown code fences
                 lines = json_str.split("\n")
-                json_str = "\n".join(
-                    line for line in lines
-                    if not line.strip().startswith("```")
-                )
+                json_str = "\n".join(line for line in lines if not line.strip().startswith("```"))
 
             data = json.loads(json_str)
 

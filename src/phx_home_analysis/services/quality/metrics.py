@@ -115,17 +115,17 @@ class QualityMetricsCalculator:
             else:
                 missing_fields.append(field)
 
-        completeness = len(present_fields) / len(self.required_fields) if self.required_fields else 1.0
+        completeness = (
+            len(present_fields) / len(self.required_fields) if self.required_fields else 1.0
+        )
 
         # Calculate high confidence percentage
         if field_confidences:
             high_conf_fields = [
-                f for f, c in field_confidences.items()
-                if c >= self.high_confidence_threshold
+                f for f, c in field_confidences.items() if c >= self.high_confidence_threshold
             ]
             low_conf_fields = [
-                f for f, c in field_confidences.items()
-                if c < self.high_confidence_threshold
+                f for f, c in field_confidences.items() if c < self.high_confidence_threshold
             ]
             high_confidence_pct = len(high_conf_fields) / len(field_confidences)
         else:
@@ -135,8 +135,7 @@ class QualityMetricsCalculator:
 
         # Calculate overall score using weighted formula
         overall_score = (
-            completeness * self.COMPLETENESS_WEIGHT +
-            high_confidence_pct * self.CONFIDENCE_WEIGHT
+            completeness * self.COMPLETENESS_WEIGHT + high_confidence_pct * self.CONFIDENCE_WEIGHT
         )
 
         return QualityScore(
@@ -306,7 +305,7 @@ def calculate_property_quality(enrichment: "EnrichmentData") -> QualityScore:
         "address": enrichment.full_address,
         "beds": None,  # Not in EnrichmentData
         "baths": None,  # Not in EnrichmentData
-        "sqft": None,   # Not in EnrichmentData
+        "sqft": None,  # Not in EnrichmentData
         "price": None,  # Not in EnrichmentData
         "lot_sqft": enrichment.lot_sqft,
         "year_built": enrichment.year_built,

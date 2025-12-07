@@ -686,7 +686,6 @@ class TestCountyAssessorAdvanced:
 
             errors = [r for r in results if isinstance(r, Exception)]
             rate_limit_errors = [
-                e for e in errors
-                if "429" in str(e).lower() or "rate limit" in str(e).lower()
+                e for e in errors if "429" in str(e).lower() or "rate limit" in str(e).lower()
             ]
             assert len(rate_limit_errors) == 0, f"Rate limit errors: {rate_limit_errors}"

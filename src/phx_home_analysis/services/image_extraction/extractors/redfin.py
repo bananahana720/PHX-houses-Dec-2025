@@ -103,6 +103,7 @@ class RedfinExtractor(StealthBrowserExtractor):
 
         # Extract address from search URL: https://www.redfin.com/search?q=...
         from urllib.parse import parse_qs, urlparse
+
         parsed = urlparse(url)
         query_params = parse_qs(parsed.query)
         address = query_params.get("q", [""])[0]
@@ -129,7 +130,7 @@ class RedfinExtractor(StealthBrowserExtractor):
             # Fallback: class-based
             'input[class*="SearchBox"]',
             'input[class*="search-input"]',
-            '#search-box-input',
+            "#search-box-input",
             'input[name="searchInputBox"]',
         ]
 
@@ -184,13 +185,13 @@ class RedfinExtractor(StealthBrowserExtractor):
             '[role="listbox"] [role="option"]',
             '[class*="SearchDropDown"] a',
             '[class*="suggestion"] a',
-            '.autosuggest-result a',
-            '.SearchDropDown a',
+            ".autosuggest-result a",
+            ".SearchDropDown a",
             '[data-rf-test-id="search-result"]',
-            '.autosuggest-result',
-            '.search-result-item',
+            ".autosuggest-result",
+            ".search-result-item",
             '[role="option"]',
-            '.HomeCardContainer a',
+            ".HomeCardContainer a",
         ]
 
         for attempt in range(max_attempts):
@@ -203,13 +204,20 @@ class RedfinExtractor(StealthBrowserExtractor):
                 try:
                     results = await tab.query_selector_all(selector)
                     if results and len(results) > 0:
-                        logger.info("Redfin: Found %d autocomplete results with selector: %s",
-                                  len(results), selector)
+                        logger.info(
+                            "Redfin: Found %d autocomplete results with selector: %s",
+                            len(results),
+                            selector,
+                        )
 
                         # Log the first few results for debugging
                         for i, result in enumerate(results[:3]):
                             try:
-                                text = result.text_all if hasattr(result, 'text_all') else str(result.attrs)
+                                text = (
+                                    result.text_all
+                                    if hasattr(result, "text_all")
+                                    else str(result.attrs)
+                                )
                                 logger.debug("  Result %d: %s", i, text[:100])
                             except Exception:
                                 pass
@@ -219,12 +227,16 @@ class RedfinExtractor(StealthBrowserExtractor):
                         best_score = 0.0
                         for result in results:
                             try:
-                                result_text = result.text_all if hasattr(result, 'text_all') else str(result)
+                                result_text = (
+                                    result.text_all if hasattr(result, "text_all") else str(result)
+                                )
                                 score = self._score_address_match(address, result_text)
                                 if score > best_score:
                                     best_score = score
                                     best_match = result
-                                    logger.debug("Redfin: Result scored %.2f: %s", score, result_text[:60])
+                                    logger.debug(
+                                        "Redfin: Result scored %.2f: %s", score, result_text[:60]
+                                    )
                             except Exception as e:
                                 logger.debug("Redfin: Error scoring result: %s", e)
                                 continue
@@ -235,7 +247,10 @@ class RedfinExtractor(StealthBrowserExtractor):
                             result_clicked = True
                             break
                         else:
-                            logger.warning("Redfin: No good match found (best score: %.2f), trying Enter key", best_score)
+                            logger.warning(
+                                "Redfin: No good match found (best score: %.2f), trying Enter key",
+                                best_score,
+                            )
                             # Fallback to Enter key instead of clicking wrong result
                             try:
                                 await search_input.send_keys("\n")
@@ -273,7 +288,9 @@ class RedfinExtractor(StealthBrowserExtractor):
 
         # Validate navigation success (FAIL-FAST)
         if not await self._validate_navigation_success(tab, address):
-            logger.error("Redfin: Aborting extraction - navigation validation failed for %s", address)
+            logger.error(
+                "Redfin: Aborting extraction - navigation validation failed for %s", address
+            )
             # Mark the tab with navigation failure so _extract_urls_from_page returns empty
             tab._redfin_nav_failed = True
         else:
@@ -298,18 +315,26 @@ class RedfinExtractor(StealthBrowserExtractor):
             True if on correct property page, False otherwise (extraction should abort)
         """
         try:
-            current_url = tab.target.url if hasattr(tab, 'target') else ""
+            current_url = tab.target.url if hasattr(tab, "target") else ""
 
             # Check 1: Must be on property page URL
             if not self._is_property_url(current_url):
-                logger.error("Redfin: Navigation failed - not on property page (URL: %s)", current_url[:100])
+                logger.error(
+                    "Redfin: Navigation failed - not on property page (URL: %s)", current_url[:100]
+                )
                 return False
 
             # Check 2: Page content must have property indicators
             content = await tab.get_content()
             content_lower = content.lower() if content else ""
 
-            property_indicators = ['propertydetails', 'home-details', 'listing-details', 'property-header', 'homeinfo']
+            property_indicators = [
+                "propertydetails",
+                "home-details",
+                "listing-details",
+                "property-header",
+                "homeinfo",
+            ]
             indicator_count = sum(1 for ind in property_indicators if ind in content_lower)
 
             if indicator_count < 1:
@@ -320,7 +345,9 @@ class RedfinExtractor(StealthBrowserExtractor):
             parts = expected_address.split()
             street_num = parts[0] if parts and parts[0].isdigit() else None
             if street_num and street_num not in content:
-                logger.warning("Redfin: Street number %s not found in page - may be wrong property", street_num)
+                logger.warning(
+                    "Redfin: Street number %s not found in page - may be wrong property", street_num
+                )
                 # This is a warning, not a failure - content may be lazy-loaded
 
             logger.info("Redfin: Navigation validation passed for %s", expected_address)
@@ -342,11 +369,11 @@ class RedfinExtractor(StealthBrowserExtractor):
         url_lower = url.lower()
 
         # Must contain /home/ path
-        if '/home/' not in url_lower:
+        if "/home/" not in url_lower:
             return False
 
         # Must NOT be city/county/region pages
-        invalid_patterns = ['/city/', '/county/', '/zipcode/', '/neighborhood/', '/real-estate/']
+        invalid_patterns = ["/city/", "/county/", "/zipcode/", "/neighborhood/", "/real-estate/"]
         for pattern in invalid_patterns:
             if pattern in url_lower:
                 return False
@@ -368,7 +395,7 @@ class RedfinExtractor(StealthBrowserExtractor):
         Returns:
             Score from 0.0 (no match) to 1.0 (perfect match)
         """
-        target_lower = target.lower().replace(',', ' ')
+        target_lower = target.lower().replace(",", " ")
         result_lower = result_text.lower()
 
         parts = target_lower.split()
@@ -389,7 +416,7 @@ class RedfinExtractor(StealthBrowserExtractor):
             score += 0.3 * (matched / len(street_words))
 
         # City matching (last 1-2 parts)
-        city = parts[-4] if len(parts) >= 4 else ''
+        city = parts[-4] if len(parts) >= 4 else ""
         if city and len(city) > 2 and city.lower() in result_lower:
             score += 0.2
 
@@ -448,7 +475,7 @@ class RedfinExtractor(StealthBrowserExtractor):
 
         try:
             # Check if navigation validation failed (fail-fast)
-            if getattr(tab, '_redfin_nav_failed', False):
+            if getattr(tab, "_redfin_nav_failed", False):
                 logger.error("Redfin: Skipping extraction - navigation validation had failed")
                 return []
 

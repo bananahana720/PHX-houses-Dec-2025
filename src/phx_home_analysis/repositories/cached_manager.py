@@ -25,7 +25,6 @@ Typical Usage:
     ...     print("Changes saved to disk")
 """
 
-
 from ..domain.entities import EnrichmentData
 from .base import EnrichmentRepository
 

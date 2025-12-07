@@ -114,11 +114,7 @@ class TestCheckpointWorkflowIntegration:
 
         # First attempt fails
         repo.checkpoint_phase_start("123 Main St", "phase1_listing")
-        repo.checkpoint_phase_complete(
-            "123 Main St",
-            "phase1_listing",
-            error_message="HTTP 500"
-        )
+        repo.checkpoint_phase_complete("123 Main St", "phase1_listing", error_message="HTTP 500")
 
         item = repo.get_work_item("123 Main St")
         assert item["phases"]["phase1_listing"]["retry_count"] == 1

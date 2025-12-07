@@ -109,9 +109,7 @@ class StalenessDetector:
             data = json.load(f)
 
         if not isinstance(data, list):
-            raise ValueError(
-                f"Expected list of properties, got {type(data).__name__}"
-            )
+            raise ValueError(f"Expected list of properties, got {type(data).__name__}")
 
         logger.debug(f"Loaded {len(data)} properties from {self.enrichment_path}")
         return data
@@ -171,6 +169,7 @@ class StalenessDetector:
         if not last_updated:
             # If no timestamp, consider it stale from project start
             from datetime import timezone
+
             last_updated = datetime(2025, 1, 1, tzinfo=timezone.utc)
             logger.debug(f"No timestamp for {full_address}, using default")
 
@@ -215,6 +214,7 @@ class StalenessDetector:
             json.JSONDecodeError: If file contains invalid JSON.
         """
         from datetime import timezone
+
         reference_date = reference_date or datetime.now(timezone.utc)
 
         logger.info(
@@ -239,10 +239,7 @@ class StalenessDetector:
             )
 
         # Separate stale and fresh
-        stale_properties = [
-            lc for lc in lifecycles
-            if lc.is_stale(self.threshold_days)
-        ]
+        stale_properties = [lc for lc in lifecycles if lc.is_stale(self.threshold_days)]
         fresh_count = len(lifecycles) - len(stale_properties)
 
         # Find date range
@@ -320,6 +317,7 @@ class StalenessDetector:
             PropertyLifecycle if found, None otherwise.
         """
         from datetime import timezone as tz
+
         reference_date = reference_date or datetime.now(tz.utc)
 
         try:
@@ -357,10 +355,7 @@ class StalenessDetector:
 
     def __str__(self) -> str:
         """String representation."""
-        return (
-            f"StalenessDetector(path={self.enrichment_path}, "
-            f"threshold={self.threshold_days}d)"
-        )
+        return f"StalenessDetector(path={self.enrichment_path}, threshold={self.threshold_days}d)"
 
     def __repr__(self) -> str:
         """Developer representation."""

@@ -366,9 +366,7 @@ class TestQualityMetricsCalculator:
 
     def test_custom_required_fields(self):
         """Test calculator with custom required fields."""
-        calculator = QualityMetricsCalculator(
-            required_fields=["address", "price"]
-        )
+        calculator = QualityMetricsCalculator(required_fields=["address", "price"])
 
         property_data = {"address": "123 Main St"}
         score = calculator.calculate(property_data)
@@ -379,9 +377,7 @@ class TestQualityMetricsCalculator:
 
     def test_custom_confidence_threshold(self):
         """Test calculator with custom confidence threshold."""
-        calculator = QualityMetricsCalculator(
-            high_confidence_threshold=0.9
-        )
+        calculator = QualityMetricsCalculator(high_confidence_threshold=0.9)
 
         property_data = {"address": "123 Main St"}
         confidences = {"address": 0.85}  # Below 0.9 threshold
@@ -409,9 +405,7 @@ class TestQualityMetricsCalculator:
 
         # Aggregate should be average
         expected_avg_completeness = (1.0 + 5 / 9) / 2
-        assert aggregate.completeness == pytest.approx(
-            expected_avg_completeness, rel=0.01
-        )
+        assert aggregate.completeness == pytest.approx(expected_avg_completeness, rel=0.01)
 
     def test_calculate_batch_empty(self, calculator):
         """Test batch calculation with empty list."""

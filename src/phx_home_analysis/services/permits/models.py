@@ -111,9 +111,7 @@ class PermitHistory:
     @property
     def last_roof_permit_year(self) -> int | None:
         """Year of most recent roofing permit."""
-        roof_permits = [
-            p for p in self.permits if p.permit_type == PermitType.ROOFING
-        ]
+        roof_permits = [p for p in self.permits if p.permit_type == PermitType.ROOFING]
         if not roof_permits:
             return None
         years = [p.year_issued for p in roof_permits if p.year_issued]
@@ -122,9 +120,7 @@ class PermitHistory:
     @property
     def last_hvac_permit_year(self) -> int | None:
         """Year of most recent HVAC/mechanical permit."""
-        hvac_permits = [
-            p for p in self.permits if p.permit_type == PermitType.MECHANICAL
-        ]
+        hvac_permits = [p for p in self.permits if p.permit_type == PermitType.MECHANICAL]
         if not hvac_permits:
             return None
         years = [p.year_issued for p in hvac_permits if p.year_issued]

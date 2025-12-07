@@ -32,9 +32,19 @@ class WorkItemsRepository:
     # State transition rules
     VALID_STATUS_TRANSITIONS = {
         None: [WorkItemStatus.PENDING.value],
-        WorkItemStatus.PENDING.value: [WorkItemStatus.IN_PROGRESS.value, WorkItemStatus.BLOCKED.value],
-        WorkItemStatus.IN_PROGRESS.value: [WorkItemStatus.COMPLETED.value, WorkItemStatus.FAILED.value, WorkItemStatus.BLOCKED.value],
-        WorkItemStatus.FAILED.value: [WorkItemStatus.IN_PROGRESS.value, WorkItemStatus.BLOCKED.value],
+        WorkItemStatus.PENDING.value: [
+            WorkItemStatus.IN_PROGRESS.value,
+            WorkItemStatus.BLOCKED.value,
+        ],
+        WorkItemStatus.IN_PROGRESS.value: [
+            WorkItemStatus.COMPLETED.value,
+            WorkItemStatus.FAILED.value,
+            WorkItemStatus.BLOCKED.value,
+        ],
+        WorkItemStatus.FAILED.value: [
+            WorkItemStatus.IN_PROGRESS.value,
+            WorkItemStatus.BLOCKED.value,
+        ],
         WorkItemStatus.BLOCKED.value: [WorkItemStatus.IN_PROGRESS.value],
         WorkItemStatus.COMPLETED.value: [],  # Terminal state
     }
@@ -78,7 +88,7 @@ class WorkItemsRepository:
             return self._create_empty_state()
 
         try:
-            with open(self.json_file_path, encoding='utf-8') as f:
+            with open(self.json_file_path, encoding="utf-8") as f:
                 state: dict[str, Any] = json.load(f)
 
             # Reset stale in_progress items
@@ -125,10 +135,7 @@ class WorkItemsRepository:
         self._state_cache = state
 
     def initialize_session(
-        self,
-        mode: str,
-        addresses: list[str],
-        session_id: str | None = None
+        self, mode: str, addresses: list[str], session_id: str | None = None
     ) -> None:
         """Initialize a new pipeline session.
 
@@ -148,10 +155,7 @@ class WorkItemsRepository:
                 "total_items": len(addresses),
                 "current_index": 0,
             },
-            "work_items": [
-                self._create_work_item(addr, idx)
-                for idx, addr in enumerate(addresses)
-            ],
+            "work_items": [self._create_work_item(addr, idx) for idx, addr in enumerate(addresses)],
             "summary": {},
         }
 
@@ -159,10 +163,7 @@ class WorkItemsRepository:
         logger.info(f"Initialized session {session_id}: {len(addresses)} items")
 
     def checkpoint_phase_complete(
-        self,
-        address: str,
-        phase: str,
-        error_message: str | None = None
+        self, address: str, phase: str, error_message: str | None = None
     ) -> None:
         """Checkpoint a phase completion for a property.
 
@@ -190,16 +191,17 @@ class WorkItemsRepository:
         # Validate transition
         if not self._is_valid_phase_transition(current_status, new_status):
             raise ValueError(
-                f"Invalid phase transition for {address}.{phase}: "
-                f"{current_status} → {new_status}"
+                f"Invalid phase transition for {address}.{phase}: {current_status} → {new_status}"
             )
 
         # Update phase status
         now = datetime.now(timezone.utc).isoformat()
-        phase_info.update({
-            "status": new_status,
-            "completed_at": now,
-        })
+        phase_info.update(
+            {
+                "status": new_status,
+                "completed_at": now,
+            }
+        )
 
         if error_message:
             phase_info["error_message"] = error_message
@@ -243,10 +245,12 @@ class WorkItemsRepository:
 
         # Update phase status
         now = datetime.now(timezone.utc).isoformat()
-        phase_info.update({
-            "status": PhaseStatus.IN_PROGRESS.value,
-            "started_at": now,
-        })
+        phase_info.update(
+            {
+                "status": PhaseStatus.IN_PROGRESS.value,
+                "started_at": now,
+            }
+        )
 
         work_item["phases"][phase] = phase_info
         work_item["updated_at"] = now
@@ -277,7 +281,8 @@ class WorkItemsRepository:
         """
         state = self.load_state()
         return [
-            item for item in state.get("work_items", [])
+            item
+            for item in state.get("work_items", [])
             if item["status"] == WorkItemStatus.PENDING.value
         ]
 
@@ -289,7 +294,8 @@ class WorkItemsRepository:
         """
         state = self.load_state()
         return [
-            item for item in state.get("work_items", [])
+            item
+            for item in state.get("work_items", [])
             if item["status"] != WorkItemStatus.COMPLETED.value
         ]
 
@@ -328,11 +334,7 @@ class WorkItemsRepository:
             "updated_at": now,
         }
 
-    def _find_work_item(
-        self,
-        state: dict[str, Any],
-        address: str
-    ) -> dict[str, Any] | None:
+    def _find_work_item(self, state: dict[str, Any], address: str) -> dict[str, Any] | None:
         """Find work item by address."""
         work_items: list[dict[str, Any]] = state.get("work_items", [])
         for item in work_items:
@@ -348,7 +350,7 @@ class WorkItemsRepository:
             WorkItemStatus.IN_PROGRESS.value: 0,
             WorkItemStatus.COMPLETED.value: 0,
             WorkItemStatus.FAILED.value: 0,
-            WorkItemStatus.BLOCKED.value: 0
+            WorkItemStatus.BLOCKED.value: 0,
         }
 
         for item in work_items:
@@ -362,7 +364,9 @@ class WorkItemsRepository:
             "completed": by_status[WorkItemStatus.COMPLETED.value],
             "failed": by_status[WorkItemStatus.FAILED.value],
             "blocked": by_status[WorkItemStatus.BLOCKED.value],
-            "completion_percentage": (by_status[WorkItemStatus.COMPLETED.value] / total * 100) if total > 0 else 0.0,
+            "completion_percentage": (by_status[WorkItemStatus.COMPLETED.value] / total * 100)
+            if total > 0
+            else 0.0,
         }
 
     def _update_work_item_status(self, work_item: dict[str, Any]) -> None:
@@ -394,11 +398,7 @@ class WorkItemsRepository:
         else:
             work_item["status"] = WorkItemStatus.PENDING.value
 
-    def _is_valid_phase_transition(
-        self,
-        from_status: str | None,
-        to_status: str
-    ) -> bool:
+    def _is_valid_phase_transition(self, from_status: str | None, to_status: str) -> bool:
         """Check if phase status transition is valid."""
         allowed = self.VALID_PHASE_TRANSITIONS.get(from_status, [])
         return to_status in allowed
@@ -453,13 +453,11 @@ class WorkItemsRepository:
         """Remove old backup files, keeping only MAX_BACKUPS most recent."""
         pattern = f"{self.json_file_path.stem}.*.bak.json"
         backups = sorted(
-            self.json_file_path.parent.glob(pattern),
-            key=lambda p: p.stat().st_mtime,
-            reverse=True
+            self.json_file_path.parent.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True
         )
 
         if len(backups) > self.MAX_BACKUPS:
-            old_backups = backups[self.MAX_BACKUPS:]
+            old_backups = backups[self.MAX_BACKUPS :]
             for backup in old_backups:
                 try:
                     backup.unlink()

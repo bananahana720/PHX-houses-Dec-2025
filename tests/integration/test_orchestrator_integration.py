@@ -54,8 +54,7 @@ class TestOrchestratorExtractAll:
             assert result.total_properties == 3
             # Should have attempted extraction for all properties
             assert (
-                result.successful_properties + result.failed_properties
-                == result.total_properties
+                result.successful_properties + result.failed_properties == result.total_properties
             )
 
     @pytest.mark.asyncio
@@ -67,9 +66,7 @@ class TestOrchestratorExtractAll:
         state_file = orchestrator.base_dir / "extraction_state.json"
         state_file.write_text(json.dumps(extraction_state))
 
-        result = await orchestrator.extract_all(
-            sample_properties[:3], resume=True
-        )
+        result = await orchestrator.extract_all(sample_properties[:3], resume=True)
 
         assert result.total_properties == 3
         # Should skip properties from extraction_state
@@ -133,6 +130,7 @@ class TestOrchestratorCircuitBreaker:
 
         # Wait for reset timeout (testing with very short delay)
         import time
+
         time.sleep(0.02)
 
         # Circuit should be reset after timeout
@@ -232,19 +230,19 @@ class TestOrchestratorSourceCoordination:
     """Test source prioritization and fallback."""
 
     @pytest.mark.asyncio
-    async def test_sources_attempted_in_priority_order(
-        self, orchestrator, sample_property
-    ):
+    async def test_sources_attempted_in_priority_order(self, orchestrator, sample_property):
         """Sources are attempted in configured priority order."""
         # Get configured priority
-        priority = orchestrator.source_priority if hasattr(
-            orchestrator, "source_priority"
-        ) else [
-            ImageSource.ZILLOW,
-            ImageSource.PHOENIX_MLS,
-            ImageSource.REDFIN,
-            ImageSource.MARICOPA_ASSESSOR,
-        ]
+        priority = (
+            orchestrator.source_priority
+            if hasattr(orchestrator, "source_priority")
+            else [
+                ImageSource.ZILLOW,
+                ImageSource.PHOENIX_MLS,
+                ImageSource.REDFIN,
+                ImageSource.MARICOPA_ASSESSOR,
+            ]
+        )
 
         assert len(priority) > 0
         # First source should be primary
@@ -256,21 +254,17 @@ class TestOrchestratorSourceCoordination:
     def test_fallback_chain_configuration(self, orchestrator):
         """Fallback chain is properly configured."""
         # Verify fallback logic exists
-        assert hasattr(
-            orchestrator, "source_priority"
-        ) or hasattr(orchestrator, "get_fallback_sources")
+        assert hasattr(orchestrator, "source_priority") or hasattr(
+            orchestrator, "get_fallback_sources"
+        )
 
 
 class TestOrchestratorDeduplication:
     """Test deduplication across extraction runs."""
 
-    def test_deduplication_manifest_updated(
-        self, orchestrator, extraction_manifest
-    ):
+    def test_deduplication_manifest_updated(self, orchestrator, extraction_manifest):
         """Deduplication updates manifest with deduplicated image count."""
-        original_images = extraction_manifest[list(extraction_manifest.keys())[0]][
-            "images"
-        ]
+        original_images = extraction_manifest[list(extraction_manifest.keys())[0]]["images"]
 
         # Simulate deduplication (remove duplicates)
         unique_images = []

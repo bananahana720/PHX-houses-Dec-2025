@@ -1,6 +1,5 @@
 """Unit tests for provenance tracking functionality."""
 
-
 from src.phx_home_analysis.domain.entities import EnrichmentData
 from src.phx_home_analysis.services.quality.confidence_display import (
     ConfidenceLevel,

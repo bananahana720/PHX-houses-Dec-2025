@@ -148,14 +148,10 @@ class HowLoudExtractor(LocationDataExtractor[NoiseData]):
                 value = int(match.group(1))
                 # Validate score is in 0-100 range
                 if 0 <= value <= 100:
-                    logger.debug(
-                        "%s found score: %d (pattern: %s)", self.name, value, pattern[:30]
-                    )
+                    logger.debug("%s found score: %d (pattern: %s)", self.name, value, pattern[:30])
                     return value
                 else:
-                    logger.warning(
-                        "%s invalid score %d (out of range 0-100)", self.name, value
-                    )
+                    logger.warning("%s invalid score %d (out of range 0-100)", self.name, value)
             except (ValueError, IndexError):
                 pass
         return None

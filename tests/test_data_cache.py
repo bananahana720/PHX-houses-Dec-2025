@@ -21,9 +21,7 @@ def reset_singleton():
 @pytest.fixture
 def temp_csv():
     """Create a temporary CSV file for testing."""
-    with tempfile.NamedTemporaryFile(
-        mode='w', suffix='.csv', delete=False, newline=''
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
         f.write("name,value\n")
         f.write("foo,1\n")
         f.write("bar,2\n")
@@ -38,7 +36,7 @@ def temp_csv():
 @pytest.fixture
 def temp_json():
     """Create a temporary JSON file for testing."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump([{"id": 1, "name": "test1"}, {"id": 2, "name": "test2"}], f)
         temp_path = Path(f.name)
 
@@ -81,7 +79,7 @@ def test_csv_data_cached(temp_csv):
     stats2 = cache.get_cache_stats()
 
     assert data1 is data2  # Same object reference
-    assert stats1['csv_mtime'] == stats2['csv_mtime']
+    assert stats1["csv_mtime"] == stats2["csv_mtime"]
 
 
 def test_csv_data_reloaded_on_mtime_change(temp_csv):
@@ -93,7 +91,7 @@ def test_csv_data_reloaded_on_mtime_change(temp_csv):
 
     # Modify file (wait to ensure mtime changes)
     time.sleep(0.01)
-    with open(temp_csv, 'a', newline='') as f:
+    with open(temp_csv, "a", newline="") as f:
         f.write("baz,3\n")
 
     # Second load (should reload due to mtime change)
@@ -126,7 +124,7 @@ def test_json_data_cached(temp_json):
     stats2 = cache.get_cache_stats()
 
     assert data1 is data2  # Same object reference
-    assert stats1['json_mtime'] == stats2['json_mtime']
+    assert stats1["json_mtime"] == stats2["json_mtime"]
 
 
 def test_invalidate_clears_cache(temp_csv, temp_json):
@@ -138,15 +136,15 @@ def test_invalidate_clears_cache(temp_csv, temp_json):
     cache.get_enrichment_data(temp_json)
 
     stats_before = cache.get_cache_stats()
-    assert stats_before['csv_cached'] is True
-    assert stats_before['json_cached'] is True
+    assert stats_before["csv_cached"] is True
+    assert stats_before["json_cached"] is True
 
     # Invalidate
     cache.invalidate()
 
     stats_after = cache.get_cache_stats()
-    assert stats_after['csv_cached'] is False
-    assert stats_after['json_cached'] is False
+    assert stats_after["csv_cached"] is False
+    assert stats_after["json_cached"] is False
 
 
 def test_cache_stats(temp_csv):
@@ -155,15 +153,15 @@ def test_cache_stats(temp_csv):
 
     # Before loading
     stats = cache.get_cache_stats()
-    assert stats['csv_cached'] is False
-    assert stats['csv_rows'] == 0
+    assert stats["csv_cached"] is False
+    assert stats["csv_rows"] == 0
 
     # After loading
     cache.get_csv_data(temp_csv)
     stats = cache.get_cache_stats()
-    assert stats['csv_cached'] is True
-    assert stats['csv_rows'] == 2
-    assert stats['csv_path'] == str(temp_csv)
+    assert stats["csv_cached"] is True
+    assert stats["csv_rows"] == 2
+    assert stats["csv_path"] == str(temp_csv)
 
 
 def test_file_not_found():
@@ -180,9 +178,7 @@ def test_file_not_found():
 def test_different_paths_cached_separately(temp_csv):
     """Test that different file paths are cached separately."""
     # Create a second temp CSV
-    with tempfile.NamedTemporaryFile(
-        mode='w', suffix='.csv', delete=False, newline=''
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
         f.write("name,value\n")
         f.write("different,99\n")
         temp_csv2 = Path(f.name)

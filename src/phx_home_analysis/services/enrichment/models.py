@@ -33,9 +33,7 @@ class FieldConflict:
         """Validate action is one of the allowed values."""
         valid_actions = {"preserved", "updated", "skipped", "added"}
         if self.action not in valid_actions:
-            raise ValueError(
-                f"Invalid action '{self.action}'. Must be one of: {valid_actions}"
-            )
+            raise ValueError(f"Invalid action '{self.action}'. Must be one of: {valid_actions}")
 
 
 @dataclass

@@ -29,24 +29,31 @@ class TestDealSheetDataLoading:
         CSV should contain properties with scores and rankings.
         """
         # Create temporary ranked CSV
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, newline='') as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
             fieldnames = [
-                'rank', 'full_address', 'price_num', 'beds', 'baths', 'sqft',
-                'total_score'
+                "rank",
+                "full_address",
+                "price_num",
+                "beds",
+                "baths",
+                "sqft",
+                "total_score",
             ]
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
 
             for idx, prop in enumerate(sample_properties[:3], 1):
-                writer.writerow({
-                    'rank': idx,
-                    'full_address': prop.full_address,
-                    'price_num': prop.price_num,
-                    'beds': prop.beds,
-                    'baths': prop.baths,
-                    'sqft': prop.sqft,
-                    'total_score': 350 + (idx * 10),
-                })
+                writer.writerow(
+                    {
+                        "rank": idx,
+                        "full_address": prop.full_address,
+                        "price_num": prop.price_num,
+                        "beds": prop.beds,
+                        "baths": prop.baths,
+                        "sqft": prop.sqft,
+                        "total_score": 350 + (idx * 10),
+                    }
+                )
             csv_path = f.name
 
         try:
@@ -55,10 +62,10 @@ class TestDealSheetDataLoading:
 
             # Verify structure
             assert len(df) == 3
-            assert 'rank' in df.columns
-            assert 'full_address' in df.columns
-            assert 'total_score' in df.columns
-            assert list(df['rank'].astype(int)) == [1, 2, 3]
+            assert "rank" in df.columns
+            assert "full_address" in df.columns
+            assert "total_score" in df.columns
+            assert list(df["rank"].astype(int)) == [1, 2, 3]
         finally:
             Path(csv_path).unlink()
 
@@ -68,7 +75,7 @@ class TestDealSheetDataLoading:
         Enrichment data should map addresses to field data.
         """
         # Create temporary enrichment JSON
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(sample_enrichment, f)
             json_path = f.name
 
@@ -84,13 +91,13 @@ class TestDealSheetDataLoading:
             for address, fields in enrichment.items():
                 assert isinstance(address, str)
                 assert isinstance(fields, dict)
-                assert 'lot_sqft' in fields or 'year_built' in fields
+                assert "lot_sqft" in fields or "year_built" in fields
         finally:
             Path(json_path).unlink()
 
     def test_load_enrichment_json_empty_file(self):
         """Test loading empty enrichment JSON returns empty dict."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump({}, f)
             json_path = f.name
 
@@ -106,18 +113,20 @@ class TestDealSheetDataLoading:
 
         All original CSV columns should persist after merge.
         """
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, newline='') as f:
-            fieldnames = ['rank', 'full_address', 'price_num', 'beds', 'total_score']
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
+            fieldnames = ["rank", "full_address", "price_num", "beds", "total_score"]
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
 
-            writer.writerow({
-                'rank': 1,
-                'full_address': sample_properties[0].full_address,
-                'price_num': 475000,
-                'beds': 4,
-                'total_score': 350,
-            })
+            writer.writerow(
+                {
+                    "rank": 1,
+                    "full_address": sample_properties[0].full_address,
+                    "price_num": 475000,
+                    "beds": 4,
+                    "total_score": 350,
+                }
+            )
             csv_path = f.name
 
         try:
@@ -125,10 +134,10 @@ class TestDealSheetDataLoading:
             merged = merge_enrichment_data(df, {})
 
             # Original columns preserved
-            assert 'rank' in merged.columns
-            assert 'full_address' in merged.columns
-            assert 'price_num' in merged.columns
-            assert 'total_score' in merged.columns
+            assert "rank" in merged.columns
+            assert "full_address" in merged.columns
+            assert "price_num" in merged.columns
+            assert "total_score" in merged.columns
         finally:
             Path(csv_path).unlink()
 
@@ -147,7 +156,7 @@ class TestDealSheetDirectoryStructure:
         Directory should be created during generation.
         """
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir) / 'reports' / 'deal_sheets'
+            output_dir = Path(tmpdir) / "reports" / "deal_sheets"
 
             # Directory doesn't exist yet
             assert not output_dir.exists()

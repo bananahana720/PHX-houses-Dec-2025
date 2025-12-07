@@ -69,9 +69,7 @@ class ScoringStrategy(ABC):
         """
         pass
 
-    def calculate_weighted_score(
-        self, property: Property, note: str | None = None
-    ) -> Score:
+    def calculate_weighted_score(self, property: Property, note: str | None = None) -> Score:
         """Calculate weighted score for this criterion.
 
         Computes base score (0-10) and converts to weighted score using the

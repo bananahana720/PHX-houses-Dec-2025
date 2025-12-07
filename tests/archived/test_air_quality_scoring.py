@@ -5,12 +5,42 @@ from src.phx_home_analysis.services.scoring.strategies.location import AirQualit
 
 # Create test properties with different AQI values
 test_cases = [
-    {"address": "Good Air (AQI=30)", "air_quality_aqi": 30, "expected_base": 10.0, "expected_weighted": 15.0},
-    {"address": "Moderate Air (AQI=75)", "air_quality_aqi": 75, "expected_base": 8.0, "expected_weighted": 12.0},
-    {"address": "Unhealthy Sensitive (AQI=125)", "air_quality_aqi": 125, "expected_base": 5.0, "expected_weighted": 7.5},
-    {"address": "Unhealthy (AQI=175)", "air_quality_aqi": 175, "expected_base": 3.0, "expected_weighted": 4.5},
-    {"address": "Hazardous (AQI=250)", "air_quality_aqi": 250, "expected_base": 1.0, "expected_weighted": 1.5},
-    {"address": "No Data", "air_quality_aqi": None, "expected_base": 5.0, "expected_weighted": 7.5},  # Neutral
+    {
+        "address": "Good Air (AQI=30)",
+        "air_quality_aqi": 30,
+        "expected_base": 10.0,
+        "expected_weighted": 15.0,
+    },
+    {
+        "address": "Moderate Air (AQI=75)",
+        "air_quality_aqi": 75,
+        "expected_base": 8.0,
+        "expected_weighted": 12.0,
+    },
+    {
+        "address": "Unhealthy Sensitive (AQI=125)",
+        "air_quality_aqi": 125,
+        "expected_base": 5.0,
+        "expected_weighted": 7.5,
+    },
+    {
+        "address": "Unhealthy (AQI=175)",
+        "air_quality_aqi": 175,
+        "expected_base": 3.0,
+        "expected_weighted": 4.5,
+    },
+    {
+        "address": "Hazardous (AQI=250)",
+        "air_quality_aqi": 250,
+        "expected_base": 1.0,
+        "expected_weighted": 1.5,
+    },
+    {
+        "address": "No Data",
+        "air_quality_aqi": None,
+        "expected_base": 5.0,
+        "expected_weighted": 7.5,
+    },  # Neutral
 ]
 
 scorer = AirQualityScorer()
@@ -55,7 +85,9 @@ for test in test_cases:
     test_pass = base_pass and weighted_pass
 
     status = "✓ PASS" if test_pass else "✗ FAIL"
-    print(f"{status} | {test['address']:<30} | AQI={test['air_quality_aqi']!s:<5} | Base: {base_score:.1f}/{test['expected_base']:.1f} | Weighted: {weighted_score:.1f}/{test['expected_weighted']:.1f}")
+    print(
+        f"{status} | {test['address']:<30} | AQI={test['air_quality_aqi']!s:<5} | Base: {base_score:.1f}/{test['expected_base']:.1f} | Weighted: {weighted_score:.1f}/{test['expected_weighted']:.1f}"
+    )
 
     if not test_pass:
         all_pass = False

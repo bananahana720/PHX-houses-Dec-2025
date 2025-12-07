@@ -31,9 +31,10 @@ class ConfidenceLevel(Enum):
     - MEDIUM: 0.5 <= score < CONFIDENCE_HIGH_THRESHOLD
     - LOW: score < 0.5
     """
-    HIGH = "high"      # >= CONFIDENCE_HIGH_THRESHOLD confidence
+
+    HIGH = "high"  # >= CONFIDENCE_HIGH_THRESHOLD confidence
     MEDIUM = "medium"  # 0.5 - CONFIDENCE_HIGH_THRESHOLD
-    LOW = "low"        # < 0.5
+    LOW = "low"  # < 0.5
 
     @classmethod
     def from_score(cls, score: float) -> "ConfidenceLevel":
@@ -76,6 +77,7 @@ class FieldInference:
         source: Origin of the inference (web_scrape, assessor_api, ai_inference, ai_pending)
         reasoning: Optional explanation of how the value was inferred
     """
+
     field_name: str
     inferred_value: Any
     confidence: float
@@ -124,6 +126,7 @@ class TriageResult:
         fields_resolved: Count of fields successfully inferred
         fields_pending: Count of fields still awaiting inference
     """
+
     property_hash: str
     inferences: list[FieldInference] = field(default_factory=list)
     fields_resolved: int = 0

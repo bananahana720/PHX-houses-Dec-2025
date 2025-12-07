@@ -1214,5 +1214,73 @@
       "hook_io: Failed to write output: {e}\", file=sys.stderr)"
     ],
     "learnings": []
+  },
+  {
+    "timestamp": "2025-12-07T05:27:29.288094+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "extractor: [path:line references]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-07T05:58:24.745431+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "Fix ALL Issues Before Returning"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-07T06:08:15.645985+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "- [list any issues]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-07T06:11:41.507478+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "[count]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-07T15:33:53.549087+00:00",
+    "subagent_type": "pr-review-toolkit:code-reviewer",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "[count]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-07T15:52:00.532023+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "[]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-07T16:16:43.384262+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "N",
+      "N",
+      "N",
+      "N"
+    ],
+    "learnings": [
+      "[]"
+    ]
   }
 ]

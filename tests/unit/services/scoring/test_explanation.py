@@ -4,7 +4,6 @@ Tests the ScoringExplainer class and explanation data classes for generating
 human-readable scoring explanations, tier descriptions, and improvement suggestions.
 """
 
-
 from src.phx_home_analysis.config.scoring_weights import ScoringWeights, TierThresholds
 from src.phx_home_analysis.domain.entities import Property
 from src.phx_home_analysis.domain.enums import (
@@ -849,7 +848,10 @@ class TestScoringExplainerCriterionExplanation:
 
         assert explanation.criterion == "School District Rating"
         assert explanation.percentage == 85.0
-        assert "high" not in explanation.reasoning.lower() or "excellent" in explanation.reasoning.lower()
+        assert (
+            "high" not in explanation.reasoning.lower()
+            or "excellent" in explanation.reasoning.lower()
+        )
 
     def test_explain_criterion_medium_score(self, sample_property):
         """Test criterion explanation for medium score (40-70%)."""
@@ -936,7 +938,10 @@ class TestScoringExplainerMarkdownGeneration:
         markdown = explanation.to_text()
 
         assert "Property Score" in markdown
-        assert f"{int(explanation.total_score):.0f}" in markdown or f"{explanation.total_score:.0f}" in markdown
+        assert (
+            f"{int(explanation.total_score):.0f}" in markdown
+            or f"{explanation.total_score:.0f}" in markdown
+        )
         assert explanation.tier.upper() in markdown
 
     def test_to_text_includes_section_breakdowns(self, sample_property):

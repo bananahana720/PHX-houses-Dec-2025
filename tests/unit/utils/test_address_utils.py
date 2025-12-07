@@ -4,7 +4,6 @@ Tests the normalize_address() and addresses_match() functions
 for various input formats and edge cases.
 """
 
-
 from src.phx_home_analysis.utils.address_utils import addresses_match, normalize_address
 
 
@@ -24,7 +23,9 @@ class TestNormalizeAddress:
     def test_period_removal(self):
         """Periods should be removed."""
         assert normalize_address("123 Main St.") == "123 main st"
-        assert normalize_address("Dr. Martin Luther King Jr. Blvd") == "dr martin luther king jr blvd"
+        assert (
+            normalize_address("Dr. Martin Luther King Jr. Blvd") == "dr martin luther king jr blvd"
+        )
 
     def test_strip_whitespace(self):
         """Leading and trailing whitespace should be stripped."""

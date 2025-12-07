@@ -26,9 +26,7 @@ MARICOPA_PERMITS_URL = (
 )
 
 # Alternative: Query by parcel from Assessor (more reliable)
-ASSESSOR_PERMITS_URL = (
-    "https://mcassessor.maricopa.gov/mcs/api/v1/parcel/{parcel}/permits"
-)
+ASSESSOR_PERMITS_URL = "https://mcassessor.maricopa.gov/mcs/api/v1/parcel/{parcel}/permits"
 
 
 class MaricopaPermitClient:
@@ -149,9 +147,7 @@ class MaricopaPermitClient:
             logger.error("Maricopa GIS unexpected error: %s", e)
             return None
 
-    async def get_permit_history_by_parcel(
-        self, parcel_number: str
-    ) -> PermitHistory | None:
+    async def get_permit_history_by_parcel(self, parcel_number: str) -> PermitHistory | None:
         """Get permit history by parcel number (APN).
 
         More reliable than spatial query if parcel number is known.
@@ -193,9 +189,7 @@ class MaricopaPermitClient:
             logger.error("Assessor API unexpected error: %s", e)
             return None
 
-    def _parse_response(
-        self, data: dict[str, Any], lat: float, lng: float
-    ) -> PermitHistory | None:
+    def _parse_response(self, data: dict[str, Any], lat: float, lng: float) -> PermitHistory | None:
         """Parse ArcGIS query response.
 
         Args:
@@ -219,9 +213,7 @@ class MaricopaPermitClient:
             if permit:
                 permits.append(permit)
 
-        logger.debug(
-            "Found %d permits near (%.4f, %.4f)", len(permits), lat, lng
-        )
+        logger.debug("Found %d permits near (%.4f, %.4f)", len(permits), lat, lng)
 
         return PermitHistory(
             permits=permits,
@@ -255,16 +247,10 @@ class MaricopaPermitClient:
                     item.get("description") or item.get("work_description")
                 ),
                 description=item.get("description") or item.get("work_description"),
-                issue_date=self._parse_date(
-                    item.get("issue_date") or item.get("issueDate")
-                ),
-                final_date=self._parse_date(
-                    item.get("final_date") or item.get("finalDate")
-                ),
+                issue_date=self._parse_date(item.get("issue_date") or item.get("issueDate")),
+                final_date=self._parse_date(item.get("final_date") or item.get("finalDate")),
                 status=item.get("status"),
-                valuation=self._safe_float(
-                    item.get("valuation") or item.get("value")
-                ),
+                valuation=self._safe_float(item.get("valuation") or item.get("value")),
             )
             permits.append(permit)
 
@@ -282,35 +268,25 @@ class MaricopaPermitClient:
         try:
             # Common ArcGIS field name patterns
             permit_num = (
-                attrs.get("PERMIT_NUM")
-                or attrs.get("PermitNumber")
-                or attrs.get("PERMITNO")
+                attrs.get("PERMIT_NUM") or attrs.get("PermitNumber") or attrs.get("PERMITNO")
             )
 
             description = (
-                attrs.get("DESCRIPTION")
-                or attrs.get("WorkDescription")
-                or attrs.get("WORK_DESC")
+                attrs.get("DESCRIPTION") or attrs.get("WorkDescription") or attrs.get("WORK_DESC")
             )
 
             issue_date = self._parse_epoch_date(
-                attrs.get("ISSUE_DATE")
-                or attrs.get("IssueDate")
-                or attrs.get("ISSUED")
+                attrs.get("ISSUE_DATE") or attrs.get("IssueDate") or attrs.get("ISSUED")
             )
 
             final_date = self._parse_epoch_date(
-                attrs.get("FINAL_DATE")
-                or attrs.get("FinalDate")
-                or attrs.get("FINALED")
+                attrs.get("FINAL_DATE") or attrs.get("FinalDate") or attrs.get("FINALED")
             )
 
             status = attrs.get("STATUS") or attrs.get("PermitStatus")
 
             valuation = self._safe_float(
-                attrs.get("VALUATION")
-                or attrs.get("Value")
-                or attrs.get("JOB_VALUE")
+                attrs.get("VALUATION") or attrs.get("Value") or attrs.get("JOB_VALUE")
             )
 
             return Permit(

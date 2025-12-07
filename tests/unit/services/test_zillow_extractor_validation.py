@@ -126,16 +126,16 @@ class TestAutocompleteSelectors:
         source = inspect.getsource(ZillowExtractor._navigate_to_property_via_search)
 
         # Find selector lines between autocomplete_selectors = [ and ]
-        lines = source.split('\n')
+        lines = source.split("\n")
         in_selectors = False
         selectors_lines = []
 
         for line in lines:
-            if 'autocomplete_selectors' in line and '=' in line:
+            if "autocomplete_selectors" in line and "=" in line:
                 in_selectors = True
                 continue
             if in_selectors:
-                if line.strip().startswith(']'):
+                if line.strip().startswith("]"):
                     break
                 if "'" in line:
                     selectors_lines.append(line)
@@ -282,9 +282,7 @@ class TestClickFirstSearchResult:
 
         # Mock tab that raises exception
         mock_tab = AsyncMock()
-        mock_tab.query_selector_all = AsyncMock(
-            side_effect=Exception("DOM error")
-        )
+        mock_tab.query_selector_all = AsyncMock(side_effect=Exception("DOM error"))
 
         result = await extractor._click_first_search_result(mock_tab)
 
@@ -389,10 +387,12 @@ class TestNavigationRecovery:
 
         # Setup mocks
         mock_tab.get = AsyncMock()
-        mock_tab.query_selector_all = AsyncMock(side_effect=[
-            [mock_input],  # Search input
-            [AsyncMock()],  # Autocomplete suggestion
-        ])
+        mock_tab.query_selector_all = AsyncMock(
+            side_effect=[
+                [mock_input],  # Search input
+                [AsyncMock()],  # Autocomplete suggestion
+            ]
+        )
         mock_tab.get_content = AsyncMock(return_value="propertydetails photos.zillowstatic.com")
         mock_tab.url = "https://www.zillow.com/homedetails/123_zpid"
 
@@ -444,7 +444,9 @@ class TestNavigationRecovery:
         async def mock_query_selector_all(selector: str):
             call_count["value"] += 1
             # Return search input on first call to a search selector
-            if not search_input_found["value"] and ("search" in selector.lower() or "input" in selector.lower()):
+            if not search_input_found["value"] and (
+                "search" in selector.lower() or "input" in selector.lower()
+            ):
                 search_input_found["value"] = True
                 return [mock_input]
             # Return empty for all autocomplete selectors (simulating no autocomplete)
@@ -454,12 +456,12 @@ class TestNavigationRecovery:
 
         # _is_property_detail_page returns False for direct URL attempt (Step 0),
         # then _wait_for_property_detail_page returns True after Enter key
-        with patch.object(
-            extractor, "_is_property_detail_page", new=AsyncMock(return_value=False)
-        ), patch.object(
-            extractor, "_wait_for_property_detail_page", new=AsyncMock(return_value=True)
-        ), patch.object(
-            extractor, "_check_for_captcha", new=AsyncMock(return_value=False)
+        with (
+            patch.object(extractor, "_is_property_detail_page", new=AsyncMock(return_value=False)),
+            patch.object(
+                extractor, "_wait_for_property_detail_page", new=AsyncMock(return_value=True)
+            ),
+            patch.object(extractor, "_check_for_captcha", new=AsyncMock(return_value=False)),
         ):
             result = await extractor._navigate_to_property_via_search(prop, mock_tab)
 
@@ -503,11 +505,19 @@ class TestNavigationRecovery:
 
         async def mock_query_selector_all(selector: str):
             # Return search input on first call to a search selector
-            if not search_input_found["value"] and ("search" in selector.lower() or "input" in selector.lower()):
+            if not search_input_found["value"] and (
+                "search" in selector.lower() or "input" in selector.lower()
+            ):
                 search_input_found["value"] = True
                 return [mock_input]
             # Return autocomplete suggestion on first call to an autocomplete selector
-            if not autocomplete_found["value"] and ("suggestion" in selector.lower() or "result" in selector.lower() or "autocomplete" in selector.lower() or "option" in selector.lower() or "li" in selector.lower()):
+            if not autocomplete_found["value"] and (
+                "suggestion" in selector.lower()
+                or "result" in selector.lower()
+                or "autocomplete" in selector.lower()
+                or "option" in selector.lower()
+                or "li" in selector.lower()
+            ):
                 autocomplete_found["value"] = True
                 return [mock_autocomplete]
             return []
@@ -517,14 +527,15 @@ class TestNavigationRecovery:
         # _is_property_detail_page returns False for direct URL (Step 0)
         # _wait_for_property_detail_page returns False (landed on search results)
         # _click_first_search_result is called as recovery
-        with patch.object(
-            extractor, "_is_property_detail_page", new=AsyncMock(return_value=False)
-        ), patch.object(
-            extractor, "_wait_for_property_detail_page", new=AsyncMock(return_value=False)
-        ), patch.object(
-            extractor, "_click_first_search_result", new=AsyncMock(return_value=True)
-        ) as mock_click, patch.object(
-            extractor, "_check_for_captcha", new=AsyncMock(return_value=False)
+        with (
+            patch.object(extractor, "_is_property_detail_page", new=AsyncMock(return_value=False)),
+            patch.object(
+                extractor, "_wait_for_property_detail_page", new=AsyncMock(return_value=False)
+            ),
+            patch.object(
+                extractor, "_click_first_search_result", new=AsyncMock(return_value=True)
+            ) as mock_click,
+            patch.object(extractor, "_check_for_captcha", new=AsyncMock(return_value=False)),
         ):
             result = await extractor._navigate_to_property_via_search(prop, mock_tab)
 
@@ -561,10 +572,9 @@ class TestNavigationRecovery:
         mock_tab.query_selector_all = AsyncMock(return_value=[mock_input])
 
         # All checks fail
-        with patch.object(
-            extractor, "_is_property_detail_page", return_value=False
-        ), patch.object(
-            extractor, "_click_first_search_result", return_value=False
+        with (
+            patch.object(extractor, "_is_property_detail_page", return_value=False),
+            patch.object(extractor, "_click_first_search_result", return_value=False),
         ):
             result = await extractor._navigate_to_property_via_search(prop, mock_tab)
 
@@ -595,7 +605,9 @@ class TestCaptchaV2Integration:
         import ast
         from pathlib import Path
 
-        stealth_base_path = Path("src/phx_home_analysis/services/image_extraction/extractors/stealth_base.py")
+        stealth_base_path = Path(
+            "src/phx_home_analysis/services/image_extraction/extractors/stealth_base.py"
+        )
         source = stealth_base_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
 
@@ -711,7 +723,9 @@ class TestCaptchaV2Integration:
         from pathlib import Path
 
         zillow_path = Path("src/phx_home_analysis/services/image_extraction/extractors/zillow.py")
-        stealth_base_path = Path("src/phx_home_analysis/services/image_extraction/extractors/stealth_base.py")
+        stealth_base_path = Path(
+            "src/phx_home_analysis/services/image_extraction/extractors/stealth_base.py"
+        )
 
         # Check zillow.py - should have v2 calls only
         zillow_source = zillow_path.read_text(encoding="utf-8")
@@ -724,7 +738,9 @@ class TestCaptchaV2Integration:
 
         # Check stealth_base.py - should have 1 v2 call in extract_image_urls
         stealth_source = stealth_base_path.read_text(encoding="utf-8")
-        v2_calls_stealth = re.findall(r"await self\._attempt_captcha_solve_v2\(tab\)", stealth_source)
+        v2_calls_stealth = re.findall(
+            r"await self\._attempt_captcha_solve_v2\(tab\)", stealth_source
+        )
 
         assert len(v2_calls_stealth) == 1, (
             f"Expected 1 v2 call in stealth_base.py, found {len(v2_calls_stealth)}"
@@ -732,7 +748,9 @@ class TestCaptchaV2Integration:
         logger.info(f"Found {len(v2_calls_stealth)} v2 call in stealth_base.py")
 
         # Verify v1 calls only appear inside v2 with attempt_number
-        v1_with_attempt = re.findall(r"await self\._attempt_captcha_solve\(tab, attempt_number=", stealth_source)
+        v1_with_attempt = re.findall(
+            r"await self\._attempt_captcha_solve\(tab, attempt_number=", stealth_source
+        )
         assert len(v1_with_attempt) == 1, (
             "v2 should call v1 exactly once with attempt_number parameter"
         )

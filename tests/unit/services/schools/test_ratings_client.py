@@ -371,9 +371,7 @@ class TestGooglePlacesFallback:
         ):
             async with SchoolRatingsClient() as client:
                 # Mock GoogleMapsClient.find_nearest_poi
-                with patch(
-                    "phx_home_analysis.services.maps.GoogleMapsClient"
-                ) as mock_maps_client:
+                with patch("phx_home_analysis.services.maps.GoogleMapsClient") as mock_maps_client:
                     mock_instance = mock_maps_client.return_value.__aenter__.return_value
                     mock_instance.find_nearest_poi = AsyncMock(
                         return_value=type(
@@ -400,9 +398,7 @@ class TestGooglePlacesFallback:
             },
         ):
             async with SchoolRatingsClient() as client:
-                with patch(
-                    "phx_home_analysis.services.maps.GoogleMapsClient"
-                ) as mock_maps_client:
+                with patch("phx_home_analysis.services.maps.GoogleMapsClient") as mock_maps_client:
                     mock_maps_client.return_value.__aenter__.side_effect = Exception(
                         "Maps API error"
                     )

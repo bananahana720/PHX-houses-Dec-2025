@@ -77,26 +77,40 @@ def main():
     print()
 
     print("Score Breakdown:")
-    print(f"  Location & Environment: {score_breakdown.location_total:.1f}/250 pts ({score_breakdown.location_percentage:.1f}%)")
-    print(f"  Lot & Systems: {score_breakdown.systems_total:.1f}/160 pts ({score_breakdown.systems_percentage:.1f}%)")
-    print(f"  Interior & Features: {score_breakdown.interior_total:.1f}/190 pts ({score_breakdown.interior_percentage:.1f}%)")
+    print(
+        f"  Location & Environment: {score_breakdown.location_total:.1f}/250 pts ({score_breakdown.location_percentage:.1f}%)"
+    )
+    print(
+        f"  Lot & Systems: {score_breakdown.systems_total:.1f}/160 pts ({score_breakdown.systems_percentage:.1f}%)"
+    )
+    print(
+        f"  Interior & Features: {score_breakdown.interior_total:.1f}/190 pts ({score_breakdown.interior_percentage:.1f}%)"
+    )
     print()
-    print(f"  TOTAL SCORE: {score_breakdown.total_score:.1f}/600 pts ({score_breakdown.total_percentage:.1f}%)")
+    print(
+        f"  TOTAL SCORE: {score_breakdown.total_score:.1f}/600 pts ({score_breakdown.total_percentage:.1f}%)"
+    )
     print()
 
     print("Location Scores:")
     for score in score_breakdown.location_scores:
-        print(f"  - {score.criterion}: {score.base_score:.1f}/10 -> {score.weighted_score:.1f}/{score.weight:.0f} pts")
+        print(
+            f"  - {score.criterion}: {score.base_score:.1f}/10 -> {score.weighted_score:.1f}/{score.weight:.0f} pts"
+        )
     print()
 
     print("Systems Scores:")
     for score in score_breakdown.systems_scores:
-        print(f"  - {score.criterion}: {score.base_score:.1f}/10 -> {score.weighted_score:.1f}/{score.weight:.0f} pts")
+        print(
+            f"  - {score.criterion}: {score.base_score:.1f}/10 -> {score.weighted_score:.1f}/{score.weight:.0f} pts"
+        )
     print()
 
     print("Interior Scores:")
     for score in score_breakdown.interior_scores:
-        print(f"  - {score.criterion}: {score.base_score:.1f}/10 -> {score.weighted_score:.1f}/{score.weight:.0f} pts")
+        print(
+            f"  - {score.criterion}: {score.base_score:.1f}/10 -> {score.weighted_score:.1f}/{score.weight:.0f} pts"
+        )
     print()
 
     # Test score_all
@@ -105,7 +119,9 @@ def main():
     scored = scorer.score_all(properties)
     print(f"Scored {len(scored)} properties")
     for p in scored:
-        print(f"  - {p.short_address}: {p.total_score:.1f} pts, Tier: {p.tier.label if p.tier else 'None'}")
+        print(
+            f"  - {p.short_address}: {p.total_score:.1f} pts, Tier: {p.tier.label if p.tier else 'None'}"
+        )
 
 
 if __name__ == "__main__":

@@ -14,7 +14,6 @@ Source Reliability:
 - AI Inference: Variable based on context available
 """
 
-
 from ...config.constants import (
     CONFIDENCE_HIGH_THRESHOLD,
     DATA_CONFIDENCE_ASSESSOR_API,
@@ -58,25 +57,25 @@ class ConfidenceScorer:
     # Reflects how accurately each field can typically be inferred
     # See config.constants for documentation on field weights
     FIELD_CONFIDENCE_WEIGHTS: dict[str, float] = {
-        "beds": 0.9,                                          # Usually accurate from listings
-        "baths": 0.9,                                         # Usually accurate from listings
-        "sqft": FIELD_CONFIDENCE_SQFT,                        # Sometimes varies between sources
-        "lot_sqft": FIELD_CONFIDENCE_LOT_SQFT,                # Very accurate from assessor
-        "year_built": FIELD_CONFIDENCE_YEAR_BUILT,            # Very accurate from assessor
-        "garage_spaces": 0.7,                                 # Can be ambiguous (carport vs garage)
-        "sewer_type": 0.6,                                    # Often needs manual verification
-        "has_pool": FIELD_CONFIDENCE_HAS_POOL,                # Usually visible in photos/listings
-        "orientation": FIELD_CONFIDENCE_ORIENTATION,          # Satellite imagery + manual
+        "beds": 0.9,  # Usually accurate from listings
+        "baths": 0.9,  # Usually accurate from listings
+        "sqft": FIELD_CONFIDENCE_SQFT,  # Sometimes varies between sources
+        "lot_sqft": FIELD_CONFIDENCE_LOT_SQFT,  # Very accurate from assessor
+        "year_built": FIELD_CONFIDENCE_YEAR_BUILT,  # Very accurate from assessor
+        "garage_spaces": 0.7,  # Can be ambiguous (carport vs garage)
+        "sewer_type": 0.6,  # Often needs manual verification
+        "has_pool": FIELD_CONFIDENCE_HAS_POOL,  # Usually visible in photos/listings
+        "orientation": FIELD_CONFIDENCE_ORIENTATION,  # Satellite imagery + manual
     }
 
     # Reliability multipliers for different data sources
     # See config.constants for documentation on data source confidence
     SOURCE_RELIABILITY: dict[str, float] = {
-        "assessor_api": DATA_CONFIDENCE_ASSESSOR_API,         # Government records, highest trust
-        "web_scrape": DATA_CONFIDENCE_WEB_SCRAPE,             # Listing data, generally reliable
-        "ai_inference": 0.6,                                  # AI guesses, lower trust
-        "ai_pending": 0.0,                                    # Not yet processed
-        "manual": DATA_CONFIDENCE_MANUAL,                     # Human inspection
+        "assessor_api": DATA_CONFIDENCE_ASSESSOR_API,  # Government records, highest trust
+        "web_scrape": DATA_CONFIDENCE_WEB_SCRAPE,  # Listing data, generally reliable
+        "ai_inference": 0.6,  # AI guesses, lower trust
+        "ai_pending": 0.0,  # Not yet processed
+        "manual": DATA_CONFIDENCE_MANUAL,  # Human inspection
     }
 
     def score_inference(
@@ -99,14 +98,10 @@ class ConfidenceScorer:
         Returns:
             Final confidence score between 0.0 and 1.0
         """
-        base_weight = self.FIELD_CONFIDENCE_WEIGHTS.get(
-            inference.field_name, 0.5
-        )
+        base_weight = self.FIELD_CONFIDENCE_WEIGHTS.get(inference.field_name, 0.5)
 
         if source_reliability is None:
-            source_reliability = self.SOURCE_RELIABILITY.get(
-                inference.source, 0.5
-            )
+            source_reliability = self.SOURCE_RELIABILITY.get(inference.source, 0.5)
 
         return min(1.0, base_weight * source_reliability * inference.confidence)
 
@@ -232,7 +227,4 @@ class ConfidenceScorer:
         Returns:
             List of FieldInference objects meeting the threshold
         """
-        return [
-            inf for inf in inferences
-            if self.score_inference(inf) >= threshold
-        ]
+        return [inf for inf in inferences if self.score_inference(inf) >= threshold]

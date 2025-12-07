@@ -12,7 +12,6 @@ This module implements scoring strategies for interior features:
 Total Section C maximum: 180 points
 """
 
-
 from ....config.constants import (
     DEFAULT_FIREPLACE_ABSENT_SCORE,
     DEFAULT_FIREPLACE_PRESENT_SCORE,

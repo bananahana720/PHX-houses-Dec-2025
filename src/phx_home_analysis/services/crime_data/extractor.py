@@ -100,9 +100,7 @@ class CrimeDataExtractor(LocationDataExtractor[CrimeData]):
 
             # Strategy 3: Check for "safer than X% of cities" format
             if violent_index is None or property_index is None:
-                safer_match = re.search(
-                    r"safer\s+than\s+(\d+)%", content_lower, re.IGNORECASE
-                )
+                safer_match = re.search(r"safer\s+than\s+(\d+)%", content_lower, re.IGNORECASE)
                 if safer_match:
                     safer_pct = float(safer_match.group(1))
                     # Use safer percentage as proxy for both indices if missing

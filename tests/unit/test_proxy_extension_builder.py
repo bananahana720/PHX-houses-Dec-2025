@@ -65,7 +65,9 @@ def test_extension_builder():
 
         # Verify no placeholders remain
         assert "PROXY_HOST" not in background_content, "Host placeholder not replaced"
-        assert "PROXY_PORT" not in background_content or "80" in background_content, "Port placeholder issue"
+        assert "PROXY_PORT" not in background_content or "80" in background_content, (
+            "Port placeholder issue"
+        )
         assert "PROXY_USERNAME" not in background_content, "Username placeholder not replaced"
         assert "PROXY_PASSWORD" not in background_content, "Password placeholder not replaced"
 

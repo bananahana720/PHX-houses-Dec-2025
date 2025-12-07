@@ -215,7 +215,9 @@ FIELD_MAPPING: dict[str, dict[str, str]] = {
 # Reverse mapping: canonical -> source-specific names
 REVERSE_MAPPING: dict[str, dict[str, str]] = {}
 for source, mappings in FIELD_MAPPING.items():
-    REVERSE_MAPPING[source] = {canonical: source_field for source_field, canonical in mappings.items()}
+    REVERSE_MAPPING[source] = {
+        canonical: source_field for source_field, canonical in mappings.items()
+    }
 
 
 class FieldMapper:
@@ -258,7 +260,9 @@ class FieldMapper:
         """Build reverse lookup tables for canonical -> source mappings."""
         self.reverse_mappings: dict[str, dict[str, str]] = {}
         for source, fields in self.mappings.items():
-            self.reverse_mappings[source] = {canonical: source_field for source_field, canonical in fields.items()}
+            self.reverse_mappings[source] = {
+                canonical: source_field for source_field, canonical in fields.items()
+            }
 
     def to_canonical(self, field_name: str, source: str) -> str:
         """Convert source-specific field name to canonical name.
@@ -304,7 +308,9 @@ class FieldMapper:
 
         return self.reverse_mappings[target_source].get(canonical_name, canonical_name)
 
-    def translate_dict(self, data: dict[str, Any], source: str, to_canonical: bool = True) -> dict[str, Any]:
+    def translate_dict(
+        self, data: dict[str, Any], source: str, to_canonical: bool = True
+    ) -> dict[str, Any]:
         """Translate all field names in a dictionary.
 
         Args:

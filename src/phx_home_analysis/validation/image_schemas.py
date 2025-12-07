@@ -49,6 +49,7 @@ class ImageEntryV2(BaseModel):
         created_by_run_id: Run ID that created this image
         content_hash: MD5 hash of image bytes
     """
+
     image_id: str
     property_address: str
     property_hash: str
@@ -66,7 +67,7 @@ class ImageEntryV2(BaseModel):
     created_by_run_id: str = ""
     content_hash: str = ""
 
-    @field_validator('property_hash')
+    @field_validator("property_hash")
     @classmethod
     def validate_property_hash_length(cls, v: str) -> str:
         """Ensure property_hash is exactly 8 characters.
@@ -84,8 +85,8 @@ class ImageEntryV2(BaseModel):
             raise ValueError(f"property_hash must be 8 chars, got {len(v)}")
         return v
 
-    @model_validator(mode='after')
-    def validate_hash_matches_address(self) -> 'ImageEntryV2':
+    @model_validator(mode="after")
+    def validate_hash_matches_address(self) -> "ImageEntryV2":
         """Verify property_hash matches computed hash from address.
 
         Ensures data integrity by validating that the stored hash
@@ -98,13 +99,11 @@ class ImageEntryV2(BaseModel):
             ValueError: If property_hash doesn't match computed hash
         """
         if self.property_hash and self.property_address:
-            expected = hashlib.sha256(
-                self.property_address.lower().strip().encode()
-            ).hexdigest()[:8]
+            expected = hashlib.sha256(self.property_address.lower().strip().encode()).hexdigest()[
+                :8
+            ]
             if self.property_hash != expected:
-                raise ValueError(
-                    f"property_hash {self.property_hash} != computed {expected}"
-                )
+                raise ValueError(f"property_hash {self.property_hash} != computed {expected}")
         return self
 
 
@@ -125,6 +124,7 @@ class URLEntryV2(BaseModel):
         first_run_id: Run ID that first discovered this URL
         last_run_id: Run ID that last updated this entry
     """
+
     image_id: str
     property_hash: str
     original_address: str = ""
@@ -148,6 +148,7 @@ class ManifestV2(BaseModel):
         last_updated: ISO timestamp of last update
         properties: Dict mapping property address to list of images
     """
+
     version: str = "2.0.0"
     last_updated: str
     properties: dict[str, list[ImageEntryV2]]

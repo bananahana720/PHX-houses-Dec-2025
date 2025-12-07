@@ -78,11 +78,7 @@ class PropertyChanges:
     @property
     def has_changes(self) -> bool:
         """Check if this property had any changes."""
-        return (
-            self.new_images > 0
-            or self.content_changed > 0
-            or self.removed > 0
-        )
+        return self.new_images > 0 or self.content_changed > 0 or self.removed > 0
 
     @property
     def needs_review(self) -> bool:
@@ -93,11 +89,7 @@ class PropertyChanges:
         - Multiple errors
         - Content changes
         """
-        return (
-            self.new_images > 10
-            or self.errors > 3
-            or self.content_changed > 0
-        )
+        return self.new_images > 10 or self.errors > 3 or self.content_changed > 0
 
 
 @dataclass
@@ -190,8 +182,7 @@ class RunLog:
             "properties_processed": self.properties_processed,
             "aggregate": self.aggregate,
             "property_changes": {
-                addr: changes.to_dict()
-                for addr, changes in self.property_changes.items()
+                addr: changes.to_dict() for addr, changes in self.property_changes.items()
             },
             "errors": self.errors,
             "duration_seconds": self.duration_seconds,
@@ -247,7 +238,9 @@ class RunLog:
             f"Run {self.run_id} Summary",
             "=" * 40,
             f"Mode: {self.mode}",
-            f"Duration: {self.duration_seconds:.1f}s" if self.duration_seconds else "Duration: In progress",
+            f"Duration: {self.duration_seconds:.1f}s"
+            if self.duration_seconds
+            else "Duration: In progress",
             f"Properties: {self.properties_processed}/{self.properties_requested}",
             "",
             "Aggregate Stats:",
@@ -385,14 +378,16 @@ class RunLogger:
             try:
                 with open(log_path, encoding="utf-8") as f:
                     data = json.load(f)
-                    summaries.append({
-                        "run_id": data.get("run_id"),
-                        "started_at": data.get("started_at"),
-                        "mode": data.get("mode"),
-                        "properties_processed": data.get("properties_processed"),
-                        "new_images": data.get("aggregate", {}).get("total_new_images", 0),
-                        "errors": data.get("aggregate", {}).get("total_errors", 0),
-                    })
+                    summaries.append(
+                        {
+                            "run_id": data.get("run_id"),
+                            "started_at": data.get("started_at"),
+                            "mode": data.get("mode"),
+                            "properties_processed": data.get("properties_processed"),
+                            "new_images": data.get("aggregate", {}).get("total_new_images", 0),
+                            "errors": data.get("aggregate", {}).get("total_errors", 0),
+                        }
+                    )
             except (OSError, json.JSONDecodeError) as e:
                 logger.warning(f"Failed to read run log {log_path}: {e}")
 

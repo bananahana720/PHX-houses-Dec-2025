@@ -81,14 +81,16 @@ class ZillowExtractor(StealthBrowserExtractor):
     ]
 
     # Keys in __NEXT_DATA__ JSON that contain images from OTHER properties (contamination sources)
-    CONTAMINATION_KEYS = frozenset({
-        "similarHomes",
-        "nearbyHomes",
-        "recommendedHomes",
-        "otherListings",
-        "searchResults",
-        "carousel",
-    })
+    CONTAMINATION_KEYS = frozenset(
+        {
+            "similarHomes",
+            "nearbyHomes",
+            "recommendedHomes",
+            "otherListings",
+            "searchResults",
+            "carousel",
+        }
+    )
 
     def __init__(
         self,
@@ -265,9 +267,7 @@ class ZillowExtractor(StealthBrowserExtractor):
     # Task 1b: Discover ZPID from Address (Story E2.R1 Enhancement)
     # =========================================================================
 
-    async def _discover_zpid_from_address(
-        self, property: Property, tab: uc.Tab
-    ) -> str | None:
+    async def _discover_zpid_from_address(self, property: Property, tab: uc.Tab) -> str | None:
         """Discover zpid by navigating to Zillow with address search.
 
         When no zpid or listing_url is available, this method:
@@ -310,9 +310,7 @@ class ZillowExtractor(StealthBrowserExtractor):
             try:
                 next_data_script = await tab.query_selector("script#__NEXT_DATA__")
                 if next_data_script:
-                    json_content = await tab.evaluate(
-                        "(el) => el.textContent", next_data_script
-                    )
+                    json_content = await tab.evaluate("(el) => el.textContent", next_data_script)
                     zpid = self._extract_zpid_from_json(json_content)
                     if zpid:
                         logger.info("%s discovered zpid %s from __NEXT_DATA__", self.name, zpid)
@@ -383,9 +381,7 @@ class ZillowExtractor(StealthBrowserExtractor):
         logger.debug("%s no gallery elements found", self.name)
         return False
 
-    async def _navigate_to_gallery_direct(
-        self, property: Property, tab: uc.Tab
-    ) -> bool:
+    async def _navigate_to_gallery_direct(self, property: Property, tab: uc.Tab) -> bool:
         """Navigate directly to gallery URL using zpid.
 
         Attempts to bypass search by navigating directly to:
@@ -432,9 +428,7 @@ class ZillowExtractor(StealthBrowserExtractor):
     # Task 3: Screenshot Fallback (Story E2.R1)
     # =========================================================================
 
-    async def _capture_gallery_screenshots(
-        self, tab: uc.Tab, max_images: int = 30
-    ) -> list[str]:
+    async def _capture_gallery_screenshots(self, tab: uc.Tab, max_images: int = 30) -> list[str]:
         """Capture gallery screenshots by cycling through thumbnail gallery.
 
         Opens gallery and captures each image by clicking thumbnails in sequence
@@ -534,7 +528,7 @@ class ZillowExtractor(StealthBrowserExtractor):
         """
         try:
             # Track which thumbnail we're on
-            if not hasattr(self, '_thumbnail_index'):
+            if not hasattr(self, "_thumbnail_index"):
                 self._thumbnail_index = 0
 
             current_index = self._thumbnail_index
@@ -614,9 +608,7 @@ class ZillowExtractor(StealthBrowserExtractor):
         filename = f"{content_hash}.png"
 
         # Determine base directory from config or default
-        base_dir = os.environ.get(
-            "SCREENSHOT_DIR", "data/property_images/screenshots"
-        )
+        base_dir = os.environ.get("SCREENSHOT_DIR", "data/property_images/screenshots")
         full_dir = os.path.join(base_dir, subdir)
         os.makedirs(full_dir, exist_ok=True)
 
@@ -1034,11 +1026,7 @@ class ZillowExtractor(StealthBrowserExtractor):
 
         return result
 
-    def _extract_from_regex_fallback(
-        self,
-        html: str,
-        result: dict[str, Any]
-    ) -> dict[str, Any]:
+    def _extract_from_regex_fallback(self, html: str, result: dict[str, Any]) -> dict[str, Any]:
         """Extract property details using regex patterns as fallback.
 
         Only fills fields that are still None in result dict.
@@ -1394,4 +1382,3 @@ class ZillowExtractor(StealthBrowserExtractor):
                 await tab.close()
             except Exception:
                 pass
-

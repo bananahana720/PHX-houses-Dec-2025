@@ -102,8 +102,7 @@ class PropertyAnalyzer:
         score_breakdown = self._scorer.score(property_obj)
         property_obj.score_breakdown = score_breakdown
         logger.debug(
-            f"Property scored {score_breakdown.total_score:.1f} pts: "
-            f"{property_obj.full_address}"
+            f"Property scored {score_breakdown.total_score:.1f} pts: {property_obj.full_address}"
         )
 
         # Step 4: Classify tier

@@ -80,15 +80,19 @@ class PipelineResult:
             Multi-line string with pipeline execution summary
         """
         lines = [
-            "="*70,
+            "=" * 70,
             "PHX HOME ANALYSIS PIPELINE RESULTS",
-            "="*70,
+            "=" * 70,
             f"Total Properties Processed: {self.total_properties}",
             f"Execution Time: {self.execution_time_seconds:.2f}s",
             "",
             "KILL SWITCH FILTER RESULTS:",
-            f"  Passed: {self.passed_count} ({self.passed_count/self.total_properties*100:.1f}%)" if self.total_properties > 0 else "  Passed: 0",
-            f"  Failed: {self.failed_count} ({self.failed_count/self.total_properties*100:.1f}%)" if self.total_properties > 0 else "  Failed: 0",
+            f"  Passed: {self.passed_count} ({self.passed_count / self.total_properties * 100:.1f}%)"
+            if self.total_properties > 0
+            else "  Passed: 0",
+            f"  Failed: {self.failed_count} ({self.failed_count / self.total_properties * 100:.1f}%)"
+            if self.total_properties > 0
+            else "  Failed: 0",
             "",
             "TIER BREAKDOWN (Passing Properties):",
             f"  UNICORN (>400 pts):   {len(self.unicorns):2d} properties",
@@ -105,7 +109,7 @@ class PipelineResult:
                 lines.append(f"  {i}. {prop.street} - {score:.1f} pts")
             lines.append("")
 
-        lines.append("="*70)
+        lines.append("=" * 70)
         return "\n".join(lines)
 
 
@@ -176,6 +180,7 @@ class AnalysisPipeline:
         # Initialize cached data manager for efficient enrichment data access
         # Import here to avoid circular dependency issues
         from ..repositories.cached_manager import CachedDataManager as CachedDataManagerImpl
+
         self._cached_data_manager = cached_data_manager or CachedDataManagerImpl(
             self._enrichment_repo
         )
@@ -249,8 +254,12 @@ class AnalysisPipeline:
 
         # Stage 4: Apply kill-switch filters
         logger.info("Stage 4/8: Applying kill-switch filters...")
-        passed_properties, failed_properties = self._kill_switch_filter.filter_properties(properties)
-        logger.info(f"Kill switch results: {len(passed_properties)} passed, {len(failed_properties)} failed")
+        passed_properties, failed_properties = self._kill_switch_filter.filter_properties(
+            properties
+        )
+        logger.info(
+            f"Kill switch results: {len(passed_properties)} passed, {len(failed_properties)} failed"
+        )
 
         # Stage 5: Score passing properties
         logger.info("Stage 5/8: Scoring passing properties...")
@@ -261,7 +270,9 @@ class AnalysisPipeline:
         logger.info("Stage 6/8: Classifying properties into tiers...")
         self._tier_classifier.classify_batch(scored_properties)
         unicorns, contenders, passed = self._tier_classifier.group_by_tier(scored_properties)
-        logger.info(f"Tiers: {len(unicorns)} unicorns, {len(contenders)} contenders, {len(passed)} passed")
+        logger.info(
+            f"Tiers: {len(unicorns)} unicorns, {len(contenders)} contenders, {len(passed)} passed"
+        )
 
         # Stage 7: Sort by score (descending)
         logger.info("Stage 7/8: Sorting properties by score...")

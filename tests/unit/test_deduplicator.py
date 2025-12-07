@@ -223,9 +223,7 @@ class TestDuplicateDetection:
         assert is_dup is False
         assert original_id is None
 
-    def test_duplicate_returns_correct_original_id(
-        self, deduplicator, red_image
-    ):
+    def test_duplicate_returns_correct_original_id(self, deduplicator, red_image):
         """Verify duplicate detection returns correct original image ID."""
         hash1 = deduplicator.compute_hash(red_image)
         deduplicator.register_hash("img_original_123", hash1, "123 Main St", "zillow")
@@ -338,10 +336,7 @@ class TestLSHOptimization:
         # Check buckets were updated
         assert len(deduplicator._lsh_buckets) > 0
         # At least one band should have entries
-        assert any(
-            len(band_buckets) > 0
-            for band_buckets in deduplicator._lsh_buckets.values()
-        )
+        assert any(len(band_buckets) > 0 for band_buckets in deduplicator._lsh_buckets.values())
 
     def test_get_candidate_images_returns_set(self, deduplicator):
         """Verify candidate retrieval returns a set."""
@@ -549,10 +544,7 @@ class TestStatistics:
     @pytest.fixture
     def populated_deduplicator(self, deduplicator):
         """Create deduplicator with sample data."""
-        hashes = [
-            PerceptualHash(phash=f"{i:016x}", dhash=f"{i+100:016x}")
-            for i in range(5)
-        ]
+        hashes = [PerceptualHash(phash=f"{i:016x}", dhash=f"{i + 100:016x}") for i in range(5)]
 
         for i, hash_obj in enumerate(hashes):
             deduplicator.register_hash(
@@ -622,7 +614,7 @@ class TestClearIndex:
         dedup = ImageDeduplicator(hash_index_path=tmp_path / "hash_index.json")
 
         for i in range(3):
-            hash_obj = PerceptualHash(phash=f"{i:016x}", dhash=f"{i+100:016x}")
+            hash_obj = PerceptualHash(phash=f"{i:016x}", dhash=f"{i + 100:016x}")
             dedup.register_hash(f"img_{i}", hash_obj, f"Prop {i}", "zillow")
 
         return dedup

@@ -204,8 +204,16 @@ class TestPhoenixMLSExtractorBasics:
         """Test PHOENIX_METRO_CITIES constant is comprehensive."""
         # Verify key Phoenix metro cities are included
         required_cities = {
-            "phoenix", "scottsdale", "tempe", "mesa", "chandler",
-            "glendale", "peoria", "gilbert", "surprise", "avondale"
+            "phoenix",
+            "scottsdale",
+            "tempe",
+            "mesa",
+            "chandler",
+            "glendale",
+            "peoria",
+            "gilbert",
+            "surprise",
+            "avondale",
         }
 
         assert required_cities.issubset(PHOENIX_METRO_CITIES)
@@ -483,9 +491,7 @@ class TestPhoenixMLSImageExtraction:
 class TestPhoenixMLSFullExtraction:
     """Test complete extraction workflow with mocked HTTP."""
 
-    async def test_extract_full_property_data(
-        self, sample_phoenix_property, mock_phoenixmls_html
-    ):
+    async def test_extract_full_property_data(self, sample_phoenix_property, mock_phoenixmls_html):
         """Test complete extraction: images + metadata for real property.
 
         This is the primary test case from E2.R1 Task 9:
@@ -496,9 +502,10 @@ class TestPhoenixMLSFullExtraction:
         extractor = PhoenixMLSExtractor(http_client=httpx.AsyncClient())
 
         # Mock the search and listing page fetch
-        with patch.object(extractor, '_search_property', new_callable=AsyncMock) as mock_search, \
-             patch.object(extractor, '_fetch_listing_page', new_callable=AsyncMock) as mock_fetch:
-
+        with (
+            patch.object(extractor, "_search_property", new_callable=AsyncMock) as mock_search,
+            patch.object(extractor, "_fetch_listing_page", new_callable=AsyncMock) as mock_fetch,
+        ):
             # Mock successful search returning listing URL
             mock_search.return_value = "https://phoenixmlssearch.com/property/12345"
 
@@ -551,9 +558,10 @@ class TestPhoenixMLSFullExtraction:
         extractor = PhoenixMLSExtractor(http_client=httpx.AsyncClient())
 
         # Mock the extraction
-        with patch.object(extractor, '_search_property', new_callable=AsyncMock) as mock_search, \
-             patch.object(extractor, '_fetch_listing_page', new_callable=AsyncMock) as mock_fetch:
-
+        with (
+            patch.object(extractor, "_search_property", new_callable=AsyncMock) as mock_search,
+            patch.object(extractor, "_fetch_listing_page", new_callable=AsyncMock) as mock_fetch,
+        ):
             mock_search.return_value = "https://phoenixmlssearch.com/property/12345"
             mock_fetch.return_value = mock_phoenixmls_html
 
@@ -578,7 +586,7 @@ class TestPhoenixMLSFullExtraction:
         extractor = PhoenixMLSExtractor(http_client=httpx.AsyncClient())
 
         # Mock search returning None (property not found)
-        with patch.object(extractor, '_search_property', new_callable=AsyncMock) as mock_search:
+        with patch.object(extractor, "_search_property", new_callable=AsyncMock) as mock_search:
             mock_search.return_value = None
 
             # Execute extraction
@@ -599,7 +607,9 @@ class TestPhoenixMLSFullExtraction:
         try:
             with pytest.raises((httpx.TimeoutException, httpx.ConnectTimeout)):
                 # Mock search that times out
-                with patch.object(extractor, '_search_property', new_callable=AsyncMock) as mock_search:
+                with patch.object(
+                    extractor, "_search_property", new_callable=AsyncMock
+                ) as mock_search:
                     mock_search.side_effect = httpx.TimeoutException("Request timeout")
                     await extractor.extract_image_urls(sample_phoenix_property)
         except Exception as e:
@@ -757,12 +767,12 @@ def test_phoenixmls_extractor_integration_complete():
     assert extractor.name == "Phoenix MLS"
 
     # Verify required methods exist
-    assert hasattr(extractor, 'extract_image_urls')
-    assert hasattr(extractor, 'download_image')
-    assert hasattr(extractor, 'can_handle')
-    assert hasattr(extractor, 'get_cached_metadata')
-    assert hasattr(extractor, '_parse_listing_metadata')
-    assert hasattr(extractor, '_parse_image_gallery')
+    assert hasattr(extractor, "extract_image_urls")
+    assert hasattr(extractor, "download_image")
+    assert hasattr(extractor, "can_handle")
+    assert hasattr(extractor, "get_cached_metadata")
+    assert hasattr(extractor, "_parse_listing_metadata")
+    assert hasattr(extractor, "_parse_image_gallery")
 
     # Verify metro cities
     assert len(PHOENIX_METRO_CITIES) >= 20

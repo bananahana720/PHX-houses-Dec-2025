@@ -81,9 +81,7 @@ class MaricopaAssessorExtractor(ImageExtractor):
         self._token = token or os.getenv("MARICOPA_ASSESSOR_TOKEN")
 
         if not self._token:
-            logger.warning(
-                "MARICOPA_ASSESSOR_TOKEN not set - extractor will fail authentication"
-            )
+            logger.warning("MARICOPA_ASSESSOR_TOKEN not set - extractor will fail authentication")
 
     @property
     def source(self) -> ImageSource:
@@ -158,9 +156,7 @@ class MaricopaAssessorExtractor(ImageExtractor):
         # Step 3: Extract image URLs from parcel data
         image_urls = self._extract_image_urls_from_parcel(parcel_data)
 
-        logger.info(
-            f"Found {len(image_urls)} images for {property.short_address} (APN: {apn})"
-        )
+        logger.info(f"Found {len(image_urls)} images for {property.short_address} (APN: {apn})")
         return image_urls
 
     async def download_image(self, url: str) -> tuple[bytes, str]:
@@ -241,6 +237,7 @@ class MaricopaAssessorExtractor(ImageExtractor):
             apn = first_result.get("APN") or first_result.get("apn")
 
             from typing import cast
+
             return cast(str | None, apn)
 
         except httpx.HTTPStatusError as e:
@@ -317,6 +314,7 @@ class MaricopaAssessorExtractor(ImageExtractor):
             response.raise_for_status()
 
             from typing import Any, cast
+
             return cast(dict[Any, Any] | None, response.json())
 
         except httpx.HTTPStatusError as e:

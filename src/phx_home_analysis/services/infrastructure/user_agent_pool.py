@@ -52,18 +52,14 @@ class UserAgentRotator:
             ValueError: If config file has fewer than 20 UAs
         """
         if not self.config_path.exists():
-            raise FileNotFoundError(
-                f"User-Agent config file not found: {self.config_path}"
-            )
+            raise FileNotFoundError(f"User-Agent config file not found: {self.config_path}")
 
         with open(self.config_path, encoding="utf-8") as f:
             lines = f.readlines()
 
         # Filter out comments and empty lines
         user_agents = [
-            line.strip()
-            for line in lines
-            if line.strip() and not line.strip().startswith("#")
+            line.strip() for line in lines if line.strip() and not line.strip().startswith("#")
         ]
 
         if len(user_agents) < 20:

@@ -68,9 +68,7 @@ class HtmlReportGenerator(Reporter):
         # Default to risk report for legacy compatibility
         self.generate_risk_report(properties, output_path)
 
-    def generate_risk_report(
-        self, properties: list[Property], output_path: Path
-    ) -> None:
+    def generate_risk_report(self, properties: list[Property], output_path: Path) -> None:
         """Generate risk assessment HTML report.
 
         Produces an interactive table showing risk levels across categories:
@@ -95,7 +93,9 @@ class HtmlReportGenerator(Reporter):
         sorted_properties = sorted(
             properties,
             key=lambda p: sum(
-                3 if r.level.value == "high" else (1 if r.level.value in ["medium", "unknown"] else 0)
+                3
+                if r.level.value == "high"
+                else (1 if r.level.value in ["medium", "unknown"] else 0)
                 for r in p.risk_assessments
             ),
         )
@@ -110,9 +110,7 @@ class HtmlReportGenerator(Reporter):
         # Write output
         output_path.write_text(html_content, encoding="utf-8")
 
-    def generate_renovation_report(
-        self, properties: list[Property], output_path: Path
-    ) -> None:
+    def generate_renovation_report(self, properties: list[Property], output_path: Path) -> None:
         """Generate renovation gap analysis HTML report.
 
         Shows estimated renovation costs and true cost (list price + renovations).
@@ -129,15 +127,12 @@ class HtmlReportGenerator(Reporter):
             ValueError: If properties list is empty
         """
         if not properties:
-            raise ValueError(
-                "Cannot generate renovation report from empty properties list"
-            )
+            raise ValueError("Cannot generate renovation report from empty properties list")
 
         # Calculate summary statistics
         total_properties = len(properties)
         renovation_totals = [
-            p.renovation_estimate.total if p.renovation_estimate else 0.0
-            for p in properties
+            p.renovation_estimate.total if p.renovation_estimate else 0.0 for p in properties
         ]
 
         avg_renovation = sum(renovation_totals) / len(renovation_totals)

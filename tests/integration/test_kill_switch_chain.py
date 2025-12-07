@@ -7,7 +7,6 @@ Tests the complete kill-switch validation chain including:
 - Boundary conditions
 """
 
-
 from src.phx_home_analysis.domain.enums import SewerType
 from src.phx_home_analysis.services.kill_switch import KillSwitchVerdict
 from src.phx_home_analysis.services.kill_switch.filter import KillSwitchFilter
@@ -165,9 +164,7 @@ class TestSoftCriteriaSeverityChain:
         Septic severity (2.5) >= WARNING threshold (1.5) but < FAIL (3.0).
         """
         filter_service = KillSwitchFilter()
-        verdict, severity, failures = filter_service.evaluate_with_severity(
-            sample_septic_property
-        )
+        verdict, severity, failures = filter_service.evaluate_with_severity(sample_septic_property)
 
         # Septic (2.5) is >= 1.5 = WARNING, < 3.0 = not FAIL
         assert verdict == KillSwitchVerdict.WARNING

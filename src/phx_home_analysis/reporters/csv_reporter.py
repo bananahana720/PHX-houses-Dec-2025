@@ -129,19 +129,13 @@ class CsvReporter(Reporter):
             "tier": prop.tier.label if prop.tier else "",
             "total_score": f"{prop.total_score:.1f}" if prop.score_breakdown else "",
             "score_location": (
-                f"{prop.score_breakdown.location_total:.1f}"
-                if prop.score_breakdown
-                else ""
+                f"{prop.score_breakdown.location_total:.1f}" if prop.score_breakdown else ""
             ),
             "score_systems": (
-                f"{prop.score_breakdown.systems_total:.1f}"
-                if prop.score_breakdown
-                else ""
+                f"{prop.score_breakdown.systems_total:.1f}" if prop.score_breakdown else ""
             ),
             "score_interior": (
-                f"{prop.score_breakdown.interior_total:.1f}"
-                if prop.score_breakdown
-                else ""
+                f"{prop.score_breakdown.interior_total:.1f}" if prop.score_breakdown else ""
             ),
             # Extended fields
             "lot_sqft": prop.lot_sqft if prop.lot_sqft else "",
@@ -152,28 +146,18 @@ class CsvReporter(Reporter):
             "hoa_fee": prop.hoa_fee if prop.hoa_fee is not None else "",
             "commute_minutes": prop.commute_minutes if prop.commute_minutes else "",
             "school_district": prop.school_district if prop.school_district else "",
-            "school_rating": (
-                f"{prop.school_rating:.1f}" if prop.school_rating else ""
-            ),
+            "school_rating": (f"{prop.school_rating:.1f}" if prop.school_rating else ""),
             "orientation": prop.orientation.value if prop.orientation else "",
             "distance_to_grocery_miles": (
-                f"{prop.distance_to_grocery_miles:.1f}"
-                if prop.distance_to_grocery_miles
-                else ""
+                f"{prop.distance_to_grocery_miles:.1f}" if prop.distance_to_grocery_miles else ""
             ),
             "distance_to_highway_miles": (
-                f"{prop.distance_to_highway_miles:.1f}"
-                if prop.distance_to_highway_miles
-                else ""
+                f"{prop.distance_to_highway_miles:.1f}" if prop.distance_to_highway_miles else ""
             ),
             "solar_status": prop.solar_status.value if prop.solar_status else "",
-            "solar_lease_monthly": (
-                prop.solar_lease_monthly if prop.solar_lease_monthly else ""
-            ),
+            "solar_lease_monthly": (prop.solar_lease_monthly if prop.solar_lease_monthly else ""),
             "has_pool": "Yes" if prop.has_pool else "No",
-            "pool_equipment_age": (
-                prop.pool_equipment_age if prop.pool_equipment_age else ""
-            ),
+            "pool_equipment_age": (prop.pool_equipment_age if prop.pool_equipment_age else ""),
             "roof_age": prop.roof_age if prop.roof_age else "",
             "hvac_age": prop.hvac_age if prop.hvac_age else "",
         }
@@ -252,50 +236,34 @@ class RiskCsvReporter(Reporter):
             "noise_risk": (
                 risk_lookup["Noise"].level.value.upper() if "Noise" in risk_lookup else ""
             ),
-            "noise_desc": (
-                risk_lookup["Noise"].description if "Noise" in risk_lookup else ""
-            ),
+            "noise_desc": (risk_lookup["Noise"].description if "Noise" in risk_lookup else ""),
             "infrastructure_risk": (
                 risk_lookup["Infrastructure"].level.value.upper()
                 if "Infrastructure" in risk_lookup
                 else ""
             ),
             "infrastructure_desc": (
-                risk_lookup["Infrastructure"].description
-                if "Infrastructure" in risk_lookup
-                else ""
+                risk_lookup["Infrastructure"].description if "Infrastructure" in risk_lookup else ""
             ),
             "solar_risk": (
                 risk_lookup["Solar"].level.value.upper() if "Solar" in risk_lookup else ""
             ),
-            "solar_desc": (
-                risk_lookup["Solar"].description if "Solar" in risk_lookup else ""
-            ),
+            "solar_desc": (risk_lookup["Solar"].description if "Solar" in risk_lookup else ""),
             "cooling_risk": (
                 risk_lookup["Cooling Cost"].level.value.upper()
                 if "Cooling Cost" in risk_lookup
                 else ""
             ),
             "cooling_desc": (
-                risk_lookup["Cooling Cost"].description
-                if "Cooling Cost" in risk_lookup
-                else ""
+                risk_lookup["Cooling Cost"].description if "Cooling Cost" in risk_lookup else ""
             ),
             "school_risk": (
-                risk_lookup["Schools"].level.value.upper()
-                if "Schools" in risk_lookup
-                else ""
+                risk_lookup["Schools"].level.value.upper() if "Schools" in risk_lookup else ""
             ),
-            "school_desc": (
-                risk_lookup["Schools"].description if "Schools" in risk_lookup else ""
-            ),
+            "school_desc": (risk_lookup["Schools"].description if "Schools" in risk_lookup else ""),
             "lot_risk": (
-                risk_lookup["Lot Size"].level.value.upper()
-                if "Lot Size" in risk_lookup
-                else ""
+                risk_lookup["Lot Size"].level.value.upper() if "Lot Size" in risk_lookup else ""
             ),
-            "lot_desc": (
-                risk_lookup["Lot Size"].description if "Lot Size" in risk_lookup else ""
-            ),
+            "lot_desc": (risk_lookup["Lot Size"].description if "Lot Size" in risk_lookup else ""),
             "overall_risk_score": overall_score,
         }

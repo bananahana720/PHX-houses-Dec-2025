@@ -184,7 +184,9 @@ async def test_redfin_is_redfin_image():
     extractor = RedfinExtractor()
 
     # Should accept property photos
-    assert extractor._is_redfin_image("https://ssl.cdn-redfin.com/photo/68/bcsphoto/471/genBcs.123.jpg")
+    assert extractor._is_redfin_image(
+        "https://ssl.cdn-redfin.com/photo/68/bcsphoto/471/genBcs.123.jpg"
+    )
 
     # Should reject logos
     assert not extractor._is_redfin_image("https://ssl.cdn-redfin.com/images/logo.png")
@@ -213,10 +215,8 @@ async def test_playwright_mcp_extract_images_from_snapshot():
             {"url": "https://photos.zillowstatic.com/image1.jpg"},
             {
                 "src": "https://ssl.cdn-redfin.com/photo/image2.jpg",
-                "children": [
-                    {"value": "https://example.com/image3.png"}
-                ]
-            }
+                "children": [{"value": "https://example.com/image3.png"}],
+            },
         ]
     }
 
@@ -245,8 +245,7 @@ async def test_playwright_mcp_extract_images_with_filter():
 
     # Filter for Zillow/Redfin CDN only
     images = client.extract_images_from_snapshot(
-        snapshot,
-        filter_pattern=r"(photos\.zillowstatic|ssl\.cdn-redfin)"
+        snapshot, filter_pattern=r"(photos\.zillowstatic|ssl\.cdn-redfin)"
     )
 
     assert len(images) == 2
@@ -279,11 +278,15 @@ async def test_zillow_extraction_with_mocked_browser(sample_property, zillow_htm
     # Mock browser tab
     mock_tab = AsyncMock()
     mock_tab.get_content = AsyncMock(return_value=zillow_html)
-    mock_tab.url = "https://www.zillow.com/homedetails/4732-W-Davis-Rd-Glendale-AZ-85306/7826047_zpid/"
-    mock_tab.query_selector_all = AsyncMock(return_value=[
-        MagicMock(attrs={"src": "https://photos.zillowstatic.com/fp/photo1-uncrate.jpg"}),
-        MagicMock(attrs={"src": "https://photos.zillowstatic.com/fp/photo2-uncrate.jpg"}),
-    ])
+    mock_tab.url = (
+        "https://www.zillow.com/homedetails/4732-W-Davis-Rd-Glendale-AZ-85306/7826047_zpid/"
+    )
+    mock_tab.query_selector_all = AsyncMock(
+        return_value=[
+            MagicMock(attrs={"src": "https://photos.zillowstatic.com/fp/photo1-uncrate.jpg"}),
+            MagicMock(attrs={"src": "https://photos.zillowstatic.com/fp/photo2-uncrate.jpg"}),
+        ]
+    )
 
     # Extract URLs from mocked page
     urls = await extractor._extract_urls_from_page(mock_tab)
@@ -300,24 +303,15 @@ async def test_redfin_extraction_score_address_match():
     target = "4732 W Davis Rd, Glendale, AZ 85306"
 
     # Perfect match
-    score1 = extractor._score_address_match(
-        target,
-        "4732 W Davis Rd, Glendale, AZ 85306"
-    )
+    score1 = extractor._score_address_match(target, "4732 W Davis Rd, Glendale, AZ 85306")
     assert score1 >= 0.8
 
     # Good match (street + city)
-    score2 = extractor._score_address_match(
-        target,
-        "4732 W Davis Road, Glendale"
-    )
+    score2 = extractor._score_address_match(target, "4732 W Davis Road, Glendale")
     assert score2 >= 0.5
 
     # No match (different street number)
-    score3 = extractor._score_address_match(
-        target,
-        "9999 E Other St, Phoenix, AZ"
-    )
+    score3 = extractor._score_address_match(target, "9999 E Other St, Phoenix, AZ")
     assert score3 == 0.0
 
 

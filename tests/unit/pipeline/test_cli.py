@@ -9,6 +9,7 @@ Tests cover:
 - JSON output format
 - CSV row-level validation
 """
+
 from __future__ import annotations
 
 # Import the CLI app
@@ -160,9 +161,7 @@ class TestLoadAddressesFromCSV:
 
     def test_load_addresses_from_csv_success(self) -> None:
         """Test loading addresses from valid CSV."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("full_address,price,beds\n")
             f.write("123 Main St,400000,4\n")
             f.write("456 Oak Ave,350000,3\n")
@@ -178,9 +177,7 @@ class TestLoadAddressesFromCSV:
 
     def test_load_addresses_from_csv_with_limit(self) -> None:
         """Test loading addresses with limit."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("full_address,price,beds\n")
             f.write("123 Main St,400000,4\n")
             f.write("456 Oak Ave,350000,3\n")
@@ -201,9 +198,7 @@ class TestLoadAddressesFromCSV:
 
     def test_load_addresses_alternative_column_names(self) -> None:
         """Test loading with alternative column names."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("Address,price,beds\n")  # Capital A
             f.write("123 Main St,400000,4\n")
             f.flush()
@@ -259,9 +254,7 @@ class TestDryRunMode:
 
     def test_dry_run_validates_csv_without_processing(self) -> None:
         """Test --dry-run validates CSV and shows estimated time without API calls."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("full_address,price,beds\n")
             f.write("123 Main St Phoenix AZ 85001,400000,4\n")
             f.write("456 Oak Ave Phoenix AZ 85002,350000,3\n")
@@ -283,9 +276,7 @@ class TestDryRunMode:
 
     def test_dry_run_shows_estimated_time(self) -> None:
         """Test --dry-run displays estimated processing time."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("full_address,price,beds\n")
             f.write("123 Main St Phoenix AZ 85001,400000,4\n")
             f.write("456 Oak Ave Phoenix AZ 85002,350000,3\n")
@@ -308,9 +299,7 @@ class TestDryRunMode:
 
     def test_dry_run_blocks_on_csv_errors(self) -> None:
         """Test --dry-run blocks processing when CSV has validation errors."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             # CSV with missing address field (header exists but no address column)
             f.write("price,beds\n")
             f.write("400000,4\n")
@@ -371,9 +360,7 @@ class TestCsvValidation:
 
     def test_csv_validation_reports_missing_address_column(self) -> None:
         """Test validation reports error when address column is missing."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             # No address column at all
             f.write("price,beds,baths\n")
             f.write("400000,4,2\n")
@@ -386,16 +373,12 @@ class TestCsvValidation:
                 # Should indicate missing address column
                 stdout_lower = result.stdout.lower()
                 assert (
-                    "address" in stdout_lower
-                    or "column" in stdout_lower
-                    or "error" in stdout_lower
+                    "address" in stdout_lower or "column" in stdout_lower or "error" in stdout_lower
                 )
 
     def test_csv_validation_reports_empty_addresses_with_row_numbers(self) -> None:
         """Test validation reports empty addresses with row numbers."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("full_address,price,beds\n")
             f.write("123 Main St,400000,4\n")
             f.write(",350000,3\n")  # Empty address on row 3 (data row 2)
@@ -408,19 +391,13 @@ class TestCsvValidation:
 
                 # Should show row number in error message
                 stdout_lower = result.stdout.lower()
-                assert (
-                    "row" in stdout_lower or "line" in stdout_lower
-                ) and (
-                    "empty" in stdout_lower
-                    or "missing" in stdout_lower
-                    or "error" in stdout_lower
+                assert ("row" in stdout_lower or "line" in stdout_lower) and (
+                    "empty" in stdout_lower or "missing" in stdout_lower or "error" in stdout_lower
                 )
 
     def test_csv_validation_collects_all_errors_before_blocking(self) -> None:
         """Test validation collects all errors before reporting (batch mode)."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("full_address,price,beds\n")
             f.write(",400000,4\n")  # Error 1: empty address
             f.write("456 Oak Ave,350000,3\n")  # Valid
@@ -435,16 +412,11 @@ class TestCsvValidation:
                 # Count occurrences of error indicators
                 stdout_lower = result.stdout.lower()
                 # Should mention at least 2 errors
-                assert (
-                    "2" in result.stdout
-                    or "error" in stdout_lower
-                )
+                assert "2" in result.stdout or "error" in stdout_lower
 
     def test_csv_validation_passes_for_valid_csv(self) -> None:
         """Test validation passes for a fully valid CSV."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("full_address,price,beds\n")
             f.write("123 Main St Phoenix AZ 85001,400000,4\n")
             f.write("456 Oak Ave Phoenix AZ 85002,350000,3\n")
@@ -471,9 +443,7 @@ class TestIntegrationDryRunAndJson:
 
     def test_dry_run_with_json_output(self) -> None:
         """Test --dry-run with --json outputs valid JSON structure."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("full_address,price,beds\n")
             f.write("123 Main St Phoenix AZ 85001,400000,4\n")
             f.write("456 Oak Ave Phoenix AZ 85002,350000,3\n")
@@ -495,9 +465,7 @@ class TestIntegrationDryRunAndJson:
 
     def test_dry_run_with_json_shows_errors(self) -> None:
         """Test --dry-run with --json reports validation errors in JSON."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("full_address,price,beds\n")
             f.write(",400000,4\n")  # Empty address
             f.flush()
@@ -534,9 +502,7 @@ class TestIntegrationDryRunAndJson:
         from pipeline_cli import CSVValidationResult, validate_csv_with_errors
 
         # Create valid temp CSV
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("full_address,price\n")
             f.write("123 Main St,400000\n")
             f.flush()

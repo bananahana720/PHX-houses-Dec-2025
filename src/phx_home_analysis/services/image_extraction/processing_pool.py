@@ -3,6 +3,7 @@
 Offloads hash computation and image standardization to worker processes,
 keeping the main event loop responsive for I/O operations.
 """
+
 from __future__ import annotations
 
 import asyncio

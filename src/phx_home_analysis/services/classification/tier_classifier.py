@@ -61,9 +61,7 @@ class TierClassifier:
             ValueError: If property lacks score_breakdown
         """
         if not property_obj.score_breakdown:
-            raise ValueError(
-                f"Property {property_obj.full_address} missing score_breakdown"
-            )
+            raise ValueError(f"Property {property_obj.full_address} missing score_breakdown")
 
         score = property_obj.score_breakdown.total_score
 
@@ -93,9 +91,7 @@ class TierClassifier:
                 logger.warning(f"Skipping classification: {e}")
                 continue
 
-        logger.info(
-            f"Classified {classified_count}/{len(properties)} properties into tiers"
-        )
+        logger.info(f"Classified {classified_count}/{len(properties)} properties into tiers")
         return properties
 
     def group_by_tier(
@@ -114,8 +110,7 @@ class TierClassifier:
         passed = [p for p in properties if p.tier == Tier.PASS]
 
         logger.debug(
-            f"Grouped: {len(unicorns)} unicorns, {len(contenders)} contenders, "
-            f"{len(passed)} passed"
+            f"Grouped: {len(unicorns)} unicorns, {len(contenders)} contenders, {len(passed)} passed"
         )
 
         return unicorns, contenders, passed

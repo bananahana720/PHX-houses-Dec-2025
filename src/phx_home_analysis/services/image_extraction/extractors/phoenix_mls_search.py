@@ -85,9 +85,9 @@ class PhoenixMLSSearchExtractor(StealthBrowserExtractor):
     # - "MLS# 6937912" - MLS prefix with number
     MLS_PATTERNS = [
         re.compile(r"/\s*(\d{7})\s*\(MLS\s*#?\)", re.IGNORECASE),  # Primary: / 6937912 (MLS #)
-        re.compile(r"#\s*(\d{7})", re.IGNORECASE),                  # Fallback: #6937912
-        re.compile(r"MLS\s*#?\s*(\d{7})", re.IGNORECASE),          # Fallback: MLS 6937912
-        re.compile(r"(\d{7})\s*\(MLS", re.IGNORECASE),             # Fallback: 6937912 (MLS
+        re.compile(r"#\s*(\d{7})", re.IGNORECASE),  # Fallback: #6937912
+        re.compile(r"MLS\s*#?\s*(\d{7})", re.IGNORECASE),  # Fallback: MLS 6937912
+        re.compile(r"(\d{7})\s*\(MLS", re.IGNORECASE),  # Fallback: 6937912 (MLS
     ]
     # Keep MLS_PATTERN for backward compatibility
     MLS_PATTERN = MLS_PATTERNS[0]
@@ -244,7 +244,6 @@ class PhoenixMLSSearchExtractor(StealthBrowserExtractor):
             input_element = None
             for selector in input_selectors:
                 try:
-
                     # Wrap tab.select() with timeout protection
                     input_element = await asyncio.wait_for(
                         tab.select(selector), timeout=OPERATION_TIMEOUT
@@ -387,7 +386,9 @@ class PhoenixMLSSearchExtractor(StealthBrowserExtractor):
                                         for idx, text in enumerate(all_texts):
                                             if not text:
                                                 continue
-                                            score = self._score_autocomplete_match(search_query, text)
+                                            score = self._score_autocomplete_match(
+                                                search_query, text
+                                            )
                                             logger.debug(
                                                 "%s HTML result %d scored %.2f: %s",
                                                 self.name,
@@ -430,7 +431,9 @@ class PhoenixMLSSearchExtractor(StealthBrowserExtractor):
                                                 )
 
                                                 # Extract address from autocomplete text
-                                                address_match = self.ADDRESS_PATTERN.match(best_match_text_from_js)
+                                                address_match = self.ADDRESS_PATTERN.match(
+                                                    best_match_text_from_js
+                                                )
                                                 if address_match:
                                                     autocomplete_address = address_match.group(
                                                         1
@@ -456,7 +459,9 @@ class PhoenixMLSSearchExtractor(StealthBrowserExtractor):
                                                     # Navigate directly to listing page
                                                     await tab.get(direct_url)
                                                     await self._rate_limit_search()
-                                                    await asyncio.sleep(self.RESULT_WAIT_SECONDS * 1.5)
+                                                    await asyncio.sleep(
+                                                        self.RESULT_WAIT_SECONDS * 1.5
+                                                    )
 
                                                     # Verify navigation succeeded
                                                     current_url = (
@@ -471,7 +476,8 @@ class PhoenixMLSSearchExtractor(StealthBrowserExtractor):
                                                         # Verify it's actually a listing page (not 404)
                                                         page_html_detail = await tab.get_content()
                                                         if page_html_detail and (
-                                                            "cdn.photos.sparkplatform.com" in page_html_detail
+                                                            "cdn.photos.sparkplatform.com"
+                                                            in page_html_detail
                                                             or "listing" in page_html_detail.lower()
                                                         ):
                                                             logger.info(
@@ -505,7 +511,9 @@ class PhoenixMLSSearchExtractor(StealthBrowserExtractor):
                                             self.name,
                                         )
                                 else:
-                                    logger.warning("%s get_content() returned empty/None", self.name)
+                                    logger.warning(
+                                        "%s get_content() returned empty/None", self.name
+                                    )
 
                             except asyncio.TimeoutError:
                                 logger.warning(
@@ -568,7 +576,6 @@ class PhoenixMLSSearchExtractor(StealthBrowserExtractor):
         except Exception as e:
             logger.error("%s search form interaction failed: %s", self.name, e)
             return False
-
 
     def _addresses_match(self, card_text: str, property: Property) -> bool:
         """Check if card text contains property address.
@@ -947,7 +954,9 @@ class PhoenixMLSSearchExtractor(StealthBrowserExtractor):
             # Also check anchor tags for image links
             for a in soup.find_all("a", href=True):
                 href = str(a.get("href", ""))
-                if "cdn.photos.sparkplatform.com" in href and href.endswith((".jpg", ".png", ".jpeg")):
+                if "cdn.photos.sparkplatform.com" in href and href.endswith(
+                    (".jpg", ".png", ".jpeg")
+                ):
                     # Transform to full-size
                     full_url = href
                     for suffix in ["-t.jpg", "-m.jpg", "-l.jpg", "-t.png", "-m.png", "-l.png"]:

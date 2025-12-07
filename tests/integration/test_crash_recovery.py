@@ -296,7 +296,10 @@ class TestNormalizedAddressRecovery:
         # Verify normalized_address is present
         loaded = repo.load_all()
         assert "123 Main St, Phoenix, AZ 85001" in loaded
-        assert loaded["123 Main St, Phoenix, AZ 85001"].normalized_address == "123 main st phoenix az 85001"
+        assert (
+            loaded["123 Main St, Phoenix, AZ 85001"].normalized_address
+            == "123 main st phoenix az 85001"
+        )
 
     def test_normalized_address_computed_if_missing_in_backup(self, tmp_path: Path):
         """Normalized address should be computed if missing from backup."""
@@ -319,4 +322,6 @@ class TestNormalizedAddressRecovery:
         # Verify normalized_address is computed
         loaded = repo.load_all()
         assert "456 Oak Ave, Mesa, AZ 85201" in loaded
-        assert loaded["456 Oak Ave, Mesa, AZ 85201"].normalized_address == "456 oak ave mesa az 85201"
+        assert (
+            loaded["456 Oak Ave, Mesa, AZ 85201"].normalized_address == "456 oak ave mesa az 85201"
+        )

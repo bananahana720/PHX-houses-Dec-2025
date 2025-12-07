@@ -260,9 +260,7 @@ class TestImageDownloader:
         assert downloader._generate_filename(100) == "img_100.jpg"
 
     @pytest.mark.asyncio
-    async def test_download_single_image_success(
-        self, downloader, sample_jpg_bytes
-    ):
+    async def test_download_single_image_success(self, downloader, sample_jpg_bytes):
         """Test successful single image download."""
         url = "https://example.com/test.jpg"
 
@@ -311,8 +309,7 @@ class TestImageDownloader:
 
         semaphore = asyncio.Semaphore(5)
         tasks = [
-            mock_download(url, i + 1, downloader.base_dir, semaphore)
-            for i, url in enumerate(urls)
+            mock_download(url, i + 1, downloader.base_dir, semaphore) for i, url in enumerate(urls)
         ]
         await asyncio.gather(*tasks)
 
@@ -354,9 +351,7 @@ class TestImageDownloader:
             ),
         ]
 
-        with patch.object(
-            downloader, "download_images", return_value=results
-        ):
+        with patch.object(downloader, "download_images", return_value=results):
             download_results = await downloader.download_images(
                 urls=urls,
                 address="123 Main St",

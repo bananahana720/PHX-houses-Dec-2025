@@ -42,12 +42,14 @@ class EnrichmentMergeService:
     """
 
     # Fields that should never be overwritten if manually researched
-    PROTECTED_SOURCES: frozenset[str] = frozenset({
-        "manual",
-        "manual_research",
-        "user",
-        "web_research",
-    })
+    PROTECTED_SOURCES: frozenset[str] = frozenset(
+        {
+            "manual",
+            "manual_research",
+            "user",
+            "web_research",
+        }
+    )
 
     # Fields to merge from parcel data
     MERGE_FIELDS: tuple[str, ...] = (
@@ -224,9 +226,7 @@ class EnrichmentMergeService:
 
         # Handle coordinates from ArcGIS fallback
         if parcel.latitude and parcel.longitude:
-            self._merge_coordinates(
-                entry, parcel, report, update_only, prop_hash
-            )
+            self._merge_coordinates(entry, parcel, report, update_only, prop_hash)
 
         # Add freshness timestamps for data staleness detection
         self._add_freshness_timestamps(entry, report)
@@ -273,9 +273,7 @@ class EnrichmentMergeService:
                 # In update-only mode, skip if already has value
                 continue
 
-            should_update, reason = self.should_update_field(
-                entry, coord_field, coord_value
-            )
+            should_update, reason = self.should_update_field(entry, coord_field, coord_value)
 
             if should_update:
                 entry[coord_field] = coord_value
@@ -354,9 +352,6 @@ class EnrichmentMergeService:
         entry["_last_county_sync"] = now
 
         # Update _last_updated only if actual changes were made
-        has_changes = (
-            report.new_fields
-            or report.updated
-        )
+        has_changes = report.new_fields or report.updated
         if has_changes:
             entry["_last_updated"] = now

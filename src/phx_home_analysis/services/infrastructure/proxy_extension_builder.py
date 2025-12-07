@@ -101,9 +101,7 @@ class ProxyExtensionBuilder:
         credentials, host_port = rest.split("@", 1)
 
         if ":" not in credentials:
-            raise ValueError(
-                f"Invalid credentials format (expected user:pass): {credentials}"
-            )
+            raise ValueError(f"Invalid credentials format (expected user:pass): {credentials}")
 
         username, password = credentials.split(":", 1)
 
@@ -142,15 +140,11 @@ class ProxyExtensionBuilder:
             /tmp/proxy_ext_abc123
         """
         if self.extension_dir is not None:
-            raise RuntimeError(
-                "Extension already created. Call cleanup() before creating again."
-            )
+            raise RuntimeError("Extension already created. Call cleanup() before creating again.")
 
         # Verify template directory exists
         if not self.TEMPLATE_DIR.exists():
-            raise FileNotFoundError(
-                f"Template directory not found: {self.TEMPLATE_DIR}"
-            )
+            raise FileNotFoundError(f"Template directory not found: {self.TEMPLATE_DIR}")
 
         manifest_path = self.TEMPLATE_DIR / "manifest.json"
         background_template_path = self.TEMPLATE_DIR / "background.js"
@@ -159,9 +153,7 @@ class ProxyExtensionBuilder:
             raise FileNotFoundError(f"Template manifest not found: {manifest_path}")
 
         if not background_template_path.exists():
-            raise FileNotFoundError(
-                f"Template background.js not found: {background_template_path}"
-            )
+            raise FileNotFoundError(f"Template background.js not found: {background_template_path}")
 
         # Create temporary directory
         temp_dir = Path(tempfile.mkdtemp(prefix="proxy_ext_"))
@@ -179,9 +171,7 @@ class ProxyExtensionBuilder:
             background_content = background_template.replace(
                 '"PROXY_HOST"', f'"{self.config.host}"'
             )
-            background_content = background_content.replace(
-                "PROXY_PORT", str(self.config.port)
-            )
+            background_content = background_content.replace("PROXY_PORT", str(self.config.port))
             background_content = background_content.replace(
                 '"PROXY_USERNAME"', f'"{self.config.username}"'
             )

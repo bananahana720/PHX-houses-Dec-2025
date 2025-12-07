@@ -22,8 +22,9 @@ def get_orchestration_context() -> str:
         "Your responsibility: coordinate, delegate, and sequence agent waves.\n\n"
         "RULE:\n"
         "  → Delegate **all** non-trivial work to sub-agents. "
-        "** This is a repo that abides by the BMAD principles and SDLC framework. Inform them to execute appropriate bmad custom slash commands when  applicable.**\n"
-        "  → Only perform small tasks yourself (~1k–2k tokens max **with read operations considered**)."
+        "** This is a repo that abides by the BMAD principles and SDLC framework → Inform them to execute appropriate bmad custom slash commands when  applicable.**\n"
+        "  → Only perform small tasks yourself (~1k–2k tokens max **with read operations considered**).\n"
+        "  → For planning and architecture design tasks, instruct sub-agents to use mcp__context7__* mcp tools for up-to-date tech-reference documentation.\n\n"
     )
 
 

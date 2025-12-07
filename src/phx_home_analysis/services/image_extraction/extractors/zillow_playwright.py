@@ -139,7 +139,7 @@ class ZillowExtractor(ImageExtractor):
             gallery_selectors = [
                 '[data-test="hdp-gallery-photo"]',  # Main gallery photos
                 'picture[data-test="media-photo"] img',  # Media carousel
-                '.media-stream img',  # Stream view
+                ".media-stream img",  # Stream view
                 'img[class*="photo"]',  # Generic photo class
             ]
 
@@ -164,7 +164,7 @@ class ZillowExtractor(ImageExtractor):
                     if srcset:
                         # Parse srcset: "url1 1x, url2 2x, url3 3x"
                         # Extract highest resolution URL
-                        urls_in_srcset = re.findall(r'(https://[^\s,]+)', srcset)
+                        urls_in_srcset = re.findall(r"(https://[^\s,]+)", srcset)
                         if urls_in_srcset:
                             # Take last URL (usually highest res)
                             image_urls.add(urls_in_srcset[-1])
@@ -178,10 +178,7 @@ class ZillowExtractor(ImageExtractor):
                             image_urls.add(src)
 
             # Convert set to list and filter for quality
-            filtered_urls = [
-                url for url in image_urls
-                if self._is_high_quality_url(url)
-            ]
+            filtered_urls = [url for url in image_urls if self._is_high_quality_url(url)]
 
             logger.info(f"Extracted {len(filtered_urls)} high-quality image URLs from Zillow")
             return filtered_urls
@@ -257,9 +254,11 @@ class ZillowExtractor(ImageExtractor):
             page = await browser.new_page()
 
             # Set user agent to avoid detection
-            await page.set_extra_http_headers({
-                "User-Agent": self.USER_AGENT,
-            })
+            await page.set_extra_http_headers(
+                {
+                    "User-Agent": self.USER_AGENT,
+                }
+            )
 
             # Build search URL and navigate
             search_url = self._build_search_url(property)

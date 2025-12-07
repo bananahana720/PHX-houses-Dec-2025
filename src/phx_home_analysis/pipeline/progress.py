@@ -18,6 +18,7 @@ Usage:
     reporter.complete_property(success=True, tier="UNICORN")
     reporter.show_status_table()
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -162,7 +163,9 @@ class ProgressReporter:
         # Start the progress display
         self._progress.start()
 
-        self.console.print(f"\n[bold cyan]Starting batch processing of {total} properties[/bold cyan]\n")
+        self.console.print(
+            f"\n[bold cyan]Starting batch processing of {total} properties[/bold cyan]\n"
+        )
 
     def stop_batch(self) -> None:
         """Stop batch progress tracking."""
@@ -195,7 +198,9 @@ class ProgressReporter:
         self._progress.update(self._task_id, description=description, completed=index)
 
         # Update pending/in_progress counts
-        self.stats.pending = max(0, self.stats.total - index - 1 - self.stats.complete - self.stats.failed)
+        self.stats.pending = max(
+            0, self.stats.total - index - 1 - self.stats.complete - self.stats.failed
+        )
         self.stats.in_progress = 1
 
     def complete_property(self, success: bool, tier: str | None = None) -> None:
@@ -314,7 +319,9 @@ class ProgressReporter:
 
         # Show top tier counts
         if self.stats.unicorns > 0:
-            self.console.print(f"[bold magenta]Found {self.stats.unicorns} UNICORN properties![/bold magenta]")
+            self.console.print(
+                f"[bold magenta]Found {self.stats.unicorns} UNICORN properties![/bold magenta]"
+            )
 
         self.console.print()
 

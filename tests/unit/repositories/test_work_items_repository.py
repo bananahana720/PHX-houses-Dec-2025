@@ -174,9 +174,7 @@ class TestPhaseCheckpointing:
         repo.initialize_session(mode="single", addresses=["123 Main St"])
         repo.checkpoint_phase_start("123 Main St", "phase1_listing")
         repo.checkpoint_phase_complete(
-            "123 Main St",
-            "phase1_listing",
-            error_message="HTTP 500 error"
+            "123 Main St", "phase1_listing", error_message="HTTP 500 error"
         )
 
         item = repo.get_work_item("123 Main St")
@@ -243,9 +241,7 @@ class TestStateTransitions:
         repo.initialize_session(mode="single", addresses=["123 Main St"])
         repo.checkpoint_phase_start("123 Main St", "phase1_listing")
         repo.checkpoint_phase_complete(
-            "123 Main St",
-            "phase1_listing",
-            error_message="Network error"
+            "123 Main St", "phase1_listing", error_message="Network error"
         )
 
         # Retry should be allowed
@@ -280,8 +276,12 @@ class TestWorkItemStatusUpdate:
         repo.initialize_session(mode="single", addresses=["123 Main St"])
 
         phases = [
-            "phase0_county", "phase1_listing", "phase1_map",
-            "phase2_images", "phase3_synthesis", "phase4_report"
+            "phase0_county",
+            "phase1_listing",
+            "phase1_map",
+            "phase2_images",
+            "phase3_synthesis",
+            "phase4_report",
         ]
 
         for phase in phases:
@@ -298,11 +298,7 @@ class TestWorkItemStatusUpdate:
 
         repo.initialize_session(mode="single", addresses=["123 Main St"])
         repo.checkpoint_phase_start("123 Main St", "phase1_listing")
-        repo.checkpoint_phase_complete(
-            "123 Main St",
-            "phase1_listing",
-            error_message="Error"
-        )
+        repo.checkpoint_phase_complete("123 Main St", "phase1_listing", error_message="Error")
 
         item = repo.get_work_item("123 Main St")
         assert item["status"] == "failed"
@@ -383,8 +379,12 @@ class TestSummaryCalculation:
 
         # Complete all phases for first item
         phases = [
-            "phase0_county", "phase1_listing", "phase1_map",
-            "phase2_images", "phase3_synthesis", "phase4_report"
+            "phase0_county",
+            "phase1_listing",
+            "phase1_map",
+            "phase2_images",
+            "phase3_synthesis",
+            "phase4_report",
         ]
 
         for phase in phases:
@@ -425,7 +425,9 @@ class TestBackupManagement:
             repo.checkpoint_phase_start("123 Main St", "phase1_listing")
             # Complete and restart to create more checkpoints
             if i < 14:
-                repo.checkpoint_phase_complete("123 Main St", "phase1_listing", error_message="test")
+                repo.checkpoint_phase_complete(
+                    "123 Main St", "phase1_listing", error_message="test"
+                )
 
         backups = list(tmp_path.glob("work_items.*.bak.json"))
         assert len(backups) <= repo.MAX_BACKUPS
@@ -482,8 +484,12 @@ class TestQueryMethods:
 
         # Complete all phases for first item
         phases = [
-            "phase0_county", "phase1_listing", "phase1_map",
-            "phase2_images", "phase3_synthesis", "phase4_report"
+            "phase0_county",
+            "phase1_listing",
+            "phase1_map",
+            "phase2_images",
+            "phase3_synthesis",
+            "phase4_report",
         ]
 
         for phase in phases:

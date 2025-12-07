@@ -14,6 +14,7 @@ print("=" * 60)
 print("\n1. Testing orchestrator import...")
 try:
     from phx_home_analysis.services.location_data.orchestrator import LocationDataOrchestrator
+
     print("   ✓ LocationDataOrchestrator imported successfully")
 except Exception as e:
     print(f"   ✗ Failed to import orchestrator: {e}")
@@ -23,7 +24,17 @@ except Exception as e:
 print("\n2. Checking SOURCES list...")
 orch = LocationDataOrchestrator()
 print(f"   Sources: {orch.SOURCES}")
-expected_sources = ["crime", "walkscore", "schools", "noise", "flood", "census", "zoning", "air_quality", "permits"]
+expected_sources = [
+    "crime",
+    "walkscore",
+    "schools",
+    "noise",
+    "flood",
+    "census",
+    "zoning",
+    "air_quality",
+    "permits",
+]
 if set(orch.SOURCES) == set(expected_sources):
     print("   ✓ SOURCES list contains all expected services")
 else:
@@ -32,8 +43,8 @@ else:
 
 # Test 3: Check extraction methods exist
 print("\n3. Checking extraction methods...")
-has_air_quality = hasattr(orch, '_extract_air_quality')
-has_permits = hasattr(orch, '_extract_permits')
+has_air_quality = hasattr(orch, "_extract_air_quality")
+has_permits = hasattr(orch, "_extract_permits")
 
 if has_air_quality:
     print("   ✓ _extract_air_quality method exists")
@@ -71,7 +82,7 @@ try:
     field_names = [f.name for f in fields(LocationData)]
     print(f"   Fields: {field_names}")
 
-    if 'air_quality' in field_names and 'permits' in field_names:
+    if "air_quality" in field_names and "permits" in field_names:
         print("   ✓ LocationData has air_quality and permits fields")
     else:
         print("   ✗ LocationData missing air_quality or permits fields")
@@ -82,13 +93,13 @@ except Exception as e:
 
 # Test 6: Check lazy initialization attributes
 print("\n6. Checking lazy initialization attributes...")
-if hasattr(orch, '_air_quality_client'):
+if hasattr(orch, "_air_quality_client"):
     print("   ✓ _air_quality_client attribute exists")
 else:
     print("   ✗ _air_quality_client attribute missing")
     sys.exit(1)
 
-if hasattr(orch, '_permits_client'):
+if hasattr(orch, "_permits_client"):
     print("   ✓ _permits_client attribute exists")
 else:
     print("   ✗ _permits_client attribute missing")

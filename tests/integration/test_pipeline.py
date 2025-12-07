@@ -129,10 +129,10 @@ class TestFullPipeline:
         scored = scorer.score(passed[0])
 
         # Check that scored property has score totals
-        assert hasattr(scored, 'location_total')
-        assert hasattr(scored, 'systems_total')
-        assert hasattr(scored, 'interior_total')
-        assert hasattr(scored, 'total_score')
+        assert hasattr(scored, "location_total")
+        assert hasattr(scored, "systems_total")
+        assert hasattr(scored, "interior_total")
+        assert hasattr(scored, "total_score")
 
     def test_pipeline_tier_assignment(self, sample_unicorn_property):
         """Test that scoring produces correct score.
@@ -208,11 +208,11 @@ class TestPipelineEnrichment:
         enrichment_record = sample_enrichment[address]
 
         # Check required enrichment fields
-        assert 'lot_sqft' in enrichment_record
-        assert 'year_built' in enrichment_record
-        assert 'garage_spaces' in enrichment_record
-        assert 'sewer_type' in enrichment_record
-        assert 'hoa_fee' in enrichment_record
+        assert "lot_sqft" in enrichment_record
+        assert "year_built" in enrichment_record
+        assert "garage_spaces" in enrichment_record
+        assert "sewer_type" in enrichment_record
+        assert "hoa_fee" in enrichment_record
 
 
 # ============================================================================
@@ -233,25 +233,32 @@ class TestPipelineCSVIO:
         passed, _ = filter_service.filter_properties([sample_property])
 
         # Create temporary CSV from filtered properties
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             writer = csv.DictWriter(
                 f,
                 fieldnames=[
-                    'full_address', 'price_num', 'beds', 'baths', 'sqft',
-                    'kill_switch_passed', 'kill_switch_failures'
-                ]
+                    "full_address",
+                    "price_num",
+                    "beds",
+                    "baths",
+                    "sqft",
+                    "kill_switch_passed",
+                    "kill_switch_failures",
+                ],
             )
             writer.writeheader()
             for prop in passed:
-                writer.writerow({
-                    'full_address': prop.full_address,
-                    'price_num': prop.price_num,
-                    'beds': prop.beds,
-                    'baths': prop.baths,
-                    'sqft': prop.sqft,
-                    'kill_switch_passed': prop.kill_switch_passed,
-                    'kill_switch_failures': '|'.join(prop.kill_switch_failures or []),
-                })
+                writer.writerow(
+                    {
+                        "full_address": prop.full_address,
+                        "price_num": prop.price_num,
+                        "beds": prop.beds,
+                        "baths": prop.baths,
+                        "sqft": prop.sqft,
+                        "kill_switch_passed": prop.kill_switch_passed,
+                        "kill_switch_failures": "|".join(prop.kill_switch_failures or []),
+                    }
+                )
             csv_path = f.name
 
         try:
@@ -259,9 +266,9 @@ class TestPipelineCSVIO:
             with open(csv_path) as f:
                 reader = csv.DictReader(f)
                 row = next(reader)
-                assert row['full_address'] == sample_property.full_address
-                assert int(row['price_num']) == sample_property.price_num
-                assert int(row['beds']) == sample_property.beds
+                assert row["full_address"] == sample_property.full_address
+                assert int(row["price_num"]) == sample_property.price_num
+                assert int(row["beds"]) == sample_property.beds
         finally:
             Path(csv_path).unlink()
 
@@ -278,22 +285,21 @@ class TestPipelineCSVIO:
         all_props = passed + failed
 
         # Create temporary CSV
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, newline='') as f:
-            fieldnames = [
-                'full_address', 'price_num', 'beds', 'baths',
-                'kill_switch_passed'
-            ]
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
+            fieldnames = ["full_address", "price_num", "beds", "baths", "kill_switch_passed"]
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
 
             for prop in all_props:
-                writer.writerow({
-                    'full_address': prop.full_address,
-                    'price_num': prop.price_num,
-                    'beds': prop.beds,
-                    'baths': prop.baths,
-                    'kill_switch_passed': prop.kill_switch_passed,
-                })
+                writer.writerow(
+                    {
+                        "full_address": prop.full_address,
+                        "price_num": prop.price_num,
+                        "beds": prop.beds,
+                        "baths": prop.baths,
+                        "kill_switch_passed": prop.kill_switch_passed,
+                    }
+                )
             csv_path = f.name
 
         try:
@@ -305,9 +311,9 @@ class TestPipelineCSVIO:
 
                 # Verify all rows have required fields
                 for row in rows:
-                    assert row['full_address']
-                    assert row['price_num']
-                    assert 'beds' in row
+                    assert row["full_address"]
+                    assert row["price_num"]
+                    assert "beds" in row
         finally:
             Path(csv_path).unlink()
 
@@ -377,11 +383,7 @@ class TestPipelineScoringVariations:
         scored = scorer.score(passed[0])
 
         # Component scores should sum to total (allowing for rounding)
-        component_sum = (
-            scored.location_total +
-            scored.systems_total +
-            scored.interior_total
-        )
+        component_sum = scored.location_total + scored.systems_total + scored.interior_total
 
         assert abs(component_sum - scored.total_score) < 1.0
 
@@ -486,9 +488,7 @@ class TestAnalysisPipelineInit:
         assert pipeline.config == mock_config
         assert pipeline.config.paths is not None
 
-    def test_pipeline_init_with_custom_dependencies(
-        self, mock_config, sample_property
-    ):
+    def test_pipeline_init_with_custom_dependencies(self, mock_config, sample_property):
         """Test pipeline initializes with custom injected dependencies."""
         from unittest.mock import Mock
 
@@ -636,9 +636,7 @@ class TestAnalysisPipelineRun:
         assert len(result.passed) == 0
         assert len(result.failed) == 4
 
-    def test_pipeline_run_success_path(
-        self, mock_config, sample_property, sample_unicorn_property
-    ):
+    def test_pipeline_run_success_path(self, mock_config, sample_property, sample_unicorn_property):
         """Test pipeline.run() happy path with successful scoring."""
         from unittest.mock import Mock
 

@@ -4,7 +4,6 @@ Tests cover source fallback chains, deduplication across sources,
 priority ordering, and source-specific behavior.
 """
 
-
 import pytest
 
 from src.phx_home_analysis.domain.enums import ImageSource
@@ -34,9 +33,7 @@ class TestMultiSourceExtraction:
         assert results["phoenix_mls"]["count"] == len(mls_urls)
 
     @pytest.mark.asyncio
-    async def test_fallback_to_secondary_source_on_failure(
-        self, orchestrator, sample_property
-    ):
+    async def test_fallback_to_secondary_source_on_failure(self, orchestrator, sample_property):
         """When Zillow fails, PhoenixMLS used as fallback."""
         # Track source attempts
         sources_attempted = []
@@ -71,8 +68,7 @@ class TestMultiSourceExtraction:
         shared_image = "https://shared.cdn.example.com/image.jpg"
 
         all_images = [
-            {"url": url, "source": "zillow", "md5": "hash1"}
-            for url in sample_image_urls["zillow"]
+            {"url": url, "source": "zillow", "md5": "hash1"} for url in sample_image_urls["zillow"]
         ] + [
             {"url": shared_image, "source": "phoenix_mls", "md5": "hash_shared"},
             {"url": shared_image, "source": "zillow", "md5": "hash_shared"},
@@ -163,9 +159,7 @@ class TestSourceSpecificBehavior:
             assert "yimg.com" in url or "redfin" in url.lower()
 
     @pytest.mark.asyncio
-    async def test_maricopa_assessor_extraction(
-        self, sample_property, sample_image_urls
-    ):
+    async def test_maricopa_assessor_extraction(self, sample_property, sample_image_urls):
         """Maricopa Assessor extracts property images."""
         assessor_images = sample_image_urls["maricopa_assessor"]
 
@@ -179,9 +173,7 @@ class TestSourceErrorHandling:
     """Test error handling per source."""
 
     @pytest.mark.asyncio
-    async def test_zillow_rate_limit_triggers_circuit_breaker(
-        self, orchestrator, sample_property
-    ):
+    async def test_zillow_rate_limit_triggers_circuit_breaker(self, orchestrator, sample_property):
         """Zillow rate limiting triggers circuit breaker."""
         # Simulate rate limit response
         rate_limit_error = {
@@ -215,9 +207,7 @@ class TestSourceErrorHandling:
         assert handled is True
 
     @pytest.mark.asyncio
-    async def test_maricopa_assessor_404_continues_extraction(
-        self, orchestrator, sample_property
-    ):
+    async def test_maricopa_assessor_404_continues_extraction(self, orchestrator, sample_property):
         """Maricopa Assessor 404 doesn't stop extraction."""
         # 404 for assessor is non-fatal
         status_code = 404

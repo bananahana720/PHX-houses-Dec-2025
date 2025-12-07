@@ -1,6 +1,5 @@
 """Tests for FieldMapper field name translation."""
 
-
 from phx_home_analysis.services.data_integration import FieldMapper
 
 
