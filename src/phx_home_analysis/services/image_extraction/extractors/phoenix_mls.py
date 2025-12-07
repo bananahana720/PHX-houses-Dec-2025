@@ -67,6 +67,53 @@ PHOENIX_METRO_CITIES = {
 }
 
 
+# Pre-compiled regex patterns for HTML parsing (performance optimization)
+# URL patterns
+RE_MLS_LISTING_URL = re.compile(r"/mls/listing/")
+RE_PROPERTY_TITLE_LINK = re.compile(r"(property|listing)-(title|link)")
+
+# Gallery patterns
+RE_GALLERY_CONTAINER = re.compile(r"(gallery|photos|images|slideshow)", re.IGNORECASE)
+
+# MLS identifier patterns
+RE_MLS_NUMBER = re.compile(r"MLS #")
+RE_MLS_NUMBER_EXTRACT = re.compile(r"MLS #:\s*(\w+)")
+RE_PRICE_EXTRACT = re.compile(r"\$([0-9,]+)")
+
+# Property details patterns
+RE_PRICE_ELEMENT = re.compile(r"price|listing-price")
+RE_DETAILS_TABLE = re.compile(r"details|facts|features")
+RE_STATUS_BADGE = re.compile(r"status|badge|tag", re.IGNORECASE)
+RE_PRICE_HISTORY = re.compile(r"price-history|original|reduced")
+RE_PRICE_REDUCED = re.compile(r"price\s*reduced", re.IGNORECASE)
+RE_UPDATED = re.compile(r"(?:last\s*)?updated|modified", re.IGNORECASE)
+RE_ORIGINAL_PRICE = re.compile(r"(?:original(?:\s+price)?|was)[:\s]*\$([0-9,]+)", re.IGNORECASE)
+
+# Date patterns
+RE_ISO_DATE = re.compile(r"(\d{4}-\d{2}-\d{2})")
+RE_US_DATE = re.compile(r"(\d{1,2}/\d{1,2}/\d{4})")
+
+# Section patterns
+RE_SCHOOL_SECTION = re.compile(r"school|education")
+RE_FEATURES_SECTION = re.compile(r"features|amenities")
+RE_ELEMENTARY = re.compile(r"Elementary:?\s*(.+)", re.IGNORECASE)
+RE_MIDDLE = re.compile(r"Middle:?\s*(.+)", re.IGNORECASE)
+RE_HIGH = re.compile(r"High:?\s*(.+)", re.IGNORECASE)
+RE_KITCHEN = re.compile(r"Kitchen", re.IGNORECASE)
+RE_MASTER_BATH = re.compile(r"Master Bath", re.IGNORECASE)
+RE_INTERIOR = re.compile(r"Interior", re.IGNORECASE)
+RE_EXTERIOR = re.compile(r"Exterior", re.IGNORECASE)
+RE_CROSS_STREETS = re.compile(r"Cross Streets", re.IGNORECASE)
+RE_CROSS_STREETS_EXTRACT = re.compile(r"Cross Streets:?\s*(.+)", re.IGNORECASE)
+
+# Days on market patterns (list of patterns)
+DOM_PATTERNS = [
+    re.compile(r"(?:listed|on market)\s+(\d+)\s*days?\s*ago", re.IGNORECASE),
+    re.compile(r"(?:dom|days on market)[:\s]+(\d+)", re.IGNORECASE),
+    re.compile(r"(\d+)\s*days?\s*on\s*market", re.IGNORECASE),
+]
+
+
 class PhoenixMLSExtractor(StealthBrowserExtractor):
     """Extract property images from Phoenix MLS Search website.
 
@@ -245,7 +292,7 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
         soup = BeautifulSoup(search_html, "html.parser")
 
         # Pattern 1: Look for links to /mls/listing/ pages
-        listing_links = soup.find_all("a", href=re.compile(r"/mls/listing/"))
+        listing_links = soup.find_all("a", href=RE_MLS_LISTING_URL)
         if listing_links:
             first_link = listing_links[0]
             href = first_link.get("href")
@@ -267,7 +314,7 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
                     return listing_url
 
         # Pattern 3: Look for property title links
-        title_links = soup.find_all("a", class_=re.compile(r"(property|listing)-(title|link)"))
+        title_links = soup.find_all("a", class_=RE_PROPERTY_TITLE_LINK)
         if title_links:
             first_link = title_links[0]
             href = first_link.get("href")
@@ -317,7 +364,7 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
         # Pattern 1: Look for common gallery containers
         gallery_containers = soup.find_all(
             ["div", "section"],
-            class_=re.compile(r"(gallery|photos|images|slideshow)", re.IGNORECASE),
+            class_=RE_GALLERY_CONTAINER,
         )
 
         for container in gallery_containers:
@@ -500,22 +547,22 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
         metadata: dict[str, Any] = {}
 
         # MLS Number (e.g., "MLS #: 6789012")
-        mls_elem = soup.find(string=re.compile(r"MLS #"))
+        mls_elem = soup.find(string=RE_MLS_NUMBER)
         if mls_elem:
-            mls_match = re.search(r"MLS #:\s*(\w+)", str(mls_elem))
+            mls_match = RE_MLS_NUMBER_EXTRACT.search(str(mls_elem))
             if mls_match:
                 metadata["mls_number"] = mls_match.group(1)
 
         # Price
-        price_elem = soup.find("span", class_=re.compile(r"price|listing-price"))
+        price_elem = soup.find("span", class_=RE_PRICE_ELEMENT)
         if price_elem:
             price_text = price_elem.get_text(strip=True)
-            price_match = re.search(r"\$([0-9,]+)", price_text)
+            price_match = RE_PRICE_EXTRACT.search(price_text)
             if price_match:
                 metadata["price"] = int(price_match.group(1).replace(",", ""))
 
         # Property Details Table (common pattern on MLS sites)
-        details_table = soup.find("table", class_=re.compile(r"details|facts|features"))
+        details_table = soup.find("table", class_=RE_DETAILS_TABLE)
         if details_table:
             for row in details_table.find_all("tr"):
                 cells = row.find_all(["th", "td"])
@@ -547,7 +594,7 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
                         if "no fee" in value.lower():
                             metadata["hoa_fee"] = 0.0
                         else:
-                            hoa_match = re.search(r"\$([0-9,]+)", value)
+                            hoa_match = RE_PRICE_EXTRACT.search(value)
                             if hoa_match:
                                 metadata["hoa_fee"] = float(hoa_match.group(1).replace(",", ""))
                     elif "pool" in label:
@@ -569,31 +616,105 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
                         metadata["water_source"] = value
                     elif "roof" in label:
                         metadata["roof_material"] = value
+                    # === NEW EXTRACTION PATTERNS (E2-R2) ===
+                    elif "fireplace" in label:
+                        metadata["fireplace_yn"] = (
+                            "yes" in value.lower()
+                            or "true" in value.lower()
+                            or (value.isdigit() and int(value) > 0)
+                        )
+                    elif "flooring" in label or "floor" in label:
+                        # Parse flooring types as list
+                        metadata["flooring_types"] = [
+                            f.strip() for f in value.split(",") if f.strip()
+                        ]
+                    elif "laundry" in label:
+                        # Parse laundry features as list
+                        metadata["laundry_features"] = [
+                            f.strip() for f in value.split(",") if f.strip()
+                        ]
+                    elif "status" in label and "listing" in label:
+                        metadata["listing_status"] = value
+                    elif "office" in label or "brokerage" in label or "broker" in label:
+                        metadata["listing_office"] = value
+
+        # Listing Status (badge/tag pattern - e.g., "Active", "Pending", "Sold")
+        if "listing_status" not in metadata:
+            status_elem = soup.find(
+                ["span", "div", "badge"],
+                class_=RE_STATUS_BADGE,
+            )
+            if status_elem:
+                status_text = status_elem.get_text(strip=True)
+                if status_text.lower() in ("active", "pending", "sold", "contingent"):
+                    metadata["listing_status"] = status_text.capitalize()
+
+        # Days on Market (patterns: "Listed X days ago", "DOM: X", "Days on Market: X")
+        for pattern in DOM_PATTERNS:
+            dom_match = soup.find(string=pattern)
+            if dom_match:
+                match = pattern.search(str(dom_match))
+                if match:
+                    metadata["days_on_market"] = int(match.group(1))
+                    break
+
+        # Original List Price and Price Reduced
+        # Pattern: "Original Price: $X" or "Was $X, Now $Y" or "Price Reduced"
+        price_history = soup.find(["div", "span", "p"], class_=RE_PRICE_HISTORY)
+        if price_history:
+            history_text = price_history.get_text(strip=True)
+            # Match "Original Price: $X" or "Original: $X" or "Was $X"
+            original_match = RE_ORIGINAL_PRICE.search(history_text)
+            if original_match:
+                metadata["original_list_price"] = int(original_match.group(1).replace(",", ""))
+                # If we have both original and current price, determine if reduced
+                if "price" in metadata and metadata["original_list_price"] > metadata["price"]:
+                    metadata["price_reduced"] = True
+                elif "price" in metadata:
+                    metadata["price_reduced"] = False
+        # Also check for "Price Reduced" badge/tag
+        reduced_elem = soup.find(string=RE_PRICE_REDUCED)
+        if reduced_elem:
+            metadata["price_reduced"] = True
+
+        # MLS Last Updated (timestamp pattern)
+        updated_elem = soup.find(string=RE_UPDATED)
+        if updated_elem:
+            updated_text = str(updated_elem)
+            # Try ISO date pattern
+            date_match = RE_ISO_DATE.search(updated_text)
+            if date_match:
+                metadata["mls_last_updated"] = date_match.group(1)
+            else:
+                # Try "MM/DD/YYYY" pattern
+                date_match = RE_US_DATE.search(updated_text)
+                if date_match:
+                    metadata["mls_last_updated"] = date_match.group(1)
 
         # Schools (usually in separate section)
-        schools_section = soup.find("div", class_=re.compile(r"school|education"))
+        schools_section = soup.find("div", class_=RE_SCHOOL_SECTION)
         if schools_section:
             for school_elem in schools_section.find_all(["div", "span", "p"]):
                 text = school_elem.get_text(strip=True)
                 if "elementary" in text.lower():
                     # Extract school name after "Elementary:"
-                    school_match = re.search(r"Elementary:?\s*(.+)", text, re.IGNORECASE)
+                    school_match = RE_ELEMENTARY.search(text)
                     if school_match:
                         metadata["elementary_school_name"] = school_match.group(1).strip()
                 elif "middle" in text.lower():
-                    school_match = re.search(r"Middle:?\s*(.+)", text, re.IGNORECASE)
+                    school_match = RE_MIDDLE.search(text)
                     if school_match:
                         metadata["middle_school_name"] = school_match.group(1).strip()
                 elif "high" in text.lower():
-                    school_match = re.search(r"High:?\s*(.+)", text, re.IGNORECASE)
+                    school_match = RE_HIGH.search(text)
                     if school_match:
                         metadata["high_school_name"] = school_match.group(1).strip()
 
         # Features (comma-separated lists)
-        features_section = soup.find("div", class_=re.compile(r"features|amenities"))
+        features_section = soup.find("div", class_=RE_FEATURES_SECTION)
         if features_section:
             # Kitchen features
-            kitchen_elem = features_section.find(string=re.compile(r"Kitchen", re.IGNORECASE))
+            kitchen_elem = features_section.find(string=RE_KITCHEN)
             if kitchen_elem:
                 kitchen_parent = kitchen_elem.find_parent(["div", "section"])
                 if kitchen_parent:
@@ -603,7 +724,7 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
                     ]
 
             # Master bath features
-            master_elem = features_section.find(string=re.compile(r"Master Bath", re.IGNORECASE))
+            master_elem = features_section.find(string=RE_MASTER_BATH)
             if master_elem:
                 master_parent = master_elem.find_parent(["div", "section"])
                 if master_parent:
@@ -613,7 +734,7 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
                     ]
 
             # Interior features
-            interior_elem = features_section.find(string=re.compile(r"Interior", re.IGNORECASE))
+            interior_elem = features_section.find(string=RE_INTERIOR)
             if interior_elem:
                 interior_parent = interior_elem.find_parent(["div", "section"])
                 if interior_parent:
@@ -623,7 +744,7 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
                     ]
 
             # Exterior features
-            exterior_elem = features_section.find(string=re.compile(r"Exterior", re.IGNORECASE))
+            exterior_elem = features_section.find(string=RE_EXTERIOR)
             if exterior_elem:
                 exterior_parent = exterior_elem.find_parent(["div", "section"])
                 if exterior_parent:
@@ -633,12 +754,12 @@ class PhoenixMLSExtractor(StealthBrowserExtractor):
                     ]
 
         # Cross streets
-        cross_elem = soup.find(string=re.compile(r"Cross Streets", re.IGNORECASE))
+        cross_elem = soup.find(string=RE_CROSS_STREETS)
         if cross_elem:
             cross_parent = cross_elem.find_parent(["div", "span", "p"])
             if cross_parent:
                 cross_text = cross_parent.get_text(strip=True)
-                cross_match = re.search(r"Cross Streets:?\s*(.+)", cross_text, re.IGNORECASE)
+                cross_match = RE_CROSS_STREETS_EXTRACT.search(cross_text)
                 if cross_match:
                     metadata["cross_streets"] = cross_match.group(1).strip()
 

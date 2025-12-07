@@ -149,6 +149,7 @@ class Property:
     school_count_1mi: int | None = None
 
     # Market Data (Phase 1 listing extraction)
+    list_price: int | None = None  # Current listing price from MLS
     days_on_market: int | None = None
     original_list_price: int | None = None
     price_reduced: bool | None = None
@@ -562,6 +563,7 @@ class EnrichmentData:
     school_count_1mi: int | None = None
 
     # Market Data (Phase 1 listing extraction)
+    list_price: int | None = None  # Current listing price from MLS
     days_on_market: int | None = None
     original_list_price: int | None = None
     price_reduced: bool | None = None

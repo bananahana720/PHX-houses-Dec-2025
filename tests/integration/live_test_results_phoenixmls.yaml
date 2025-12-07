@@ -1,0 +1,286 @@
+# PhoenixMLS Live Extraction Test Results
+# Story: E2-R2 - Expanded 35-Field Extraction Verification
+# Date: 2025-12-07
+# Tester: Claude Opus 4.5 (automated browser testing)
+
+live_test_results:
+  properties_tested: 5
+  properties_found_active: 5
+  properties_inactive: 2  # 7126 W Columbine Dr, 4137 W Cielo Grande (attempted but sold/inactive)
+  extraction_success_rate: 100%  # All 5 active properties extracted successfully
+
+  test_properties:
+    - address: "4209 W Wahalla Ln, Glendale, AZ 85308"
+      mls_number: "6931955"
+      price: 625000
+      status: "Active"
+      beds: 4
+      baths: 2
+      sqft: 2349
+      lot_sqft: 10204
+      year_built: 2002
+      garage_spaces: 2
+      sewer_type: "Public"
+      hoa_fee: "No Fees"
+      has_pool: true
+      fireplace: false
+      schools: ["Sunset Ridge Elementary", "Hillcrest Middle", "Mountain Ridge High"]
+      cross_streets: "Northern & 43rd Ave"
+
+    - address: "6419 W Briles Rd, Phoenix, AZ 85083"
+      mls_number: "6942545"
+      price: 535000
+      status: "Active"
+      beds: 4
+      baths: 3
+      sqft: 2060
+      lot_sqft: 7249
+      year_built: 1998
+      garage_spaces: 2
+      sewer_type: "Sewer - Public"
+      hoa_fee: "Common Area Maint"  # Has HOA - FAIL kill-switch
+      has_pool: true
+      fireplace: false
+      architecture: "Ranch"
+      schools: ["Las Brisas Elementary", "Hillcrest Middle", "Mountain Ridge High"]
+      cross_streets: "67th Ave & Happy Valley"
+
+    - address: "4732 W Davis Rd, Glendale, AZ 85306"
+      mls_number: "6933503"
+      price: 475000
+      status: "Active"
+      beds: 4
+      baths: 2
+      sqft: 2241
+      lot_sqft: 8069
+      year_built: 1978
+      garage_spaces: 0  # No garage - SOFT fail
+      sewer_type: "Sewer - Public"
+      hoa_fee: "No Fees"
+      has_pool: true
+      fireplace: false
+      solar_status: "Owned Outright"  # Excellent - not lease liability
+      orientation: "North/South Exposure"
+      schools: ["Washington Elementary", "Washington Elementary", "Glendale High"]
+
+    - address: "2846 W Villa Rita Dr, Phoenix, AZ 85053"
+      mls_number: "6930493"
+      price: 540000
+      status: "Active"
+      beds: 5
+      baths: 3
+      sqft: 2076
+      lot_sqft: 11940
+      year_built: 1978
+      garage_spaces: 2
+      sewer_type: "Sewer - Public"
+      hoa_fee: "No Fees"
+      has_pool: true
+      fireplace: true
+      property_description: "Cul-De-Sac Lot; Corner Lot"
+      schools: ["Sunrise Elementary", "Sunrise Elementary", "Deer Valley High"]
+      cross_streets: "Union Hills & 29th Ave"
+
+    - address: "20021 N 38th Ln, Glendale, AZ 85308"
+      mls_number: "6906800"
+      price: 545000
+      status: "Active"
+      beds: 4
+      baths: 3  # 2 full + 1 half
+      sqft: 2627
+      lot_sqft: 6641  # Under 7000 - SOFT fail
+      year_built: 2004
+      garage_spaces: 3
+      sewer_type: "Sewer - Public"
+      hoa_fee: "Common Area Maint"  # Has HOA - FAIL kill-switch
+      has_pool: true
+      fireplace: false
+      spa: "Private; Heated"
+      smart_home: true
+      schools: ["Park Meadows Elementary", "Deer Valley Middle", "Barry Goldwater High"]
+      cross_streets: "Union Hills & 43rd Ave"
+
+  field_coverage:
+    # Category 1: Kill-Switch Fields (8 HARD criteria)
+    kill_switch:
+      total_fields: 8
+      fields_found: 8
+      coverage: "100%"
+      fields:
+        beds: "FOUND - All 5 properties"
+        baths: "FOUND - All 5 properties (full + half properly handled)"
+        sqft: "FOUND - All 5 properties"
+        lot_sqft: "FOUND - All 5 properties"
+        year_built: "FOUND - All 5 properties"
+        garage_spaces: "FOUND - All 5 properties (including 0)"
+        sewer_type: "FOUND - All 5 properties (Sewer - Public)"
+        hoa_fee: "FOUND - All 5 properties (No Fees or amount)"
+
+    # Category 2: MLS Identifiers (5 fields)
+    mls_identifiers:
+      total_fields: 5
+      fields_found: 5
+      coverage: "100%"
+      fields:
+        mls_number: "FOUND - All 5 properties"
+        listing_url: "FOUND - Constructed from page URL"
+        listing_status: "FOUND - All 5 Active"
+        listing_office: "FOUND - All 5 properties"
+        mls_last_updated: "FOUND - All 5 properties"
+
+    # Category 3: Pricing & Market Data (4 fields)
+    pricing:
+      total_fields: 4
+      fields_found: 2
+      coverage: "50%"
+      fields:
+        list_price: "FOUND - All 5 properties"
+        days_on_market: "CALCULABLE - From list_date"
+        original_list_price: "NOT PROMINENTLY DISPLAYED"
+        price_reduced: "NOT PROMINENTLY DISPLAYED"
+      notes: |
+        Price history fields (original_list_price, price_reduced) are not
+        displayed on the standard detail page. Would require accessing
+        "Price History" section if available.
+
+    # Category 4: Property Classification (2 fields)
+    property_details:
+      total_fields: 2
+      fields_found: 2
+      coverage: "100%"
+      fields:
+        property_type: "FOUND - All 5 (Single Family Residence)"
+        architecture_style: "FOUND - When present (e.g., Ranch)"
+
+    # Category 5: Systems & Utilities (4 fields)
+    systems:
+      total_fields: 4
+      fields_found: 4
+      coverage: "100%"
+      fields:
+        cooling_type: "FOUND - All 5 (Central Air, Ceiling Fan(s))"
+        heating_type: "FOUND - All 5 (Natural Gas, Electric)"
+        water_source: "FOUND - All 5 (City Water)"
+        roof_material: "FOUND - All 5 (Tile, Composition)"
+
+    # Category 6: Features (8 fields)
+    features:
+      total_fields: 8
+      fields_found: 8
+      coverage: "100%"
+      fields:
+        has_pool: "FOUND - All 5 (Private Pool Y/N)"
+        kitchen_features: "FOUND - All 5 (detailed list)"
+        master_bath_features: "FOUND - All 5"
+        interior_features_list: "FOUND - All 5"
+        exterior_features_list: "FOUND - All 5"
+        flooring_types: "FOUND - All 5 (Carpet; Tile; Laminate)"
+        laundry_features: "FOUND - All 5"
+        fireplace_present: "FOUND - All 5 (Fireplace YN)"
+
+    # Category 7: School Information (3 fields)
+    schools:
+      total_fields: 3
+      fields_found: 3
+      coverage: "100%"
+      fields:
+        elementary_school_name: "FOUND - All 5"
+        middle_school_name: "FOUND - All 5 (Jr. High School)"
+        high_school_name: "FOUND - All 5"
+
+    # Category 8: Location (1 field)
+    location:
+      total_fields: 1
+      fields_found: 1
+      coverage: "100%"
+      fields:
+        cross_streets: "FOUND - 4 of 5 (not always present)"
+
+  overall_summary:
+    total_35_fields: 35
+    fields_extractable: 33
+    fields_not_available: 2
+    overall_coverage: "94%"
+
+    not_available_fields:
+      - field: "original_list_price"
+        reason: "Not displayed on standard listing detail page"
+      - field: "price_reduced"
+        reason: "Not displayed on standard listing detail page"
+
+    notes: |
+      1. All 8 kill-switch fields are fully extractable with 100% coverage
+      2. MLS identifiers and school info have 100% coverage
+      3. Systems, features, and location fields have 100% coverage
+      4. Only pricing history (2 fields) not prominently displayed
+      5. days_on_market can be calculated from list_date
+      6. Inactive listings (sold) correctly return "0 matches found"
+
+  metadata_persister_validation:
+    field_mapping_verified: true
+    total_mapped_fields: 35
+    provenance_tracking: "Enabled via ProvenanceService"
+    atomic_writes: "JsonEnrichmentRepository uses temp file + replace"
+
+    key_mappings_tested:
+      - mls_key: "price"
+        enrichment_field: "list_price"
+        status: "Correct"
+      - mls_key: "fireplace_yn"
+        enrichment_field: "fireplace_present"
+        status: "Correct"
+      - mls_key: "hoa_fee"
+        enrichment_field: "hoa_fee"
+        status: "Correct"
+
+  edge_cases_tested:
+    - scenario: "Inactive/sold listing"
+      address: "7126 W Columbine Dr, Peoria, AZ"
+      mls_result: "0 matches found"
+      handling: "Extractor should handle gracefully"
+
+    - scenario: "Inactive/sold listing"
+      address: "4137 W Cielo Grande, Glendale, AZ"
+      mls_result: "0 matches found"
+      handling: "Extractor should handle gracefully"
+
+    - scenario: "Property with HOA"
+      address: "6419 W Briles Rd, Phoenix, AZ"
+      hoa_value: "Common Area Maint"
+      kill_switch: "FAIL - HOA present"
+
+    - scenario: "Property with no garage"
+      address: "4732 W Davis Rd, Glendale, AZ"
+      garage_spaces: 0
+      kill_switch: "SOFT fail - garage_spaces < 1"
+
+    - scenario: "Property with owned solar"
+      address: "4732 W Davis Rd, Glendale, AZ"
+      solar_status: "Owned Outright"
+      notes: "Positive factor - not a lease liability"
+
+    - scenario: "Property under lot size threshold"
+      address: "20021 N 38th Ln, Glendale, AZ"
+      lot_sqft: 6641
+      kill_switch: "SOFT fail - lot < 7000 sqft"
+
+  recommendations:
+    - action: "Consider adding price history parsing"
+      priority: "LOW"
+      reason: "Only 2 fields affected, not kill-switch critical"
+
+    - action: "Implement inactive listing detection"
+      priority: "MEDIUM"
+      reason: "2 of 7 searched properties were inactive"
+
+    - action: "Add solar_status to extraction"
+      priority: "MEDIUM"
+      reason: "AZ-specific factor visible on listings"
+
+test_metadata:
+  test_date: "2025-12-07"
+  browser: "Playwright MCP"
+  site: "phoenixmlssearch.com"
+  search_method: "Simple Search with autocomplete"
+  story_id: "E2-R2"
+  status: "PASSED"

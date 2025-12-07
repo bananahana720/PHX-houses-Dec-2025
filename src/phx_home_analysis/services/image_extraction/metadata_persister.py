@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 # Field mapping from PhoenixMLS metadata keys to EnrichmentData fields
+# Organized by category for maintainability
 MLS_FIELD_MAPPING: dict[str, str] = {
+    # === KILL-SWITCH FIELDS (8 HARD criteria) ===
     "hoa_fee": "hoa_fee",
     "beds": "beds",
     "baths": "baths",
@@ -27,8 +29,42 @@ MLS_FIELD_MAPPING: dict[str, str] = {
     "garage_spaces": "garage_spaces",
     "sewer_type": "sewer_type",
     "year_built": "year_built",
+    # === MLS IDENTIFIERS ===
     "mls_number": "mls_number",
     "listing_url": "listing_url",
+    "listing_status": "listing_status",
+    "listing_office": "listing_office",
+    "mls_last_updated": "mls_last_updated",
+    # === PRICING & MARKET DATA ===
+    "price": "list_price",  # Map to list_price in EnrichmentData
+    "days_on_market": "days_on_market",
+    "original_list_price": "original_list_price",
+    "price_reduced": "price_reduced",
+    # === PROPERTY CLASSIFICATION ===
+    "property_type": "property_type",
+    "architecture_style": "architecture_style",
+    # === SYSTEMS & UTILITIES ===
+    "cooling_type": "cooling_type",
+    "heating_type": "heating_type",
+    "water_source": "water_source",
+    "roof_material": "roof_material",
+    # === POOL & EXTERIOR ===
+    "has_pool": "has_pool",
+    # === INTERIOR FEATURES (list fields) ===
+    "kitchen_features": "kitchen_features",
+    "master_bath_features": "master_bath_features",
+    "interior_features_list": "interior_features_list",
+    "flooring_types": "flooring_types",
+    "laundry_features": "laundry_features",
+    "fireplace_yn": "fireplace_present",  # Map to fireplace_present boolean
+    # === EXTERIOR FEATURES (list fields) ===
+    "exterior_features_list": "exterior_features_list",
+    # === SCHOOL INFORMATION ===
+    "elementary_school_name": "elementary_school_name",
+    "middle_school_name": "middle_school_name",
+    "high_school_name": "high_school_name",
+    # === LOCATION ===
+    "cross_streets": "cross_streets",
 }
 
 
