@@ -33,6 +33,7 @@ import nodriver as uc
 
 from ....config.settings import StealthExtractionConfig
 from ....domain.entities import Property
+from ....errors import retry_with_backoff
 from ...infrastructure import BrowserPool, StealthHttpClient
 from ..metrics import log_captcha_event
 from .base import ExtractionError, ImageExtractor, SourceUnavailableError
@@ -139,6 +140,7 @@ class StealthBrowserExtractor(ImageExtractor):
             "enabled" if self.config.is_configured else "disabled",
         )
 
+    @retry_with_backoff(max_retries=3, min_delay=2.0)
     async def download_image(self, url: str) -> tuple[bytes, str]:
         """Download image using stealth HTTP client.
 
@@ -213,8 +215,7 @@ class StealthBrowserExtractor(ImageExtractor):
 
                 if not solved:
                     logger.error(
-                        "%s CAPTCHA solving failed for %s (%.2fs)",
-                        self.name, url, solve_time
+                        "%s CAPTCHA solving failed for %s (%.2fs)", self.name, url, solve_time
                     )
 
                     # Log CAPTCHA failure event
@@ -234,10 +235,7 @@ class StealthBrowserExtractor(ImageExtractor):
                         retry_after=self.CAPTCHA_RETRY_AFTER_SECONDS,
                     )
 
-                logger.info(
-                    "%s CAPTCHA solved for %s (%.2fs)",
-                    self.name, url, solve_time
-                )
+                logger.info("%s CAPTCHA solved for %s (%.2fs)", self.name, url, solve_time)
 
                 # Log CAPTCHA success event
                 log_captcha_event(
@@ -344,18 +342,7 @@ class StealthBrowserExtractor(ImageExtractor):
             True if CAPTCHA is blocking content, False otherwise
         """
         try:
-            # Strategy 1: Network request analysis (primary detection)
-            # Check for PerimeterX API calls indicating CAPTCHA challenge
-            try:
-                # Get network requests from tab (if available)
-                # Note: This may require enabling network monitoring in browser
-                # For now, we'll use DOM-based detection as primary method
-                logger.debug("%s checking network requests for PerimeterX calls", self.name)
-                # TODO: Implement network request inspection when nodriver API supports it
-            except Exception as e:
-                logger.debug("%s network analysis not available: %s", self.name, e)
-
-            # Strategy 2: DOM text analysis (fallback/primary for now)
+            # DOM text analysis for CAPTCHA detection
             page_text = await tab.get_content()
             page_text_lower = page_text.lower()
             content_length = len(page_text)
@@ -388,8 +375,7 @@ class StealthBrowserExtractor(ImageExtractor):
                 for indicator in property_indicators:
                     if indicator in page_text_lower:
                         logger.debug(
-                            "%s page has property content (%d chars), "
-                            "indicator: %s - no CAPTCHA",
+                            "%s page has property content (%d chars), indicator: %s - no CAPTCHA",
                             self.name,
                             content_length,
                             indicator,
@@ -435,9 +421,7 @@ class StealthBrowserExtractor(ImageExtractor):
             # Assume no CAPTCHA if we can't check
             return False
 
-    async def _human_mouse_move_bezier(
-        self, tab: uc.Tab, target_x: int, target_y: int
-    ) -> None:
+    async def _human_mouse_move_bezier(self, tab: uc.Tab, target_x: int, target_y: int) -> None:
         """Move mouse using cubic Bezier curve for natural human-like trajectory.
 
         Implements parametric cubic Bezier curve movement with randomized control
@@ -463,9 +447,7 @@ class StealthBrowserExtractor(ImageExtractor):
             Falls back to direct mouse_move on any error to ensure the mouse
             reaches the target even if smooth movement fails.
         """
-        logger.debug(
-            "%s Bezier mouse move to: (%d, %d)", self.name, target_x, target_y
-        )
+        logger.debug("%s Bezier mouse move to: (%d, %d)", self.name, target_x, target_y)
 
         try:
             # Start position (assume center-left of viewport)
@@ -478,22 +460,14 @@ class StealthBrowserExtractor(ImageExtractor):
             cp2_range = self.BEZIER_CONTROL_POINT_2_RANGE
 
             # Control point 1: early in path with random offset
-            cp1_x = start_x + int(
-                (target_x - start_x) * random.uniform(*cp1_range)
-            )
-            cp1_y = start_y + int(
-                (target_y - start_y) * random.uniform(*cp1_range)
-            )
+            cp1_x = start_x + int((target_x - start_x) * random.uniform(*cp1_range))
+            cp1_y = start_y + int((target_y - start_y) * random.uniform(*cp1_range))
             cp1_x += random.randint(-variance, variance)
             cp1_y += random.randint(-variance, variance)
 
             # Control point 2: later in path with random offset
-            cp2_x = start_x + int(
-                (target_x - start_x) * random.uniform(*cp2_range)
-            )
-            cp2_y = start_y + int(
-                (target_y - start_y) * random.uniform(*cp2_range)
-            )
+            cp2_x = start_x + int((target_x - start_x) * random.uniform(*cp2_range))
+            cp2_y = start_y + int((target_y - start_y) * random.uniform(*cp2_range))
             cp2_x += random.randint(-variance, variance)
             cp2_y += random.randint(-variance, variance)
 
@@ -620,8 +594,7 @@ class StealthBrowserExtractor(ImageExtractor):
 
                 if initial_content_length > 0:
                     change_ratio = (
-                        abs(current_length - initial_content_length)
-                        / initial_content_length
+                        abs(current_length - initial_content_length) / initial_content_length
                     )
                     if change_ratio > self.PAGE_CONTENT_CHANGE_THRESHOLD:
                         logger.debug(
@@ -668,7 +641,7 @@ class StealthBrowserExtractor(ImageExtractor):
         """
         try:
             # JavaScript to find the CAPTCHA iframe and return its center coordinates
-            js_code = '''
+            js_code = """
             (function() {
                 // Find the px-captcha container
                 var container = document.querySelector('#px-captcha');
@@ -720,17 +693,22 @@ class StealthBrowserExtractor(ImageExtractor):
                     source: 'shadow-iframe'
                 };
             })();
-            '''
+            """
 
             # Execute JavaScript and get result
             result = await tab.evaluate(js_code)
 
-            if result and isinstance(result, dict) and 'x' in result and 'y' in result:
-                x, y = result['x'], result['y']
-                source = result.get('source', 'unknown')
+            if result and isinstance(result, dict) and "x" in result and "y" in result:
+                x, y = result["x"], result["y"]
+                source = result.get("source", "unknown")
                 logger.info(
                     "%s found CAPTCHA button via CDP at (%d, %d), size: %dx%d, source: %s",
-                    self.name, x, y, result.get('width', 0), result.get('height', 0), source
+                    self.name,
+                    x,
+                    y,
+                    result.get("width", 0),
+                    result.get("height", 0),
+                    source,
                 )
                 return (x, y)
 
@@ -792,7 +770,9 @@ class StealthBrowserExtractor(ImageExtractor):
                 logger.info("%s using CDP coordinates: %s", self.name, element_center)
             else:
                 # Fall back to existing iframe/selector logic
-                logger.debug("%s CDP detection failed, falling back to iframe/selector logic", self.name)
+                logger.debug(
+                    "%s CDP detection failed, falling back to iframe/selector logic", self.name
+                )
                 try:
                     # Updated selectors to match actual PerimeterX CAPTCHA iframe structure
                     iframe_selectors = [
@@ -860,10 +840,9 @@ class StealthBrowserExtractor(ImageExtractor):
                         try:
                             frame_buttons = await iframe_el.query_selector_all("button")
                             for btn in frame_buttons:
-                                text = (
-                                    (getattr(btn, "text", "") or "").lower()
-                                    or btn.attrs.get("aria-label", "").lower()
-                                )
+                                text = (getattr(btn, "text", "") or "").lower() or btn.attrs.get(
+                                    "aria-label", ""
+                                ).lower()
                                 if "press" in text and "hold" in text:
                                     element = btn
                                     logger.debug("%s found CAPTCHA button inside iframe", self.name)
@@ -907,10 +886,9 @@ class StealthBrowserExtractor(ImageExtractor):
                     try:
                         buttons = await tab.query_selector_all("button")
                         for btn in buttons:
-                            text = (
-                                (getattr(btn, "text", "") or "").lower()
-                                or btn.attrs.get("aria-label", "").lower()
-                            )
+                            text = (getattr(btn, "text", "") or "").lower() or btn.attrs.get(
+                                "aria-label", ""
+                            ).lower()
                             if "press" in text and "hold" in text:
                                 element = btn
                                 logger.debug("%s found CAPTCHA button by text scan", self.name)
@@ -1081,9 +1059,7 @@ class StealthBrowserExtractor(ImageExtractor):
             logger.error("%s error solving CAPTCHA: %s", self.name, e)
             return False
 
-    async def _attempt_captcha_solve_v2(
-        self, tab: uc.Tab, max_attempts: int = 3
-    ) -> bool:
+    async def _attempt_captcha_solve_v2(self, tab: uc.Tab, max_attempts: int = 3) -> bool:
         """Orchestrate multi-attempt CAPTCHA solving with progressive backoff.
 
         This method coordinates the 2-layer CAPTCHA solving strategy by:

@@ -16,6 +16,10 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
+# Schema version for migration support
+CURRENT_SCHEMA_VERSION = "2.0.0"
+
+
 @dataclass
 class ExtractionState:
     """Persistent state for resumable extraction.
@@ -24,12 +28,14 @@ class ExtractionState:
     to enable resumption of interrupted extraction runs.
 
     Attributes:
+        version: Schema version for migration support (added in v2.0.0)
         completed_properties: Set of addresses that completed successfully
         failed_properties: Set of addresses that failed
         property_last_checked: Dict mapping address -> ISO datetime when last processed
         last_updated: ISO timestamp of last state modification
     """
 
+    version: str = CURRENT_SCHEMA_VERSION
     completed_properties: set[str] = field(default_factory=set)
     failed_properties: set[str] = field(default_factory=set)
     property_last_checked: dict[str, str] = field(default_factory=dict)
@@ -39,9 +45,10 @@ class ExtractionState:
         """Convert to dictionary for JSON serialization.
 
         Returns:
-            Dict representation
+            Dict representation with schema version
         """
         return {
+            "version": self.version,
             "completed_properties": list(self.completed_properties),
             "failed_properties": list(self.failed_properties),
             "property_last_checked": self.property_last_checked,
@@ -50,15 +57,34 @@ class ExtractionState:
 
     @classmethod
     def from_dict(cls, data: dict) -> "ExtractionState":
-        """Load from dictionary.
+        """Load from dictionary with migration support.
+
+        Handles legacy state files (v1.0.0) that lack version field.
+        Future versions: Add migration logic here to transform old schema to new.
 
         Args:
             data: Dictionary from JSON
 
         Returns:
-            ExtractionState instance
+            ExtractionState instance with current schema version
         """
+        # Read version with fallback to legacy "1.0.0"
+        version = data.get("version", "1.0.0")
+
+        # Log migration from older versions
+        if version != CURRENT_SCHEMA_VERSION:
+            logger.warning(
+                f"Migrating state from version {version} to {CURRENT_SCHEMA_VERSION}"
+            )
+
+        # Future migration logic:
+        # if version == "1.0.0":
+        #     data = migrate_v1_to_v2(data)
+        # if version == "2.0.0":
+        #     data = migrate_v2_to_v3(data)
+
         return cls(
+            version=CURRENT_SCHEMA_VERSION,
             completed_properties=set(data.get("completed_properties", [])),
             failed_properties=set(data.get("failed_properties", [])),
             property_last_checked=data.get("property_last_checked", {}),
@@ -119,7 +145,7 @@ class StateManager:
     """Manages extraction state persistence.
 
     Provides atomic read/write operations for extraction state with
-    automatic timestamping and logging.
+    automatic timestamping and logging. Includes backup management.
     """
 
     def __init__(self, state_path: Path):
@@ -156,10 +182,108 @@ class StateManager:
         self._state = ExtractionState()
         return self._state
 
+    def _create_backup(self) -> Path | None:
+        """Create timestamped backup of current state file.
+
+        Returns:
+            Path to backup file, or None if state file doesn't exist
+        """
+        if not self.state_path.exists():
+            return None
+
+        backup_dir = self.state_path.parent / "backups"
+        backup_dir.mkdir(parents=True, exist_ok=True)
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_path = backup_dir / f"{self.state_path.stem}_{timestamp}.json"
+
+        try:
+            import shutil
+
+            shutil.copy2(self.state_path, backup_path)
+            logger.debug(f"Created backup: {backup_path.name}")
+            return backup_path
+        except OSError as e:
+            logger.warning(f"Failed to create backup: {e}")
+            return None
+
+    def _cleanup_old_backups(self, keep_count: int = 10) -> None:
+        """Remove old backups, keeping only the most recent N.
+
+        Args:
+            keep_count: Number of most recent backups to retain (default: 10)
+        """
+        backup_dir = self.state_path.parent / "backups"
+        if not backup_dir.exists():
+            return
+
+        # Get all backup files for this state file
+        pattern = f"{self.state_path.stem}_*.json"
+        backups = sorted(backup_dir.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
+
+        # Remove old backups beyond keep_count
+        removed_count = 0
+        for old_backup in backups[keep_count:]:
+            try:
+                old_backup.unlink()
+                removed_count += 1
+            except OSError as e:
+                logger.warning(f"Failed to remove old backup {old_backup.name}: {e}")
+
+        if removed_count > 0:
+            logger.debug(f"Cleaned up {removed_count} old backup(s)")
+
+    def restore_from_backup(self, backup_path: Path | None = None) -> bool:
+        """Restore state from a backup file.
+
+        Args:
+            backup_path: Specific backup to restore. If None, restores most recent backup.
+
+        Returns:
+            True if restore succeeded, False otherwise
+        """
+        if backup_path is None:
+            # Find most recent backup
+            backup_dir = self.state_path.parent / "backups"
+            if not backup_dir.exists():
+                logger.error("No backups directory found")
+                return False
+
+            pattern = f"{self.state_path.stem}_*.json"
+            backups = sorted(backup_dir.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
+
+            if not backups:
+                logger.error("No backups found")
+                return False
+
+            backup_path = backups[0]
+
+        if not backup_path.exists():
+            logger.error(f"Backup file not found: {backup_path}")
+            return False
+
+        try:
+            import shutil
+
+            # Create backup of current state before restoring
+            if self.state_path.exists():
+                self._create_backup()
+
+            # Restore from backup
+            shutil.copy2(backup_path, self.state_path)
+            # Clear cached state to force reload
+            self._state = None
+            logger.info(f"Restored state from backup: {backup_path.name}")
+            return True
+        except OSError as e:
+            logger.error(f"Failed to restore from backup: {e}")
+            return False
+
     def save(self, state: ExtractionState | None = None) -> None:
-        """Save state to disk atomically.
+        """Save state to disk atomically with automatic backup.
 
         Security: Uses temp file + rename to prevent corruption from crashes.
+        Creates timestamped backup before save and cleans up old backups.
 
         Args:
             state: State to save (uses cached state if None)
@@ -179,6 +303,9 @@ class StateManager:
         try:
             self.state_path.parent.mkdir(parents=True, exist_ok=True)
 
+            # Create backup before saving
+            self._create_backup()
+
             # Atomic write using temp file + rename
             fd, temp_path = tempfile.mkstemp(dir=self.state_path.parent, suffix=".tmp")
             try:
@@ -186,6 +313,9 @@ class StateManager:
                     json.dump(self._state.to_dict(), f, indent=2)
                 os.replace(temp_path, self.state_path)  # Atomic on POSIX and Windows
                 logger.debug("Saved state to disk")
+
+                # Cleanup old backups
+                self._cleanup_old_backups(keep_count=10)
             except Exception:
                 if os.path.exists(temp_path):
                     os.unlink(temp_path)

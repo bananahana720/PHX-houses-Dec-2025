@@ -29,6 +29,7 @@ import httpx
 from ...domain.entities import Property
 from ...domain.enums import ImageSource, ImageStatus
 from ...domain.value_objects import ImageMetadata
+from ...errors import is_transient_error
 from .deduplicator import DeduplicationError, ImageDeduplicator
 from .extraction_stats import ExtractionResult, SourceStats
 from .extractors import (
@@ -259,6 +260,7 @@ class ImageExtractionOrchestrator:
         max_concurrent_properties: int | None = None,
         deduplication_threshold: int = 8,
         max_dimension: int = 1024,
+        work_items_path: Path | None = None,
     ):
         """Initialize orchestrator with configuration.
 
@@ -270,6 +272,7 @@ class ImageExtractionOrchestrator:
                 while respecting rate limiting constraints.
             deduplication_threshold: Hamming distance threshold for duplicates
             max_dimension: Maximum image dimension in pixels
+            work_items_path: Path to work_items.json for phase status updates (optional)
 
         Performance Tuning Notes:
             - Default concurrency is CPU-based since image extraction is I/O-bound
@@ -279,6 +282,7 @@ class ImageExtractionOrchestrator:
         """
         self.base_dir = Path(base_dir)
         self.enabled_sources = enabled_sources or list(ImageSource)
+        self.work_items_path = Path(work_items_path) if work_items_path else None
 
         # Compute optimal concurrency: 2x CPU count, bounded between 2 and 15
         # I/O-bound workloads benefit from higher concurrency than CPU-bound
@@ -349,6 +353,10 @@ class ImageExtractionOrchestrator:
             "extraction_errors": 0,
         }
 
+        # Run startup reconciliation if manifest exists
+        if self.manifest_path.exists():
+            self._run_startup_reconciliation()
+
     def _load_manifest(self) -> dict[str, list[dict]]:
         """Load image manifest from disk.
 
@@ -414,6 +422,53 @@ class ImageExtractionOrchestrator:
             self.manifest = current_manifest
 
         logger.debug("Saved manifest to disk")
+
+    def _run_startup_reconciliation(self) -> None:
+        """
+        Run reconciliation check on startup.
+
+        Validates data integrity across manifest, disk files, and URL tracker.
+        Logs warnings if quality is below 90%.
+
+        Called automatically from __init__ if manifest exists.
+        """
+        try:
+            from .reconciliation import DataReconciler
+
+            reconciler = DataReconciler(
+                manifest_path=self.manifest_path,
+                processed_dir=self.processed_dir,
+                url_tracker_path=self.metadata_dir / "url_tracker.json",
+            )
+
+            report = reconciler.reconcile()
+
+            # Log summary
+            logger.info(
+                f"Startup reconciliation: overall quality {report.overall_quality:.1f}% "
+                f"({report.manifest_image_count} manifest, {report.disk_file_count} disk)"
+            )
+
+            # Warn if quality is below 90%
+            if not report.is_healthy:
+                logger.warning(
+                    f"Data quality below 90% ({report.overall_quality:.1f}%): "
+                    f"{len(report.orphan_files)} orphans, "
+                    f"{len(report.ghost_entries)} ghosts, "
+                    f"{len(report.hash_mismatches)} hash mismatches"
+                )
+
+                # Log specific issues for debugging
+                if report.orphan_files:
+                    logger.warning(f"Orphan files (first 5): {report.orphan_files[:5]}")
+                if report.ghost_entries:
+                    logger.warning(f"Ghost entries (first 5): {report.ghost_entries[:5]}")
+                if report.hash_mismatches:
+                    logger.warning(f"Hash mismatches (first 5): {report.hash_mismatches[:5]}")
+
+        except Exception as e:
+            # Don't fail initialization if reconciliation errors
+            logger.warning(f"Startup reconciliation failed: {e}", exc_info=True)
 
     def _load_state(self) -> ExtractionState:
         """Load extraction state from disk.
@@ -745,11 +800,22 @@ class ImageExtractionOrchestrator:
                 )
 
             except Exception as e:
-                logger.error(f"Unexpected error processing property: {e}", exc_info=True)
+                # Classify error as transient or permanent
+                is_transient = is_transient_error(e)
+                error_category = "transient" if is_transient else "permanent"
+
+                logger.error(
+                    f"Unexpected error processing property ({error_category}): {e}",
+                    exc_info=True,
+                )
                 async with self._state_lock:
                     result.properties_failed += 1
+                    # Mark property as failed (permanent) or leave for retry (transient)
+                    if not is_transient:
+                        self.state.mark_failed(property.full_address)
+
                 if self.run_logger.current_run:
-                    self.run_logger.current_run.record_error(str(e))
+                    self.run_logger.current_run.record_error(f"[{error_category}] {str(e)}")
 
         # Final save (with lock)
         async with self._state_lock:
@@ -963,7 +1029,14 @@ class ImageExtractionOrchestrator:
                         result.failed_downloads += 1
 
                     except Exception as e:
-                        logger.error(f"Unexpected error processing {url}: {e}", exc_info=True)
+                        # Classify error as transient or permanent
+                        is_transient = is_transient_error(e)
+                        error_category = "transient" if is_transient else "permanent"
+
+                        logger.error(
+                            f"Unexpected error processing {url} ({error_category}): {e}",
+                            exc_info=True,
+                        )
                         source_stats.images_failed += 1
                         result.failed_downloads += 1
 
@@ -991,14 +1064,20 @@ class ImageExtractionOrchestrator:
                 self._circuit_breaker.record_failure(source_name)
 
             except Exception as e:
+                # Classify error as transient or permanent
+                is_transient = is_transient_error(e)
+                error_category = "transient" if is_transient else "permanent"
+
                 logger.error(
-                    f"Unexpected error with {extractor.name}: {e}",
+                    f"Unexpected error with {extractor.name} ({error_category}): {e}",
                     exc_info=True,
                 )
                 source_stats.properties_failed += 1
 
                 # Circuit breaker: Record failure for unexpected errors
-                self._circuit_breaker.record_failure(source_name)
+                # Only record permanent failures in circuit breaker to avoid over-tripping
+                if not is_transient:
+                    self._circuit_breaker.record_failure(source_name)
 
             finally:
                 # Close extractor
@@ -1367,7 +1446,11 @@ class ImageExtractionOrchestrator:
                         self._stats_accumulator["extraction_errors"] += 1
 
                     except Exception as e:
-                        error_msg = f"Unexpected error processing {url}: {e}"
+                        # Classify error as transient or permanent
+                        is_transient = is_transient_error(e)
+                        error_category = "transient" if is_transient else "permanent"
+
+                        error_msg = f"Unexpected error processing {url} ({error_category}): {e}"
                         # Record error for systemic failure detection
                         should_skip = self._error_aggregator.record_error(error_msg)
                         if not should_skip:
@@ -1376,7 +1459,7 @@ class ImageExtractionOrchestrator:
                         source_stats.images_failed += 1
                         result.failed_downloads += 1
                         prop_changes.errors += 1
-                        prop_changes.error_messages.append(f"Error: {url}: {e}")
+                        prop_changes.error_messages.append(f"Error ({error_category}): {url}: {e}")
                         # Update statistics accumulator
                         self._stats_accumulator["extraction_errors"] += 1
 
@@ -1408,16 +1491,24 @@ class ImageExtractionOrchestrator:
                 self._circuit_breaker.record_failure(source_name)
 
             except Exception as e:
+                # Classify error as transient or permanent
+                is_transient = is_transient_error(e)
+                error_category = "transient" if is_transient else "permanent"
+
                 logger.error(
-                    f"Unexpected error with {extractor.name}: {e}",
+                    f"Unexpected error with {extractor.name} ({error_category}): {e}",
                     exc_info=True,
                 )
                 source_stats.properties_failed += 1
                 prop_changes.errors += 1
-                prop_changes.error_messages.append(f"{extractor.name} error: {e}")
+                prop_changes.error_messages.append(
+                    f"{extractor.name} error ({error_category}): {e}"
+                )
 
                 # Circuit breaker: Record failure for unexpected errors
-                self._circuit_breaker.record_failure(source_name)
+                # Only record permanent failures in circuit breaker to avoid over-tripping
+                if not is_transient:
+                    self._circuit_breaker.record_failure(source_name)
 
             finally:
                 # Close extractor
