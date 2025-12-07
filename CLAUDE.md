@@ -9,7 +9,7 @@ line_target: 80
 # PHX Houses Analysis Pipeline
 
 ## Purpose
-Evaluates Phoenix properties against 7 HARD kill-switches and scores (605 pts max) into Unicorn/Contender/Pass tiers.
+Evaluates Phoenix properties against 5 HARD + 4 SOFT kill-switches and scores (605 pts max) into Unicorn/Contender/Pass tiers.
 
 ## Critical Rules
 | Category | Items |
@@ -36,8 +36,20 @@ Evaluates Phoenix properties against 7 HARD kill-switches and scores (605 pts ma
 | `bash find/ls` | `Glob` tool |
 | Playwright for Zillow | `scripts/extract_images.py` |
 
-## Kill-Switches (7 HARD - instant fail)
-`HOA=$0` | `beds>=4` | `baths>=2` | `sqft>1800` | `lot>8k` | `garage>=1` | `sewer=city`
+## Kill-Switches (5 HARD + 4 SOFT)
+
+**HARD (instant fail):**
+`HOA=$0` | `solar≠lease` | `beds≥4` | `baths≥2` | `sqft>1800`
+
+**SOFT (severity accumulation, fail if ≥3.0):**
+| Criterion | Threshold | Severity |
+|-----------|-----------|----------|
+| Sewer | City only | 2.5 |
+| Year Built | ≤2023 | 2.0 |
+| Garage | ≥2 indoor | 1.5 |
+| Lot Size | 7k-15k sqft | 1.0 |
+
+**Verdict:** FAIL if any HARD fails OR severity ≥ 3.0
 
 ## Scoring (605 pts max)
 - **Location** (250): schools, safety, orientation, proximity

@@ -72,35 +72,41 @@ constants.py assertion:
 - Contender: 363-484 pts (60-80% of 605)
 - Pass: <363 pts (<60% of 605)
 
-### ADR-04: All Kill-Switch Criteria Are HARD
+### ADR-04: Kill-Switch Criteria Classification (5 HARD + 4 SOFT)
 
-**Status:** Accepted
+**Status:** Superseded (2025-12-07)
 
-**Context:** PRD specifies 8 non-negotiable criteria. Previous architecture had some as SOFT.
+**Original Context:** PRD specified 8 non-negotiable criteria. Original decision was all HARD.
 
-**PRD Requirements (FR9-FR14):**
+**Superseded By:** Buyer flexibility requirements led to severity accumulation system.
 
-| Criterion | PRD Requirement | Type |
-|-----------|-----------------|------|
-| HOA | Must be $0 | HARD |
-| Bedrooms | >=4 | HARD |
-| Bathrooms | >=2 | HARD |
-| House SQFT | >1800 sqft | HARD |
-| Lot Size | >8000 sqft | HARD |
-| Garage | Indoor garage required | HARD |
-| Sewer | City only (no septic) | HARD |
-| Year Built | <=2024 (no new construction) | HARD |
+**Current Implementation:**
 
-**Decision:** Implement all 8 as HARD kill-switches. Instant FAIL if any criterion not met.
+| Classification | Criteria | Behavior |
+|----------------|----------|----------|
+| **HARD** (5) | HOA=$0, Solar≠lease, Beds≥4, Baths≥2, Sqft>1800 | Instant FAIL |
+| **SOFT** (4) | Sewer=city, Year≤2023, Garage≥2, Lot 7k-15k | Severity weighted |
 
-**Soft Severity System:** Retained for future flexibility but not currently used in PRD criteria.
+**Severity System:**
+- Sewer (septic): 2.5
+- Year (>2023): 2.0
+- Garage (<2): 1.5
+- Lot (outside range): 1.0
+
+**Verdict:** FAIL if any HARD fails OR severity ≥ 3.0
+
+**Rationale:** Buyer can accept minor compromises (e.g., 1-car garage) but not combinations (e.g., septic + 1-car garage = 4.0 → FAIL).
 
 **Consequences:**
-- (+) Matches PRD exactly
-- (+) Simpler logic (no severity accumulation needed for core criteria)
-- (+) Zero false passes guaranteed
-- (-) Less flexible than soft severity approach
-- (-) May filter out properties that are "close enough"
+- (+) More nuanced filtering than binary pass/fail
+- (+) Allows acceptable properties that miss single SOFT criterion
+- (+) Prevents properties with multiple deficiencies
+- (-) Requires severity accumulation logic
+- (-) May allow borderline properties at 2.5-3.0 threshold
+
+**References:**
+- Implementation: `src/phx_home_analysis/services/kill_switch/filter.py:92-142`
+- Documentation: `docs/architecture/kill-switch-architecture.md`
 
 ### ADR-05: Multi-Agent Model Selection
 
