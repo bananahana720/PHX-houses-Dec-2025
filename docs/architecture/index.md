@@ -89,7 +89,7 @@ Detailed phase execution guides: [Phase Orchestration](phase-orchestration/index
 | Total Scoring Points | 605 |
 | Unicorn Tier Threshold | ≥484 (80%) |
 | Contender Tier Threshold | 363-483 (60-80%) |
-| Kill-Switch Criteria | 7 HARD |
+| Kill-Switch Criteria | 8 HARD |
 | Agent Models | Haiku (extraction) + Sonnet (vision) |
 | Storage Format | JSON (LIST-based) |
 

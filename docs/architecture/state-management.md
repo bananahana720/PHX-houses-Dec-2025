@@ -192,14 +192,14 @@ fi
 
 # Commit with structured message
 git commit -m "$(cat <<'EOF'
-feat(property): Complete {address_short} - {tier} ({score}/600)
+feat(property): Complete {address_short} - {tier} ({score}/605)
 
 Property: {full_address}
 Hash: {hash}
 Phases: County ✓ | Cost ✓ | Listing ✓ | Map ✓ | Images ✓ | Synthesis ✓ | Report ✓
 Kill-switch: {PASS|WARNING|FAIL}
 Tier: {tier}
-Score: {score}/600
+Score: {score}/605
 Monthly Cost: ${monthly_cost}
 
 🤖 Generated with Claude Code Pipeline
@@ -234,14 +234,14 @@ work_items_path.write_text(json.dumps(work_items, indent=2))
 #### Example Commit Messages
 
 ```
-feat(property): Complete 4732 W Davis Rd - CONTENDER (412/600)
+feat(property): Complete 4732 W Davis Rd - CONTENDER (412/605)
 
 Property: 4732 W Davis Rd, Glendale, AZ 85306
 Hash: ef7cd95f
 Phases: County ✓ | Cost ✓ | Listing ✓ | Map ✓ | Images ✓ | Synthesis ✓ | Report ✓
 Kill-switch: PASS
 Tier: CONTENDER
-Score: 412/600
+Score: 412/605
 Monthly Cost: $3,245
 
 🤖 Generated with Claude Code Pipeline
@@ -250,14 +250,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ```
-feat(property): Complete 2353 W Tierra Buena Ln - FAILED (0/600)
+feat(property): Complete 2353 W Tierra Buena Ln - FAILED (0/605)
 
 Property: 2353 W Tierra Buena Ln, Phoenix, AZ 85023
 Hash: abc12345
 Phases: County ✓ | Cost ✓ | Listing ✓ | Map ✓ | Images ✗ | Synthesis ✗ | Report ✗
 Kill-switch: FAIL (HOA fee: $250/mo)
 Tier: FAILED
-Score: 0/600
+Score: 0/605
 Monthly Cost: N/A
 
 🤖 Generated with Claude Code Pipeline

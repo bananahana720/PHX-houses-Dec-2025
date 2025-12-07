@@ -1,6 +1,6 @@
 # Kill-Switch Architecture
 
-### All 7 Criteria Are HARD (per PRD)
+### All 8 Criteria Are HARD (per PRD)
 
 | Criterion | Requirement | Implementation | PRD Reference |
 |-----------|-------------|----------------|---------------|
@@ -8,15 +8,16 @@
 | Bedrooms | >= 4 | `property.beds >= 4` | FR9-FR11 |
 | Bathrooms | >= 2 | `property.baths >= 2.0` | FR9-FR11 |
 | House SQFT | > 1800 | `property.sqft > 1800` | FR9 (NEW) |
-| Lot Size | > 8000 | `property.lot_sqft > 8000` | FR9 (upgraded) |
-| Garage | Indoor required | `property.garage_spaces >= 1` | FR9 (clarified) |
+| Lot Size | > 8000 sqft | `property.lot_sqft > 8000` | FR9 (upgraded) |
+| Garage | >= 1 space | `property.garage_spaces >= 1` | FR9 (clarified) |
 | Sewer | City only | `property.sewer_type == SewerType.CITY` | FR9 (upgraded) |
+| Year Built | <= 2024 | `property.year_built <= 2024` | FR9 |
 
 ### Verdict Logic
 
 ```python
 def evaluate(self, property: Property) -> KillSwitchResult:
-    """Evaluate property against all 7 HARD criteria."""
+    """Evaluate property against all 8 HARD criteria."""
 
     failed_criteria = []
 
@@ -41,6 +42,9 @@ def evaluate(self, property: Property) -> KillSwitchResult:
 
     if property.sewer_type != SewerType.CITY:
         failed_criteria.append("sewer")
+
+    if property.year_built is None or property.year_built > 2024:
+        failed_criteria.append("year")
 
     # Determine verdict
     if len(failed_criteria) == 0:
