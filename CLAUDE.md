@@ -50,7 +50,7 @@ Evaluates Phoenix properties against 8 HARD kill-switches and scores (605 pts ma
 |-------|--------|--------|
 | 0 | County API | lot, year, garage |
 | 1 | listing-browser + map-analyzer | images, hoa, schools, orientation |
-| 2 | image-assessor (Sonnet) | interior/exterior scores |
+| 2 | image-assessor (Opus 4.5) | interior/exterior scores |
 | 3 | Synthesis | total score, tier |
 | 4 | Reports | deal sheets |
 

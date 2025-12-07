@@ -111,7 +111,7 @@ def validate_and_spawn_phase2(address: str, strict_mode: bool) -> bool:
 
 **Agent spawn (only if prerequisites satisfied):**
 ```
-Task (model: sonnet, subagent: image-assessor)
+Task (model: opus, subagent: image-assessor)
 Target: {ADDRESS}
 Phase: 2A (Exterior)
 Skills: property-data, image-assessment, arizona-context-lite, scoring

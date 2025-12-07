@@ -215,3 +215,175 @@ class DuringExtractionAssertions:
                     "actual": actual_hash,
                 }
             )
+
+    @staticmethod
+    def assert_image_quality(
+        image_data: bytes,
+        min_dimension: int = 200,
+        min_size: int = 5000,
+    ) -> None:
+        """
+        Assert image meets minimum quality requirements.
+
+        Checks both file size and image dimensions to ensure images
+        are usable for visual assessment.
+
+        Args:
+            image_data: Raw image bytes
+            min_dimension: Minimum width/height in pixels (default: 200px)
+            min_size: Minimum file size in bytes (default: 5000 bytes)
+
+        Raises:
+            DataIntegrityError: If image doesn't meet quality requirements
+                - DUR-010: File size too small
+                - DUR-011: Image width too small
+                - DUR-012: Image height too small
+        """
+        # Check file size
+        file_size = len(image_data)
+        if file_size < min_size:
+            raise DataIntegrityError(
+                f"Image file size too small ({file_size} bytes < {min_size} bytes)",
+                rule_id="DUR-010",
+                context={
+                    "file_size": file_size,
+                    "min_size": min_size,
+                }
+            )
+
+        # Check image dimensions
+        try:
+            import io
+
+            from PIL import Image
+
+            img = Image.open(io.BytesIO(image_data))
+            width, height = img.size
+
+            if width < min_dimension:
+                raise DataIntegrityError(
+                    f"Image width too small ({width}px < {min_dimension}px)",
+                    rule_id="DUR-011",
+                    context={
+                        "width": width,
+                        "height": height,
+                        "min_dimension": min_dimension,
+                    }
+                )
+
+            if height < min_dimension:
+                raise DataIntegrityError(
+                    f"Image height too small ({height}px < {min_dimension}px)",
+                    rule_id="DUR-012",
+                    context={
+                        "width": width,
+                        "height": height,
+                        "min_dimension": min_dimension,
+                    }
+                )
+
+        except Exception as e:
+            if isinstance(e, DataIntegrityError):
+                raise
+            # If we can't open the image, it's corrupt/invalid
+            raise DataIntegrityError(
+                f"Unable to validate image dimensions: {e}",
+                rule_id="DUR-010",
+                context={"error": str(e)}
+            ) from e
+
+
+# Required fields for kill-switch evaluation
+REQUIRED_FIELDS = [
+    "beds",
+    "baths",
+    "lot_sqft",
+    "garage_spaces",
+    "hoa_fee",
+    "sewer_type",
+    "year_built",
+]
+
+
+@dataclass
+class MetadataCompletenessReport:
+    """Report of metadata completeness for property data."""
+
+    property_address: str
+    total_fields: int
+    present_fields: int
+    missing_fields: list[str] = field(default_factory=list)
+
+    @property
+    def completeness_percentage(self) -> float:
+        """Calculate completeness as percentage (0-100)."""
+        if self.total_fields == 0:
+            return 100.0
+        return (self.present_fields / self.total_fields) * 100.0
+
+    @property
+    def is_complete(self) -> bool:
+        """Check if all required fields are present."""
+        return len(self.missing_fields) == 0
+
+
+class MetadataCompletenessValidator:
+    """Validates metadata completeness for kill-switch evaluation."""
+
+    def __init__(self, required_fields: list[str] | None = None):
+        """
+        Initialize validator with required fields.
+
+        Args:
+            required_fields: List of required field names.
+                If None, uses REQUIRED_FIELDS constant.
+        """
+        self.required_fields = required_fields or REQUIRED_FIELDS
+
+    def validate(self, property_data: dict[str, Any]) -> MetadataCompletenessReport:
+        """
+        Validate metadata completeness for a property.
+
+        Checks that all required fields are present and non-None.
+
+        Args:
+            property_data: Property data dictionary from enrichment_data.json
+
+        Returns:
+            MetadataCompletenessReport with completeness analysis
+        """
+        property_address = property_data.get("full_address", "Unknown")
+        missing_fields: list[str] = []
+
+        for field_name in self.required_fields:
+            value = property_data.get(field_name)
+            # Field is missing if not in dict or value is None
+            if value is None:
+                missing_fields.append(field_name)
+
+        return MetadataCompletenessReport(
+            property_address=property_address,
+            total_fields=len(self.required_fields),
+            present_fields=len(self.required_fields) - len(missing_fields),
+            missing_fields=missing_fields,
+        )
+
+    def validate_batch(
+        self, properties: list[dict[str, Any]]
+    ) -> dict[str, MetadataCompletenessReport]:
+        """
+        Validate metadata completeness for multiple properties.
+
+        Args:
+            properties: List of property data dictionaries
+
+        Returns:
+            Dict mapping property address to completeness report
+        """
+        results: dict[str, MetadataCompletenessReport] = {}
+
+        for property_data in properties:
+            report = self.validate(property_data)
+            results[report.property_address] = report
+
+        return results

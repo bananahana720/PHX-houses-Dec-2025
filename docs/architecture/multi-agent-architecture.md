@@ -45,11 +45,11 @@
 
 **Duration:** 45-90 seconds per property
 
-#### image-assessor (Sonnet)
+#### image-assessor (Opus 4.5)
 
 **Purpose:** Visual scoring of interior/exterior condition.
 
-**Model:** Claude Sonnet (multi-modal vision)
+**Model:** Claude Opus 4.5 (multi-modal vision, extended thinking)
 
 **Skills:** image-assessment, property-data, state-management, arizona-context-lite, scoring
 

@@ -43,7 +43,7 @@ from typing import Any
 import yaml
 from pydantic import ValidationError
 
-from phx_home_analysis.validation.config_schemas import (
+from ..validation.config_schemas import (
     AppConfigSchema,
     BuyerCriteriaConfigSchema,
     ConfigurationError,

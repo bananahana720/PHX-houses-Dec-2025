@@ -48,7 +48,7 @@ Analyze the task thoroughly inside `<orchestration_analysis>` tags within your t
 
 **Simple Workflow Mode** for tasks that:
 - Are straightforward and well-defined
-- Can complete in <2000-3000 tokens
+- Can complete in <1000-2000 tokens (including context received in full partial read operations)
 - Involve single component
 - Don't require parallel execution
 

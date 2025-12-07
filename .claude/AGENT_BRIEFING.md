@@ -81,7 +81,7 @@ if mapping:
 |-------|-------|-------|---------|---------|
 | listing-browser | 1 | Haiku | Zillow/Redfin extraction | price, beds, baths, HOA |
 | map-analyzer | 1 | Haiku | Geographic analysis | schools, safety, orientation |
-| image-assessor | 2 | Sonnet | Interior scoring (190 pts) | 7 interior scores (0-10 each) |
+| image-assessor | 2 | Opus 4.5 | Interior scoring (190 pts) | 7 interior scores (0-10 each) |
 
 ### Skills by Agent
 

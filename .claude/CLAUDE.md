@@ -1,5 +1,5 @@
 ---
-last_updated: 2025-12-05T18:30:00Z
+last_updated: 2025-12-06T12:00:00Z
 updated_by: agent
 staleness_hours: 24
 line_target: 80
@@ -8,14 +8,14 @@ flags: []
 # .claude
 
 ## Purpose
-Claude Code configuration: agents, skills, commands, hooks, and operational protocols.
+Claude Code configuration: agents, skills, commands, hooks, and operational protocols for PHX Houses pipeline.
 
 ## Contents
-| File/Dir | Purpose |
-|----------|---------|
+| Path | Purpose |
+|------|---------|
 | `protocols.md` | Operational protocols (TIER 0-3) |
 | `mcp-reference.md` | MCP tool docs (Context7, Playwright, Fetch) |
-| `agents/` | Subagent definitions (listing-browser, map-analyzer) |
+| `agents/` | Subagent definitions (3 agents: listing-browser, map-analyzer, image-assessor) |
 | `commands/` | Slash commands (analyze-property, commit) |
 | `skills/` | Domain expertise modules (11 skills) |
 | `hooks/` | Pre/post execution hooks (safety, linting) |
@@ -24,7 +24,7 @@ Claude Code configuration: agents, skills, commands, hooks, and operational prot
 ## Key Patterns
 - **Skills loading**: Agents declare `skills:` in frontmatter YAML
 - **Hooks**: Python scripts in `hooks/` run pre/post tool execution
-- **Protocols reference**: See `protocols.md` for TIER 0-3 rules
+- **Model tiers**: Haiku 4.5 (extraction), Opus 4.5 (vision/assessment)
 
 ## Available Skills
 | Skill | Use When |
@@ -38,7 +38,7 @@ Claude Code configuration: agents, skills, commands, hooks, and operational prot
 | listing-extraction | Phase 1 Zillow/Redfin automation |
 | map-analysis | Phase 1 schools, safety, distances |
 | image-assessment | Phase 2 visual scoring (Section C) |
-| deal-sheets | Phase 4 report generation |
+| orchestration | Multi-agent workflow coordination |
 | visualizations | Charts & plots |
 
 ## Quick Commands
@@ -54,5 +54,5 @@ Claude Code configuration: agents, skills, commands, hooks, and operational prot
 - MCP: `mcp-reference.md` (Context7, Playwright, Fetch)
 
 ## Deps
-← imports: none (config directory)
-→ used by: all agents, all skills, all commands
+<- imports: none (config directory)
+-> used by: all agents, all skills, all commands

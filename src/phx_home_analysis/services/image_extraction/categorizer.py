@@ -160,7 +160,7 @@ class CategoryResult:
     confidence: float
     features_detected: list[str] = field(default_factory=list)
     alternative_categories: list[tuple[ImageSubject, float]] = field(default_factory=list)
-    model_version: str = "claude-3-5-haiku-20241022"
+    model_version: str = "claude-haiku-4-5-20251001"
     raw_response: dict | None = None
     error: str | None = None
     categorized_at: str | None = None
@@ -227,7 +227,7 @@ class CategoryResult:
                 (ImageSubject.from_string(alt["subject"]), alt["confidence"])
                 for alt in data.get("alternative_categories", [])
             ],
-            model_version=data.get("model_version", "claude-3-5-haiku-20241022"),
+            model_version=data.get("model_version", "claude-haiku-4-5-20251001"),
             categorized_at=data.get("categorized_at"),
             error=data.get("error"),
         )
@@ -331,7 +331,7 @@ Rules:
 6. Use "unknown" only when truly unidentifiable.'''
 
     # Model configuration
-    MODEL_ID = "claude-3-5-haiku-20241022"
+    MODEL_ID = "claude-haiku-4-5-20251001"
     MAX_TOKENS = 512
     API_BASE_URL = "https://api.anthropic.com/v1/messages"
     API_VERSION = "2023-06-01"

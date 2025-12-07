@@ -1,63 +1,45 @@
 ---
-last_updated: 2025-12-05
+last_updated: 2025-12-06T21:30:00Z
 updated_by: agent
 staleness_hours: 24
 flags: []
 ---
-
 # extractors
 
 ## Purpose
-Source-specific property image extraction drivers supporting Zillow, Redfin, Maricopa Assessor, and Phoenix MLS. Stealth-based async extractors with anti-bot resilience, screenshot capture, and content-addressed storage integration.
+Source-specific property image extraction drivers with anti-bot bypass. Supports Zillow, Redfin, Maricopa Assessor, and Phoenix MLS using nodriver (stealth) or Playwright (fallback).
 
 ## Contents
-| Path | Purpose |
+| File | Purpose |
 |------|---------|
-| `base.py` | ImageExtractor abstract base class; interface for all extractors |
-| `stealth_base.py` | StealthExtractor base: nodriver-based anti-bot, browser management, screenshot ops |
-| `zillow.py` | ZillowExtractor (nodriver) - Zillow listing navigation, image extraction, error recovery |
-| `zillow_playwright.py` | ZillowExtractor (Playwright) - Fallback implementation for Zillow |
-| `redfin.py` | RedfdinExtractor (nodriver) - Redfin listing data and image extraction |
-| `redfin_playwright.py` | RedffinExtractor (Playwright) - Fallback for Redfin |
-| `maricopa_assessor.py` | MaricopaAssessorExtractor - County API integration for property records |
-| `phoenix_mls.py` | PhoenixMlsExtractor - MLS data and images via stealth browser |
-| `__init__.py` | Package exports (ImageExtractor, StealthExtractor, all concrete implementations) |
+| `base.py` | `ImageExtractor` ABC, exception classes (`ExtractionError`, `SourceUnavailableError`) |
+| `stealth_base.py` | `StealthBrowserExtractor` - nodriver + curl_cffi anti-bot base class |
+| `zillow.py` | `ZillowExtractor` (nodriver) - ZPID extraction, gallery navigation |
+| `redfin.py` | `RedfinExtractor` (nodriver) - CDN image extraction |
+| `phoenix_mls_search.py` | `PhoenixMLSSearchExtractor` - autocomplete + direct URL navigation |
+| `maricopa_assessor.py` | `MaricopaAssessorExtractor` - County API integration |
+| `__init__.py` | Conditional imports based on `USE_PLAYWRIGHT_EXTRACTORS` env var |
 
-## Design Patterns
-- **Async-first architecture:** All extractors async for concurrent multi-property processing
-- **Stealth-based extraction:** nodriver (preferred) + Playwright fallback for anti-bot resilience
-- **Screenshot-to-storage:** Screenshots → content-addressed file path (hash-based) → manifest tracking
-- **Error recovery:** Retry logic, fallback selectors, graceful degradation on missing data
-- **Circuit breaker:** Extractors track failures; disabled temporarily on repeated failures
+## Key Patterns
+- **Stealth-first**: nodriver + curl_cffi bypasses PerimeterX (Zillow/Redfin)
+- **Fallback chain**: nodriver -> Playwright via `USE_PLAYWRIGHT_EXTRACTORS=1`
+- **Retry decorator**: `@retry_with_backoff` on `download_image` for transient errors
+- **CAPTCHA solving**: 2-layer press-and-hold with CDP shadow DOM traversal
 
 ## Tasks
-- [x] Implement base ImageExtractor interface `P:H`
-- [x] Implement StealthExtractor for anti-bot resilience `P:H`
-- [x] Implement Zillow, Redfin, Assessor, MLS extractors `P:H`
-- [x] Add fallback Playwright implementations `P:H`
 - [ ] Add performance benchmarks for concurrent extraction `P:M`
 
 ## Learnings
-- **Stealth extraction critical:** Standard browser automation blocked by PerimeterX; nodriver + anti-detection required
-- **Fallback required:** Zillow/Redfin extractors need Playwright fallback for robustness
-- **Screenshot reliability:** Image quality varies by source; Assessor API most reliable
-- **Concurrent safety:** Multiple extractors can run in parallel; file locking prevents overwrites
+- Zillow/Redfin block standard Playwright - must use nodriver stealth
+- PhoenixMLS uses ARIA tree pattern (`[role='treeitem']`) for autocomplete
+- Direct URL construction from MLS# more reliable than autocomplete click
+- PerimeterX detects Bezier curve patterns - need random control points
 
 ## Refs
-- ImageExtractor interface: `base.py:1-80`
-- StealthExtractor base: `stealth_base.py:1-200`
-- Zillow (nodriver): `zillow.py:1-400`
-- Redfin (nodriver): `redfin.py:1-350`
-- Maricopa Assessor: `maricopa_assessor.py:1-250`
+- Stealth base: `stealth_base.py:42-170` (class definition + download_image)
+- CAPTCHA solver: `stealth_base.py:733-920` (_attempt_captcha_solve)
+- PhoenixMLS autocomplete: `phoenix_mls_search.py:200-350`
 
 ## Deps
-← Imports from:
-  - `nodriver 0.48` (stealth browser automation)
-  - `playwright 1.56` (fallback browser automation)
-  - `PIL/Pillow` (image processing)
-  - `httpx` (HTTP requests)
-
-→ Imported by:
-  - `orchestrator.py` (SourceCircuitBreaker, extraction coordination)
-  - `image_extraction/__init__.py` (package exports)
-  - `/analyze-property` command (Phase 1)
+- nodriver 0.48, playwright 1.56, httpx, PIL/Pillow
+- imported by: `orchestrator.py`, `/analyze-property` command

@@ -1,7 +1,7 @@
 ---
 name: image-assessor
-description: Analyze property photos to assess exterior condition (roof, pool, HVAC) and interior quality (Section C scoring). Uses Claude Vision for detailed image analysis. Higher-quality Sonnet model for subjective assessments.
-model: sonnet
+description: Analyze property photos to assess exterior condition (roof, pool, HVAC) and interior quality (Section C scoring). Uses Claude Vision for detailed image analysis. Higher-quality Opus 4.5 model for subjective assessments.
+model: opus
 skills: property-data, state-management, image-assessment, arizona-context, scoring
 ---
 

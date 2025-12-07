@@ -7,7 +7,7 @@
    # .claude/agents/my-new-agent.md
    ---
    name: my-new-agent
-   model: claude-haiku-3.5
+   model: haiku
    skills: property-data, state-management
    ---
 

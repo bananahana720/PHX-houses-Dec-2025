@@ -198,26 +198,44 @@ def evaluate_hygiene(is_agent: bool = False) -> dict[str, str]:
             if len(oversized_dirs) > 5:
                 oversized_list += f"\n  ... +{len(oversized_dirs) - 5} more"
 
+        # Build directory lists for template
+        all_dirs_to_process: list[str] = missing_claude_md + stale_dirs + [d for d, _ in oversized_dirs]
+        # Deduplicate while preserving order
+        seen: set[str] = set()
+        unique_dirs: list[str] = []
+        for d in all_dirs_to_process:
+            if d not in seen:
+                seen.add(d)
+                unique_dirs.append(d)
+
+        directories_text = "\n".join(f"- {d}" for d in unique_dirs) if unique_dirs else "(none)"
+
+        # Standard file extensions for code analysis
+        file_extensions_text = ".py, .ts, .tsx, .js, .jsx, .md, .json, .yaml, .yml, .toml"
+
+        # Model type for CLAUDE.md generation
+        model_type_text = "haiku"
+
         # Build explicit Haiku instructions
-        haiku_instructions = """
+        haiku_instructions = f"""
             You are an AI orchestrator responsible for coordinating the creation and maintenance of CLAUDE.md documentation files across a codebase. You will simulate multiple sub-agents, each processing one directory to create or update its CLAUDE.md file.
 
             Here are the directories you need to process:
 
             <directories_to_process>
-            {{DIRECTORIES_TO_PROCESS}}
+            {directories_text}
             </directories_to_process>
 
             Here are the file extensions to analyze in each directory:
 
             <file_extensions>
-            {{FILE_EXTENSIONS}}
+            {file_extensions_text}
             </file_extensions>
 
             Here is the model type being used:
 
             <model_type>
-            {{MODEL_TYPE}}
+            {model_type_text}
             </model_type>
 
             ## Your Task

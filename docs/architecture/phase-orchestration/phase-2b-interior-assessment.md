@@ -59,7 +59,7 @@ def validate_and_spawn_phase2b(address: str, strict_mode: bool) -> bool:
 
 **Agent spawn with validated context:**
 ```
-Task (model: sonnet, subagent: image-assessor)
+Task (model: opus, subagent: image-assessor)
 Target: {ADDRESS}
 Phase: 2B (Interior)
 Skills: property-data, image-assessment, arizona-context-lite, scoring

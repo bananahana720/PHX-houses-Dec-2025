@@ -151,7 +151,7 @@ agent_catalog:
       wave_type: "parallel_swarm"
 
     image-assessor:
-      model: "Sonnet"
+      model: "Opus 4.5"
       phase: 2
       purpose: "Visual scoring of interior/exterior from photos"
       input: "Property images directory"
@@ -165,7 +165,7 @@ agent_catalog:
 
   model_tiers:
     haiku:
-      model_id: "claude-haiku-3-5-20241022"
+      model_id: "claude-haiku-4-5-20251001"
       input_per_million: 0.25
       output_per_million: 1.25
       typical_task_cost: 0.001
@@ -173,14 +173,14 @@ agent_catalog:
       use_for: ["extraction", "parsing", "geographic_lookup", "api_calls", "data_transformation"]
       avoid_for: ["visual_assessment", "subjective_judgment", "complex_multi-factor_reasoning"]
 
-    sonnet:
-      model_id: "claude-sonnet-4-5-20250929"
-      input_per_million: 3.00
-      output_per_million: 15.00
-      typical_task_cost: 0.015
-      strengths: ["Visual reasoning", "Subjective assessment", "Complex reasoning", "Nuanced judgment"]
-      use_for: ["visual_assessment", "subjective_scoring", "complex_reasoning", "multi-factor_decisions"]
-      avoid_for: ["simple_lookups", "structured_extraction", "api_calls"]
+    opus:
+      model_id: "claude-opus-4-5-20251101"
+      input_per_million: 15.00
+      output_per_million: 75.00
+      typical_task_cost: 0.075
+      strengths: ["Visual reasoning", "Subjective assessment", "Complex reasoning", "Nuanced judgment", "Extended thinking"]
+      use_for: ["visual_assessment", "subjective_scoring", "complex_reasoning", "multi-factor_decisions", "architecture_planning"]
+      avoid_for: ["simple_lookups", "structured_extraction", "api_calls", "high_volume_tasks"]
 
 # =============================================================================
 # SECTION 4: Cost-Aware Model Selection Guide
@@ -200,8 +200,8 @@ model_selection:
       cost: "~$0.002 per property"
 
     - condition: "Visual or subjective assessment"
-      action: "Use Sonnet agent"
-      reason: "Higher quality for nuanced judgment"
+      action: "Use Opus 4.5 agent"
+      reason: "Higher quality for nuanced judgment with extended thinking"
       example: "Scoring interior photos"
       cost: "~$0.075 per property"
 
@@ -224,7 +224,7 @@ model_selection:
     - rule: "Batch similar tasks to same agent to preserve context"
       example: "Process all images in single image-assessor session, not one per image"
 
-    - rule: "Use Haiku by default, upgrade to Sonnet only when necessary"
+    - rule: "Use Haiku by default, upgrade to Opus 4.5 only when necessary"
       triggers: ["visual_analysis", "subjective_scoring", "complex_multi-factor_reasoning"]
 
     - rule: "Avoid agent spawn for simple lookups"
@@ -235,7 +235,7 @@ model_selection:
       phase_0_county: "$0 (script)"
       phase_1_listing_browser: "$0.002 (Haiku)"
       phase_1_map_analyzer: "$0.003 (Haiku)"
-      phase_2_image_assessor: "$0.075 (Sonnet)"
+      phase_2_image_assessor: "$0.075 (Opus 4.5)"
       phase_3_scoring: "$0 (script)"
       phase_4_deal_sheet: "$0 (script)"
       total: "$0.080 per property"

@@ -1,5 +1,5 @@
 ---
-last_updated: 2025-12-05T11:30:00Z
+last_updated: 2025-12-06T20:00:00Z
 updated_by: agent
 staleness_hours: 24
 line_target: 80
@@ -13,7 +13,8 @@ Quality gate and safety constraint system enforcing stop-the-line compliance che
 ## Core Python Hooks
 | File | Purpose | Category |
 |------|---------|----------|
-| `stop_hygiene_hook.py` | Block exit if CLAUDE.md missing/stale/oversized; auto-approve agent sessions | Session hygiene |
+| `session_start_hook.py` | Inject orchestration protocol at session start | Orchestration |
+| `stop_hygiene_hook.py` | Block exit if CLAUDE.md missing/stale/oversized; embeds directory lists in Haiku prompt | Session hygiene |
 | `bash_hook.py` | Block unsafe bash (cat, grep, find, head, tail) → redirect to Read/Grep/Glob tools | Tool enforcement |
 | `env_file_protection_hook.py` | Block .env file access (cat, vi, nano, grep) | Security |
 | `git_add_block_hook.py` | Prevent wildcards in git add commands | Security |
@@ -23,6 +24,12 @@ Quality gate and safety constraint system enforcing stop-the-line compliance che
 | `rm_block_hook.py` | Require approval for rm/rmdir commands | Safety |
 | `session_cleanup_hook.py` | Clean transient state on session exit | Cleanup |
 | `file_size_conditional_hook.py` | Warn/block operations on large files | Performance |
+| `precompact_hook.py` | Generate context optimization template for /compact | Context mgmt |
+
+## Orchestration Hooks
+| File | Purpose | Category |
+|------|---------|----------|
+| `user_prompt_submit_hook.py` | Orchestration guidelines + PreCompact context injection (headless) | Orchestration |
 
 ## Shared Libraries
 | File | Purpose |
