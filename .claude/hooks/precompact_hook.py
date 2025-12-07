@@ -13,7 +13,6 @@ removing noise.
 import json
 import sys
 from datetime import datetime
-from pathlib import Path
 
 
 def generate_compact_template() -> str:

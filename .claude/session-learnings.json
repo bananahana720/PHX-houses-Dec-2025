@@ -1160,5 +1160,59 @@
       "logger.warning(f\"Failed to process {url}: {error}\")"
     ],
     "learnings": []
+  },
+  {
+    "timestamp": "2025-12-07T04:02:56.338550+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "{e}\""
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-07T04:27:10.652405+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "`https://phoenixmlssearch.com/mls/{address-slug}-mls_{mls_number}/`"
+    ]
+  },
+  {
+    "timestamp": "2025-12-07T05:08:45.029788+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "- pattern: \"What's duplicated\""
+    ]
+  },
+  {
+    "timestamp": "2025-12-07T05:09:07.871508+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "- hook: \"hook_name.py\""
+    ]
+  },
+  {
+    "timestamp": "2025-12-07T05:09:21.628952+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "\"What's duplicated\""
+    ]
+  },
+  {
+    "timestamp": "2025-12-07T05:15:20.615002+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "hook_io: Failed to write output: {e}\", file=sys.stderr)"
+    ],
+    "learnings": []
   }
 ]

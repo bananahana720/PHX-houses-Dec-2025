@@ -5,6 +5,7 @@ human-readable verdict explanations for property evaluation.
 """
 
 import sys
+
 sys.path.insert(0, 'src')
 
 from phx_home_analysis.domain.entities import Property

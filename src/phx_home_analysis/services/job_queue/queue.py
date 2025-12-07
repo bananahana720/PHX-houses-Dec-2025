@@ -25,9 +25,9 @@ import json
 import logging
 import os
 import tempfile
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Callable
 
 from .models import Job, JobQueueState, JobResult, JobStatus, JobType
 

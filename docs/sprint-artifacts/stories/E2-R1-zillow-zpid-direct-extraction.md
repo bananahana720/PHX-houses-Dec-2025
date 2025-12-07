@@ -1,10 +1,30 @@
-# Story 2.R1: Zillow ZPID Direct Extraction
+# Story 2.R1: PhoenixMLS Pivot + Multi-Wave Remediation
 
-**Status:** Ready for Review
-**Priority:** P0 | **Blocker:** BLOCK-001
-**Dependencies:** E2.S3 (Zillow/Redfin Listing Extraction)
+**Status:** COMPLETE ✅
+**Priority:** P0 | **Blocker:** BLOCK-001, BLOCK-002
+**Dependencies:** E2.S3, E2.S4 (Image Extraction Pipeline)
 **Created:** 2025-12-05 | **Epic:** 2 - Property Data Acquisition
-**Completed:** 2025-12-05
+**Completed:** 2025-12-06 (Base story 2025-12-05, Waves 1-3 on 2025-12-06)
+
+---
+
+## Course Correction Summary
+
+**Original Story:** Zillow ZPID Direct Extraction (bypass CAPTCHA via gallery URL)
+**Evolution:** Multi-wave remediation addressing extraction failures + architectural bugs
+
+**Three-Wave Implementation (2025-12-06):**
+- **Wave 1** (74d91f5): Error handling & schema versioning
+- **Wave 2** (0b4fa88, 3697b0c): ImageProcessor wiring fixes + unit tests
+- **Wave 3** (02041da): MetadataPersister for kill-switch auto-persistence
+
+**Impact:**
+- Images now saving to disk (31+ from test property)
+- Kill-switch fields auto-persisting to enrichment_data.json
+- Gap analysis: 8/8 kill-switch fields complete (100%)
+- 67 integration tests created (commit 3880460)
+
+---
 
 ---
 
@@ -409,4 +429,115 @@ Claude Opus 4.5 (claude-opus-4-5-20251101) via BMad Master create-story workflow
 
 ---
 
-**Ultimate context engine analysis completed - comprehensive developer guide created.**
+## Wave 1-3 Implementation Summary (2025-12-06)
+
+### Wave 1: Error Handling & Schema Versioning (Commit 74d91f5)
+
+**Implemented:**
+- `@retry_with_backoff` decorator in `stealth_base.py` for transient error recovery
+- Schema versioning (v2.0.0) in `ExtractionState` with migration support
+- `is_transient_error()` classification in orchestrator (5 locations)
+- Architecture plan document for pipeline alignment
+
+**Files Modified:**
+- `src/phx_home_analysis/services/image_extraction/extractors/stealth_base.py` (+92 lines)
+- `src/phx_home_analysis/services/image_extraction/state_manager.py` (+140 lines)
+- `src/phx_home_analysis/services/image_extraction/orchestrator.py` (+111 lines)
+- `docs/sprint-artifacts/ARCHITECTURE_PLAN_2025_12_06.md` (new, 265 lines)
+
+**Impact:** Pipeline resilient to transient errors with exponential backoff
+
+---
+
+### Wave 2: ImageProcessor Wiring Fixes (Commits 0b4fa88, 3697b0c)
+
+**Critical Bugs Fixed:**
+1. **Extractor Creation Bug** - Fixed `_create_extractors()` string-to-enum conversion → extractor creation now works
+2. **Source Stats Initialization** - Fixed `extract_for_property()` to initialize `SourceStats` → no more KeyError
+
+**Verification:**
+- Test property: `4560 E Sunrise Dr, Phoenix, AZ 85044`
+- Result: **31 new images saved to disk** in `data/property_images/processed/{hash[:8]}/{hash}.png`
+- All files validated as proper PNG format
+
+**Files Modified:**
+- `src/phx_home_analysis/services/image_extraction/orchestrator.py` (major refactor, 3393 lines)
+- `tests/unit/services/image_extraction/test_image_processor.py` (new)
+- `tests/unit/services/image_extraction/test_state_manager.py` (new)
+
+**Impact:** Image extraction pipeline now fully operational with disk persistence
+
+---
+
+### Wave 3: Metadata Persistence (Commit 02041da)
+
+**Implemented:**
+- Added `beds`, `baths`, `sqft` to `EnrichmentData` schema
+- Created `MetadataPersister` service with provenance tracking
+- Added `PHOENIX_MLS` DataSource (0.87 confidence)
+- Wired MetadataPersister into orchestrator NEW path
+
+**Fields Auto-Persisted:**
+- `hoa_fee`, `beds`, `baths`, `sqft`, `lot_sqft`, `garage_spaces`, `sewer_type`, `year_built`, `mls_number`, `listing_url`
+
+**Files Created:**
+- `src/phx_home_analysis/services/image_extraction/metadata_persister.py` (195 lines)
+
+**Files Modified:**
+- `src/phx_home_analysis/domain/entities.py` (+7 lines)
+- `src/phx_home_analysis/services/image_extraction/orchestrator.py` (+41 lines)
+- `src/phx_home_analysis/services/quality/models.py` (+2 lines)
+
+**Impact:** Kill-switch fields now auto-persist with full provenance tracking
+
+---
+
+## Integration Testing (Commit 3880460)
+
+**Test Suite Created:**
+- 67 new integration tests validating multi-source extraction, state management, orchestrator coordination
+- All tests passing
+- Coverage: ImageProcessor, StateManager, Orchestrator, multi-source extraction scenarios
+
+**Test Focus:**
+- Content-addressed storage validation
+- State checkpoint/recovery
+- Multi-source extractor coordination
+- Error handling and retry logic
+
+---
+
+## Gap Analysis Results (Post-Wave 3)
+
+| Category | Status | Details |
+|----------|--------|---------|
+| Kill-Switch Fields | 8/8 (100%) ✅ | hoa_fee, beds, baths, sqft, lot_sqft, garage, sewer, year |
+| Scoring Fields | 0/22 (0%) ❌ | Requires Epic 6 (Visual Analysis) |
+| Deal Analysis Fields | 0/25 (0%) ❌ | Requires Epic 7 (Deal Sheet Generation) |
+
+**Next Story:** E2.R2 (Field Expansion) - Extract remaining 47 fields from PhoenixMLS
+
+---
+
+## Final Validation
+
+**Test Property:** 4560 E Sunrise Dr, Phoenix, AZ 85044
+
+**Results:**
+- Images extracted: 31
+- Sources used: PhoenixMLS, Zillow ZPID
+- Format: Content-addressed PNG (`data/property_images/processed/{hash[:8]}/{hash}.png`)
+- Kill-switch fields persisted: 8/8
+- Metadata in `enrichment_data.json`: ✅
+- All images validated as proper PNG: ✅
+
+**Blockers Resolved:**
+- BLOCK-001 (Zillow CAPTCHA): RESOLVED via PhoenixMLS primary + architectural fixes
+- BLOCK-002 (Redfin CDN 404): MITIGATED (sufficient coverage from PhoenixMLS + Zillow)
+
+---
+
+**Story Status:** COMPLETE ✅ (Base + Waves 1-3)
+**Total Commits:** 5 (E2.R1 base + 74d91f5 + 0b4fa88 + 3697b0c + 3880460 + 02041da)
+**Tests Added:** 67 integration + unit tests for ImageProcessor/StateManager
+**Documentation Updated:** Epic 2, sprint-status.yaml, this story file

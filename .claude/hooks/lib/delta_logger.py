@@ -20,6 +20,13 @@ import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Import shared exclusions (with fallback for standalone usage)
+try:
+    from .exclusions import should_skip_logging as _shared_should_skip
+    _USE_SHARED_EXCLUSIONS = True
+except ImportError:
+    _USE_SHARED_EXCLUSIONS = False
+
 # Session delta log location (relative to project root)
 SESSION_DELTA_LOG = ".claude/session-delta.log"
 
@@ -108,8 +115,14 @@ def _should_skip_logging(file_path: str | Path) -> bool:
     """
     Check if file should be skipped from delta logging.
 
+    Uses shared exclusions module when available, falls back to local patterns.
     Skips agent session directories and other noise.
     """
+    # Use shared exclusions if available (centralized patterns)
+    if _USE_SHARED_EXCLUSIONS:
+        return _shared_should_skip(file_path)
+
+    # Fallback: local implementation for standalone usage
     path_str = str(file_path)
 
     # Skip agent session directories (subagent transcripts)
@@ -119,41 +132,14 @@ def _should_skip_logging(file_path: str | Path) -> bool:
         return True
 
     # Skip noise directories - these don't need delta tracking
-    # Categories: caches, generated output, personal config, transient state
+    # NOTE: Keep in sync with lib/exclusions.py SKIP_PATTERNS
     skip_patterns = [
-        # Caches (binary/generated, no context value)
-        "__pycache__",
-        ".mypy_cache",
-        ".ruff_cache",
-        ".pytest_cache",
-        ".pip-audit-cache",
-        "node_modules",
-        # Build artifacts (generated)
-        "dist/",
-        "build/",
-        ".egg-info",
-        "htmlcov/",
-        # Virtual environments
-        ".venv/",
-        "venv/",
-        "env/",
-        # Git internals
-        ".git/",
-        # Claude Code session data (personal, transient)
-        ".claude/audio",
-        ".claude/logs",
-        # Personal config (API keys, preferences)
-        ".agentvibes/",
-        ".playwright-mcp/",
-        # Data caches and archives (stale, redundant)
-        "data/api_cache",
-        "data/archive",
-        "api_cache/",
-        # Project trash/archive (explicitly unwanted)
-        "TRASH/",
-        "archive/",
-        # Generated reports (output, not source)
-        "reports/",
+        "__pycache__", ".mypy_cache", ".ruff_cache", ".pytest_cache",
+        ".pip-audit-cache", "node_modules", "dist/", "build/", ".egg-info",
+        "htmlcov/", ".venv/", "venv/", "env/", ".git/", ".claude/audio",
+        ".claude/logs", ".agentvibes/", ".playwright-mcp/", "data/api_cache",
+        "data/archive", "api_cache/", "data/property_images/processed",
+        "TRASH/", "archive/", "reports/",
     ]
     return any(pat in path_str for pat in skip_patterns)
 

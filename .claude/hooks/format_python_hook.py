@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PostToolUse hook: Formats Python files with black and ruff after Edit/Write operations.
+PostToolUse hook: Formats Python files with ruff after Edit/Write operations.
 """
 import json
 import subprocess
@@ -28,19 +28,19 @@ def main():
             print(f"WARNING: File not found: {file_path}", file=sys.stderr)
             sys.exit(0)
 
-        # Run black formatter
+        # Run ruff formatter
         try:
             subprocess.run(
-                ["black", "--line-length", "100", file_path],
+                ["ruff", "format", file_path],
                 capture_output=True,
                 check=True,
                 timeout=30
             )
-            print(f"INFO: Formatted with black: {file_path}", file=sys.stderr)
+            print(f"INFO: Formatted with ruff: {file_path}", file=sys.stderr)
         except subprocess.CalledProcessError as e:
-            print(f"WARNING: Black formatting failed: {e.stderr.decode()}", file=sys.stderr)
+            print(f"WARNING: Ruff formatting failed: {e.stderr.decode()}", file=sys.stderr)
         except FileNotFoundError:
-            print("WARNING: black not found in PATH", file=sys.stderr)
+            print("WARNING: ruff not found in PATH", file=sys.stderr)
 
         # Run ruff linter with auto-fix
         try:

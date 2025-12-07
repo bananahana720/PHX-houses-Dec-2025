@@ -42,6 +42,18 @@ _VALIDATION_RULES = [
         r"^find\s+\S+\s+-name\b",
         "Use 'rg --files | rg pattern' or 'rg --files -g pattern' instead of 'find -name' for better performance",
     ),
+    (
+        r"^cat\b",
+        "Use the Read tool instead of 'cat' for better context management",
+    ),
+    (
+        r"^head\b",
+        "Use the Read tool with limit parameter instead of 'head'",
+    ),
+    (
+        r"^tail\b",
+        "Use the Read tool with offset parameter instead of 'tail'",
+    ),
 ]
 
 

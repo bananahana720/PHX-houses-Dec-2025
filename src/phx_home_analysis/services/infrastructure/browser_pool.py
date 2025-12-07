@@ -10,8 +10,8 @@ with user input during stealth automation.
 import asyncio
 import inspect
 import logging
-import random
 import os
+import random
 from pathlib import Path
 
 import nodriver as uc

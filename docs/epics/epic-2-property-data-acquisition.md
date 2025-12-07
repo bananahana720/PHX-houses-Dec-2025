@@ -220,10 +220,33 @@
 
 ---
 
-## Post-Completion Remediation (Wave 0)
+## Post-Completion Remediation (Waves 0-2)
 
 **Added:** 2025-12-05 via Correct Course Workflow
-**Reason:** Live testing revealed 67% extraction failure rate requiring targeted fixes
+**Reason:** Live testing revealed extraction failures requiring architectural fixes
+**Total Work:** 4 commits (74d91f5, 0b4fa88, 3697b0c, 02041da) + 67 integration tests (3880460)
+
+---
+
+### Course Correction Summary (2025-12-06)
+
+**Problem:** Live testing revealed image extraction pipeline had critical bugs preventing disk persistence and metadata extraction.
+
+**Solution:** Three-wave remediation addressing error handling, wiring bugs, and metadata persistence:
+
+| Wave | Focus | Commits | Impact |
+|------|-------|---------|--------|
+| Wave 1 | Error handling & schema versioning | 74d91f5 | Retry decorator, state v2.0.0, transient error classification |
+| Wave 2 | ImageProcessor wiring | 0b4fa88, 3697b0c | 31+ images now saving to disk, fixed extractor creation bug |
+| Wave 3 | Metadata persistence | 02041da | Kill-switch fields auto-persisted to enrichment_data.json |
+
+**Verification:**
+- 67 integration tests created and passing (commit 3880460)
+- Test extraction: 4560 E Sunrise Dr → 31 images saved to `data/property_images/processed/{hash[:8]}/{hash}.png`
+- All images validated as proper PNG format with content-addressed storage
+- Kill-switch fields (hoa_fee, beds, baths, sqft, lot_sqft, garage_spaces, sewer_type, year_built) now auto-persist
+
+---
 
 ### E2.R1: PhoenixMLS Data Extraction Pivot
 
@@ -267,23 +290,140 @@
 
 ---
 
-### E2.R2: Redfin Session-Bound Download
+### Wave 1: Error Handling & Schema Versioning (Commit 74d91f5)
 
-**Priority:** P0 | **Dependencies:** E2.S3, E2.S4 | **Blocker:** BLOCK-002
+**Implementation Date:** 2025-12-06
 
-**User Story:** As a system user, I want Redfin images downloaded in the same browser session, so that CDN URLs don't expire before download.
+**Changes:**
+1. **@retry_with_backoff Decorator** - Added to `stealth_base.py` for transient error recovery
+2. **Schema Versioning** - Added `v2.0.0` to ExtractionState with migration support in `state_manager.py`
+3. **Error Classification** - Added `is_transient_error()` to orchestrator (5 locations)
+4. **Architecture Plan** - Created `ARCHITECTURE_PLAN_2025_12_06.md` with alignment to AP-2, AP-3, AP-6
+
+**Files Modified:**
+- `src/phx_home_analysis/services/image_extraction/extractors/stealth_base.py` (+92 lines)
+- `src/phx_home_analysis/services/image_extraction/state_manager.py` (+140 lines)
+- `src/phx_home_analysis/services/image_extraction/orchestrator.py` (+111 lines)
+- `docs/sprint-artifacts/ARCHITECTURE_PLAN_2025_12_06.md` (new file, 265 lines)
+- `docs/sprint-artifacts/SESSION_COMPACT_2025_12_06.md` (new file, 64 lines)
+
+**Impact:** Pipeline now resilient to transient errors with exponential backoff and state schema migration safety.
+
+---
+
+### Wave 2: ImageProcessor Wiring Fixes (Commits 0b4fa88, 3697b0c)
+
+**Implementation Date:** 2025-12-06
+
+**Critical Bugs Fixed:**
+1. **Extractor Creation Bug** - Fixed `_create_extractors()` to convert string source names to `ImageSource` enum before dictionary lookup. Previous code checked string keys against enum keys → 0 extractors created.
+2. **Source Stats Initialization** - Fixed `extract_for_property()` to initialize `SourceStats` for each source before accessing. `extract_all()` already did this, but single-property method was missing initialization → KeyError.
+
+**Verification:**
+- Test property: `4560 E Sunrise Dr, Phoenix, AZ 85044`
+- Result: **31 new images saved to disk** in content-addressed storage format
+- Format: `data/property_images/processed/{hash[:8]}/{hash}.png`
+- All files validated as proper PNG format
+
+**Unit Tests Added (Commit 3697b0c):**
+- `tests/unit/services/image_extraction/test_image_processor.py` - ImageProcessor unit tests
+- `tests/unit/services/image_extraction/test_state_manager.py` - StateManager unit tests
+
+**Files Modified:**
+- `src/phx_home_analysis/services/image_extraction/orchestrator.py` (major refactor, 3393 lines touched)
+
+**Impact:** Image extraction pipeline now fully operational with proper disk persistence.
+
+---
+
+### Wave 3: Metadata Persistence (Commit 02041da)
+
+**Implementation Date:** 2025-12-06
+
+**Changes:**
+1. **Schema Extension** - Added `beds`, `baths`, `sqft` fields to `EnrichmentData` in `entities.py`
+2. **MetadataPersister Service** - Created new service with provenance tracking for automatic kill-switch field persistence
+3. **PHOENIX_MLS DataSource** - Added with 0.87 confidence in `quality/models.py`
+4. **Orchestrator Integration** - Wired MetadataPersister into `extract_for_property_with_tracking()` in NEW path
+
+**Fields Auto-Persisted:**
+- `hoa_fee`, `beds`, `baths`, `sqft`, `lot_sqft`, `garage_spaces`, `sewer_type`, `year_built`, `mls_number`, `listing_url`
+
+**Files Created:**
+- `src/phx_home_analysis/services/image_extraction/metadata_persister.py` (195 lines)
+
+**Files Modified:**
+- `src/phx_home_analysis/domain/entities.py` (+7 lines)
+- `src/phx_home_analysis/services/image_extraction/orchestrator.py` (+41 lines)
+- `src/phx_home_analysis/services/quality/models.py` (+2 lines)
+
+**Impact:** Kill-switch fields now automatically persist to `enrichment_data.json` with full provenance tracking, enabling gap analysis for scoring fields.
+
+---
+
+### Gap Analysis Results (Post-Wave 3)
+
+**Kill-Switch Fields (8/8 - 100% COMPLETE):**
+| Field | Source | Confidence |
+|-------|--------|------------|
+| hoa_fee | PHOENIX_MLS | 0.87 |
+| beds | PHOENIX_MLS | 0.87 |
+| baths | PHOENIX_MLS | 0.87 |
+| sqft | PHOENIX_MLS | 0.87 |
+| lot_sqft | MARICOPA_ASSESSOR | 0.95 |
+| garage_spaces | MARICOPA_ASSESSOR | 0.95 |
+| sewer_type | MARICOPA_ASSESSOR | 0.95 |
+| year_built | MARICOPA_ASSESSOR | 0.95 |
+
+**Scoring Fields (0/22 - 0% COMPLETE):** ❌
+- Requires Epic 6 (Visual Analysis) implementation
+- Image assessment with Claude Opus 4.5 for interior/exterior scoring
+
+**Deal Analysis Fields (0/25 - 0% COMPLETE):** ❌
+- Requires Epic 7 (Deal Sheet Generation) implementation
+- Narrative generation and risk checklists
+
+**Next Story:** E2.R2 (Expansion) - Extract remaining 22 scoring fields + 25 deal analysis fields from PhoenixMLS listings
+
+---
+
+### E2.R2: PhoenixMLS Full Listing Attribute Extraction
+
+**Priority:** P1 | **Dependencies:** E2.R1 (Wave 3 Complete) | **Type:** Enhancement
+
+**User Story:** As a system user, I want all 22 scoring fields and 25 deal analysis fields extracted from PhoenixMLS, so that I have complete property data for Epic 4-7 pipelines.
 
 **Acceptance Criteria:**
-- Extract image URLs and download in single browser session
-- Use browser's native download capabilities (not separate httpx)
-- Screenshot fallback if download fails
-- Success rate >80% on 5 test properties
 
-**Technical Approach:**
-1. Keep browser session active during download phase
-2. Use page.screenshot() or browser-native download
-3. Don't extract URLs then download separately (causes 404)
-4. Implement screenshot-capture fallback
+**Phase 1: HIGH Priority Scoring Fields (22 fields)**
+- Location (Section A - 250 pts): geo_lat, geo_lon, elementary_school, jr_high_school, high_school, orientation
+- Systems (Section B - 175 pts): roofing, private_pool_yn, pool_partial_full, pool_features, spa, cooling, heating, price_per_sqft
+- Interior (Section C - 180 pts): kitchen_features, master_bathroom, master_bedroom, fireplace_yn, fireplaces_total, interior_features, laundry, flooring
 
-**Definition of Done:** Session-bound downloads | Screenshot fallback | >80% success rate | Updated tests
+**Phase 2: MEDIUM Priority Deal Analysis Fields (25 fields)**
+- Pricing & Status: list_price, current_price, status, list_date
+- Property Structure: dwelling_type, exterior_stories, total_bathrooms
+- Lot & Community: lot_acres, subdivision, community_features
+- Exterior & Utilities: construction, exterior_features, water_source, utilities, fencing, landscaping
+- Parking & Rooms: carport_spaces, total_covered_spaces, other_rooms
+- Assessor: assessor_number, tax_year
+
+**Technical Requirements:**
+- Refactor `_extract_kill_switch_fields()` → `_extract_listing_metadata()`
+- Add 22 HIGH-priority regex patterns
+- Add 25 MEDIUM-priority regex patterns
+- Add corresponding fields to EnrichmentData schema
+- Update MetadataPersister field mapping
+- Add unit tests for new extraction patterns
+- Verify with 5+ diverse test properties
+
+**Estimated Effort:** Phase 1 (2-3h) + Phase 2 (3-4h) + Testing (1-2h) = 6-9 hours (8 story points)
+
+**Implementation Status:** Backlog
+
+**Notes:**
+- Replaces original E2.R2 "Redfin Session-Bound Download" (Redfin coverage now sufficient via PhoenixMLS + Zillow)
+- BLOCK-002 mitigated - Redfin no longer blocking
+
+**Definition of Done:** ✅ 47 fields added | MetadataPersister extended | Tests passing | Gap analysis 100%
 

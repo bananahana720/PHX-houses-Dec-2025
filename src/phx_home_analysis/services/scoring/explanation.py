@@ -12,12 +12,11 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from ...config.scoring_weights import ScoringWeights, TierThresholds
-from ...domain.enums import Orientation, FloodZone, SolarStatus
+from ...domain.enums import FloodZone, Orientation, SolarStatus
 
 if TYPE_CHECKING:
     from ...domain.entities import Property
-    from ...domain.value_objects import ScoreBreakdown, Score
-    from .scorer import PropertyScorer
+    from ...domain.value_objects import Score, ScoreBreakdown
 
 
 # -----------------------------------------------------------------------------
@@ -793,6 +792,6 @@ class ScoringExplainer:
             if weakest.percentage < 50:
                 return f"Strong candidate with {weakest.section.lower()} as primary improvement area"
             else:
-                return f"Strong candidate with balanced scores across all sections"
+                return "Strong candidate with balanced scores across all sections"
         else:
             return f"Meets minimum criteria but lacks standout features; {weakest.section.lower()} is the main concern"

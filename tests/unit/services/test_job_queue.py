@@ -8,24 +8,18 @@ Tests cover:
 """
 
 import asyncio
-import json
-import tempfile
-from datetime import datetime, timezone
-from pathlib import Path
 
 import pytest
 
 from phx_home_analysis.services.job_queue import (
     Job,
     JobExecutor,
-    JobProgress,
     JobQueue,
     JobQueueState,
     JobResult,
     JobStatus,
     JobType,
 )
-
 
 # =============================================================================
 # Job Model Tests

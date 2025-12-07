@@ -3,14 +3,11 @@
 Spawn parallel Haiku subagents to assess directories and create CLAUDE.md files.
 Each agent gets one directory to analyze.
 """
-import json
-import sys
-from pathlib import Path
 
 # Target directories (relative to project root)
 DIRECTORIES = [
     "src/phx_home_analysis/domain",
-    "src/phx_home_analysis/utils", 
+    "src/phx_home_analysis/utils",
     "tests/unit",
     "tests/integration",
     "tests/unit/utils",
@@ -54,14 +51,14 @@ def main():
     print("PARALLEL SUBAGENT SPAWNING PLAN")
     print("=" * 80)
     print("\nSpawn these Haiku subagents in PARALLEL (independent work):\n")
-    
+
     for i, directory in enumerate(DIRECTORIES, 1):
         print(f"{i}. Assess: {directory}")
-        print(f"   Task: Read directory structure, analyze all files, create CLAUDE.md")
+        print("   Task: Read directory structure, analyze all files, create CLAUDE.md")
         print(f"   Output: {directory}/CLAUDE.md")
-        print(f"   Template: .claude/templates/CLAUDE.md.template")
+        print("   Template: .claude/templates/CLAUDE.md.template")
         print()
-    
+
     print("\nTemplate location:")
     print("  .claude/templates/CLAUDE.md.template")
     print("\nInstructions for each agent:")
