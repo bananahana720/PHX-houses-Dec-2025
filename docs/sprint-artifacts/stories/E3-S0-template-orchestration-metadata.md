@@ -215,6 +215,7 @@ From Epic 2 Retrospective Lesson L6:
 - [Epic 3 Wave 0: docs/epics/epic-3-kill-switch-filtering-system.md:10-26] - Wave 0 precedent
 - [Story Template: .bmad/bmm/workflows/4-implementation/create-story/template.md] - Current format
 - [Epic Template: .bmad/bmm/workflows/3-solutioning/create-epics-and-stories/epics-template.md] - Current format
+- [Cross-Layer Validation Guide: docs/development-guide/cross-layer-validation-guide.md] - Validation checklist (Action Item A8)
 
 ## Dev Agent Record
 

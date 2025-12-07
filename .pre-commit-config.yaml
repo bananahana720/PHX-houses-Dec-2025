@@ -24,3 +24,14 @@ repos:
       - id: pip-audit
         args: [--strict]
         stages: [commit]
+
+  # Architecture consistency checks
+  - repo: local
+    hooks:
+      - id: architecture-consistency
+        name: Architecture Consistency Check
+        entry: python .claude/hooks/architecture-consistency-check.py
+        language: system
+        pass_filenames: false
+        stages: [commit]
+        files: ^(CLAUDE\.md|docs/architecture/.*)$

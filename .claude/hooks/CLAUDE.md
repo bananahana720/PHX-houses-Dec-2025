@@ -27,6 +27,7 @@ Quality gate and safety constraint system enforcing stop-the-line compliance che
 | `file_size_conditional_hook.py` | Block large file reads (>750 lines main, >10k subagent) | Performance |
 | `precompact_hook.py` | Generate context optimization template for /compact | Context mgmt |
 | `security_reminder_hook.py` | Warn about security patterns (eval, innerHTML, etc.) | Security |
+| `architecture-consistency-check.py` | Verify key architecture values match across docs (pre-commit) | Documentation |
 
 ## Orchestration Hooks
 | File | Purpose | Category |
@@ -53,12 +54,12 @@ Quality gate and safety constraint system enforcing stop-the-line compliance che
 `__pycache__`, `.mypy_cache`, `.venv`, `.git`, `.claude/audio`, `.claude/logs`, `.agentvibes`, `.playwright-mcp`, `data/api_cache`, `TRASH`, `archive`, `reports`
 
 ## Tasks
-- [ ] Add pre-commit lint/type-check hooks `P:M`
 - [ ] Add hook telemetry/effectiveness metrics `P:L`
 - [x] Create lib/config.py for centralized thresholds `P:M` ✓ 2025-12-07
 - [x] Create lib/hook_io.py for standardized I/O `P:M` ✓ 2025-12-07
 - [x] Fix bash_hook.py to block cat/head/tail `P:H` ✓ 2025-12-07
 - [x] Remove /compact duplication from user_prompt_submit `P:M` ✓ 2025-12-07
+- [x] Add architecture consistency pre-commit hook `P:M` ✓ 2025-12-07
 
 ## Learnings
 - Agent sessions bypass CLAUDE.md checks (auto-approve agent-*.jsonl)
@@ -66,6 +67,7 @@ Quality gate and safety constraint system enforcing stop-the-line compliance che
 - Deleted files don't generate delta entries (safety pattern)
 - Removed broken grep_block_hook.py, bash_grep_check.py (2025-12-07)
 - format_python_hook uses ruff only (black removed 2025-12-07)
+- Architecture consistency hook catches doc drift early (Epic 2 Audit 2025-12-07)
 
 ## Refs
 - Centralized config: `lib/config.py` (all thresholds)
