@@ -44,17 +44,17 @@ This supplemental retrospective covers the post-Epic 2 remediation work (E2.R1 t
 
 | # | Action Item | Original Status | **Current Status** |
 |---|-------------|-----------------|-------------------|
-| A1 | Add orchestration metadata to story template | Before E3.S1 | ⏳ **In Progress** → E3.S0 |
-| A2 | Add wave planning section to epic template | Before E3 | ⏳ **In Progress** → E3.S0 |
+| A1 | Add orchestration metadata to story template | Before E3.S1 | ✅ **Completed** (E3.S0 - 2025-12-07) |
+| A2 | Add wave planning section to epic template | Before E3 | ✅ **Completed** (E3.S0 - 2025-12-07) |
 | A3 | Require live validation step in all stories | Ongoing | ✅ **Completed** |
 | A4 | Run live extraction validation (5 properties) | CRITICAL | ✅ **Completed** |
 | A5 | Remediate BLOCK-001 (Zillow CAPTCHA) | HIGH | ✅ **Resolved** |
 | A6 | Remediate BLOCK-002 (Redfin CDN 404) | HIGH | ✅ **Mitigated** |
 | A7 | Update sprint-status.yaml blocker section | HIGH | ✅ **Completed** |
 | A8 | Document Epic 2 orchestration patterns | Before E3 | ✅ **Completed** |
-| A9 | Add orchestration protocols reference | Before E3.S1 | ⏳ **In Progress** → E3.S0 |
+| A9 | Add orchestration protocols reference | Before E3.S1 | ✅ **Completed** (E3.S0 - 2025-12-07) |
 
-**Summary:** 6 completed, 3 deferred to E3.S0
+**Summary:** 9/9 completed (A1/A2/A9 done via E3.S0 on 2025-12-07)
 
 ---
 

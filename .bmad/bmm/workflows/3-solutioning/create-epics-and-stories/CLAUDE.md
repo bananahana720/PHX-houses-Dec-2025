@@ -1,57 +1,71 @@
-<!-- TEMPLATE:UNFILLED -->
-<!-- Remove this block when populated -->
 ---
-last_updated: [YYYY-MM-DDTHH:MM:SSZ]
-updated_by: [main|agent]
+last_updated: 2025-12-07T12:00:00Z
+updated_by: agent
+staleness_hours: 24
+flags: []
 ---
-# [Directory/Module Name]
+# create-epics-and-stories
 
 ## Purpose
-<!-- 1-2 sentences: What does this do? Why does it exist? -->
-[Brief what + why]
+Epic and story breakdown workflow that decomposes PRD requirements into implementable epics and stories. Templates include wave planning for orchestration, parallelization analysis, and dependency tracking.
 
-## Common Commands
-<!-- Frequently used bash commands for this module -->
-```bash
-# [description]
-[command]
-```
+## Contents
+| Path | Purpose |
+|------|---------|
+| `workflow.yaml` | Workflow configuration and variables |
+| `instructions.xml` | Epic/story decomposition instructions |
+| `epics-template.md` | Epic template with wave planning |
+| `checklist.md` | FR coverage validation checklist |
 
-## Core Files & Utilities
-<!-- Key files and their main exports/functions -->
-| File | Key Exports | Purpose |
-|------|-------------|---------|
-| `file.py` | `func()`, `Class` | [one-line desc] |
+## Template Structure (Updated 2025-12-07)
 
-## Code Style
-<!-- Module-specific conventions beyond project defaults -->
-- [convention]: [explanation]
+The epic template includes these key sections:
 
-## Testing
-<!-- How to test this module -->
-```bash
-# Run tests
-[test command]
-```
-- **Coverage target**: [X]%
-- **Test patterns**: [e.g., fixtures, mocks used]
+### Wave Planning Section
+Added per E3.S0 (Epic 2 Retro action item A2):
+- **Wave 0:** Foundation/infrastructure stories (templates, schemas, setup)
+- **Wave 1+:** Implementation waves with dependency ordering
+- **Per Wave Fields:**
+  - Stories list
+  - Model tier (haiku | sonnet | opus)
+  - Dependencies (which waves must complete first)
+  - Conflicts (stories that cannot run in parallel)
+  - Parallelizable flag
 
-## Repository Etiquette
-<!-- Branch naming, merge/rebase, commit conventions -->
-- **Branch prefix**: `[prefix]/`
-- **Merge strategy**: [merge|rebase|squash]
-- **Commit scope**: `[scope]`
+### Orchestration Summary Section
+Provides at-a-glance metrics for sprint planning:
+- Total wave count
+- Critical path (longest dependency chain)
+- Parallelization opportunities
+- Model distribution (Haiku/Sonnet/Opus counts)
+- Estimated execution time
 
-## Environment Setup
-<!-- Runtime requirements, toolchain specifics -->
-- **Python**: [version] via [pyenv|uv]
-- **Dependencies**: `[command to install]`
-- **Required env vars**: `[VAR_NAME]`
+### Per-Story Orchestration Block
+Each story within an epic now includes:
+- Wave assignment
+- Model tier
+- Parallelizable flag
+- Dependencies and conflicts
+- Layer touchpoints
 
-## Gotchas & Warnings
-<!-- Non-obvious behaviors, known issues, footguns -->
-- **[Issue]**: [What happens and how to avoid]
+## Tasks
+- [x] Add wave planning section to epic template `P:H` (E3.S0)
+- [x] Add orchestration summary section `P:H` (E3.S0)
+- [x] Add per-story orchestration block `P:H` (E3.S0)
+- [ ] Add automated FR coverage validation `P:M`
 
-## Notes
-<!-- Other important information for Claude to remember -->
-- [anything else relevant]
+## Learnings
+- **Story zero pattern:** Infrastructure before main epic work (Team Agreement TA4)
+- **Wave planning enables parallelization:** Stories in same wave with no conflicts can run simultaneously
+- **Model tier guidelines:** Haiku=simple docs/config, Sonnet=standard implementation, Opus=complex/vision
+- **Critical path identification:** Helps prioritize which stories block others
+
+## Refs
+- Epic template: `epics-template.md:1-162`
+- E3.S0 Story: `docs/sprint-artifacts/stories/E3-S0-template-orchestration-metadata.md`
+- E2 Retro: `docs/sprint-artifacts/epic-2-retro-supplemental-2025-12-07.md:144-152`
+- E3 Wave Planning Example: `docs/epics/epic-3-kill-switch-filtering-system.md:10-27`
+
+## Deps
+<- imports: `.bmad/bmm/config.yaml` (project variables)
+-> used by: `create-story` workflow, sprint planning

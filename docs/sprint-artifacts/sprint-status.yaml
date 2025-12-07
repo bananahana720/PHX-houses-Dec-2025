@@ -87,7 +87,7 @@ development_status:
   # =============================================================================
   epic-3: backlog
   # Wave 0: FOUNDATION (Sequential - Before Main Epic)
-  3-0-template-orchestration-metadata: backlog  # From E2 Retro: Update story/epic templates with wave planning
+  3-0-template-orchestration-metadata: done  # From E2 Retro: Update story/epic templates with wave planning (Completed 2025-12-07)
   # Wave 1: CORE KILL-SWITCH (Sequential)
   3-1-hard-kill-switch-criteria-implementation: backlog
   3-2-soft-kill-switch-severity-system: backlog
@@ -167,12 +167,12 @@ summary:
   total_epics: 7
   total_stories: 49  # +1 E3.S0 from E2 Retro
   stories_by_status:
-    backlog: 27  # +1 E3.S0
+    backlog: 26
     drafted: 0
     ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 22
+    done: 23
   epics_by_status:
     backlog: 2
     contexted: 0
@@ -232,17 +232,17 @@ retro_action_items:
       action: "Create E3.S0: Template Orchestration Metadata"
       owner: "SM"
       deadline: "Before E3.S1"
-      status: "in-progress"  # Added to sprint-status.yaml
+      status: "completed"  # Completed via E3.S0 on 2025-12-07
     - id: "A2"
       action: "Add extraction→persistence trace tests to Definition of Done"
       owner: "Dev Team"
       deadline: "E3.S1 onwards"
-      status: "pending"
+      status: "completed"  # Added to story template cross-layer validation checklist
     - id: "A3"
       action: "Add type contract tests at layer boundaries"
       owner: "Dev Team"
       deadline: "E3.S1 onwards"
-      status: "pending"
+      status: "completed"  # Added to story template cross-layer validation checklist
 
   technical_debt:
     - id: "A4"
