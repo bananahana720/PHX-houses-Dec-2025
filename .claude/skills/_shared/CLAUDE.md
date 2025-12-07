@@ -1,31 +1,34 @@
-<!-- TEMPLATE:UNFILLED -->
-<!-- File Word Count <= 250 words -->
-<!-- child CLAUDE.md | Remove this block when populated -->
 ---
-last_updated: [TIMESTAMP]
-updated_by: [main|agent]
-staleness_hours: 24
-flags: []
+last_updated: 2025-12-07T19:00:00Z
+updated_by: agent
+staleness_hours: 168
 ---
-# [Directory Name]
+# _shared
 
 ## Purpose
-[1-2 sentences: what + why]
+Shared reference tables and data used across multiple skills. Provides consistent values for scoring, kill-switches, and Arizona-specific factors.
 
 ## Contents
-| Path | Purpose |
+| File | Purpose |
 |------|---------|
-| `file` | [desc] |
+| `scoring-tables.md` | 605-point scoring breakdown, tier thresholds |
+| `arizona-factors.md` | AZ-specific: HVAC lifespan, pool costs, orientation |
 
-## Tasks
-- [ ] [task] `P:H|M|L`
+## Key Values
+| Metric | Value |
+|--------|-------|
+| Scoring Total | 605 pts |
+| Kill-Switches | 5 HARD + 4 SOFT |
+| Unicorn Tier | >=484 pts |
+| Contender Tier | 363-483 pts |
 
-## Learnings
-- [pattern/discovery]
+## Usage
+Skills import shared tables via markdown includes or direct reference.
 
 ## Refs
-- [desc]: `path:lines`
+- Skills: `../` (parent skills directory)
+- Scoring: `../../agents/image-assessor/`
 
 ## Deps
-← [imports from]
-→ [imported by]
+← Used by: scoring, kill-switch, arizona-context, image-assessment skills
+→ Imports from: Architecture docs (authoritative values)
