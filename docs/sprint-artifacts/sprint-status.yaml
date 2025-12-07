@@ -73,7 +73,7 @@ development_status:
   2-R1-wave1-error-handling: done  # Retry decorator, schema v2.0.0, error classification - 2025-12-06 (74d91f5)
   2-R1-wave2-imageprocessor-wiring: done  # Fixed extractor creation bug, 31+ images now saving - 2025-12-06 (0b4fa88, 3697b0c)
   2-R1-wave3-metadata-persistence: done  # Kill-switch auto-persist to enrichment_data.json - 2025-12-06 (02041da)
-  2-R2-phoenixmls-full-listing-extraction: backlog  # Extract 22 HIGH scoring + 25 MEDIUM deal analysis fields from PhoenixMLS (P1, 8 pts)
+  2-R2-phoenixmls-full-listing-extraction: done  # Extract 35 fields (Phase 1 MLS scope) from PhoenixMLS (P1, 8 pts) - completed 2025-12-07, 84 tests, 94% live coverage
 
   # =============================================================================
   # Epic 3: Kill-Switch Filtering System
@@ -156,12 +156,12 @@ summary:
   total_epics: 7
   total_stories: 47  # +5 remediation stories (E2.R1 base + 3 waves + E2.R2 expansion)
   stories_by_status:
-    backlog: 24  # +1 E2.R2 expansion
+    backlog: 23  # -1 (E2.R2 completed)
     drafted: 0
     ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 23  # +4 (E2.R1 base + Wave 1-3)
+    done: 24  # +5 (E2.R1 base + Wave 1-3 + E2.R2)
   epics_by_status:
     backlog: 5
     contexted: 0
@@ -172,10 +172,10 @@ summary:
   p0_stories: 38  # +3 Wave 1-3 (P0)
   p1_stories: 8   # +1 E2.R2 (P1)
   fr_coverage: "62/62 (100%)"
-  test_coverage_total: 186  # 119 baseline + 67 integration (commit 3880460)
-  last_updated: "2025-12-06"
-  last_story_completed: "2-R1-wave3-metadata-persistence"
-  last_story_completed_date: "2025-12-06"
+  test_coverage_total: 228  # 186 + 42 new E2-R2 tests (84 total in test_phoenix_mls_metadata.py)
+  last_updated: "2025-12-07"
+  last_story_completed: "2-R2-phoenixmls-full-listing-extraction"
+  last_story_completed_date: "2025-12-07"
   last_epic_completed: "epic-2"
   last_epic_completed_date: "2025-12-05"
 
@@ -281,3 +281,45 @@ live_testing_post_remediation:
     kill_switch_fields: "8/8 (100%)"
     scoring_fields: "0/22 (0%)"
     deal_analysis_fields: "0/25 (0%)"
+
+live_testing_e2r2:
+  date: "2025-12-07"
+  status: "SUCCESS - 35-field extraction validated"
+  properties_tested: 5
+  results:
+    - address: "4209 W Wahalla Ln, Glendale"
+      mls_number: "6931955"
+      fields_extracted: 33
+      status: "success"
+    - address: "6419 W Briles Rd, Phoenix"
+      mls_number: "6942545"
+      fields_extracted: 33
+      status: "success"
+    - address: "4732 W Davis Rd, Glendale"
+      mls_number: "6933503"
+      fields_extracted: 33
+      status: "success"
+    - address: "2846 W Villa Rita Dr, Phoenix"
+      mls_number: "6930493"
+      fields_extracted: 33
+      status: "success"
+    - address: "20021 N 38th Ln, Glendale"
+      mls_number: "6906800"
+      fields_extracted: 33
+      status: "success"
+  field_coverage: "33/35 (94%)"
+  missing_fields: ["original_list_price", "price_reduced"]  # Price history not displayed on MLS
+  field_categories:
+    kill_switch: "8/8 (100%)"
+    mls_identifiers: "5/5 (100%)"
+    pricing: "2/4 (50%)"
+    property_details: "2/2 (100%)"
+    systems: "4/4 (100%)"
+    features: "8/8 (100%)"
+    schools: "3/3 (100%)"
+    location: "1/1 (100%)"
+  commits_applied:
+    - "db128d4 - E2-R2: Expand PhoenixMLS extraction to 35 fields"
+  tests_added: 42  # 84 total in test_phoenix_mls_metadata.py
+  code_review_cycles: 2
+  verdict: "APPROVED"

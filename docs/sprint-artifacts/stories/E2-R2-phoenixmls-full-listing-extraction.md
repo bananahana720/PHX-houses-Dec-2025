@@ -2,7 +2,7 @@
 story_id: E2-R2
 epic: epic-2-property-data-acquisition
 title: PhoenixMLS Full Listing Attribute Extraction
-status: ready-for-review
+status: done
 priority: P1
 points: 8
 created: 2025-12-07
