@@ -46,6 +46,7 @@ from .extractors.base import (
     RateLimitError,
     SourceUnavailableError,
 )
+from .image_processor import ImageProcessor
 from .metrics import CaptchaMetrics
 from .run_logger import PropertyChanges, RunLogger
 from .standardizer import ImageProcessingError, ImageStandardizer
@@ -309,6 +310,11 @@ class ImageExtractionOrchestrator:
         self.standardizer = ImageStandardizer(
             max_dimension=max_dimension,
             output_format="PNG",
+        )
+        self.image_processor = ImageProcessor(
+            base_dir=self.processed_dir,
+            deduplicator=self.deduplicator,
+            standardizer=self.standardizer,
         )
 
         # State tracking
@@ -650,8 +656,11 @@ class ImageExtractionOrchestrator:
         }
 
         for source in self.enabled_sources:
-            if source in extractor_map:
-                extractor_class = extractor_map[source]
+            # Convert string source to ImageSource enum if needed
+            source_enum = source if isinstance(source, ImageSource) else ImageSource(source)
+
+            if source_enum in extractor_map:
+                extractor_class = extractor_map[source_enum]
                 extractor = extractor_class(http_client=self._http_client)
                 extractors.append(extractor)
                 logger.info(f"Enabled extractor: {extractor.name}")
@@ -894,6 +903,9 @@ class ImageExtractionOrchestrator:
         # Extract from each source
         for extractor in extractors:
             source_name = extractor.source.value
+            # Initialize source stats if not already present
+            if source_name not in result.by_source:
+                result.by_source[source_name] = SourceStats(source=source_name)
             source_stats = result.by_source[source_name]
 
             # Circuit breaker: Skip if source is disabled
@@ -1206,6 +1218,9 @@ class ImageExtractionOrchestrator:
         # Extract from each source
         for extractor in extractors:
             source_name = extractor.source.value
+            # Initialize source stats if not already present
+            if source_name not in result.by_source:
+                result.by_source[source_name] = SourceStats(source=source_name)
             source_stats = result.by_source[source_name]
 
             # Circuit breaker: Skip if source is disabled
@@ -1280,11 +1295,10 @@ class ImageExtractionOrchestrator:
                             # Local file - read directly instead of downloading
                             with open(url, "rb") as f:
                                 image_data = f.read()
-                            content_type = "image/png"
                             logger.debug(f"Read local screenshot: {url}")
                         else:
                             # Download from URL
-                            image_data, content_type = await extractor.download_image(url)
+                            image_data, _ = await extractor.download_image(url)
 
                         # Compute content hash for URL tracking
                         content_hash = hashlib.md5(image_data).hexdigest()
@@ -1296,119 +1310,80 @@ class ImageExtractionOrchestrator:
                                 prop_changes.content_changed += 1
                                 logger.info(f"Content changed at URL: {url[:60]}...")
 
-                        # Compute perceptual hash
-                        try:
-                            phash = self.deduplicator.compute_hash(image_data)
-                        except DeduplicationError as e:
-                            logger.warning(f"Failed to hash image {url}: {e}")
+                        # Process image using ImageProcessor
+                        processed_image, error = await self.image_processor.process_image(
+                            image_data=image_data,
+                            source_url=url,
+                            property_hash=property_hash,
+                            run_id=self.run_id,
+                        )
+
+                        if error:
+                            # Processing failed
+                            logger.warning(f"Failed to process {url}: {error}")
                             source_stats.images_failed += 1
                             result.failed_downloads += 1
                             prop_changes.errors += 1
-                            prop_changes.error_messages.append(f"Hash failed: {url}")
-                            # Update statistics accumulator
+                            prop_changes.error_messages.append(f"Processing failed: {url}")
                             self._stats_accumulator["extraction_errors"] += 1
                             continue
 
-                        # Check for duplicate
-                        is_duplicate, duplicate_of = self.deduplicator.is_duplicate(phash)
+                        if not processed_image:
+                            # Shouldn't happen, but handle gracefully
+                            logger.error(f"ImageProcessor returned None for {url}")
+                            source_stats.images_failed += 1
+                            result.failed_downloads += 1
+                            prop_changes.errors += 1
+                            self._stats_accumulator["extraction_errors"] += 1
+                            continue
 
-                        if is_duplicate:
-                            logger.debug(f"Duplicate detected: {url} (matches {duplicate_of})")
+                        # Handle duplicates (processed_image is from ImageProcessor)
+                        if processed_image.is_duplicate:
+                            logger.debug(f"Duplicate detected: {url} (matches {processed_image.duplicate_of})")
                             source_stats.duplicates_detected += 1
                             result.duplicate_images += 1
                             prop_changes.duplicates += 1
 
                             # Still register URL to track it
-                            if incremental and duplicate_of:
+                            if incremental and processed_image.duplicate_of:
                                 self.url_tracker.register_url(
                                     url=url,
-                                    image_id=duplicate_of,
+                                    image_id=processed_image.duplicate_of,
                                     property_hash=property_hash,
                                     content_hash=content_hash,
                                     source=extractor.source.value,
                                 )
                             continue
 
-                        # Standardize image
-                        try:
-                            standardized_data = self.standardizer.standardize(image_data)
-                        except ImageProcessingError as e:
-                            logger.warning(f"Failed to standardize image {url}: {e}")
-                            source_stats.images_failed += 1
-                            result.failed_downloads += 1
-                            prop_changes.errors += 1
-                            prop_changes.error_messages.append(f"Standardize failed: {url}")
-                            # Update statistics accumulator
-                            self._stats_accumulator["extraction_errors"] += 1
-                            continue
 
-                        # Use content hash as image ID for deterministic storage
-                        image_id = content_hash
-
-                        # Content-addressed directory structure
-                        content_dir = self.processed_dir / content_hash[:8]
-                        content_dir.mkdir(parents=True, exist_ok=True)
-                        local_path = content_dir / f"{content_hash}.png"
-
-                        # Skip if already exists (natural deduplication)
-                        if local_path.exists():
-                            logger.info(f"Image already exists (dedup): {content_hash}")
-                            # Load existing metadata and continue
-                            existing = self._get_existing_image_metadata(content_hash, property)
-                            if existing:
-                                # Still register URL to track it
-                                if incremental:
-                                    self.url_tracker.register_url(
-                                        url=url,
-                                        image_id=image_id,
-                                        property_hash=property_hash,
-                                        content_hash=content_hash,
-                                        source=extractor.source.value,
-                                    )
-                                prop_changes.unchanged += 1
-                                continue
-
-                        with open(local_path, "wb") as f:
-                            f.write(standardized_data)
-
-                        # Get dimensions
-                        width, height = self.standardizer.get_dimensions(standardized_data)
-
-                        # Create metadata
+                        # New unique image - create metadata
                         now = datetime.now().astimezone().isoformat()
                         metadata = ImageMetadata(
-                            image_id=image_id,
+                            image_id=processed_image.image_id,
                             property_address=property.full_address,
                             source=extractor.source.value,
                             source_url=url,
-                            local_path=str(local_path.relative_to(self.base_dir)),
+                            local_path=str(processed_image.local_path.relative_to(self.base_dir)),
                             original_path=None,
-                            phash=phash.phash,
-                            dhash=phash.dhash,
-                            width=width,
-                            height=height,
-                            file_size_bytes=len(standardized_data),
+                            phash=processed_image.phash,
+                            dhash=processed_image.dhash,
+                            width=processed_image.width,
+                            height=processed_image.height,
+                            file_size_bytes=processed_image.file_size_bytes,
                             status=ImageStatus.PROCESSED.value,
                             downloaded_at=now,
                             processed_at=now,
                             property_hash=property_hash,
                             created_by_run_id=self.run_id,
-                            content_hash=content_hash,
+                            content_hash=processed_image.content_hash,
                         )
 
-                        # Register hash
-                        self.deduplicator.register_hash(
-                            image_id=image_id,
-                            phash=phash,
-                            property_address=property.full_address,
-                            source=extractor.source.value,
-                        )
 
                         # Register URL in tracker
                         if incremental:
                             self.url_tracker.register_url(
                                 url=url,
-                                image_id=image_id,
+                                image_id=processed_image.image_id,
                                 property_hash=property_hash,
                                 content_hash=content_hash,
                                 source=extractor.source.value,
@@ -1416,7 +1391,7 @@ class ImageExtractionOrchestrator:
 
                         new_images.append(metadata)
                         prop_changes.new_images += 1
-                        prop_changes.new_image_ids.append(image_id)
+                        prop_changes.new_image_ids.append(processed_image.image_id)
                         source_stats.images_downloaded += 1
                         result.total_images += 1
                         result.unique_images += 1
@@ -1426,7 +1401,7 @@ class ImageExtractionOrchestrator:
                         self._stats_accumulator["by_source"][extractor.source.value] += 1
                         self._stats_accumulator["by_property"][property.full_address] += 1
 
-                        logger.debug(f"Saved new image: {content_hash}.png")
+                        logger.debug(f"Saved new image: {processed_image.image_id[:8]}.png")
 
                         # Rate limiting
                         await extractor._rate_limit()
