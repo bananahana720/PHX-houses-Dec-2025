@@ -2,7 +2,7 @@
 name: block-debug-code
 enabled: true
 event: file
-pattern: console\.log\(|print\(|debugger\b|logger\.debug\(
+pattern: console\.log\(|(?<![a-zA-Z])print\(|debugger\b|logger\.debug\(|breakpoint\(\)|pdb\.set_trace\(|import\s+pdb|from\s+pdb\s+import
 action: block
 ---
 
@@ -11,10 +11,13 @@ action: block
 You attempted to add debug code to the codebase. This is blocked per user preference.
 
 **Detected patterns:**
-- `console.log()` - JavaScript/TypeScript console logging
-- `print()` - Python print statements
+- `console.log` - JavaScript/TypeScript console logging
+- `print` statements - Python print calls (not methods like blueprint)
 - `debugger` - JavaScript debugger breakpoints
-- `logger.debug()` - Debug-level logging calls
+- `logger.debug` - Debug-level logging calls
+- `breakpoint` - Python 3.7+ built-in debugger
+- `pdb.set_trace` - Python debugger breakpoints
+- `import pdb` / `from pdb import` - Debugger imports
 
 **Why this is blocked:**
 - Debug code should not ship to production
