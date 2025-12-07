@@ -22,7 +22,7 @@
 | Google Maps geographic data | Production | E2.S5 | Geocoding, distance matrix, orientation inference |
 | GreatSchools API integration | Production | E2.S6 | School ratings, assigned schools, composite scoring |
 | API infrastructure | Production | E2.S7 | Auth, rate limiting, caching with TTL, hit tracking |
-| Kill-switch filtering | Production | — | 8 HARD criteria, soft severity system |
+| Kill-switch filtering | Production | — | 5 HARD + 4 SOFT criteria, severity system |
 | 605-point scoring | Production | — | 22 scoring strategies across 3 dimensions |
 | Multi-agent pipeline | Production | IP-01 | Works, blocks 30+ min (no background jobs) |
 | Score explanations | Partial | XT-09 | Returns breakdown, not human reasoning |

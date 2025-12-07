@@ -41,7 +41,7 @@
      |               BUSINESS LOGIC LAYER                       |
      |  +-------------------+  +--------------------+           |
      |  | Kill-Switch       |  | Property Scorer    |           |
-     |  | Filter (7 HARD)   |  | (605 pts, 22 strat)|           |
+     |  | (5 HARD + 4 SOFT) |  | (605 pts, 22 strat)|           |
      |  +-------------------+  +--------------------+           |
      |  +-------------------+  +--------------------+           |
      |  | Tier Classifier   |  | Cost Estimator     |           |

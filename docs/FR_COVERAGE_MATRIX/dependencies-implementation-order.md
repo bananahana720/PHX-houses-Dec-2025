@@ -79,7 +79,7 @@
 **Dependencies:** E1, E2
 
 1. **E3.S1** - HARD Criteria (1 day)
-   - 7 HARD criteria implementation
+   - 5 HARD + 4 SOFT criteria implementation
    - Short-circuit evaluation
 
 2. **E3.S2** - SOFT Severity (1 day)

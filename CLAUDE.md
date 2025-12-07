@@ -54,7 +54,7 @@ Evaluates Phoenix properties against 5 HARD + 4 SOFT kill-switches and scores (6
 - **Location** (250): schools, safety, orientation, proximity
 - **Systems** (175): HVAC, roof, pool, solar
 - **Interior** (180): kitchen, master, layout, finishes
-- **Tiers**: Unicorn >480, Contender 360-480, Pass <360
+- **Tiers**: Unicorn ≥484, Contender 363-483, Pass <363
 
 ## Pipeline Phases
 | Phase | Action | Output |

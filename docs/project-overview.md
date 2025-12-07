@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-PHX Houses Analysis Pipeline is a Python data pipeline that evaluates Phoenix metropolitan real estate properties for first-time home buyers. It implements a sophisticated 605-point scoring system with 8 HARD kill-switch criteria to filter unsuitable properties before detailed analysis.
+PHX Houses Analysis Pipeline is a Python data pipeline that evaluates Phoenix metropolitan real estate properties for first-time home buyers. It implements a sophisticated 605-point scoring system with 5 HARD + 4 SOFT kill-switch criteria to filter unsuitable properties before detailed analysis.
 
 The system integrates multiple data sources (County Assessor API, Zillow, Redfin, GreatSchools, Google Maps) to provide comprehensive property evaluation with automated deal sheet generation.
 
@@ -69,20 +69,26 @@ The system integrates multiple data sources (County Assessor API, Zillow, Redfin
 
 ---
 
-## Kill-Switch System (8 HARD Criteria)
+## Kill-Switch System (5 HARD + 4 SOFT Criteria)
 
-All criteria are **instant fail** - any violation disqualifies the property:
+**HARD criteria** (instant fail - any violation disqualifies the property):
 
 | Criterion | Requirement | Rationale |
 |-----------|-------------|-----------|
 | HOA | = $0 | No HOA properties only |
+| Solar | ≠ lease | No solar leases |
 | Beds | >= 4 | Family size requirement |
 | Baths | >= 2 | Minimum comfort |
 | SqFt | > 1800 | Space requirement |
-| Lot | > 8,000 sqft | Yard size |
-| Garage | >= 1 space | Arizona essential |
-| Sewer | City | No septic systems |
-| Year | <= 2024 | Existing construction |
+
+**SOFT criteria** (severity accumulation - fail if total severity ≥ 3.0):
+
+| Criterion | Threshold | Severity | Rationale |
+|-----------|-----------|----------|-----------|
+| Sewer | City only | 2.5 | No septic systems |
+| Year Built | <= 2023 | 2.0 | Existing construction |
+| Garage | >= 2 indoor | 1.5 | Arizona essential |
+| Lot Size | 7k-15k sqft | 1.0 | Optimal yard size |
 
 ---
 
@@ -99,9 +105,9 @@ All criteria are **instant fail** - any violation disqualifies the property:
 
 | Tier | Score Range | Percentage |
 |------|-------------|------------|
-| UNICORN | >480 | 80%+ |
-| CONTENDER | 360-480 | 60-80% |
-| PASS | <360 | <60% |
+| UNICORN | ≥484 | 80%+ |
+| CONTENDER | 363-483 | 60-80% |
+| PASS | <363 | <60% |
 
 ---
 

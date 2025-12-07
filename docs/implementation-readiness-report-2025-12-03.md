@@ -46,7 +46,7 @@ The PHX Houses Analysis Pipeline planning artifacts are substantially complete a
 | Validation Check | Status | Notes |
 |------------------|--------|-------|
 | 62 FRs have architectural support | PASS | All FRs mapped to components |
-| Kill-switch system (FR9-FR14) | PASS | ADR-04 defines 7 HARD criteria |
+| Kill-switch system (FR9-FR14) | PASS | ADR-04 defines 5 HARD + 4 SOFT criteria |
 | Scoring system (FR15-FR20) | PASS | ADR-03 defines 605-point system |
 | Multi-agent pipeline (FR28-FR33) | PASS | Phase orchestration documented |
 | State management (FR34-FR39) | PASS | Checkpoint/resume architecture defined |
@@ -122,7 +122,7 @@ The PHX Houses Analysis Pipeline planning artifacts are substantially complete a
 
 | ASR ID | Architecture Coverage | Test Strategy | Status |
 |--------|----------------------|---------------|--------|
-| ASR-01 (Kill-switch 100%) | 7 HARD criteria | Exhaustive boundary tests | Ready |
+| ASR-01 (Kill-switch 100%) | 5 HARD + 4 SOFT criteria | Exhaustive boundary tests | Ready |
 | ASR-02 (Scoring consistency) | 605-pt system | Deterministic tests | Ready |
 | ASR-03 (30min batch) | Pipeline orchestrator | Timing benchmarks | Ready |
 | ASR-04 (Crash recovery) | Checkpoint/resume | Interrupt simulation | Ready |

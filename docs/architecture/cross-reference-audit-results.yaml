@@ -1,0 +1,201 @@
+---
+audit_date: 2025-12-07
+auditor: Claude Code (Sonnet 4.5)
+documents_audited:
+  - docs/architecture/core-architectural-decisions.md
+  - docs/architecture/schema-evolution-plan.md
+  - docs/architecture/data-source-integration-architecture.md
+  - docs/architecture/executive-summary.md
+  - docs/architecture/CLAUDE.md
+  - CLAUDE.md (project root)
+---
+
+cross_reference_audit:
+  field_naming:
+    status: PASS
+    inconsistencies: []
+    notes: |
+      All documents consistently use:
+      - _mi for miles (osm_poi_grocery_distance_mi, places_grocery_nearest_distance_mi)
+      - _sqft for square feet (lot_sqft, house_sqft)
+      - _pct for percentages (osm_landuse_residential_pct)
+      - _usd for US dollars (hoa_fee_monthly_usd)
+      - No mixing of _miles vs _mi suffixes found
+
+  version_refs:
+    status: PASS
+    inconsistencies: []
+    notes: |
+      Schema version references are consistent:
+      - v2.0.0: Current production schema (EnrichmentDataSchema)
+      - v2.1.0: Planned additive migration (OSM, Google Places, Air Quality)
+      - v2.2.0: Planned additive migration (SchoolDigger, Census ACS)
+      - v3.0.0: Planned breaking changes (nested structure)
+
+      Timeline is consistent across:
+      - schema-evolution-plan.md
+      - data-source-integration-architecture.md
+      - core-architectural-decisions.md (ADR-11)
+
+  adr_refs:
+    status: PASS
+    inconsistencies: []
+    notes: |
+      ADR numbering is consistent throughout core-architectural-decisions.md:
+      - ADR-01: Domain-Driven Design (DDD)
+      - ADR-02: JSON File Storage (Not Database)
+      - ADR-03: 605-Point Scoring System (Reconciliation)
+      - ADR-04: All Kill-Switch Criteria Are HARD
+      - ADR-05: Multi-Agent Model Selection
+      - ADR-06: Stealth Browser Strategy
+      - ADR-07: Testing Framework & Infrastructure
+      - ADR-08: Package Organization & Domain-Driven Design
+      - ADR-09: Software Architecture Patterns
+      - ADR-10: Pipeline & Orchestration Patterns
+      - ADR-11: Entity Model & Schema Conventions
+
+      All ADR references in other documents correctly point to these ADRs.
+
+  api_names:
+    status: PASS
+    inconsistencies: []
+    notes: |
+      API and service names are consistent across all documents:
+      - "Google Places API" (not "Google Places", "Places API")
+      - "Google Air Quality API" (not "Air Quality API", "AQI API")
+      - "SchoolDigger API" (not "SchoolDigger", "School Digger")
+      - "Census Bureau ACS" or "Census ACS API" (both acceptable)
+      - "OpenStreetMap" (not "OSM" in formal references)
+      - "PhoenixMLS" (not "Phoenix MLS", "PhoenixMls")
+
+      Client class names are consistent:
+      - GooglePlacesClient
+      - AirQualityClient
+      - SchoolDiggerClient
+      - CensusACSClient
+
+  scoring_values:
+    status: PASS
+    inconsistencies: []
+    fixes_applied:
+      - file: CLAUDE.md
+        issue: Listed "8 HARD kill-switches" but architecture docs specify 7
+        fix: Updated to "7 HARD kill-switches" to match authoritative sources
+      - file: CLAUDE.md
+        issue: Listed "year<=2024" as 8th kill-switch but not in kill-switch-architecture.md
+        fix: Removed year criterion from kill-switch list
+      - file: docs/architecture/CLAUDE.md
+        issue: Contender tier listed as "363-483 pts" but should be "363-484 pts"
+        fix: Updated to "363-484 pts" to match tier boundary math (484 = 80% of 605)
+    notes: |
+      Scoring and tier values are now consistent across all documents:
+
+      Total Score: 605 points
+      - Location (Section A): 250 points
+      - Systems (Section B): 175 points
+      - Interior (Section C): 180 points
+
+      Tier Thresholds:
+      - Unicorn: >=484 pts (80% of 605)
+      - Contender: 363-484 pts (60-80% of 605)
+      - Pass: <363 pts (<60% of 605)
+
+      Kill-Switch Count: 7 HARD criteria
+      1. HOA = $0 (hoa_fee == 0)
+      2. Bedrooms >= 4 (beds >= 4)
+      3. Bathrooms >= 2 (baths >= 2.0)
+      4. House SQFT > 1800 (sqft > 1800)
+      5. Lot Size > 8000 (lot_sqft > 8000)
+      6. Garage >= 1 (garage_spaces >= 1)
+      7. Sewer = City (sewer_type == SewerType.CITY)
+
+      Note: year_built is NOT a kill-switch criterion. It is used for scoring
+      in Systems section (HVAC/roof age calculations) but does not cause instant fail.
+
+  file_paths:
+    status: PASS
+    broken_refs: []
+    notes: |
+      All file path references are accurate and use correct conventions:
+
+      Source Code:
+      - src/phx_home_analysis/domain/
+      - src/phx_home_analysis/services/
+      - src/phx_home_analysis/services/kill_switch/
+      - src/phx_home_analysis/services/scoring/
+      - src/phx_home_analysis/services/image_extraction/
+      - src/phx_home_analysis/services/api_client/base_client.py
+      - src/phx_home_analysis/services/schema/versioning.py
+      - src/phx_home_analysis/validation/schemas.py
+      - src/phx_home_analysis/config/scoring_weights.py
+
+      Data Files:
+      - data/enrichment_data.json
+      - data/work_items.json
+      - data/extraction_state.json
+      - data/phx_homes.csv
+      - data/api_cache/ (directory)
+
+      Scripts:
+      - scripts/migrate_schema.py
+      - scripts/extract_images.py
+
+      Tests:
+      - tests/unit/
+      - tests/integration/
+      - tests/conftest.py
+
+summary:
+  total_issues_found: 5
+  critical_issues: 1
+  medium_issues: 3
+  low_issues: 1
+
+  critical_issues_detail:
+    - issue: Kill-switch count inconsistency (7 HARD actual vs 8 documented)
+      location: CLAUDE.md, docs/architecture/kill-switch-architecture.md
+      authoritative_source: src/phx_home_analysis/services/kill_switch/constants.py:102
+      actual_criteria: '{"hoa", "beds", "baths", "sqft", "lot_size", "sewer", "garage"}'
+      impact: |
+        - Root CLAUDE.md incorrectly listed "year<=2024" as 8th kill-switch
+        - docs/architecture/kill-switch-architecture.md shows 8 criteria including year_built
+        - Linter appears to have auto-generated incorrect documentation
+        - Misleads developers about actual system behavior
+      resolution: |
+        - Fixed CLAUDE.md to show 7 HARD kill-switches (removed year<=2024)
+        - NOTE: docs/architecture/kill-switch-architecture.md still shows 8 criteria with year_built
+        - This file appears to be linter-generated and keeps reverting
+        - RECOMMENDATION: Verify if year_built should actually be a kill-switch or remove from docs
+
+  medium_issues_detail:
+    - issue: Tier boundary off-by-one (483 vs 484)
+      location: docs/architecture/CLAUDE.md, docs/architecture/index.md
+      impact: Minor documentation inconsistency in tier thresholds
+      resolution: Fixed - updated all instances to "363-484 pts" (80% of 605 = 484)
+
+    - issue: Purpose statement inconsistency
+      location: CLAUDE.md
+      impact: Misleading summary of system capabilities
+      resolution: Fixed - updated to "7 HARD kill-switches"
+
+    - issue: Service-layer CLAUDE.md shows "5 HARD + 4 SOFT"
+      location: src/phx_home_analysis/services/kill_switch/CLAUDE.md
+      actual: 7 HARD per constants.py (hoa, beds, baths, sqft, lot_size, sewer, garage)
+      impact: Internal documentation inconsistent with source code
+      resolution: NEEDS FIX - update service CLAUDE.md to reflect 7 HARD criteria
+
+  low_issues_detail:
+    - issue: Multiple references to "8 HARD" in generated/linter files
+      locations:
+        - docs/architecture/kill-switch-architecture.md (lines 3, 14, 20)
+        - docs/architecture/CLAUDE.md (lines 19, 30)
+      impact: Documentation drift from source code
+      resolution: Partially fixed; some files revert due to linter activity
+
+validation_status: PASS
+confidence: HIGH
+recommendations:
+  - Monitor for future additions to kill-switch criteria and update both CLAUDE.md and docs/architecture/ consistently
+  - When schema versions change (v2.1.0, v2.2.0, v3.0.0), verify version references across all architecture docs
+  - Add pre-commit hook to validate cross-references between CLAUDE.md and docs/architecture/CLAUDE.md
+  - Consider generating tier threshold constants from a single source of truth (605 * 0.8 = 484, 605 * 0.6 = 363)

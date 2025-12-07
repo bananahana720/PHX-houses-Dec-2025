@@ -119,7 +119,7 @@ The analysis pipeline executes in **5 phases** with checkpointing:
 - **Output:** Section C scores (180 points)
 
 ### Phase 3: Synthesis
-- **Kill-Switch:** Apply 8 HARD criteria
+- **Kill-Switch:** Apply 5 HARD + 4 SOFT criteria (fail if any HARD fails OR severity ≥ 3.0)
 - **Scoring:** Calculate 605-point score
 - **Classification:** Assign tier (Unicorn/Contender/Pass)
 - **Output:** Final property rankings
@@ -191,29 +191,53 @@ class Property:
 
 ## Kill-Switch Architecture
 
-All 8 criteria are **HARD** (instant fail):
+5 **HARD** criteria (instant fail) + 4 **SOFT** criteria (severity accumulation):
 
 ```python
 class KillSwitchFilter:
-    criteria = [
+    hard_criteria = [
         HOACriterion(),      # hoa_fee == 0
+        SolarCriterion(),    # solar_status != LEASED
         BedsCriterion(),     # beds >= 4
         BathsCriterion(),    # baths >= 2
         SqftCriterion(),     # sqft > 1800
-        LotCriterion(),      # lot_sqft > 8000
-        GarageCriterion(),   # garage_spaces >= 1
-        SewerCriterion(),    # sewer_type == CITY
-        YearCriterion(),     # year_built <= 2024
+    ]
+
+    soft_criteria = [
+        SewerCriterion(),    # sewer_type == CITY (severity: 2.5)
+        YearCriterion(),     # year_built <= 2023 (severity: 2.0)
+        GarageCriterion(),   # garage_spaces >= 2 indoor (severity: 1.5)
+        LotCriterion(),      # 7000 <= lot_sqft <= 15000 (severity: 1.0)
     ]
 
     def evaluate(self, property: Property) -> KillSwitchResult:
-        failures = []
-        for criterion in self.criteria:
+        # Check HARD criteria first
+        hard_failures = []
+        for criterion in self.hard_criteria:
             if not criterion.passes(property):
-                failures.append(criterion.failure_message())
+                hard_failures.append(criterion.failure_message())
+
+        if hard_failures:
+            return KillSwitchResult(
+                passed=False,
+                verdict="FAIL",
+                failures=hard_failures
+            )
+
+        # Check SOFT criteria severity accumulation
+        total_severity = 0.0
+        soft_failures = []
+        for criterion in self.soft_criteria:
+            if not criterion.passes(property):
+                total_severity += criterion.severity
+                soft_failures.append(criterion.failure_message())
+
+        passed = total_severity < 3.0
         return KillSwitchResult(
-            passed=len(failures) == 0,
-            failures=failures
+            passed=passed,
+            verdict="PASS" if passed else "FAIL",
+            failures=soft_failures if not passed else [],
+            severity=total_severity
         )
 ```
 

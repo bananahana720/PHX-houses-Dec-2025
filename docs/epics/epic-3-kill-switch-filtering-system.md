@@ -32,9 +32,9 @@ Before beginning Epic 3 stories, validate image extraction blocker status:
 
 **User Story:** As a system user, I want HARD kill-switch criteria that instantly reject properties, so that non-negotiable deal-breakers are caught immediately.
 
-**Acceptance Criteria:** Any HARD criterion failing results in immediate "FAIL" verdict with specific criterion identified; no further evaluation after first failure. **7 HARD Criteria:** HOA must be $0, Beds >= 4, Baths >= 2.0, House SQFT > 1800, Lot > 8000 sqft, Garage >= 1 indoor space, Sewer must be "city". Passing all criteria results in "PASS" with all values recorded.
+**Acceptance Criteria:** Any HARD criterion failing results in immediate "FAIL" verdict with specific criterion identified; no further evaluation after first failure. **5 HARD Criteria:** HOA=$0, solar≠lease, beds≥4, baths≥2, sqft>1800. **4 SOFT Criteria:** Sewer=city (2.5), Year≤2023 (2.0), Garage≥2 indoor (1.5), Lot 7k-15k (1.0). Passing all criteria results in "PASS" with all values recorded.
 
-**Technical Notes:** Implement `KillSwitchFilter` in `src/phx_home_analysis/services/kill_switch/`. Each criterion is separate class returning `CriterionResult(passed, value, note)`. Per Architecture: all 7 are HARD (instant fail).
+**Technical Notes:** Implement `KillSwitchFilter` in `src/phx_home_analysis/services/kill_switch/`. Each criterion is separate class returning `CriterionResult(passed, value, note)`. Per Architecture: 5 HARD (instant fail) + 4 SOFT (severity accumulation).
 
 **Definition of Done:** KillSwitchFilter orchestrating 7 criteria | Individual criterion classes | Short-circuit on first failure | Unit tests with boundary cases | Full flow integration test
 

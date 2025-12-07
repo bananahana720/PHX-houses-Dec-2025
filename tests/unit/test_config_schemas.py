@@ -162,7 +162,7 @@ def valid_scoring_weights(valid_value_zones, valid_section_weights, valid_tier_t
 
 @pytest.fixture
 def valid_hard_criteria():
-    """Valid hard criteria configuration (Sprint 0: 8 HARD fields)."""
+    """Valid hard criteria configuration (Sprint 0: 5 HARD + 4 SOFT criteria)."""
     return {
         "hoa_fee": 0,
         "min_beds": 4,

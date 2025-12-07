@@ -81,7 +81,7 @@ def full_listing_html() -> str:
 
 
 class TestParseListingMetadataKillSwitchFields:
-    """Tests for kill-switch field extraction (8 HARD criteria)."""
+    """Tests for kill-switch field extraction (5 HARD + 4 SOFT criteria)."""
 
     def test_parse_beds(self, extractor: PhoenixMLSExtractor, full_listing_html: str):
         """Test beds extraction."""

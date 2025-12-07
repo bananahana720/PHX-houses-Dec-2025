@@ -115,17 +115,22 @@ class FloodZone(Enum):
 
 ```python
 class KillSwitchFilter:
-    """Orchestrates all 7 HARD kill-switch criteria per PRD."""
+    """Orchestrates 5 HARD + 4 SOFT kill-switch criteria per PRD."""
 
     def __init__(self):
-        self.criteria = [
+        self.hard_criteria = [
             HoaKillSwitch(),        # HOA must be $0
+            SolarKillSwitch(),      # Solar must not be leased
             BedroomsKillSwitch(),   # Beds >= 4
             BathroomsKillSwitch(),  # Baths >= 2
             SqftKillSwitch(),       # Sqft > 1800
-            LotSizeKillSwitch(),    # Lot > 8000
-            GarageKillSwitch(),     # Indoor garage required
-            SewerKillSwitch(),      # City sewer only
+        ]
+
+        self.soft_criteria = [
+            SewerKillSwitch(),      # City sewer (severity: 2.5)
+            YearKillSwitch(),       # Year <= 2023 (severity: 2.0)
+            GarageKillSwitch(),     # >= 2 indoor spaces (severity: 1.5)
+            LotSizeKillSwitch(),    # 7k-15k sqft (severity: 1.0)
         ]
 
     def evaluate(self, property: Property) -> KillSwitchResult:

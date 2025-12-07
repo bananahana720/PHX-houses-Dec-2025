@@ -12,8 +12,8 @@ Single source of truth for kill-switch criteria used by:
 - scripts/deal_sheets.py
 - Other analysis scripts
 
-Kill Switch System (All HARD Criteria - Sprint 0 Architecture):
-All 8 default criteria are HARD (instant fail). No SOFT criteria in defaults.
+Kill Switch System (5 HARD + 4 SOFT Criteria):
+5 HARD criteria (instant fail) + 4 SOFT criteria (severity-based, fail if ≥3.0).
 
 HARD criteria:
 - NO HOA (hoa_fee must be $0)
@@ -229,8 +229,7 @@ def _check_year_built(value: Any) -> tuple[bool, str]:
 
 
 # Central criteria definition - single source of truth
-# Sprint 0 Architecture: ALL criteria are HARD (instant fail)
-# No SOFT criteria in default configuration
+# 5 HARD criteria (instant fail) + 4 SOFT criteria (severity-based, fail if ≥3.0)
 KILL_SWITCH_CRITERIA = {
     "hoa": {
         "field": "hoa_fee",
@@ -283,7 +282,7 @@ KILL_SWITCH_CRITERIA = {
     },
 }
 
-# year_built criterion is NOT included in defaults per Sprint 0.
+# year_built is a SOFT criterion with severity 2.0.
 # The _check_year_built function is retained for custom configurations.
 # To use it, add to KILL_SWITCH_CRITERIA:
 #   "year_built": {
@@ -480,15 +479,15 @@ def get_kill_switch_summary() -> str:
     """Get human-readable summary of all kill switch criteria.
 
     Returns:
-        Multi-line string describing all criteria (all HARD per Sprint 0)
+        Multi-line string describing 5 HARD + 4 SOFT criteria
     """
     lines = [
-        "Kill Switch Criteria (All HARD - Sprint 0 Architecture):",
+        "Kill Switch Criteria (5 HARD + 4 SOFT):",
         "",
         "HARD Criteria (instant fail):"
     ]
 
-    # List all HARD criteria (all criteria are HARD in Sprint 0)
+    # List all criteria (5 HARD + 4 SOFT)
     for _name, criteria in KILL_SWITCH_CRITERIA.items():
         lines.append(f"  - {criteria['description']}")
         lines.append(f"    Requirement: {criteria['requirement']}")
@@ -530,7 +529,7 @@ def evaluate_kill_switches_for_display(
     Compatible with pandas DataFrame rows and rendering use cases.
     Returns results with color coding for UI display.
 
-    Note: All criteria are now HARD per Sprint 0 architecture.
+    Note: 5 HARD criteria (instant fail) + 4 SOFT criteria (severity-based).
 
     Args:
         data: Property data as dict or object with attributes
@@ -762,7 +761,7 @@ class KillSwitchFilter:
         self.severity_warning_threshold = thresholds.get('severity_warning', 1.5)
 
     def _use_defaults(self) -> None:
-        """Use hardcoded default criteria values (all HARD per Sprint 0)."""
+        """Use hardcoded default criteria values (5 HARD + 4 SOFT)."""
         # All criteria are HARD (instant fail)
         self.hoa_fee_max = 0
         self.min_beds = 4
@@ -809,7 +808,7 @@ class KillSwitchFilter:
         """Get human-readable summary of configured criteria.
 
         Returns:
-            Multi-line string describing all criteria (all HARD per Sprint 0)
+            Multi-line string describing 5 HARD + 4 SOFT criteria
         """
         lot_desc = f"{self.min_lot_sqft:,}+ sqft"
         if self.max_lot_sqft:
@@ -818,7 +817,7 @@ class KillSwitchFilter:
         indoor_note = " (indoor required)" if getattr(self, 'garage_indoor_required', False) else ""
 
         lines = [
-            "Kill Switch Criteria (All HARD - Sprint 0):",
+            "Kill Switch Criteria (5 HARD + 4 SOFT):",
             "",
             "HARD Criteria (instant fail):",
             f"  - HOA fee: Must be ${self.hoa_fee_max}/month or None",
@@ -835,6 +834,6 @@ class KillSwitchFilter:
         if self.config_path:
             lines.insert(1, f"Config source: {self.config_path}")
         else:
-            lines.insert(1, "Config source: Sprint 0 defaults")
+            lines.insert(1, "Config source: hardcoded defaults")
 
         return "\n".join(lines)

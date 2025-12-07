@@ -8,7 +8,7 @@
 - Familiarity with `scripts/lib/kill_switch.py`
 
 **Tasks:**
-1. Update `scripts/lib/kill_switch.py` with weighted logic
+1. Update `scripts/lib/kill_switch.py` with weighted logic for 5 HARD + 4 SOFT criteria
 2. Add `HARD_SEVERITY` and `SEVERITY_WEIGHTS` constants
 3. Create `evaluate_kill_switches_weighted()` function
 4. Maintain backward compatibility

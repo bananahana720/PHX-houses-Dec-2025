@@ -3,18 +3,26 @@
 This module provides the KillSwitchFilter class that coordinates multiple
 kill switch criteria to evaluate properties.
 
-All 8 Default Criteria are HARD (instant fail):
-1. NO HOA (hoa_fee must be 0 or None)
-2. Minimum 4 bedrooms
-3. Minimum 2 bathrooms
-4. Minimum 1800 sqft living space
-5. Lot size > 8000 sqft (no maximum)
-6. City sewer (no septic systems)
-7. Minimum 1 indoor garage space
+5 HARD + 4 SOFT Kill-Switch Criteria:
+
+HARD (instant fail):
+- NO HOA (hoa_fee must be 0 or None)
+- NO solar lease
+- Minimum 4 bedrooms
+- Minimum 2 bathrooms
+- Minimum 1800 sqft living space
+
+SOFT (severity accumulation):
+- City sewer only (severity 2.5)
+- Year built ≤2023 (severity 2.0)
+- Minimum 2 indoor garage spaces (severity 1.5)
+- Lot size 7k-15k sqft (severity 1.0)
 
 Verdict Logic:
 - Any HARD failure -> FAIL (instant)
-- All pass -> PASS
+- SOFT severity ≥3.0 -> FAIL
+- SOFT severity ≥1.5 -> WARNING
+- Otherwise -> PASS
 """
 
 from typing import TYPE_CHECKING
@@ -45,20 +53,25 @@ if TYPE_CHECKING:
 class KillSwitchFilter:
     """Orchestrator for evaluating properties against kill switch criteria.
 
-    All 8 default criteria are HARD (instant fail). No SOFT criteria or
-    severity accumulation in the default configuration.
+    5 HARD + 4 SOFT criteria with severity accumulation system.
 
-    Default kill switches match buyer requirements:
+    HARD criteria (instant fail):
     1. NO HOA (HARD)
-    2. Minimum 4 bedrooms (HARD)
-    3. Minimum 2 bathrooms (HARD)
-    4. Minimum 1800 sqft living space (HARD)
-    5. Lot size > 8000 sqft (HARD)
-    6. City sewer only (HARD)
-    7. Minimum 1 indoor garage space (HARD)
+    2. NO solar lease (HARD)
+    3. Minimum 4 bedrooms (HARD)
+    4. Minimum 2 bathrooms (HARD)
+    5. Minimum 1800 sqft living space (HARD)
 
-    Note: NoSolarLeaseKillSwitch is also included (HARD) but listed separately
-    as it's a financial liability check.
+    SOFT criteria (severity weighted):
+    6. City sewer only (severity 2.5)
+    7. Year built ≤2023 (severity 2.0)
+    8. Minimum 2 indoor garage spaces (severity 1.5)
+    9. Lot size 7k-15k sqft (severity 1.0)
+
+    Verdict thresholds:
+    - FAIL: Any HARD failure OR severity ≥3.0
+    - WARNING: Severity ≥1.5
+    - PASS: All HARD pass AND severity <1.5
 
     Usage:
         filter_service = KillSwitchFilter()
@@ -77,7 +90,7 @@ class KillSwitchFilter:
 
         Args:
             kill_switches: List of KillSwitch instances to apply. If None,
-                uses all default kill switches (8 HARD criteria).
+                uses all default kill switches (5 HARD + 4 SOFT criteria).
         """
         if kill_switches is None:
             # Use all default kill switches from buyer requirements
@@ -92,7 +105,7 @@ class KillSwitchFilter:
     def _get_default_kill_switches() -> list[KillSwitch]:
         """Get default kill switches matching buyer requirements.
 
-        4 HARD criteria (instant fail):
+        5 HARD criteria (instant fail):
         - NO HOA
         - NO solar lease
         - Minimum 4 bedrooms
@@ -101,12 +114,12 @@ class KillSwitchFilter:
 
         4 SOFT criteria (severity weighted, accumulate):
         - City sewer only (severity 2.5)
-        - No new builds (severity 2.0)
+        - No new builds ≤2023 (severity 2.0)
         - Minimum 2 garage spaces (severity 1.5)
         - Lot size 7k-15k sqft (severity 1.0)
 
         Returns:
-            List of all default KillSwitch instances (5 HARD + 3 SOFT criteria)
+            List of all default KillSwitch instances (5 HARD + 4 SOFT criteria)
         """
         return [
             NoHoaKillSwitch(),

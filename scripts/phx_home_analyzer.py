@@ -367,7 +367,7 @@ def log_summary(properties: list[Property]):
         unicorns = [p for p in ranked if p.tier == Tier.UNICORN]
         contenders = [p for p in ranked if p.tier == Tier.CONTENDER]
 
-        logger.info("Unicorns (>480 pts): %d", len(unicorns))
+        logger.info("Unicorns (≥484 pts): %d", len(unicorns))
         logger.info("Contenders (360-480 pts): %d", len(contenders))
 
         logger.info("-" * 70)

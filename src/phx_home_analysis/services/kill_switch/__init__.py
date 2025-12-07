@@ -2,21 +2,26 @@
 
 This module provides automated filtering for property listings.
 
-All 8 default criteria are HARD (instant fail). No SOFT criteria in defaults.
+5 HARD + 4 SOFT criteria with severity accumulation system.
 
-HARD criteria:
+HARD criteria (instant fail):
 - NO HOA
 - NO solar lease
 - Minimum 4 bedrooms
 - Minimum 2 bathrooms
 - Minimum 1800 sqft
-- Lot size > 8000 sqft
-- City sewer only
-- Minimum 1 indoor garage
+
+SOFT criteria (severity accumulation):
+- City sewer only (severity 2.5)
+- Year built ≤2023 (severity 2.0)
+- Minimum 2 indoor garage spaces (severity 1.5)
+- Lot size 7k-15k sqft (severity 1.0)
 
 Verdict Logic:
 - Any HARD failure -> FAIL (instant)
-- All pass -> PASS
+- SOFT severity ≥3.0 -> FAIL
+- SOFT severity ≥1.5 -> WARNING
+- Otherwise -> PASS
 
 Usage:
     from phx_home_analysis.services.kill_switch import KillSwitchFilter, KillSwitchVerdict

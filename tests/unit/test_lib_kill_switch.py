@@ -289,7 +289,7 @@ class TestYearBuiltKillSwitch:
 
 
 class TestFullPropertyEvaluation:
-    """Test complete property evaluation scenarios (Sprint 0: 7 HARD criteria)."""
+    """Test complete property evaluation scenarios (Sprint 0: 5 HARD + 4 SOFT criteria)."""
 
     def test_perfect_property_passes(self):
         """Property meeting all 7 criteria should pass."""
@@ -420,7 +420,7 @@ class TestEvaluateKillSwitchesForDisplay:
 
 
 class TestGetKillSwitchSummary:
-    """Test the summary function (Sprint 0: 7 HARD criteria)."""
+    """Test the summary function (Sprint 0: 5 HARD + 4 SOFT criteria)."""
 
     def test_returns_string(self):
         """Should return a string summary."""
@@ -428,7 +428,7 @@ class TestGetKillSwitchSummary:
         assert isinstance(summary, str)
 
     def test_contains_all_criteria(self):
-        """Summary should mention all 7 criteria (no year_built in Sprint 0)."""
+        """Summary should mention all 9 criteria (5 HARD + 4 SOFT)."""
         summary = get_kill_switch_summary().lower()
         assert "hoa" in summary
         assert "sewer" in summary
@@ -498,13 +498,13 @@ class TestSeverityThreshold:
     criteria, so severity is always 0.0. Tests validate HARD behavior.
     """
 
-    def test_septic_is_hard_fail(self):
-        """Septic is now HARD FAIL in Sprint 0 (was SOFT WARNING)."""
+    def test_septic_is_soft_fail(self):
+        """Septic is SOFT FAIL (severity 2.5) per 5 HARD + 4 SOFT system."""
         prop = Property(
             beds=4,
             baths=2,
             hoa_fee=0,
-            sewer_type="septic",  # HARD FAIL
+            sewer_type="septic",  # SOFT severity 2.5
             garage_spaces=2,
             lot_sqft=10000,
             sqft=2000,
@@ -512,7 +512,7 @@ class TestSeverityThreshold:
         )
         verdict, severity, failures, results = evaluate_kill_switches(prop)
         assert verdict == KillSwitchVerdict.FAIL
-        assert severity == 0.0  # No SOFT severity, all HARD
+        assert severity == 2.5  # SOFT severity accumulation
         assert len(failures) == 1
         assert "sewer" in failures[0].lower()
 
@@ -660,7 +660,7 @@ class TestSeverityThreshold:
 
 
 class TestKillSwitchResultFields:
-    """Test that KillSwitchResult has the severity fields (Sprint 0: all HARD)."""
+    """Test that KillSwitchResult has the severity fields (Sprint 0: 5 HARD + 4 SOFT)."""
 
     def test_result_has_is_hard_field(self):
         """KillSwitchResult should have is_hard field."""

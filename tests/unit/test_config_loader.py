@@ -112,7 +112,7 @@ def valid_scoring_weights_yaml():
 
 @pytest.fixture
 def valid_buyer_criteria_yaml():
-    """Valid buyer criteria YAML content (Sprint 0: all HARD criteria)."""
+    """Valid buyer criteria YAML content (Sprint 0: 5 HARD + 4 SOFT criteria)."""
     return {
         "hard_criteria": {
             "hoa_fee": 0,
@@ -167,7 +167,7 @@ class TestConfigLoaderBasic:
         assert config.scoring.section_weights.location.points == 250
         assert config.scoring.tier_thresholds.unicorn.min_score == 484
         assert config.buyer_criteria.hard_criteria.min_beds == 4
-        # Sprint 0: No thresholds (all HARD criteria)
+        # Sprint 0: No thresholds (5 HARD + 4 SOFT criteria)
         assert config.buyer_criteria.thresholds is None
 
     def test_load_with_explicit_paths(self, temp_config_dir):
@@ -194,7 +194,7 @@ class TestConfigLoaderBasic:
         buyer_config = loader.load_buyer_criteria()
 
         assert buyer_config.hard_criteria.min_beds == 4
-        # Sprint 0: No thresholds (all HARD criteria)
+        # Sprint 0: No thresholds (5 HARD + 4 SOFT criteria)
         assert buyer_config.thresholds is None
 
 
@@ -463,7 +463,7 @@ class TestRealConfigFiles:
         loader = ConfigLoader(base_dir=project_root)
         buyer_config = loader.load_buyer_criteria()
 
-        # Verify expected values from actual config (all HARD criteria)
+        # Verify expected values from actual config (5 HARD + 4 SOFT criteria)
         assert buyer_config.hard_criteria.hoa_fee == 0
         assert buyer_config.hard_criteria.min_beds == 4
         assert buyer_config.hard_criteria.min_baths == 2

@@ -305,14 +305,14 @@ Visual inspection of property images (interior + exterior) by advanced image ana
 
 ### Phase 3: Synthesis (phase3_synthesis)
 
-Combines all data sources into final kill-switch verdict and 600-point score.
+Combines all data sources into final kill-switch verdict and 605-point score.
 
 | Field | Calculation |
 |-------|-----------|
-| `kill_switch_passed` | Evaluates all HARD + SOFT criteria |
+| `kill_switch_passed` | Evaluates all 5 HARD + 4 SOFT criteria |
 | `kill_switch_failures` | List of failed criteria |
-| `total_score` | Weighted sum of all sections (max 600) |
-| `tier` | Classification: unicorn (>480), contender (360-480), pass (<360), failed (kill-switch) |
+| `total_score` | Weighted sum of all sections (max 605) |
+| `tier` | Classification: unicorn (>484), contender (363-483), pass (<363), failed (kill-switch) |
 
 **Typical Duration**: 2-5 seconds per property
 

@@ -13,7 +13,7 @@ This directory contains shared resources used across multiple skills, preventing
 - Complete 605-point scoring system (Sections A, B, C)
 - Tier classification thresholds (UNICORN/CONTENDER/PASS/FAILED)
 - All scoring rubrics with 1-10 scales
-- Kill-switch criteria (7 hard filters)
+- Kill-switch criteria (5 HARD + 4 SOFT)
 - Default value rules and decision tree
 - Python calculation examples
 - Validation protocols

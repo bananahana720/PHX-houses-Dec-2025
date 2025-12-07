@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # Field mapping from PhoenixMLS metadata keys to EnrichmentData fields
 # Organized by category for maintainability
 MLS_FIELD_MAPPING: dict[str, str] = {
-    # === KILL-SWITCH FIELDS (8 HARD criteria) ===
+    # === KILL-SWITCH FIELDS (5 HARD + 4 SOFT criteria) ===
     "hoa_fee": "hoa_fee",
     "beds": "beds",
     "baths": "baths",

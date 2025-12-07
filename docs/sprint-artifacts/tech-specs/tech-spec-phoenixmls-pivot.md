@@ -25,7 +25,7 @@ These blockers prevent Epic 3 (Kill-Switch) execution and downstream scoring pip
 
 - **No aggressive anti-bot systems:** No PerimeterX, no session-bound URLs
 - **SparkPlatform CDN:** Direct image URLs with predictable pattern: `cdn.photos.sparkplatform.com/az/{id}-o.jpg`
-- **Complete kill-switch fields:** All 8 HARD criteria available on listing pages (HOA, beds, baths, sqft, lot, garage, sewer, year)
+- **Complete kill-switch fields:** All 5 HARD + 4 SOFT criteria available on listing pages (HOA, solar, beds, baths, sqft, sewer, year, garage, lot)
 - **Rich metadata:** Schools, property features, systems data, market information
 - **Phoenix Metro Coverage:** All properties in our target area (Phoenix, Scottsdale, Chandler, Tempe, Mesa, Gilbert, etc.)
 
@@ -619,7 +619,7 @@ async def extract_image_urls(self, property: Property) -> list[str]:
 
 **Acceptance Criteria:**
 - [ ] `_parse_listing_metadata` method implemented
-- [ ] Parses all 8 HARD kill-switch fields (HOA, beds, baths, sqft, lot, garage, sewer, year)
+- [ ] Parses all 5 HARD + 4 SOFT kill-switch fields (HOA, solar, beds, baths, sqft, sewer, year, garage, lot)
 - [ ] Parses all 25 new MLS fields
 - [ ] Handles missing fields gracefully (returns None)
 - [ ] Handles multiple formats (e.g., lot as acres or sqft)

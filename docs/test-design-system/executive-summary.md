@@ -6,7 +6,7 @@ This document defines the comprehensive test strategy for the PHX Houses Analysi
 - 7 Epics, 42 Stories, 62 Functional Requirements
 - Multi-agent architecture with 4-phase pipeline
 - 605-point scoring system (not 600 per reconciled Architecture)
-- 7 HARD kill-switch criteria
+- 5 HARD + 4 SOFT kill-switch criteria
 - Target: 100+ properties/month, single user
 
 **Test Strategy Summary:**

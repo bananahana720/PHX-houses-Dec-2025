@@ -1,31 +1,38 @@
-<!-- TEMPLATE:UNFILLED -->
-<!-- File Word Count <= 250 words -->
-<!-- child CLAUDE.md | Remove this block when populated -->
 ---
-last_updated: [TIMESTAMP]
-updated_by: [main|agent]
+last_updated: 2025-12-07T22:37:37Z
+updated_by: agent
 staleness_hours: 24
 flags: []
 ---
-# [Directory Name]
+# scripts/lib
 
 ## Purpose
-[1-2 sentences: what + why]
+Compatibility shims and legacy support modules for transitioning scripts to service layer architecture.
 
 ## Contents
 | Path | Purpose |
 |------|---------|
-| `file` | [desc] |
+| `kill_switch.py` | Compatibility shim wrapping `services/kill_switch/`; delegates to service layer |
+| `__init__.py` | Package initialization (empty) |
+
+## Key Patterns
+- **Deprecation layer**: Provides backward compatibility while migration completes
+- **Delegation**: Re-exports service layer classes/functions without duplication
+- **Zero logic**: No business logic; pure wrapper for import compatibility
 
 ## Tasks
-- [ ] [task] `P:H|M|L`
+- [ ] Remove `kill_switch.py` after all scripts migrated to direct service imports `P:M`
+- [ ] Verify no direct imports from `scripts.lib` in codebase `P:M`
 
 ## Learnings
-- [pattern/discovery]
+- **Compatibility shims**: Enable gradual migration without breaking existing scripts
+- **Single source of truth**: Service layer at `src/phx_home_analysis/services/kill_switch/` is canonical
+- **Scheduled removal**: This directory planned for deletion post-migration
 
 ## Refs
-- [desc]: `path:lines`
+- Service layer: `src/phx_home_analysis/services/kill_switch/`
+- Consumer scripts: `scripts/phx_home_analyzer.py`, legacy deal sheets
 
 ## Deps
-← [imports from]
-→ [imported by]
+← imports: `src/phx_home_analysis/services/kill_switch/`
+→ used by: `scripts/phx_home_analyzer.py` (legacy), deprecated consumers

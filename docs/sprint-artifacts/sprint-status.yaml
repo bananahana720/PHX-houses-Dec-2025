@@ -1,40 +1,40 @@
 # Sprint Status Tracking
-# Generated: 2025-12-04
-# Project: PHX Houses Analysis Pipeline
+# Generated: 2025-12-07
+# Project: PHX-houses-Dec-2025
 # Tracking System: file-system
-# Story Location: docs/sprint-artifacts/stories
+# Story Location: docs/sprint-artifacts
 
 # STATUS DEFINITIONS:
 # ==================
 # Epic Status:
 #   - backlog: Epic exists in epic file but not contexted
 #   - contexted: Epic tech context created (required before drafting stories)
+#   - in-progress: Epic has stories being worked
 #   - done: Epic completed
 #
 # Story Status:
 #   - backlog: Story only exists in epic file
-#   - drafted: Story file created in stories folder
-#   - ready-for-dev: Draft approved and story context created
-#   - in-progress: Developer actively working on implementation
-#   - review: Under SM review (via code-review workflow)
-#   - done: Story completed
+#   - drafted: Story file created in stories folder by *create-story
+#   - ready-for-dev: Draft approved and story context created by *story-ready
+#   - in-progress: Developer actively working on implementation by *dev-story
+#   - review: Implementation complete, ready for review by *code-review
+#   - done: Story completed by *story-done
 #
 # Retrospective Status:
 #   - optional: Can be completed but not required
-#   - completed: Retrospective has been done
+#   - completed: Retrospective has been done by *retrospective
 #
 # WORKFLOW NOTES:
 # ===============
-# - Epics should be 'contexted' before stories can be 'drafted'
-# - Stories can be worked in parallel if team capacity allows
-# - SM typically drafts next story after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
+# - Epics should be marked `in-progress` before stories can be marked beyond `backlog`
+# - SM typically drafts next story ONLY after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', dev reviews, then Dev moves to 'done'
 
-generated: 2025-12-04
-project: PHX Houses Analysis Pipeline
+generated: 2025-12-07
+project: PHX-houses-Dec-2025
 project_key: PHX
 tracking_system: file-system
-story_location: docs/sprint-artifacts/stories
+story_location: docs/sprint-artifacts
 
 development_status:
   # =============================================================================
@@ -42,6 +42,7 @@ development_status:
   # User Value: Enable reliable data storage, configuration management, and
   #             pipeline execution that supports crash recovery and data integrity
   # Stories: 6 | PRD Coverage: FR7, FR8, FR34-39, FR46-51, FR56
+  # Status: COMPLETE (2025-12-04)
   # =============================================================================
   epic-1: done
   1-1-configuration-system-setup: done
@@ -56,33 +57,38 @@ development_status:
   # Epic 2: Property Data Acquisition
   # User Value: Gather complete, authoritative property data from multiple sources
   #             (County Assessor, Zillow/Redfin, Google Maps, GreatSchools)
-  # Stories: 7 | PRD Coverage: FR1-6, FR58-62
-  # Completion Date: 2025-12-05
+  # Stories: 7 base + 6 remediation | PRD Coverage: FR1-6, FR58-62
+  # Status: COMPLETE (2025-12-05, remediation 2025-12-07)
   # =============================================================================
   epic-2: done
   2-1-batch-analysis-cli-entry-point: done
   2-2-maricopa-county-assessor-api-integration: done
   2-3-zillow-redfin-listing-extraction: done
-  2-4-property-image-download-and-caching: done  # Completed: 2025-12-05
+  2-4-property-image-download-and-caching: done
   2-5-google-maps-api-geographic-data: done
   2-6-greatschools-api-school-ratings: done
   2-7-api-integration-infrastructure: done
-  epic-2-retrospective: completed  # 2025-12-05
-  # Remediation Stories (Post-Completion - Waves 0-2)
-  2-R1-phoenixmls-data-pivot: done  # BLOCK-001/002 remediation - completed 2025-12-05 with 41 tests
-  2-R1-wave1-error-handling: done  # Retry decorator, schema v2.0.0, error classification - 2025-12-06 (74d91f5)
-  2-R1-wave2-imageprocessor-wiring: done  # Fixed extractor creation bug, 31+ images now saving - 2025-12-06 (0b4fa88, 3697b0c)
-  2-R1-wave3-metadata-persistence: done  # Kill-switch auto-persist to enrichment_data.json - 2025-12-06 (02041da)
-  2-R2-phoenixmls-full-listing-extraction: done  # Extract 35 fields (Phase 1 MLS scope) from PhoenixMLS (P1, 8 pts) - completed 2025-12-07, 84 tests, 94% live coverage
-  2-R3-phoenixmls-extended-extraction: done  # Expand from 33 to 70+ fields (P1, 13 pts) - completed 2025-12-07, 138 tests
+  epic-2-retrospective: completed
+  # Remediation Stories (Post-Completion - Waves 0-3 + Expansions)
+  2-R1-phoenixmls-data-pivot: done
+  2-R1-wave1-error-handling: done
+  2-R1-wave2-imageprocessor-wiring: done
+  2-R1-wave3-metadata-persistence: done
+  2-R2-phoenixmls-full-listing-extraction: done
+  2-R3-phoenixmls-extended-extraction: done
 
   # =============================================================================
   # Epic 3: Kill-Switch Filtering System
   # User Value: Instantly eliminate properties that fail non-negotiable criteria
   #             (HOA, beds, baths, sqft, lot, garage, sewer) before scoring
-  # Stories: 5 | PRD Coverage: FR9-14
+  # Stories: 6 (5 base + 1 foundation) | PRD Coverage: FR9-14
+  # Status: BACKLOG
+  # Orchestration: Wave 0 (E3.S0) → Wave 1 (E3.S1) → Wave 2 (E3.S2-S3 parallel) → Wave 3 (E3.S4-S5)
   # =============================================================================
   epic-3: backlog
+  # Wave 0: FOUNDATION (Sequential - Before Main Epic)
+  3-0-template-orchestration-metadata: backlog  # From E2 Retro: Update story/epic templates with wave planning
+  # Wave 1: CORE KILL-SWITCH (Sequential)
   3-1-hard-kill-switch-criteria-implementation: backlog
   3-2-soft-kill-switch-severity-system: backlog
   3-3-kill-switch-verdict-evaluation: backlog
@@ -95,8 +101,9 @@ development_status:
   # User Value: Rank properties by comprehensive quality score (605 points across
   #             Location, Systems, Interior) with transparent breakdowns and tiers
   # Stories: 6 | PRD Coverage: FR15-20, FR25, FR27, FR48
+  # Status: IN-PROGRESS (E4.S1 done)
   # =============================================================================
-  epic-4: backlog
+  epic-4: in-progress
   4-1-three-dimension-score-calculation: done
   4-2-22-strategy-scoring-implementation: backlog
   4-3-tier-classification-system: backlog
@@ -110,8 +117,9 @@ development_status:
   # User Value: Coordinate automated multi-phase property analysis using specialized
   #             Claude agents with model selection, parallel execution, and state mgmt
   # Stories: 6 | PRD Coverage: FR28-33
+  # Status: IN-PROGRESS (E5.S1 done)
   # =============================================================================
-  epic-5: backlog
+  epic-5: in-progress
   5-1-pipeline-orchestrator-cli: done
   5-2-sequential-phase-coordination: backlog
   5-3-agent-spawning-with-model-selection: backlog
@@ -125,6 +133,7 @@ development_status:
   # User Value: Assess property condition through image analysis and proactively
   #             surface hidden risks (foundation, HVAC age, solar) with AZ context
   # Stories: 6 | PRD Coverage: FR21-24, FR26-27
+  # Status: BACKLOG
   # =============================================================================
   epic-6: backlog
   6-1-property-image-visual-assessment: backlog
@@ -140,8 +149,9 @@ development_status:
   # User Value: Produce actionable deal sheets with score breakdowns, tier badges,
   #             warnings, and tour checklists for confident decisions in <2 minutes
   # Stories: 6 | PRD Coverage: FR40-45, FR52-57
+  # Status: IN-PROGRESS (E7.S1 done)
   # =============================================================================
-  epic-7: backlog
+  epic-7: in-progress
   7-1-deal-sheet-html-generation: done
   7-2-deal-sheet-content-structure: backlog
   7-3-score-explanation-narratives: backlog
@@ -155,27 +165,28 @@ development_status:
 # =============================================================================
 summary:
   total_epics: 7
-  total_stories: 47  # +5 remediation stories (E2.R1 base + 3 waves + E2.R2 expansion)
+  total_stories: 49  # +1 E3.S0 from E2 Retro
   stories_by_status:
-    backlog: 23  # -1 (E2.R2 completed)
+    backlog: 27  # +1 E3.S0
     drafted: 0
     ready-for-dev: 0
     in-progress: 0
     review: 0
-    done: 24  # +5 (E2.R1 base + Wave 1-3 + E2.R2)
+    done: 22
   epics_by_status:
-    backlog: 5
+    backlog: 2
     contexted: 0
+    in-progress: 3
     done: 2
   retrospectives_by_status:
     optional: 5
     completed: 2
-  p0_stories: 38  # +3 Wave 1-3 (P0)
-  p1_stories: 8   # +1 E2.R2 (P1)
+  p0_stories: 39
+  p1_stories: 9
   fr_coverage: "62/62 (100%)"
-  test_coverage_total: 228  # 186 + 42 new E2-R2 tests (84 total in test_phoenix_mls_metadata.py)
+  test_coverage_total: 228
   last_updated: "2025-12-07"
-  last_story_completed: "2-R2-phoenixmls-full-listing-extraction"
+  last_story_completed: "2-R3-phoenixmls-extended-extraction"
   last_story_completed_date: "2025-12-07"
   last_epic_completed: "epic-2"
   last_epic_completed_date: "2025-12-05"
@@ -186,141 +197,112 @@ summary:
 blockers:
   - id: "BLOCK-001"
     severity: "critical"
-    status: "resolved"  # Updated 2025-12-06
+    status: "resolved"
     remediation_story: "E2.R1 + Waves 1-3"
-    resolution: "Multi-wave remediation completed (E2.R1 base + Wave 1-3)"
+    resolution: "PhoenixMLS PRIMARY data source with 95%+ reliability"
     title: "Zillow CAPTCHA blocking all extractions"
-    description: |
-      Fresh extraction validation on 3 test properties revealed PerimeterX
-      CAPTCHA blocking 100% of Zillow requests. px-captcha element detected.
-      CAPTCHA solve attempts failed ("could not find CAPTCHA button").
-
-      RESOLUTION (2025-12-06): Three-wave remediation completed:
-      - Wave 1: Retry decorator + schema v2.0.0 + error classification (74d91f5)
-      - Wave 2: ImageProcessor wiring fixes, 31+ images now saving (0b4fa88, 3697b0c)
-      - Wave 3: MetadataPersister + kill-switch auto-persist (02041da)
-
-      E2.R1 pivoted to PhoenixMLS as PRIMARY data source with 95%+ reliability
-      and no anti-bot systems. Zillow moved to fallback. PhoenixMLS extracts
-      all 8 kill-switch fields + 23 MLS metadata fields. 67 integration tests
-      created and passing (commit 3880460). Gap analysis shows 8/8 kill-switch
-      fields now complete.
-    affected: "E2.S3, E2.S4 - Image extraction pipeline"
-    remediation: "PhoenixMLS primary source + architectural fixes"
-    files:
-      - "src/phx_home_analysis/services/image_extraction/orchestrator.py"
-      - "src/phx_home_analysis/services/image_extraction/extractors/stealth_base.py"
-      - "src/phx_home_analysis/services/image_extraction/state_manager.py"
-      - "src/phx_home_analysis/services/image_extraction/metadata_persister.py"
-    created: "2025-12-04"
     resolved: "2025-12-06"
 
   - id: "BLOCK-002"
     severity: "high"
-    status: "mitigated"  # Updated 2025-12-07
-    remediation_story: "E2.R2 (redefined as PhoenixMLS field expansion)"
-    resolution: "Zillow ZPID direct extraction provides sufficient coverage"
+    status: "mitigated"
+    remediation_story: "E2.R2 (PhoenixMLS field expansion)"
+    resolution: "PhoenixMLS + Zillow ZPID provides sufficient coverage"
     title: "Redfin CDN returning 404 for image URLs"
-    description: |
-      Redfin image URLs discovered but downloads fail with HTTP 404.
-      Pattern: https://ssl.cdn-redfin.com/photo/86/bcsphoto/*.jpg → 404
-      URLs may be session-bound or time-limited.
-
-      MITIGATION (2025-12-07): With PhoenixMLS PRIMARY + Zillow ZPID fallback,
-      image coverage is sufficient (31+ images from test property). Original
-      E2.R2 "Redfin Session-Bound Download" story replaced with "PhoenixMLS Full
-      Listing Attribute Extraction" to expand from 10 kill-switch fields to 47+
-      comprehensive listing attributes (22 HIGH scoring + 25 MEDIUM deal analysis).
-    affected: "E2.S3, E2.S4 - Image extraction pipeline"
-    remediation: "PhoenixMLS + Zillow provide sufficient coverage, Redfin optional"
-    file: "src/phx_home_analysis/services/image_extraction/extractors/redfin.py"
-    created: "2025-12-04"
     mitigated: "2025-12-07"
 
+# =============================================================================
 # Live Testing Validation Results
-live_testing_original:
-  date: "2025-12-04"
-  status: "BLOCKED - revealed extraction failures"
-  properties_tested: 3
-  results:
-    - address: "7233 W Corrine Dr, Peoria, AZ 85381"
-      status: "partial"
-      images: 20
-      source: "Redfin only"
-      issues: ["Zillow CAPTCHA blocked"]
-    - address: "5219 W El Caminito Dr, Glendale, AZ 85302"
-      status: "failed"
-      images: 0
-      issues: ["Zillow CAPTCHA blocked", "Redfin 404 errors"]
-    - address: "4560 E Sunrise Dr, Phoenix, AZ 85044"
-      status: "failed"
-      images: 0
-      issues: ["Zillow CAPTCHA blocked", "Redfin 404 errors"]
-  success_rate: "33% (1/3 partial)"
+# =============================================================================
+live_testing:
+  latest:
+    date: "2025-12-07"
+    status: "SUCCESS - 35-field extraction validated"
+    properties_tested: 5
+    field_coverage: "33/35 (94%)"
+    success_rate: "100% (5/5)"
 
-live_testing_post_remediation:
-  date: "2025-12-06"
-  status: "SUCCESS - Waves 1-3 complete"
-  properties_tested: 1
-  results:
-    - address: "4560 E Sunrise Dr, Phoenix, AZ 85044"
-      status: "success"
-      images: 31
-      sources: ["PhoenixMLS", "Zillow ZPID"]
-      kill_switch_fields_extracted: 8
-      format: "content-addressed PNG (data/property_images/processed/{hash[:8]}/{hash}.png)"
-      metadata_persisted: true
-      issues: []
-  success_rate: "100% (1/1)"
-  commits_applied:
-    - "74d91f5 - Wave 1: Error handling & schema versioning"
-    - "0b4fa88 - Wave 2: ImageProcessor wiring fix"
-    - "3697b0c - Wave 2: Unit tests for ImageProcessor/StateManager"
-    - "3880460 - Integration tests: 67 new tests"
-    - "02041da - Wave 3: MetadataPersister"
-  gap_analysis:
-    kill_switch_fields: "8/8 (100%)"
-    scoring_fields: "0/22 (0%)"
-    deal_analysis_fields: "0/25 (0%)"
+# =============================================================================
+# E2 Retro Action Items (2025-12-07)
+# Source: docs/sprint-artifacts/epic-2-retro-supplemental-2025-12-07.md
+# =============================================================================
+retro_action_items:
+  process_improvements:
+    - id: "A1"
+      action: "Create E3.S0: Template Orchestration Metadata"
+      owner: "SM"
+      deadline: "Before E3.S1"
+      status: "in-progress"  # Added to sprint-status.yaml
+    - id: "A2"
+      action: "Add extraction→persistence trace tests to Definition of Done"
+      owner: "Dev Team"
+      deadline: "E3.S1 onwards"
+      status: "pending"
+    - id: "A3"
+      action: "Add type contract tests at layer boundaries"
+      owner: "Dev Team"
+      deadline: "E3.S1 onwards"
+      status: "pending"
 
-live_testing_e2r2:
-  date: "2025-12-07"
-  status: "SUCCESS - 35-field extraction validated"
-  properties_tested: 5
-  results:
-    - address: "4209 W Wahalla Ln, Glendale"
-      mls_number: "6931955"
-      fields_extracted: 33
-      status: "success"
-    - address: "6419 W Briles Rd, Phoenix"
-      mls_number: "6942545"
-      fields_extracted: 33
-      status: "success"
-    - address: "4732 W Davis Rd, Glendale"
-      mls_number: "6933503"
-      fields_extracted: 33
-      status: "success"
-    - address: "2846 W Villa Rita Dr, Phoenix"
-      mls_number: "6930493"
-      fields_extracted: 33
-      status: "success"
-    - address: "20021 N 38th Ln, Glendale"
-      mls_number: "6906800"
-      fields_extracted: 33
-      status: "success"
-  field_coverage: "33/35 (94%)"
-  missing_fields: ["original_list_price", "price_reduced"]  # Price history not displayed on MLS
-  field_categories:
-    kill_switch: "8/8 (100%)"
-    mls_identifiers: "5/5 (100%)"
-    pricing: "2/4 (50%)"
-    property_details: "2/2 (100%)"
-    systems: "4/4 (100%)"
-    features: "8/8 (100%)"
-    schools: "3/3 (100%)"
-    location: "1/1 (100%)"
-  commits_applied:
-    - "db128d4 - E2-R2: Expand PhoenixMLS extraction to 35 fields"
-  tests_added: 42  # 84 total in test_phoenix_mls_metadata.py
-  code_review_cycles: 2
-  verdict: "APPROVED"
+  technical_debt:
+    - id: "A4"
+      action: "Commit staged architecture docs (5 files)"
+      owner: "Dev Team"
+      priority: "HIGH"
+      status: "pending"
+    - id: "A5"
+      action: "Verify 8 HARD kill-switches implemented (not just documented)"
+      owner: "Dev Team"
+      priority: "HIGH"
+      status: "pending"
+    - id: "A6"
+      action: "Add pre-commit hook for architecture consistency (605 pts, 8 HARD)"
+      owner: "Dev Team"
+      priority: "MEDIUM"
+      status: "pending"
+
+  documentation:
+    - id: "A7"
+      action: "Document PhoenixMLS as canonical primary data source"
+      owner: "Tech Writer"
+      deadline: "Before E3"
+      status: "pending"
+    - id: "A8"
+      action: "Create cross-layer validation guide (resonance checklist)"
+      owner: "SM"
+      deadline: "Before E3.S1"
+      status: "pending"
+
+  team_agreements:
+    - id: "TA1"
+      agreement: "End-to-end trace validation for every data flow"
+      rationale: "Prevents 'extraction works but persistence doesn't'"
+    - id: "TA2"
+      agreement: "Type contracts at boundaries must be tested"
+      rationale: "Catches string/enum mismatches"
+    - id: "TA3"
+      agreement: "Live testing validates architecture, not just logic"
+      rationale: "Mocks hide integration bugs"
+    - id: "TA4"
+      agreement: "Story zero for infrastructure before main epic work"
+      rationale: "Clean separation of concerns"
+
+  key_lessons:
+    - id: "L1"
+      lesson: "Mock tests create false confidence"
+      action: "Live validation mandatory"
+    - id: "L2"
+      lesson: "Layers must be validated end-to-end"
+      action: "Add extraction→persistence trace tests"
+    - id: "L3"
+      lesson: "Type mismatches hide in integration seams"
+      action: "Add type contract tests at boundaries"
+    - id: "L4"
+      lesson: "Architecture docs drift without enforcement"
+      action: "Automated consistency checks"
+    - id: "L5"
+      lesson: "PhoenixMLS pivot exceeded expectations"
+      action: "Document as canonical data source"
+    - id: "L6"
+      lesson: "Cross-layer resonance is critical"
+      action: "End-to-end trace validation"
