@@ -29,7 +29,7 @@ This directory contains the authoritative system architecture for the PHX Houses
 ### Domain Architecture
 
 - [Scoring System Architecture](scoring-system-architecture.md) - 605-point weighted scoring
-- [Kill-Switch Architecture](kill-switch-architecture.md) - 7 HARD criteria filtering
+- [Kill-Switch Architecture](kill-switch-architecture.md) - 5 HARD + 4 SOFT criteria filtering
 
 ### Technical Architecture
 
@@ -89,7 +89,7 @@ Detailed phase execution guides: [Phase Orchestration](phase-orchestration/index
 | Total Scoring Points | 605 |
 | Unicorn Tier Threshold | ≥484 (80%) |
 | Contender Tier Threshold | 363-483 (60-80%) |
-| Kill-Switch Criteria | 8 HARD |
+| Kill-Switch Criteria | 5 HARD + 4 SOFT |
 | Agent Models | Haiku (extraction) + Sonnet (vision) |
 | Storage Format | JSON (LIST-based) |
 

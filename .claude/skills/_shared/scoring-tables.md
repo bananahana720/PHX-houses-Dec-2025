@@ -22,7 +22,7 @@ Last updated: 2025-12-01
 | **Section B: Lot/Systems** | 175 pts |
 | **Section C: Interior** | 180 pts |
 | **Tier Thresholds** | 480 / 360 |
-| **Kill-Switch Criteria** | 3 HARD + 4 SOFT |
+| **Kill-Switch Criteria** | 5 HARD + 4 SOFT |
 
 ---
 
@@ -507,7 +507,7 @@ Quick reference:
 - Section C: 180 pts (Interior: kitchen, master, light, ceilings, fireplace, laundry, aesthetics)
 - Total: 605 pts
 - Tiers: UNICORN (>480), CONTENDER (360-480), PASS (<360), FAILED (kill-switch)
-- Kill-Switches: 3 HARD (instant fail) + 4 SOFT (severity-weighted)
+- Kill-Switches: 5 HARD (instant fail) + 4 SOFT (severity-weighted)
 ```
 
 ---

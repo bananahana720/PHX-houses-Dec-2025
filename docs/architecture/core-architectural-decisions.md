@@ -260,7 +260,7 @@ config/        ──┘
 
 - `services/` - Business logic orchestration (depends on domain only)
   - `scoring/` - PropertyScorer, 19 scoring strategies total (17 active: 9 Location, 6 Systems, 7 Interior; 2 deprecated)
-  - `kill_switch/` - KillSwitchFilter, 7 HARD criteria implementations
+  - `kill_switch/` - KillSwitchFilter, 5 HARD + 4 SOFT criteria implementations
   - `image_extraction/` - ImageExtractor, deduplicator, state tracking
   - `quality/` - Provenance tracking, confidence metrics
   - Each service imports from `domain/` but never from `repositories/` or `pipeline/`
@@ -464,7 +464,7 @@ config/        ──┘
 
 **Status:** Accepted
 
-**Context:** PHX Houses pipeline requires a comprehensive property data model with 160+ fields from multiple sources (Assessor API, MLS, AI vision), strict validation for 7 HARD kill-switch criteria, and evolving schema requirements across phases. Need conventions for field naming, validation, serialization, provenance tracking, and schema versioning to maintain data integrity and enable safe evolution.
+**Context:** PHX Houses pipeline requires a comprehensive property data model with 160+ fields from multiple sources (Assessor API, MLS, AI vision), strict validation for 5 HARD + 4 SOFT kill-switch criteria, and evolving schema requirements across phases. Need conventions for field naming, validation, serialization, provenance tracking, and schema versioning to maintain data integrity and enable safe evolution.
 
 **Decision:** Use Pydantic V2 as the authoritative validation framework with the following conventions:
 
@@ -530,7 +530,7 @@ config/        ──┘
 - `PropertySchema`: Core domain entity (beds, baths, sqft, price, HOA, garage, sewer)
 - `EnrichmentDataSchema`: Extended data (crime, flood, schools, demographics, 70+ PhoenixMLS fields)
 - `ScoreBreakdown`: 605-point scoring (location: 250, systems: 175, interior: 180)
-- `KillSwitchResult`: 7 HARD criteria evaluation with failure reasons
+- `KillSwitchResult`: 5 HARD + 4 SOFT criteria evaluation with failure reasons
 - `ImageEntryV2`: Image lineage (property_hash, content_hash, run_id, phash/dhash)
 
 **10. Model Configuration**
@@ -545,7 +545,7 @@ config/        ──┘
 - (+) Self-documenting: Field descriptions and constraints embedded in schema definitions
 - (+) Schema evolution: Versioning enables safe migrations with backward compatibility (see `services/schema/versioning.py`)
 - (+) Data lineage: Field provenance tracks source, confidence, and timestamps for quality assessment
-- (+) Kill-switch validation: Pydantic validators enforce 7 HARD criteria
+- (+) Kill-switch validation: Pydantic validators enforce 5 HARD + 4 SOFT criteria
 - (+) Serialization: Built-in JSON schema generation and model_dump() handle complex types
 - (+) Quality gates: Confidence scoring per field enables quality metrics
 - (+) Clean separation: PropertySchema (Pydantic validation) separate from EnrichmentData (domain entity with metadata)

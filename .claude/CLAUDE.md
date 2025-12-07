@@ -31,7 +31,7 @@ Claude Code configuration: agents, skills, commands, hooks, and operational prot
 |-------|----------|
 | property-data | Any property data access |
 | state-management | Multi-phase workflows, crash recovery |
-| kill-switch | Filtering properties (8 HARD criteria) |
+| kill-switch | Filtering properties (5 HARD + 4 SOFT criteria) |
 | scoring | Calculating 605-point scores/tiers |
 | county-assessor | Phase 0 Maricopa County API |
 | arizona-context | AZ-specific: solar, pool, HVAC |
