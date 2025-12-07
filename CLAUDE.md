@@ -1,8 +1,7 @@
 ---
-last_updated: 2025-12-05T12:00:00Z
+last_updated: 2025-12-07T18:00:00Z
 updated_by: agent
 staleness_hours: 72
-line_target: 80
 ---
 
 
@@ -85,17 +84,9 @@ ruff check --fix && ruff format   # Lint/format
 ```
 
 ## Arizona Specifics
-| Factor | Value |
-|--------|-------|
-| Orientation | North=30pts (best), West=0pts (worst) |
-| HVAC lifespan | 10-15yr (not 20+) |
-| Pool cost | $250-400/mo |
-| Solar leases | Liability, not asset |
+Orientation: North=30pts, West=0pts | HVAC: 10-15yr | Pool: $250-400/mo | Solar leases: liability
 
-## CI/CD Checks
-`ruff check` | `mypy src/` | `pytest` | `pip-audit --strict`
-
-## Dependencies Policy
-- **Blocked**: selenium, requests (use nodriver, httpx)
-- **Secrets**: `.env` file (`MARICOPA_ASSESSOR_TOKEN`, proxy creds)
-- **Licenses**: MIT/Apache/BSD allowed, GPL blocked
+## CI/CD & Dependencies
+- **Checks**: `ruff check` | `mypy src/` | `pytest` | `pip-audit --strict`
+- **Blocked**: selenium, requests → use nodriver, httpx
+- **Secrets**: `.env` (`MARICOPA_ASSESSOR_TOKEN`, proxy creds)
