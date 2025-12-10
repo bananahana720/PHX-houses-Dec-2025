@@ -25,5 +25,32 @@
     "learnings": [
       "** `rg -i \"(7|8)\\s*(HARD|hard)|all\\s*HARD\" --type md --type py`"
     ]
+  },
+  {
+    "timestamp": "2025-12-10T14:37:59.656936+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "** Use mcp__context7 tools if you need to verify Python patterns, Pydantic dataclass syntax, or pytest conventions."
+    ]
+  },
+  {
+    "timestamp": "2025-12-10T14:46:40.547294+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "** Use mcp__context7 tools for Python/Pydantic/pytest documentation if needed."
+    ]
+  },
+  {
+    "timestamp": "2025-12-10T14:57:29.733313+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "** Follow the existing test patterns in the file. Use the same fixture approach (`sample_property`)."
+    ]
   }
 ]

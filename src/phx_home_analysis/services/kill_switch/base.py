@@ -16,7 +16,7 @@ Verdict Logic:
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 # Import shared constants from centralized location
 from .constants import (
@@ -115,7 +115,7 @@ class KillSwitch(ABC):
 
     def _format_failure_message(
         self,
-        field_value: any,
+        field_value: Any,
         unknown_message: str,
         known_template: str,
     ) -> str:

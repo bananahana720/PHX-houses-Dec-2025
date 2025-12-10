@@ -85,11 +85,11 @@ development_status:
   # Status: BACKLOG
   # Orchestration: Wave 0 (E3.S0) → Wave 1 (E3.S1) → Wave 2 (E3.S2-S3 parallel) → Wave 3 (E3.S4-S5)
   # =============================================================================
-  epic-3: backlog
+  epic-3: in-progress
   # Wave 0: FOUNDATION (Sequential - Before Main Epic)
   3-0-template-orchestration-metadata: done  # From E2 Retro: Update story/epic templates with wave planning (Completed 2025-12-07)
   # Wave 1: CORE KILL-SWITCH (Sequential)
-  3-1-hard-kill-switch-criteria-implementation: backlog
+  3-1-hard-kill-switch-criteria-implementation: done
   3-2-soft-kill-switch-severity-system: backlog
   3-3-kill-switch-verdict-evaluation: backlog
   3-4-kill-switch-failure-explanations: backlog
@@ -167,16 +167,16 @@ summary:
   total_epics: 7
   total_stories: 49  # +1 E3.S0 from E2 Retro
   stories_by_status:
-    backlog: 26
+    backlog: 25
     drafted: 0
-    ready-for-dev: 0
+    ready-for-dev: 1
     in-progress: 0
     review: 0
     done: 23
   epics_by_status:
-    backlog: 2
+    backlog: 1
     contexted: 0
-    in-progress: 3
+    in-progress: 4
     done: 2
   retrospectives_by_status:
     optional: 5
@@ -185,7 +185,7 @@ summary:
   p1_stories: 9
   fr_coverage: "62/62 (100%)"
   test_coverage_total: 228
-  last_updated: "2025-12-07"
+  last_updated: "2025-12-10"
   last_story_completed: "2-R3-phoenixmls-extended-extraction"
   last_story_completed_date: "2025-12-07"
   last_epic_completed: "epic-2"

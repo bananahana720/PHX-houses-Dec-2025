@@ -13,7 +13,6 @@ This module validates:
 from __future__ import annotations
 
 import json
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +27,6 @@ from phx_home_analysis.services.image_extraction.metadata_persister import (
     MLS_FIELD_MAPPING,
     MetadataPersister,
 )
-
 
 # =============================================================================
 # E2-R3 Field Definitions
@@ -652,7 +650,7 @@ class TestE2R3DataFlowStatistics:
         total_e2r3 = len(E2R3_SOURCE_FIELDS)
         coverage_pct = (e2r3_in_mapping / total_e2r3) * 100
 
-        print(f"\nE2-R3 Field Mapping Coverage:")
+        print("\nE2-R3 Field Mapping Coverage:")
         print(f"  Total E2-R3 source fields: {total_e2r3}")
         print(f"  Fields in MLS_FIELD_MAPPING: {e2r3_in_mapping}")
         print(f"  Coverage: {coverage_pct:.1f}%")
@@ -715,7 +713,7 @@ class TestE2R3DataFlowStatistics:
         e2r2_count = sum(1 for f in e2r2_fields if f in MLS_FIELD_MAPPING)
         e2r3_count = sum(1 for f in E2R3_SOURCE_FIELDS if f in MLS_FIELD_MAPPING)
 
-        print(f"\nMLS_FIELD_MAPPING Statistics:")
+        print("\nMLS_FIELD_MAPPING Statistics:")
         print(f"  Total mappings: {total_mappings}")
         print(f"  Kill-switch fields: {ks_count}/{len(kill_switch_fields)}")
         print(f"  E2-R2 fields: {e2r2_count}/{len(e2r2_fields)}")

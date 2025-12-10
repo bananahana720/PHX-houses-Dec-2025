@@ -4,7 +4,7 @@ Tests all kill switch criteria individually and in combination, covering
 both happy path and edge cases as defined in CLAUDE.md buyer requirements.
 """
 
-from src.phx_home_analysis.domain.enums import SewerType
+from src.phx_home_analysis.domain.enums import SewerType, SolarStatus
 from src.phx_home_analysis.services.kill_switch import KillSwitchVerdict
 from src.phx_home_analysis.services.kill_switch.criteria import (
     CitySewerKillSwitch,
@@ -12,8 +12,10 @@ from src.phx_home_analysis.services.kill_switch.criteria import (
     MinBathroomsKillSwitch,
     MinBedroomsKillSwitch,
     MinGarageKillSwitch,
+    MinSqftKillSwitch,
     NoHoaKillSwitch,
     NoNewBuildKillSwitch,
+    NoSolarLeaseKillSwitch,
 )
 from src.phx_home_analysis.services.kill_switch.filter import KillSwitchFilter
 
@@ -911,3 +913,168 @@ class TestSeverityBoundaryConditions:
         assert verdict == KillSwitchVerdict.FAIL
         assert severity == 3.5
         assert len(failures) == 2
+
+
+# ============================================================================
+# MinSqftKillSwitch Tests
+# ============================================================================
+
+
+class TestMinSqftKillSwitch:
+    """Test the minimum square footage kill switch criterion (HARD).
+
+    MinSqftKillSwitch is a HARD criterion requiring sqft > 1800.
+    Per CLAUDE.md: sqft > 1800 is buyer requirement (instant fail).
+    """
+
+    def test_pass_with_2200_sqft(self, sample_property):
+        """Test property with 2200 sqft passes (typical passing case)."""
+        sample_property.sqft = 2200
+        kill_switch = MinSqftKillSwitch(min_sqft=1800)
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_1801_sqft(self, sample_property):
+        """Test property with 1801 sqft passes (just above boundary)."""
+        sample_property.sqft = 1801
+        kill_switch = MinSqftKillSwitch(min_sqft=1800)
+        assert kill_switch.check(sample_property) is True
+
+    def test_fail_with_1800_sqft(self, sample_property):
+        """Test property with exactly 1800 sqft fails (boundary condition).
+
+        The requirement is sqft > 1800, not sqft >= 1800.
+        Exactly 1800 does NOT satisfy > 1800, so it should FAIL.
+        """
+        sample_property.sqft = 1800
+        kill_switch = MinSqftKillSwitch(min_sqft=1800)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_zero_sqft(self, sample_property):
+        """Test property with 0 sqft fails."""
+        sample_property.sqft = 0
+        kill_switch = MinSqftKillSwitch(min_sqft=1800)
+        assert kill_switch.check(sample_property) is False
+
+    def test_fail_with_none_sqft(self, sample_property):
+        """Test property with None sqft fails (cannot verify requirement)."""
+        sample_property.sqft = None
+        kill_switch = MinSqftKillSwitch(min_sqft=1800)
+        assert kill_switch.check(sample_property) is False
+
+    def test_failure_message(self, sample_property):
+        """Test failure message includes actual sqft."""
+        sample_property.sqft = 1500
+        kill_switch = MinSqftKillSwitch(min_sqft=1800)
+        message = kill_switch.failure_message(sample_property)
+        assert "1,500" in message
+        assert "1,800" in message or "sqft" in message.lower()
+
+    def test_kill_switch_name(self):
+        """Test kill switch has correct name."""
+        kill_switch = MinSqftKillSwitch()
+        assert kill_switch.name == "min_sqft"
+
+    def test_kill_switch_description(self):
+        """Test kill switch has correct description."""
+        kill_switch = MinSqftKillSwitch()
+        assert "1,800" in kill_switch.description
+        assert "sqft" in kill_switch.description.lower()
+
+    def test_is_hard_criterion(self):
+        """Test that MinSqftKillSwitch is a HARD criterion."""
+        kill_switch = MinSqftKillSwitch()
+        assert kill_switch.is_hard is True
+
+    def test_custom_minimum(self, sample_property):
+        """Test custom minimum sqft requirement."""
+        sample_property.sqft = 2000
+        kill_switch = MinSqftKillSwitch(min_sqft=2500)
+        assert kill_switch.check(sample_property) is False
+
+        sample_property.sqft = 2501
+        assert kill_switch.check(sample_property) is True
+
+
+# ============================================================================
+# NoSolarLeaseKillSwitch Tests
+# ============================================================================
+
+
+class TestNoSolarLeaseKillSwitch:
+    """Test the no solar lease kill switch criterion (HARD).
+
+    NoSolarLeaseKillSwitch is a HARD criterion requiring solar != lease.
+    Per CLAUDE.md: solar lease is buyer disqualifier (liability, not asset).
+    """
+
+    def test_pass_with_owned_solar(self, sample_property):
+        """Test property with owned solar passes."""
+        sample_property.solar_status = SolarStatus.OWNED
+        kill_switch = NoSolarLeaseKillSwitch()
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_no_solar(self, sample_property):
+        """Test property with no solar panels passes."""
+        sample_property.solar_status = SolarStatus.NONE
+        kill_switch = NoSolarLeaseKillSwitch()
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_none_solar_status(self, sample_property):
+        """Test property with None solar_status passes (unknown = pass)."""
+        sample_property.solar_status = None
+        kill_switch = NoSolarLeaseKillSwitch()
+        assert kill_switch.check(sample_property) is True
+
+    def test_pass_with_unknown_solar(self, sample_property):
+        """Test property with unknown solar status passes.
+
+        Unknown status does not fail - only explicit LEASED fails.
+        """
+        sample_property.solar_status = SolarStatus.UNKNOWN
+        kill_switch = NoSolarLeaseKillSwitch()
+        assert kill_switch.check(sample_property) is True
+
+    def test_fail_with_leased_solar(self, sample_property):
+        """Test property with leased solar fails (HARD criterion)."""
+        sample_property.solar_status = SolarStatus.LEASED
+        kill_switch = NoSolarLeaseKillSwitch()
+        assert kill_switch.check(sample_property) is False
+
+    def test_failure_message_leased(self, sample_property):
+        """Test failure message for leased solar."""
+        sample_property.solar_status = SolarStatus.LEASED
+        kill_switch = NoSolarLeaseKillSwitch()
+        message = kill_switch.failure_message(sample_property)
+        assert "solar" in message.lower() or "lease" in message.lower()
+        assert "$100" in message or "liability" in message.lower()
+
+    def test_kill_switch_name(self):
+        """Test kill switch has correct name."""
+        kill_switch = NoSolarLeaseKillSwitch()
+        assert kill_switch.name == "no_solar_lease"
+
+    def test_kill_switch_description(self):
+        """Test kill switch has correct description."""
+        kill_switch = NoSolarLeaseKillSwitch()
+        assert (
+            "solar" in kill_switch.description.lower() or "lease" in kill_switch.description.lower()
+        )
+
+    def test_is_hard_criterion(self):
+        """Test that NoSolarLeaseKillSwitch is a HARD criterion (default)."""
+        kill_switch = NoSolarLeaseKillSwitch()
+        # Default is_hard returns True from base class
+        assert kill_switch.is_hard is True
+
+    def test_fail_with_leased_string(self, sample_property):
+        """Test property with 'leased' string value fails."""
+        # Some data sources may provide string instead of enum
+        sample_property.solar_status = "leased"
+        kill_switch = NoSolarLeaseKillSwitch()
+        assert kill_switch.check(sample_property) is False
+
+    def test_pass_with_owned_string(self, sample_property):
+        """Test property with 'owned' string value passes."""
+        sample_property.solar_status = "owned"
+        kill_switch = NoSolarLeaseKillSwitch()
+        assert kill_switch.check(sample_property) is True

@@ -1,20 +1,25 @@
 """Concrete kill switch implementations for PHX Home Analysis buyer criteria.
 
 This module implements all kill switches based on the buyer requirements.
-All 8 default criteria are HARD (instant fail):
+There are 5 HARD criteria (instant fail) and 4 SOFT criteria (severity accumulation):
 
-Kill Switches (Must Pass All - HARD):
+HARD Criteria (instant fail):
 1. NO HOA (hoa_fee must be 0 or None)
 2. NO Solar Lease (no leased solar panels)
-3. Minimum 4 bedrooms
-4. Minimum 2 bathrooms
-5. Minimum 1800 sqft living space
-6. Lot size > 8000 sqft (no maximum)
-7. City sewer (no septic systems)
-8. Minimum 1 indoor garage space (attached/direct access)
+3. Minimum 4 bedrooms (beds >= 4)
+4. Minimum 2 bathrooms (baths >= 2)
+5. Minimum sqft (sqft > 1800)
 
-Optional criterion (not in defaults):
-- No new builds (year_built < current year) - NoNewBuildKillSwitch
+SOFT Criteria (severity accumulation, fail if total >= 3.0):
+1. City sewer (severity 2.5 if septic/unknown)
+2. No new builds (severity 2.0 if year_built > 2023)
+3. Minimum garage (severity 1.5 if garage_spaces < 2)
+4. Lot size (severity 1.0 if outside 7k-15k sqft)
+
+Verdict logic:
+- FAIL: Any HARD criterion fails OR severity >= 3.0
+- WARNING: Severity >= 1.5 but < 3.0
+- PASS: All HARD pass AND severity < 1.5
 
 Each kill switch handles missing/None data gracefully and provides detailed
 failure messages explaining why a property was rejected.

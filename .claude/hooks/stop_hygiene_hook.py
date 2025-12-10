@@ -51,7 +51,7 @@ def _load_prompt_template() -> str:
             pass
     # Fallback: minimal directive
     return """
-**Action Required:** Update CLAUDE.md files for directories listed above.
+**Action Required:** **UTILIZE TASK() TOOL AND SUBAGENT TASK BUCKETING-DELEGATION** to Update CLAUDE.md files for directories listed above.
 Use `.claude/templates/CLAUDE.md.template` for format guidance.
 Ensure: ≤100 lines, frontmatter with `last_updated`, bullets/tables only.
 """

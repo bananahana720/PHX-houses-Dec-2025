@@ -6,7 +6,6 @@ All thresholds, paths, and settings should be defined here
 to ensure consistency and easy maintenance.
 """
 
-from pathlib import Path
 
 # =============================================================================
 # File Size Thresholds

@@ -1,26 +1,26 @@
 ---
-last_updated: 2025-12-07T22:00:00Z
+last_updated: 2025-12-10T14:30:00Z
 updated_by: agent
 staleness_hours: 24
 ---
 # tests/integration
 
 ## Purpose
-Integration tests validating multi-component workflows end-to-end: pipeline execution, kill-switch filtering, image extraction, error recovery, and report generation.
+Integration tests validating multi-component workflows end-to-end: pipeline execution, kill-switch filtering, image extraction, error recovery, and report generation. 26 kill-switch chain tests, 19 test files total.
 
 ## Contents
 | File | Focus |
 |------|-------|
+| `conftest.py` | Shared fixtures (sample_property with kill-switch fields: sewer_type, hoa_fee, solar_status) |
+| `test_kill_switch_chain.py` | HARD/SOFT severity accumulation, thresholds (26 tests) |
 | `test_pipeline.py` | Full pipeline: load -> enrich -> filter -> score -> report |
-| `test_kill_switch_chain.py` | HARD/SOFT severity accumulation, thresholds |
+| `test_e2e_pipeline.py` | End-to-end pipeline validation |
 | `test_phoenixmls_extraction.py` | PhoenixMLS listing extraction + metadata |
 | `test_multi_source_extraction.py` | Multi-source (PhoenixMLS + Zillow + Redfin) |
 | `test_orchestrator_integration.py` | ImageProcessor orchestration workflows |
 | `test_listing_extraction.py` | Listing browser extraction validation |
 | `test_state_persistence.py` | work_items.json state management |
 | `test_transient_error_recovery.py` | Exponential backoff, retry logic |
-| `test_crash_recovery.py` | Atomic writes, backup/restore |
-| `conftest.py` | Shared fixtures, mocks, HTML samples |
 
 ## Artifacts
 | File | Purpose |

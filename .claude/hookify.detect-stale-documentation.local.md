@@ -5,7 +5,7 @@ event: prompt
 conditions:
   - field: user_prompt
     operator: regex_match
-    pattern: (?i)(according to|based on|CLAUDE\.md says|documentation says|docs show|the docs|per the)
+    pattern: (?i)(according to|based on|CLAUDE\.md says|documentation says|docs show|the docs|per the|see @)
 action: warn
 ---
 

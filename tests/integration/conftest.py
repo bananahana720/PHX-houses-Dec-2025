@@ -9,6 +9,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from src.phx_home_analysis.domain.entities import Property
+from src.phx_home_analysis.domain.enums import SewerType, SolarStatus
 
 # ============================================================================
 # SAMPLE DATA FIXTURES
@@ -21,6 +22,7 @@ def sample_property():
 
     Returns:
         Property: 4bd/2ba property in Phoenix with all required fields.
+        This property passes all kill-switches (HARD and SOFT).
     """
     return Property(
         street="5219 W EL CAMINITO Drive",
@@ -37,6 +39,10 @@ def sample_property():
         lot_sqft=9000,
         year_built=2005,
         garage_spaces=2,
+        # Kill-switch required fields
+        sewer_type=SewerType.CITY,
+        hoa_fee=0,
+        solar_status=SolarStatus.NONE,
     )
 
 
