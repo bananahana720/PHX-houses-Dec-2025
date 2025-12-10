@@ -1,43 +1,64 @@
 ---
-last_updated: 2025-12-05
+last_updated: 2025-12-10
 updated_by: agent
 staleness_hours: 24
 ---
 # tests/unit/services/kill_switch
 
 ## Purpose
-Unit tests for kill-switch verdict explanation module covering criterion results, verdict explanations, severity calculations, and text/dict serialization. Validates HARD vs SOFT failure categorization and human-readable verdict narratives.
+Unit tests for kill-switch services: verdict explanations, severity evaluation, and criterion results. 200+ tests covering HARD/SOFT categorization, threshold boundaries, and human-readable narratives.
 
 ## Contents
 | File | Purpose |
 |------|---------|
-| `test_explanation.py` | CriterionResult, VerdictExplanation, VerdictExplainer classes (20+ test classes, 150+ tests) |
+| `test_explanation.py` | CriterionResult, VerdictExplanation, VerdictExplainer (20+ classes, 150+ tests) |
+| `test_severity.py` | SoftSeverityEvaluator, SoftSeverityResult, CSV loading (10 classes, 54 tests) - E3.S2 |
 | `__init__.py` | Package initialization |
 
+## Test Classes (test_severity.py - E3.S2)
+| Class | Tests | Coverage |
+|-------|-------|----------|
+| `TestSoftSeverityResult` | 6 | Dataclass fields, defaults |
+| `TestSoftSeverityEvaluator` | 7 | Evaluate method, threshold info |
+| `TestSeverityAccumulation` | 5 | Multi-criteria accumulation |
+| `TestThresholdBoundaries` | 4 | Exact boundary (2.9999 vs 3.0) |
+| `TestPassVerdict` | 4 | severity < 1.5 |
+| `TestWarningVerdict` | 5 | 1.5 <= severity < 3.0 |
+| `TestFailVerdict` | 5 | severity >= 3.0 |
+| `TestSoftCriterionConfig` | 9 | Pydantic CSV model validation |
+| `TestLoadSoftCriteriaConfig` | 7 | CSV file loading |
+| `TestKillSwitchFilterIntegration` | 2 | Filter integration |
+
 ## Key Patterns
-- **Criterion result model**: name, passed, is_hard, severity, message dataclass for each criteria
-- **Verdict types**: PASS (all criteria pass), WARNING (soft severity <3.0), FAIL (hard fail or soft ≥3.0)
-- **Severity accumulation**: SOFT criteria accumulate severity, HARD criteria instant fail
-- **Markdown output**: to_text() generates formatted verdict with sections (Hard Failures, Soft Failures, Warnings)
+- **Severity thresholds**: FAIL >= 3.0, WARNING >= 1.5, PASS < 1.5
+- **HARD vs SOFT**: HARD instant fail, SOFT accumulate with threshold check
+- **Boundary testing**: Exact threshold values tested (2.9999 vs 3.0)
+- **CSV validation**: SoftCriterionConfig uses Pydantic for row validation
+
+## Commands
+```bash
+pytest tests/unit/services/kill_switch/ -v           # All tests (200+)
+pytest tests/unit/services/kill_switch/test_severity.py -v  # Severity tests (54)
+pytest tests/unit/services/kill_switch/ --cov=src/   # With coverage
+```
 
 ## Tasks
 - [x] Map test coverage for verdict explanation classes `P:H`
-- [x] Document test patterns (criterion results, verdict logic, formatting) `P:H`
+- [x] Add SoftSeverityEvaluator tests (E3.S2) `P:H`
+- [ ] Add test for actual config/kill_switch.csv loading `P:H`
 - [ ] Add edge case tests for very long failure messages `P:M`
-- [ ] Add special character escaping tests `P:L`
 
 ## Learnings
-- **Severity threshold rule**: Failures ≥3.0 fail, warnings 1.5-3.0, pass <1.5 (thresholds inclusive)
-- **HARD vs SOFT logic**: HARD failures take precedence in summary (instant fail), SOFT accumulate with threshold check
-- **Message preservation**: Original criterion messages preserved in output and dict serialization
-- **Multiple failure types**: Verdict can have hard + soft + warning failures; text output structures each section separately
+- **Severity accumulation**: SOFT criteria add up (2.5 + 1.5 = 4.0 -> FAIL)
+- **Float precision**: Review noted potential issues at exact boundaries
+- **CSV loader tests**: All use tmp_path fixtures, not actual config file
 
 ## Refs
+- SoftSeverityEvaluator: `test_severity.py:1-400` (E3.S2 implementation)
 - CriterionResult: `test_explanation.py:20-78` (HARD/SOFT distinction)
-- VerdictExplanation: `test_explanation.py:85-350` (verdict structure, to_text, to_dict)
-- VerdictExplainer: `test_explanation.py:356-633` (explain logic, summary generation)
-- Severity calculation: `test_explanation.py:727-883` (threshold testing, edge cases)
+- VerdictExplanation: `test_explanation.py:85-350` (verdict structure)
+- VerdictExplainer: `test_explanation.py:356-633` (explain logic)
 
 ## Deps
-← imports: KillSwitchVerdict enum, Pydantic dataclasses
-→ used by: pytest, CI/CD pipeline (must pass before merge)
+<- imports: phx_home_analysis.services.kill_switch (severity, explanation modules)
+-> used by: pytest, CI/CD pipeline (must pass before merge)

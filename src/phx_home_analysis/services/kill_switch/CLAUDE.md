@@ -16,8 +16,9 @@ Buyer qualification filtering with 5 HARD (instant fail) + 4 SOFT (severity-base
 | `constants.py` | 5 HARD + 4 SOFT criteria definitions with severity weights |
 | `criteria.py` | 9 concrete implementations (NoHoaKillSwitch, MinBedroomsKillSwitch, etc.) |
 | `filter.py` | KillSwitchFilter orchestrator: applies criteria, accumulates severity, returns verdict |
-| `explanation.py` | ExplanationGenerator: human-readable failure reasons per property |
-| `__init__.py` | Package exports (KillSwitchFilter, Verdict, Criterion, ExplanationGenerator) |
+| `explanation.py` | VerdictExplainer: human-readable failure reasons per property |
+| `severity.py` | SoftSeverityEvaluator: dedicated SOFT criteria evaluation with breakdown |
+| `__init__.py` | Package exports (KillSwitchFilter, Verdict, SoftSeverityEvaluator) |
 
 ## Key Patterns
 - **HARD criteria (5)**: HOA=$0, beds≥4, baths≥2, sqft>1800, solar≠lease → instant FAIL
@@ -26,6 +27,7 @@ Buyer qualification filtering with 5 HARD (instant fail) + 4 SOFT (severity-base
 - **Explanation generation**: Human-readable reasons for filtering decisions
 
 ## Tasks
+- [x] Implement SoftSeverityEvaluator (E3.S2) `P:H`
 - [ ] Add multi-language support for explanations `P:M`
 - [ ] Add buyer profile customization (threshold tuning) `P:L`
 

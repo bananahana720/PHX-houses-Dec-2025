@@ -48,6 +48,7 @@ from .explanation import CriterionResult, VerdictExplainer, VerdictExplanation
 
 if TYPE_CHECKING:
     from ...domain.entities import Property
+    from .severity import SoftSeverityEvaluator, SoftSeverityResult
 
 
 class KillSwitchFilter:
@@ -100,6 +101,15 @@ class KillSwitchFilter:
 
         # Initialize verdict explainer with threshold from constants
         self._explainer = VerdictExplainer(severity_threshold=SEVERITY_FAIL_THRESHOLD)
+
+        # Initialize SOFT severity evaluator for dedicated SOFT evaluation
+        # Import here to avoid circular imports - module uses this class
+        from .severity import SoftSeverityEvaluator
+
+        self._soft_evaluator = SoftSeverityEvaluator(
+            fail_threshold=SEVERITY_FAIL_THRESHOLD,
+            warning_threshold=SEVERITY_WARNING_THRESHOLD,
+        )
 
     @staticmethod
     def _get_default_kill_switches() -> list[KillSwitch]:
@@ -336,6 +346,40 @@ class KillSwitchFilter:
             List of SOFT KillSwitch instances
         """
         return [ks for ks in self._kill_switches if not ks.is_hard]
+
+    def evaluate_soft_severity(self, property: "Property") -> "SoftSeverityResult":
+        """Evaluate SOFT criteria only and return detailed severity result.
+
+        Uses the dedicated SoftSeverityEvaluator to provide detailed breakdown
+        of SOFT criteria evaluation. Note: This evaluates SOFT criteria ONLY.
+        For complete evaluation including HARD criteria, use evaluate_with_severity().
+
+        Args:
+            property: Property entity to evaluate
+
+        Returns:
+            SoftSeverityResult with total_severity, verdict, breakdown dict
+        """
+
+        soft_results: list[CriterionResult] = []
+        for kill_switch in self._kill_switches:
+            if kill_switch.is_hard:
+                continue
+            passed = kill_switch.check(property)
+            cr = CriterionResult(
+                name=kill_switch.name,
+                passed=passed,
+                is_hard=False,
+                severity=0.0 if passed else kill_switch.severity_weight,
+                message=kill_switch.failure_message(property) if not passed else "",
+            )
+            soft_results.append(cr)
+        return self._soft_evaluator.evaluate(soft_results)
+
+    def get_soft_evaluator(self) -> "SoftSeverityEvaluator":
+        """Get the SOFT severity evaluator instance."""
+
+        return self._soft_evaluator
 
     def summary(self) -> str:
         """Generate summary of active kill switches with severity info.

@@ -1,0 +1,53 @@
+name,type,operator,threshold,severity,description
+# =============================================================================
+# Kill-Switch Criteria Configuration
+# =============================================================================
+# This CSV defines all kill-switch criteria for property evaluation.
+#
+# Schema:
+#   name        - Unique identifier (snake_case)
+#   type        - HARD (instant fail) or SOFT (severity accumulation)
+#   operator    - Comparison: ==, !=, >, <, >=, <=, range
+#   threshold   - Value(s) to compare against
+#   severity    - Weight when failed (0 for HARD, 0.1-10.0 for SOFT)
+#   description - Human-readable explanation
+#
+# HARD Criteria: Instant FAIL if any fail
+# SOFT Criteria: Accumulate severity, FAIL if total >= 3.0, WARNING >= 1.5
+#
+# Adding New SOFT Criteria:
+#   1. Add row below with type=SOFT
+#   2. Set severity based on importance (see guidelines below)
+#   3. Create matching KillSwitch class in criteria.py
+#   4. Register in KillSwitchFilter._get_default_kill_switches()
+#
+# Severity Weight Guidelines:
+#   2.5 - Critical preference (single failure = WARNING)
+#   2.0 - Important preference
+#   1.5 - Moderate preference (WARNING boundary)
+#   1.0 - Minor preference
+#   0.5 - Slight preference (2+ needed for WARNING)
+# =============================================================================
+
+# HARD Criteria (5) - Instant fail, severity ignored
+no_hoa,HARD,==,0,0.0,NO HOA fees allowed (hoa_fee must be 0 or None)
+no_solar_lease,HARD,!=,leased,0.0,No solar lease allowed (liability not asset)
+min_bedrooms,HARD,>=,4,0.0,Minimum 4 bedrooms required
+min_bathrooms,HARD,>=,2.0,0.0,Minimum 2 bathrooms required
+min_sqft,HARD,>,1800,0.0,Minimum 1800+ sqft living space required
+
+# SOFT Criteria (4) - Severity accumulation, thresholds: FAIL>=3.0, WARNING>=1.5
+city_sewer,SOFT,==,CITY,2.5,City sewer required (no septic)
+no_new_build,SOFT,<=,2023,2.0,No new builds (year <= 2023)
+min_garage,SOFT,>=,2,1.5,Minimum 2 garage spaces
+lot_size,SOFT,range,7000-15000,1.0,Lot size 7k-15k sqft preferred
+
+# =============================================================================
+# Example Future SOFT Criteria (commented out)
+# =============================================================================
+# Uncomment and add to code to enable:
+#
+# pool,SOFT,==,true,0.5,Pool presence preferred (optional luxury)
+# single_story,SOFT,==,1,0.5,Single story preferred (accessibility)
+# north_orientation,SOFT,==,N,0.5,North-facing backyard preferred (cooler)
+# =============================================================================

@@ -54,6 +54,12 @@ from .criteria import (
 )
 from .explanation import CriterionResult, VerdictExplainer, VerdictExplanation
 from .filter import KillSwitchFilter
+from .severity import (
+    SoftCriterionConfig,
+    SoftSeverityEvaluator,
+    SoftSeverityResult,
+    load_soft_criteria_config,
+)
 
 __all__ = [
     # Base types and constants
@@ -79,4 +85,9 @@ __all__ = [
     "VerdictExplainer",
     "VerdictExplanation",
     "CriterionResult",
+    # Severity evaluation system
+    "SoftSeverityEvaluator",
+    "SoftSeverityResult",
+    "SoftCriterionConfig",
+    "load_soft_criteria_config",
 ]
