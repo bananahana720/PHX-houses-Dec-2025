@@ -85,7 +85,7 @@ development_status:
   # Status: COMPLETE (2025-12-10)
   # Orchestration: Wave 0 (E3.S0) → Wave 1 (E3.S1) → Wave 2 (E3.S2-S3 parallel) → Wave 3 (E3.S4-S5)
   # =============================================================================
-  epic-3: done
+  epic-3: complete
   # Wave 0: FOUNDATION (Sequential - Before Main Epic)
   3-0-template-orchestration-metadata: done  # Completed 2025-12-07
   # Wave 1: CORE KILL-SWITCH (Sequential)
@@ -94,16 +94,17 @@ development_status:
   3-3-kill-switch-verdict-evaluation: done  # Completed 2025-12-09
   3-4-kill-switch-failure-explanations: done  # Completed 2025-12-10
   3-5-kill-switch-configuration-management: done  # Completed 2025-12-10
-  epic-3-retrospective: optional
+  epic-3-retrospective: completed  # 2025-12-10
 
   # =============================================================================
   # Epic 4: Property Scoring Engine
   # User Value: Rank properties by comprehensive quality score (605 points across
   #             Location, Systems, Interior) with transparent breakdowns and tiers
-  # Stories: 6 | PRD Coverage: FR15-20, FR25, FR27, FR48
+  # Stories: 7 | PRD Coverage: FR15-20, FR25, FR27, FR48
   # Status: IN-PROGRESS (E4.S1 done)
   # =============================================================================
   epic-4: in-progress
+  4-0-scoring-engine-infrastructure-setup: done  # Completed 2025-12-10
   4-1-three-dimension-score-calculation: done
   4-2-22-strategy-scoring-implementation: backlog
   4-3-tier-classification-system: backlog
@@ -165,11 +166,11 @@ development_status:
 # =============================================================================
 summary:
   total_epics: 7
-  total_stories: 49  # +1 E3.S0 from E2 Retro
+  total_stories: 50  # +1 E3.S0 from E2 Retro, +1 E4.S0 from E3 Retro
   stories_by_status:
     backlog: 18
     drafted: 0
-    ready-for-dev: 0
+    ready-for-dev: 1  # E4.S0
     in-progress: 0
     review: 0
     done: 31  # E1(6) + E2(7+6R) + E3(6) + E4.S1 + E5.S1 + E7.S1
@@ -177,14 +178,14 @@ summary:
     backlog: 1
     contexted: 0
     in-progress: 3  # E4, E5, E7
-    done: 3  # E1, E2, E3
+    complete: 3  # E1, E2, E3
   retrospectives_by_status:
-    optional: 5
-    completed: 2
-  p0_stories: 39
+    optional: 4
+    completed: 3  # E1, E2, E3
+  p0_stories: 40  # +1 E4.S0
   p1_stories: 9
   fr_coverage: "62/62 (100%)"
-  test_coverage_total: 245  # +17 kill-switch tests
+  test_coverage_total: 295  # +50 from E3 completion (kill-switch + integration)
   last_updated: "2025-12-10"
   last_story_completed: "3-5-kill-switch-configuration-management"
   last_story_completed_date: "2025-12-10"

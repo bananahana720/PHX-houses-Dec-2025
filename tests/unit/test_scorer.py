@@ -260,32 +260,63 @@ class TestTierClassification:
         assert sample_unicorn_property.is_failed is True
 
     def test_tier_from_score_boundary_unicorn(self):
-        """Test tier classification at Unicorn boundary (>480)."""
-        # Exactly at boundary
-        tier = Tier.from_score(480.0, True)
+        """Test tier classification at Unicorn boundary (>=484).
+
+        Regression test for Issue #1: Tier thresholds must match 605-point system.
+        Unicorn threshold is 484 (80% of 605).
+        """
+        # Just below boundary - should be Contender
+        tier = Tier.from_score(483.9, True)
         assert tier == Tier.CONTENDER
 
-        # Just above boundary
-        tier = Tier.from_score(480.1, True)
+        # Exactly at boundary - should be Unicorn (>= 484)
+        tier = Tier.from_score(484.0, True)
+        assert tier == Tier.UNICORN
+
+        # Above boundary - should be Unicorn
+        tier = Tier.from_score(484.1, True)
         assert tier == Tier.UNICORN
 
     def test_tier_from_score_boundary_contender(self):
-        """Test tier classification at Contender boundaries."""
-        # Below contender
-        tier = Tier.from_score(359.9, True)
+        """Test tier classification at Contender boundaries (>=363, <484).
+
+        Regression test for Issue #1: Tier thresholds must match 605-point system.
+        Contender threshold is 363 (60% of 605).
+        """
+        # Just below contender - should be Pass
+        tier = Tier.from_score(362.9, True)
         assert tier == Tier.PASS
 
-        # At lower boundary
-        tier = Tier.from_score(360.0, True)
+        # Exactly at lower boundary - should be Contender (>= 363)
+        tier = Tier.from_score(363.0, True)
         assert tier == Tier.CONTENDER
 
-        # At upper boundary
-        tier = Tier.from_score(480.0, True)
+        # Middle of contender range - should be Contender
+        tier = Tier.from_score(420.0, True)
         assert tier == Tier.CONTENDER
 
-        # Just below upper boundary
-        tier = Tier.from_score(479.9, True)
+        # Just below upper boundary - should be Contender
+        tier = Tier.from_score(483.9, True)
         assert tier == Tier.CONTENDER
+
+    def test_tier_boundaries_match_tier_thresholds_config(self):
+        """Regression test: Tier.from_score() boundaries must match TierThresholds config.
+
+        This test ensures Tier enum and TierThresholds config stay synchronized.
+        """
+        from src.phx_home_analysis.config.scoring_weights import TierThresholds
+
+        thresholds = TierThresholds()
+
+        # Unicorn boundary: score just below threshold should be Contender
+        assert Tier.from_score(thresholds.unicorn_min - 0.1, True) == Tier.CONTENDER
+        # Unicorn boundary: score at threshold should be Unicorn
+        assert Tier.from_score(thresholds.unicorn_min, True) == Tier.UNICORN
+
+        # Contender boundary: score just below threshold should be Pass
+        assert Tier.from_score(thresholds.contender_min - 0.1, True) == Tier.PASS
+        # Contender boundary: score at threshold should be Contender
+        assert Tier.from_score(thresholds.contender_min, True) == Tier.CONTENDER
 
     def test_tier_from_score_failed_regardless_of_score(self):
         """Test FAILED tier is assigned when kill_switch_passed=False."""

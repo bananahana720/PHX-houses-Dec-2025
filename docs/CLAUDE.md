@@ -1,5 +1,5 @@
 ---
-last_updated: 2025-12-07T22:37:45Z
+last_updated: 2025-12-10
 updated_by: agent
 staleness_hours: 24
 flags: []
@@ -17,10 +17,10 @@ Technical documentation hub for PHX Houses Analysis Pipeline containing architec
 | `schemas/` | JSON schema docs (work_items, enrichment_data) |
 | `sprint-artifacts/` | Sprint status, stories, tech specs |
 | `architecture/` | System design, schema evolution, consistency audits |
-| `artifacts/` | Generated reports, deal sheets, implementation notes |
-| `CONFIG_IMPLEMENTATION_GUIDE.md` | Configuration system reference |
+| `artifacts/` | Generated reports, deal sheets, research |
+| `epics/` | Epic definitions (E1-E7) |
+| `sprint-change-proposal-2025-12-10.md` | Active sprint change proposal |
 | `SECURITY.md` | Security best practices |
-| `MC-Assessor-API-Documentation.md` | Maricopa County API reference |
 
 ## Key Patterns
 - **Dual CLAUDE.md structure**: Root docs/CLAUDE.md + child subdirectory CLAUDE.md files
@@ -29,9 +29,9 @@ Technical documentation hub for PHX Houses Analysis Pipeline containing architec
 - **Master indexes**: reference-index.md, CLEANUP_INDEX.md provide navigation
 
 ## Tasks
-- [ ] Consolidate duplicate security audit reports `P:M`
-- [ ] Archive old implementation-notes in artifacts/ `P:L`
-- [ ] Sync test coverage docs with latest run `P:L`
+- [x] Complete Epic 3 retrospective `P:H`
+- [x] Complete P1-P6 research tasks `P:H`
+- [x] Implement E4.S0 infrastructure setup `P:H`
 - [ ] Update schema docs with enrichment_data.json `P:M`
 
 ## Learnings

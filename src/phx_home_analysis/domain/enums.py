@@ -59,10 +59,10 @@ class RiskLevel(Enum):
 class Tier(Enum):
     """Property tier classification based on total score.
 
-    Tiers represent property quality/desirability (600 pts max):
-    - UNICORN: >480 points (80%) - Exceptional properties
-    - CONTENDER: 360-480 points (60-80%) - Strong candidates
-    - PASS: <360 points (<60%) - Meets minimum criteria
+    Tiers represent property quality/desirability (605 pts max):
+    - UNICORN: >= 484 points (80%) - Exceptional properties
+    - CONTENDER: 363-483 points (60-80%) - Strong candidates
+    - PASS: < 363 points (< 60%) - Meets minimum criteria
     - FAILED: 0 points - Kill switch failure
     """
 
@@ -118,18 +118,23 @@ class Tier(Enum):
         """Classify tier based on total score and kill switch status.
 
         Args:
-            score: Total weighted score (0-600)
+            score: Total weighted score (0-605)
             kill_switch_passed: Whether property passed all kill switches
 
         Returns:
             Tier classification
+
+        Thresholds (605-point scale):
+            - Unicorn: >= 484 (80% of 605)
+            - Contender: >= 363 (60% of 605)
+            - Pass: < 363 (< 60%)
         """
         if not kill_switch_passed:
             return cls.FAILED
 
-        if score > 480:
+        if score >= 484:
             return cls.UNICORN
-        elif score >= 360:
+        elif score >= 363:
             return cls.CONTENDER
         else:
             return cls.PASS
