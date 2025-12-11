@@ -171,5 +171,32 @@
       "- name: [hook name or suggested new hook]"
     ],
     "learnings": []
+  },
+  {
+    "timestamp": "2025-12-11T00:29:23.175450+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "**"
+    ]
+  },
+  {
+    "timestamp": "2025-12-11T01:20:40.742526+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "Epics and Sprint Artifacts**"
+    ]
+  },
+  {
+    "timestamp": "2025-12-11T01:20:40.781024+00:00",
+    "subagent_type": "Explore",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "Scoring Architecture**"
+    ]
   }
 ]

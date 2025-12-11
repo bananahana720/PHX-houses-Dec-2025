@@ -7,7 +7,7 @@ staleness_hours: 24
 # docs/epics
 
 ## Purpose
-Epic repository organizing PHX Houses Analysis Pipeline into 7 epics with 49 stories. Transforms 62 FRs (100% coverage) into actionable development work with dependencies, critical path, and story-level acceptance criteria.
+Epic repository organizing PHX Houses Analysis Pipeline into 7 epics with 50 stories. Transforms 62 FRs (100% coverage) into actionable development work with dependencies, critical path, and story-level acceptance criteria.
 
 ## Contents
 | File | Purpose |
@@ -17,17 +17,17 @@ Epic repository organizing PHX Houses Analysis Pipeline into 7 epics with 49 sto
 | `epic-1-foundation-data-infrastructure.md` | Foundation: config, storage, provenance (6 stories) COMPLETE |
 | `epic-2-property-data-acquisition.md` | Data acquisition: County API, images, extraction (13 stories) COMPLETE |
 | `epic-3-kill-switch-filtering-system.md` | Filtering: HARD/SOFT criteria (6 stories) COMPLETE |
-| `epic-4-property-scoring-engine.md` | Scoring: 605-point system (6 stories) |
+| `epic-4-property-scoring-engine.md` | Scoring: 605-point system (7 stories) |
 | `epic-5-multi-agent-pipeline-orchestration.md` | Orchestration: agents, phases (6 stories) |
 | `epic-6-visual-analysis-risk-intelligence.md` | Vision: image assessment, risks (6 stories) |
 | `epic-7-deal-sheet-generation-reports.md` | Reports: deal sheets, exports (6 stories) |
-| `fr-coverage-matrix.md` | FR-to-story traceability matrix (62 FRs -> 49 stories) |
+| `fr-coverage-matrix.md` | FR-to-story traceability matrix (62 FRs -> 50 stories) |
 
 ## Status (2025-12-10)
 | Metric | Status |
 |--------|--------|
 | Epics Complete | 3/7 (E1, E2, E3) |
-| Stories Complete | 31/49 (63%) |
+| Stories Complete | 31/50 (62%) |
 | FR Coverage | 62/62 (100%) |
 
 ## Key Patterns

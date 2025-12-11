@@ -7,6 +7,30 @@
 
 ---
 
+### E4.S0: Infrastructure Setup (Story Zero)
+
+**Priority:** P0 | **Points:** 5 | **Status:** Ready for Dev
+
+**Objective:** Establish test infrastructure, documentation, and integration scaffolding before main scoring work.
+
+**Scope:**
+- Test fixtures and golden properties for 22 strategies
+- Score breakdown schema documentation
+- Reporting layer stubs (E7 integration)
+- Integration audit map (kill-switch → scoring → reporting)
+
+**Acceptance Criteria:**
+- [ ] `tests/unit/services/scoring/conftest.py` with shared fixtures
+- [ ] 3 golden property fixtures (Unicorn, Contender, Pass tiers)
+- [ ] `docs/schemas/score_breakdown_schema.md` created
+- [ ] Reporting stub handlers documented
+- [ ] Integration map documented
+
+**Estimate:** 5.25 hours
+**Dependencies:** E3.S5 (complete), E4.S1 (complete)
+
+---
+
 ### E4.S1: Three-Dimension Score Calculation
 
 **Priority:** P0 | **Dependencies:** E1.S2, E2.S7 | **FRs:** FR15
