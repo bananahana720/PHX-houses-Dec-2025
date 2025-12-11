@@ -1,44 +1,40 @@
 ---
-last_updated: 2025-12-07T22:37:45Z
+last_updated: 2025-12-10
 updated_by: agent
-staleness_hours: 24
-flags: []
 ---
+
 # schemas
 
 ## Purpose
-JSON schema documentation for pipeline state management and property data structures used in multi-phase property analysis workflows.
+JSON schema documentation for pipeline state management (work_items.json) and property scoring (score_breakdown). Defines structure, constraints, and serialization formats for data layer persistence.
 
 ## Contents
-| Path | Purpose |
-|------|---------|
-| `work_items_schema.md` | Complete work_items.json structure (session, phases, checkpoints, recovery) |
+| Document | Purpose |
+|----------|---------|
+| `work_items_schema.md` | work_items.json structure (phases, checkpoints, recovery, validation) |
+| `score_breakdown_schema.md` | ScoreBreakdown value object (605-point system, sections, criteria) |
 
 ## Key Patterns
-- **Atomic writes prevent corruption**: Temp+rename pattern for work_items.json reliability
-- **State machine clarity**: Explicit transitions (pending→in_progress→completed→failed) prevent invalid combinations
-- **Stale detection**: Phases hung >30min auto-reset to pending on load
-- **Phase granularity**: 6 phases (county, listing, map, images, synthesis, report) enable fine-grained tracking
+- **Atomic writes**: Temp file + rename pattern prevents corruption on crash
+- **State machine**: Explicit transitions (pending→in_progress→completed→failed)
+- **Stale detection**: 30-min timeout auto-resets hung phases
+- **Validation rules**: Structural (types, fields) + semantic (status transitions)
 - **Backup retention**: Last 10 timestamped backups enable rollback
 
-## Tasks
-- [ ] Add enrichment_data.json schema documentation `P:M`
-- [ ] Document property data validation rules `P:M`
-- [ ] Add schema validation test suite `P:L`
-
-## Learnings
-- **Checkpoint operations critical**: checkpoint_phase_start(), checkpoint_phase_complete() enforce valid transitions
-- **Stale timeout prevents hangs**: 30min timeout recovers from crashed agents
-- **Summary auto-calculated**: Never manually edit; recalculated on every save_state()
-- **Retry count enables backoff**: Track retry_count per phase for exponential backoff
+## Score System
+| Section | Name | Max Points |
+|---------|------|------------|
+| A | Location & Environment | 250 |
+| B | Lot & Systems | 175 |
+| C | Interior & Features | 180 |
+| **Total** | | **605** |
 
 ## Refs
-- State machine: `work_items_schema.md:122-158` (WorkItemStatus enum, transitions)
-- Phase checkpoints: `work_items_schema.md:365-431` (initialization, start, complete, error handling)
-- Validation rules: `work_items_schema.md:459-511` (structural, status transitions)
-- Implementation: `../../src/phx_home_analysis/repositories/work_items_repository.py`
-- Enums: `../../src/phx_home_analysis/domain/enums.py`
+- Work items state: `work_items_schema.md:122-158` (enum, transitions)
+- Phase checkpoints: `work_items_schema.md:365-431` (API contract)
+- Score breakdown: `score_breakdown_schema.md:22-42` (Score value object)
+- Implementation: `../../src/phx_home_analysis/repositories/`
 
 ## Deps
-← imports: none (schema documentation)
-→ used by: WorkItemsRepository, agents, orchestrators, CLI tools
+← imports: none (documentation)
+→ used by: WorkItemsRepository, orchestrators, validation
