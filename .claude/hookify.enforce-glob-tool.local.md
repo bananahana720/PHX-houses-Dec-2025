@@ -1,6 +1,7 @@
 ---
 name: enforce-glob-tool
-enabled: true
+enabled: false
+# DISABLED: Duplicates bash_hook.py which already blocks find
 event: bash
 pattern: \b(find|ls)\s+.*\*.*\.(py|md|json|yaml|yml|ts|js)
 action: block

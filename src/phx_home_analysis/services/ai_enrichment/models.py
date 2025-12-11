@@ -90,7 +90,7 @@ class FieldInference:
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError(f"Confidence must be between 0.0 and 1.0, got {self.confidence}")
 
-        valid_sources = {"web_scrape", "assessor_api", "ai_inference", "ai_pending"}
+        valid_sources = {"web_scrape", "assessor_api", "ai_inference", "ai_pending", "phoenix_mls"}
         if self.source not in valid_sources:
             raise ValueError(f"Source must be one of {valid_sources}, got {self.source}")
 

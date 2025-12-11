@@ -4,25 +4,41 @@
 
 **PRD Coverage:** FR9-14
 **Architecture References:** ADR-04 (All Kill-Switch Criteria Are HARD), Kill-Switch Architecture
+**Status:** COMPLETE (2025-12-10)
+**Progress:** 100% (6/6 stories done)
 
 ---
 
-## Pre-Epic Preparation (Wave 0)
+## Implementation Summary
 
-**Status:** REQUIRED | **Added:** 2025-12-05
+| Story | Status | Completed | Key Deliverables |
+|-------|--------|-----------|------------------|
+| E3.S0 | DONE | 2025-12-07 | Template orchestration metadata |
+| E3.S1 | DONE | 2025-12-08 | 5 HARD criteria, KillSwitchFilter |
+| E3.S2 | DONE | 2025-12-09 | 4 SOFT criteria, severity accumulation |
+| E3.S3 | DONE | 2025-12-09 | KillSwitchResult, FailedCriterion, formatting |
+| E3.S4 | DONE | 2025-12-10 | ConsequenceMapper, FailureExplanation, HTML cards |
+| E3.S5 | DONE | 2025-12-10 | KillSwitchConfig, ConfigWatcher, hot-reload |
 
-Before beginning Epic 3 stories, validate image extraction blocker status:
+## Key Modules Created
 
-### Wave 0 Tasks
+| Module | Purpose | Lines |
+|--------|---------|-------|
+| `result.py` | KillSwitchResult, FailedCriterion dataclasses | 215 |
+| `formatting.py` | format_verdict(), format_result(), severity bar | 205 |
+| `consequences.py` | ConsequenceMapper, FailureExplanation, HTML cards | 1045 |
+| `config_loader.py` | KillSwitchConfig, load_kill_switch_config() | 287 |
+| `config_factory.py` | create_kill_switch_from_config() factory | 217 |
+| `config_watcher.py` | ConfigWatcher for hot-reload in dev mode | 231 |
 
-| # | Task | Owner | Success Criteria | Status |
-|---|------|-------|------------------|--------|
-| W0.1 | Validate BLOCK-001/002 current status | Dev | Live test 5 properties | Pending |
-| W0.2 | IF <80%: Execute E2.R1 (Zillow zpid) | Dev | >80% Zillow success | Pending |
-| W0.3 | IF <80%: Execute E2.R2 (Redfin session) | Dev | >80% Redfin success | Pending |
-| W0.4 | Update sprint-status.yaml | SM | Blockers resolved or documented | Pending |
+## Test Coverage
 
-**Note:** Epic 3 (Kill-Switch) has **NO dependency on image extraction**. Epic 3 can proceed in parallel with Wave 0 remediation if team capacity allows.
+| Test File | Tests | Coverage |
+|-----------|-------|----------|
+| `test_kill_switch.py` | 13 classes | 1080 lines |
+| `test_lib_kill_switch.py` | 18 classes | 813 lines |
+| `test_kill_switch_chain.py` | 7 tests | Integration |
+| **Total** | 38+ test functions | Full criteria coverage |
 
 ---
 

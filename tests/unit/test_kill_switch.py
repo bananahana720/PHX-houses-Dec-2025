@@ -316,6 +316,12 @@ class TestLotSizeKillSwitch:
         kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
         assert kill_switch.check(sample_property) is True
 
+    def test_pass_with_exact_minimum_lot(self, sample_property):
+        """Test property with exactly 7000 sqft (minimum boundary) passes."""
+        sample_property.lot_sqft = 7000
+        kill_switch = LotSizeKillSwitch(min_sqft=7000, max_sqft=15000)
+        assert kill_switch.check(sample_property) is True
+
     def test_fail_with_lot_too_small(self, sample_property):
         """Test property with lot size below 7000 fails."""
         sample_property.lot_sqft = 6999

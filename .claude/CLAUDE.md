@@ -1,5 +1,5 @@
 ---
-last_updated: 2025-12-06T12:00:00Z
+last_updated: 2025-12-10T18:00:00Z
 updated_by: agent
 staleness_hours: 24
 line_target: 80
@@ -8,7 +8,7 @@ flags: []
 # .claude
 
 ## Purpose
-Claude Code configuration: agents, skills, commands, hooks, and operational protocols for PHX Houses pipeline.
+Claude Code configuration: agents, skills, commands, hooks, hookify rules, and operational protocols for PHX Houses pipeline.
 
 ## Contents
 | Path | Purpose |
@@ -17,14 +17,17 @@ Claude Code configuration: agents, skills, commands, hooks, and operational prot
 | `mcp-reference.md` | MCP tool docs (Context7, Playwright, Fetch) |
 | `agents/` | Subagent definitions (3 agents: listing-browser, map-analyzer, image-assessor) |
 | `commands/` | Slash commands (analyze-property, commit) |
-| `skills/` | Domain expertise modules (11 skills) |
-| `hooks/` | Pre/post execution hooks (safety, linting) |
+| `skills/` | Domain expertise modules (12 skills) |
+| `hooks/` | Pre/post execution hooks (18 Python scripts) |
+| `hookify.*.local.md` | 40 hookify rules (orchestration, safety, quality) |
 | `settings.json` | Claude Code settings |
 
 ## Key Patterns
 - **Skills loading**: Agents declare `skills:` in frontmatter YAML
 - **Hooks**: Python scripts in `hooks/` run pre/post tool execution
+- **Hookify rules**: Markdown rules in `.local.md` files for behavior enforcement
 - **Model tiers**: Haiku 4.5 (extraction), Opus 4.5 (vision/assessment)
+- **Orchestration**: Main agent delegates, subagents implement
 
 ## Available Skills
 | Skill | Use When |
@@ -48,10 +51,20 @@ Claude Code configuration: agents, skills, commands, hooks, and operational prot
 /analyze-property "123 Main St"   # Single property
 ```
 
+## Hookify Rules (40 total)
+| Category | Count | Key Rules |
+|----------|-------|-----------|
+| Orchestration | 8 | enforce-orchestrator-role, enforce-task-delegation, track-subagent-completions |
+| Safety | 10 | block-playwright-zillow, block-secrets-commit, block-data-file-edits |
+| Quality | 12 | require-tests-before-stop, verify-test-execution, precommit-hygiene |
+| Documentation | 6 | require-claude-md-update, detect-stale-documentation |
+| Architecture | 4 | enforce-ddd-layers, validate-repository-pattern |
+
 ## Refs
 - Parent: `../CLAUDE.md` (full project docs)
 - Protocols: `protocols.md` (TIER 0-3 rules)
 - MCP: `mcp-reference.md` (Context7, Playwright, Fetch)
+- Hookify format: `hookify.*.local.md` files
 
 ## Deps
 <- imports: none (config directory)

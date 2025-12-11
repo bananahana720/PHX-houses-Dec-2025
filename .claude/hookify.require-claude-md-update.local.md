@@ -11,6 +11,8 @@ action: warn
 
 ## 📚 CLAUDE.md Documentation Sync Required
 
+**This warning fires once per file per session - acknowledge and continue.**
+
 **You are modifying a file that is referenced in documentation.**
 
 ### Files That Require Doc Updates

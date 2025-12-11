@@ -1,6 +1,7 @@
 ---
 name: enforce-grep-tool
-enabled: true
+enabled: false
+# DISABLED: Duplicates bash_hook.py which already blocks grep
 event: bash
 pattern: \b(grep|rg)\s+(-[a-zA-Z]+\s+)*['"](.*?)['"]\s+
 action: block

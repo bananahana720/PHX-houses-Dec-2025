@@ -5,42 +5,44 @@ event: prompt
 conditions:
   - field: user_prompt
     operator: regex_match
-    pattern: (?i)(according to|based on|CLAUDE\.md says|documentation says|docs show|the docs|per the|see @)
+    pattern: (?i)(the\s+(docs?|documentation)\s+say|according\s+to\s+(the\s+)?(docs?|documentation)|docs?\s+mention|documentation\s+says|README\s+says)
 action: warn
 ---
 
-## ⚠️ Documentation May Be Stale - Verify Before Trusting
+## 📚 Documentation Reference Detected - Verify Before Trusting
 
-**You referenced documentation content. Treat ALL docs as potentially outdated.**
+**You cited documentation. Treat ALL docs as potentially outdated—verify against code.**
 
 ### Verification Protocol
 
-When citing documentation, ALWAYS:
+Before trusting a documentation claim:
 
-1. **Check against code**: Does doc match current implementation?
-2. **Cross-check related docs**: Do all references agree?
-3. **Cite source files**: Include file:line for verifiable claims
+1. **Check freshness**: Look for `last_updated` or commit date in relevant CLAUDE.md files
+2. **Cross-check code**: Compare doc claims against actual implementation
+3. **Cite sources**: Include file:line references for verifiable claims
 
-### Known Drift-Prone Areas
+### High-Risk Documentation Areas
 
-| Topic | Authoritative Source | Common Drift |
-|-------|---------------------|--------------|
-| Kill-switch count | `services/kill_switch/constants.py` | Docs may say 7/8 when code has 5+4 |
-| Scoring total | `services/scoring/constants.py` | Check MAX_SCORE, tier thresholds |
-| Schema fields | `domain/entities.py` | Field counts change frequently |
+| Topic | Authoritative Source | Stale Risk |
+|-------|---------------------|-----------|
+| Kill-switch count/criteria | `services/kill_switch/constants.py` | High—criteria change frequently |
+| Scoring weights/totals | `services/scoring/constants.py` | High—thresholds modified per analysis |
+| Schema fields | `domain/entities.py` | High—enrichment schema evolves |
+| Phase requirements | Pipeline code in `scripts/` | Medium—phase definitions stable |
+| Tool requirements | `.claude/CLAUDE.md` | Low—version table updated regularly |
 
 ### Red Flags 🚩
 
-- Numeric claims without source citations
-- "According to CLAUDE.md..." without verification
-- Docs updated >7 days ago for active areas
-- Contradictory values across different docs
+- Numeric claims (e.g., "605 points total") without code citation
+- "CLAUDE.md says..." statements made from memory (not fresh read)
+- Docs modified >7 days ago for active feature areas
+- Contradictory values across CLAUDE.md, README, code
 
-### Verification Command
+### Verification Checklist
 
-```bash
-# Check consistency before trusting docs
-python .claude/hooks/architecture-consistency-check.py
-```
+- [ ] Read the actual file referenced (don't trust memory)
+- [ ] Cross-check numeric claims against code (constants, thresholds)
+- [ ] If docs conflict with code, cite the code as authoritative
+- [ ] Document any drift you find as a follow-up issue
 
-**Never answer "the docs say X" - always verify X is current.**
+**Always verify. Never assume docs are current.**

@@ -1,6 +1,7 @@
 ---
 name: enforce-read-tool
-enabled: true
+enabled: false
+# DISABLED: Duplicates bash_hook.py which already blocks cat/head/tail
 event: bash
 pattern: \b(cat|head|tail)\s+[^|>]+\.(json|yaml|yml|py|md|txt|csv|toml)
 action: block

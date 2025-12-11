@@ -14,6 +14,8 @@ Source Reliability:
 - AI Inference: Variable based on context available
 """
 
+import logging
+
 from ...config.constants import (
     CONFIDENCE_HIGH_THRESHOLD,
     DATA_CONFIDENCE_ASSESSOR_API,
@@ -26,6 +28,8 @@ from ...config.constants import (
     FIELD_CONFIDENCE_YEAR_BUILT,
 )
 from .models import ConfidenceLevel, FieldInference
+
+logger = logging.getLogger(__name__)
 
 
 class ConfidenceScorer:
@@ -98,10 +102,20 @@ class ConfidenceScorer:
         Returns:
             Final confidence score between 0.0 and 1.0
         """
-        base_weight = self.FIELD_CONFIDENCE_WEIGHTS.get(inference.field_name, 0.5)
+        base_weight = self.FIELD_CONFIDENCE_WEIGHTS.get(inference.field_name, None)
+        if base_weight is None:
+            logger.warning(
+                f"Unknown field '{inference.field_name}' in confidence scoring, defaulting to 0.5"
+            )
+            base_weight = 0.5
 
         if source_reliability is None:
-            source_reliability = self.SOURCE_RELIABILITY.get(inference.source, 0.5)
+            source_reliability = self.SOURCE_RELIABILITY.get(inference.source, None)
+            if source_reliability is None:
+                logger.warning(
+                    f"Unknown source '{inference.source}' in confidence scoring, defaulting to 0.5"
+                )
+                source_reliability = 0.5
 
         return min(1.0, base_weight * source_reliability * inference.confidence)
 
@@ -139,7 +153,11 @@ class ConfidenceScorer:
         Returns:
             Base confidence weight, or 0.5 if field not recognized
         """
-        return self.FIELD_CONFIDENCE_WEIGHTS.get(field_name, 0.5)
+        weight = self.FIELD_CONFIDENCE_WEIGHTS.get(field_name, None)
+        if weight is None:
+            logger.warning(f"Unknown field '{field_name}' in get_field_weight, defaulting to 0.5")
+            weight = 0.5
+        return weight
 
     def get_source_reliability(self, source: str) -> float:
         """Get the reliability factor for a data source.
@@ -150,7 +168,13 @@ class ConfidenceScorer:
         Returns:
             Source reliability factor, or 0.5 if source not recognized
         """
-        return self.SOURCE_RELIABILITY.get(source, 0.5)
+        reliability = self.SOURCE_RELIABILITY.get(source, None)
+        if reliability is None:
+            logger.warning(
+                f"Unknown source '{source}' in get_source_reliability, defaulting to 0.5"
+            )
+            reliability = 0.5
+        return reliability
 
     def score_multiple_inferences(
         self,

@@ -183,6 +183,17 @@ class TestFieldInference:
                 source="invalid_source",
             )
 
+    def test_valid_phoenix_mls_source(self):
+        """Test that phoenix_mls is a valid source."""
+        inference = FieldInference(
+            field_name="beds",
+            inferred_value=4,
+            confidence=0.9,
+            confidence_level=ConfidenceLevel.HIGH,
+            source="phoenix_mls",
+        )
+        assert inference.source == "phoenix_mls"
+
 
 # ============================================================================
 # TriageResult Tests

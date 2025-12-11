@@ -1,6 +1,6 @@
 ---
-last_updated: 2025-12-07T16:00:00Z
-updated_by: Claude Code
+last_updated: 2025-12-10T18:00:00Z
+updated_by: agent
 staleness_hours: 24
 line_target: 80
 flags: []
@@ -8,7 +8,7 @@ flags: []
 # .claude/hooks
 
 ## Purpose
-Quality gate and safety constraint system enforcing stop-the-line compliance checks, tool usage redirection, session hygiene, and security boundaries.
+Quality gate and orchestration enforcement system: stop-the-line checks, tool redirection, session hygiene, security boundaries, and main-agent orchestrator role enforcement.
 
 ## Core Python Hooks
 | File | Purpose | Category |
@@ -32,7 +32,9 @@ Quality gate and safety constraint system enforcing stop-the-line compliance che
 ## Orchestration Hooks
 | File | Purpose | Category |
 |------|---------|----------|
-| `user_prompt_submit_hook.py` | Inject orchestration guidelines on every prompt | Orchestration |
+| `user_prompt_submit_hook.py` | Inject ORCHESTRATOR ROLE ENFORCEMENT on every prompt | Orchestration |
+
+**Orchestration Principle**: Main agent = Orchestrator (delegates), Subagents = Workers (implement)
 
 ## Shared Libraries
 | File | Purpose |
@@ -58,16 +60,14 @@ Quality gate and safety constraint system enforcing stop-the-line compliance che
 - [x] Create lib/config.py for centralized thresholds `P:M` ✓ 2025-12-07
 - [x] Create lib/hook_io.py for standardized I/O `P:M` ✓ 2025-12-07
 - [x] Fix bash_hook.py to block cat/head/tail `P:H` ✓ 2025-12-07
-- [x] Remove /compact duplication from user_prompt_submit `P:M` ✓ 2025-12-07
-- [x] Add architecture consistency pre-commit hook `P:M` ✓ 2025-12-07
+- [x] Add orchestration enforcement to user_prompt_submit `P:H` ✓ 2025-12-10
 
 ## Learnings
 - Agent sessions bypass CLAUDE.md checks (auto-approve agent-*.jsonl)
-- Oversized detection: >100 lines triggers distillation prompt to user
-- Deleted files don't generate delta entries (safety pattern)
-- Removed broken grep_block_hook.py, bash_grep_check.py (2025-12-07)
-- format_python_hook uses ruff only (black removed 2025-12-07)
-- Architecture consistency hook catches doc drift early (Epic 2 Audit 2025-12-07)
+- Oversized detection: >100 lines triggers distillation prompt
+- user_prompt_submit_hook now enforces ORCHESTRATOR role (2025-12-10)
+- 8 orchestration hookify rules enforce delegation pattern (2025-12-10)
+- 3 duplicate tool enforcement rules disabled (bash_hook.py handles)
 
 ## Refs
 - Centralized config: `lib/config.py` (all thresholds)

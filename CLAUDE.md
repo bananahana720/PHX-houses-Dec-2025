@@ -1,7 +1,6 @@
 ---
-last_updated: 2025-12-07T18:00:00Z
+last_updated: 2025-12-10T22:30:00Z
 updated_by: agent
-staleness_hours: 72
 ---
 
 
@@ -41,12 +40,12 @@ Evaluates Phoenix properties against 5 HARD + 4 SOFT kill-switches and scores (6
 `HOA=$0` | `solar≠lease` | `beds≥4` | `baths≥2` | `sqft>1800`
 
 **SOFT (severity accumulation, fail if ≥3.0):**
-| Criterion | Threshold | Severity |
-|-----------|-----------|----------|
-| Sewer | City only | 2.5 |
-| Year Built | ≤2023 | 2.0 |
-| Garage | ≥2 indoor | 1.5 |
-| Lot Size | 7k-15k sqft | 1.0 |
+| Criterion | Threshold | Severity | Boundary |
+|-----------|-----------|----------|----------|
+| Sewer | City only | 2.5 | - |
+| Year Built | ≤2023 | 2.0 | - |
+| Garage | ≥2 indoor | 1.5 | - |
+| Lot Size | 7k-15k sqft | 1.0 | Inclusive [7000,15000] |
 
 **Verdict:** FAIL if any HARD fails OR severity ≥ 3.0
 
@@ -86,7 +85,8 @@ ruff check --fix && ruff format   # Lint/format
 ## Arizona Specifics
 Orientation: North=30pts, West=0pts | HVAC: 10-15yr | Pool: $250-400/mo | Solar leases: liability
 
-## CI/CD & Dependencies
+## Tests & CI
+- **188 tests**: Kill-Switch (111) + AI Enrichment (51) + Integration (26)
 - **Checks**: `ruff check` | `mypy src/` | `pytest` | `pip-audit --strict`
-- **Blocked**: selenium, requests → use nodriver, httpx
-- **Secrets**: `.env` (`MARICOPA_ASSESSOR_TOKEN`, proxy creds)
+- **Blocked deps**: selenium, requests → use nodriver, httpx
+- **Data sources**: assessor_api (0.95), phoenix_mls (0.87), web_scrape (0.75), ai_inference (0.70)

@@ -41,6 +41,32 @@ from .base import (
     KillSwitch,
     KillSwitchVerdict,
 )
+from .config_factory import (
+    create_kill_switch_from_config,
+    create_kill_switches_from_config,
+    load_kill_switches_from_config,
+)
+
+# Configuration management (E3.S5)
+from .config_loader import (
+    KillSwitchConfig,
+    get_hard_configs,
+    get_soft_configs,
+    load_kill_switch_config,
+)
+from .config_watcher import ConfigWatcher
+from .consequences import (
+    CONSEQUENCE_TEMPLATES,
+    DISPLAY_NAMES,
+    REQUIREMENT_DESCRIPTIONS,
+    ConsequenceMapper,
+    FailureExplanation,
+    MultiFailureSummary,
+    explain_with_consequences,
+    generate_multi_failure_summary,
+    generate_warning_card_html,
+    generate_warning_cards_html,
+)
 from .criteria import (
     CitySewerKillSwitch,
     LotSizeKillSwitch,
@@ -54,6 +80,8 @@ from .criteria import (
 )
 from .explanation import CriterionResult, VerdictExplainer, VerdictExplanation
 from .filter import KillSwitchFilter
+from .formatting import format_result, format_verdict
+from .result import FailedCriterion, KillSwitchResult
 from .severity import (
     SoftCriterionConfig,
     SoftSeverityEvaluator,
@@ -85,9 +113,34 @@ __all__ = [
     "VerdictExplainer",
     "VerdictExplanation",
     "CriterionResult",
-    # Severity evaluation system
+    # Consequence mapping and failure explanations (E3.S4)
+    "ConsequenceMapper",
+    "FailureExplanation",
+    "MultiFailureSummary",
+    "explain_with_consequences",
+    "generate_multi_failure_summary",
+    "generate_warning_card_html",
+    "generate_warning_cards_html",
+    "CONSEQUENCE_TEMPLATES",
+    "DISPLAY_NAMES",
+    "REQUIREMENT_DESCRIPTIONS",
+    # Verdict evaluation system
     "SoftSeverityEvaluator",
     "SoftSeverityResult",
     "SoftCriterionConfig",
     "load_soft_criteria_config",
+    # Result and formatting (E3.S3)
+    "KillSwitchResult",
+    "FailedCriterion",
+    "format_verdict",
+    "format_result",
+    # Configuration management (E3.S5)
+    "KillSwitchConfig",
+    "load_kill_switch_config",
+    "get_hard_configs",
+    "get_soft_configs",
+    "create_kill_switch_from_config",
+    "create_kill_switches_from_config",
+    "load_kill_switches_from_config",
+    "ConfigWatcher",
 ]

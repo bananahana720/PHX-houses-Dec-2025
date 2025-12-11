@@ -52,5 +52,124 @@
     "learnings": [
       "** Follow the existing test patterns in the file. Use the same fixture approach (`sample_property`)."
     ]
+  },
+  {
+    "timestamp": "2025-12-10T15:36:43.555801+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "May require architecture decision - consider adding optional CSV path param to filter"
+    ]
+  },
+  {
+    "timestamp": "2025-12-10T15:40:13.611309+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "- Report specific problems with file:line references"
+    ]
+  },
+  {
+    "timestamp": "2025-12-10T16:22:24.604446+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "Block Main Agent Direct Work**",
+      "Warn on Excessive Read Operations**",
+      "Enforce Task Tool for Complex Work**"
+    ],
+    "learnings": [
+      "git commit",
+      "Match edits that add >20 lines of code",
+      "Match prompts with \"implement\", \"create\", \"add feature\", \"fix bug\""
+    ]
+  },
+  {
+    "timestamp": "2025-12-10T17:05:43.693687+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "count"
+    ]
+  },
+  {
+    "timestamp": "2025-12-10T17:11:58.428746+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "[]"
+    ]
+  },
+  {
+    "timestamp": "2025-12-10T17:20:42.033625+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "FailureExplanation) -> str:"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-10T17:28:31.979606+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "If config file doesn't exist",
+      "If CSV is invalid or validation fails",
+      "If CSV is invalid or validation fails"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-10T17:38:28.283406+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [
+      "FailureExplanation,"
+    ],
+    "learnings": []
+  },
+  {
+    "timestamp": "2025-12-10T18:19:55.640656+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "N"
+    ]
+  },
+  {
+    "timestamp": "2025-12-10T18:21:56.467911+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "N"
+    ]
+  },
+  {
+    "timestamp": "2025-12-10T18:36:30.721952+00:00",
+    "subagent_type": "general-purpose",
+    "file_references": [],
+    "error_patterns": [],
+    "learnings": [
+      "regex-pattern",
+      "(continue|step\\s+\\d{2,}|keep going|more|next\\s+\\d+|resume|part\\s+[3-9]|phase\\s+[4-9])",
+      "pytest|python\\s+-m\\s+pytest|npm\\s+test|jest"
+    ]
+  },
+  {
+    "timestamp": "2025-12-10T19:16:53.387364+00:00",
+    "subagent_type": "hookify:conversation-analyzer",
+    "file_references": [],
+    "error_patterns": [
+      "- name: [hook name or suggested new hook]",
+      "- name: [hook name or suggested new hook]"
+    ],
+    "learnings": []
   }
 ]

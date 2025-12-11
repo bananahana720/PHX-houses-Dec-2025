@@ -448,14 +448,14 @@ class LotSizeKillSwitch(KillSwitch):
             property: Property to evaluate
 
         Returns:
-            True if lot_sqft > min_sqft (and < max_sqft if max set), False otherwise
+            True if lot_sqft >= min_sqft (and <= max_sqft if max set), False otherwise
         """
         # None or missing lot size fails (cannot verify requirement)
         if property.lot_sqft is None:
             return False
         if self._max_sqft is not None:
-            return property.lot_sqft > self._min_sqft and property.lot_sqft <= self._max_sqft
-        return property.lot_sqft > self._min_sqft
+            return property.lot_sqft >= self._min_sqft and property.lot_sqft <= self._max_sqft
+        return property.lot_sqft >= self._min_sqft
 
     def failure_message(self, property: "Property") -> str:
         """Generate specific failure message with lot size.
@@ -471,11 +471,11 @@ class LotSizeKillSwitch(KillSwitch):
                 return (
                     f"Lot size unknown (buyer requires {self._min_sqft:,}-{self._max_sqft:,} sqft)"
                 )
-            return f"Lot size unknown (buyer requires >{self._min_sqft:,} sqft)"
-        elif property.lot_sqft <= self._min_sqft:
+            return f"Lot size unknown (buyer requires >={self._min_sqft:,} sqft)"
+        elif property.lot_sqft < self._min_sqft:
             return (
                 f"Lot too small: {property.lot_sqft:,} sqft "
-                f"(buyer requires >{self._min_sqft:,} sqft)"
+                f"(buyer requires >={self._min_sqft:,} sqft)"
             )
         elif self._max_sqft is not None and property.lot_sqft > self._max_sqft:
             return (
